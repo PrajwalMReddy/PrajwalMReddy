@@ -1,10 +1,15 @@
 <template>
-  <h1>Prajwal M. Reddy</h1>
+  <NavBar />
 </template>
 
 <script>
+import NavBar from "@/components/NavBar";
+
 export default {
   name: 'App',
+  components: {
+    NavBar
+  },
 }
 </script>
 
