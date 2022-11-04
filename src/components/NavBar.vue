@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #navigation-bar {
   background: #272727;
   padding: 5px;
@@ -36,8 +36,6 @@ export default {
 }
 
 .navigation-element {
-  font-family: Calibri, sans-serif;
-
   margin: 25px 30px 25px 30px;
 }
 
