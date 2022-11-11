@@ -1,8 +1,8 @@
 <template>
   <div id="about-home">
-    <img id="about-logo" src="../img/hurricane.png">
     <div id="about-text-div">
-      <h1 id="about-text-header">Hello, I'm Prajwal Reddy</h1>
+      <h1 id="about-text-header"> Hello </h1>
+      <h2 id="about-text-subheader">I'm Prajwal Reddy</h2>
       <p id="about-text">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         Phasellus a eros ac dolor laoreet egestas sit amet non mi.
@@ -13,6 +13,7 @@
         Duis imperdiet a dolor id consequat. Cras porta et massa et condimentum.
       </p>
     </div>
+    <img id="about-img" src="../img/hurricane.png">
   </div>
 </template>
 
@@ -26,13 +27,8 @@ export default {
 #about-home {
   display: flex;
   justify-content: space-evenly;
-}
 
-#about-logo {
-  height: auto;
-  width: 30%;
-
-  margin: 60px;
+  margin-left: 50px;
 }
 
 #about-text-div {
@@ -40,17 +36,32 @@ export default {
   justify-content: center;
   flex-direction: column;
 
+  margin-top: -10px;
   width: 50%;
 }
 
 #about-text-header {
   font-size: 60px;
-  text-align: center;
+  text-align: justify;
+}
+
+#about-text-subheader {
+  font-size: 45px;
+  text-align: justify;
+
+  margin-top: 10px;
 }
 
 #about-text {
   font-size: 20px;
 
-  margin: 50px 100px;
+  margin-top: 20px;
+}
+
+#about-img {
+  height: auto;
+  width: 27%;
+
+  margin: 60px;
 }
 </style>
