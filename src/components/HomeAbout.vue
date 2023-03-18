@@ -1,7 +1,7 @@
 <template>
   <div id="about-home">
     <div id="about-text-div">
-      <h1 id="about-text-header"> Hello </h1>
+      <h1 id="about-text-header">Hello</h1>
       <h2 id="about-text-subheader">I'm Prajwal Reddy</h2>
       <p id="about-text">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
