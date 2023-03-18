@@ -1,15 +1,21 @@
 <template>
   <NavBar />
   <HomeAbout />
+  <HomeExperience />
+  <HomeContact />
 </template>
 
 <script>
 import NavBar from "@/components/NavBar";
 import HomeAbout from "@/components/HomeAbout";
+import HomeExperience from "@/components/HomeExperience";
+import HomeContact from "@/components/HomeContact";
 
 export default {
   name: 'App',
   components: {
+    HomeContact,
+    HomeExperience,
     HomeAbout,
     NavBar
   },

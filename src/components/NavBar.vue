@@ -6,7 +6,7 @@
     <ul class="navigation-list">
       <li class="navigation-element"><a class="navigation-link" href="/projects">Projects</a></li>
       <li class="navigation-element"><a class="navigation-link" href="/blogs">Blogs</a></li>
-      <li class="navigation-element"><a class="navigation-link" href="/todo">Todo</a></li>
+      <li class="navigation-element"><a class="navigation-link" href="/about">About</a></li>
     </ul>
   </nav>
 </template>

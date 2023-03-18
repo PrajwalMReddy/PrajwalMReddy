@@ -60,7 +60,7 @@ export default {
 
 #about-img {
   height: auto;
-  width: 27%;
+  width: 22%;
 
   margin: 60px;
 }
