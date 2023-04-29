@@ -1,0 +1,88 @@
+@font-face {
+    font-family: "JetBrainsMono";
+    src: url("JetBrainsMono.woff2") format("woff");
+}
+
+body {
+    font-family: "JetBrainsMono", serif;
+}
+
+#navigation-bar {
+    background: #272727;
+    padding: 5px;
+
+    display: flex;
+    display: -webkit-flex;
+
+    justify-content:space-between;
+    -webkit-justify-content:space-between;
+}
+
+.navigation-list {
+    list-style-type: none;
+    display: flex;
+    display: -webkit-flex;
+}
+
+.navigation-element {
+    margin: 25px 30px 25px 30px;
+}
+
+.navigation-element:hover {
+    text-decoration: underline;
+}
+
+#navigation-name {
+    color: #BEBEBE;
+
+    font-size: 30px;
+    text-decoration: none;
+}
+
+.navigation-link {
+    color: #BEBEBE;
+
+    font-size: 25px;
+    text-decoration: none;
+}
+
+#about-home {
+    display: flex;
+    justify-content: space-evenly;
+
+    margin-left: 50px;
+}
+
+#about-text-div {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    margin-top: -10px;
+    width: 50%;
+}
+
+#about-text-header {
+    font-size: 60px;
+    text-align: justify;
+}
+
+#about-text-subheader {
+    font-size: 45px;
+    text-align: justify;
+
+    margin-top: 10px;
+}
+
+#about-text {
+    font-size: 20px;
+
+    margin-top: 20px;
+}
+
+#about-img {
+    height: auto;
+    width: 22%;
+
+    margin: 60px;
+}
