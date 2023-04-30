@@ -86,3 +86,39 @@ body {
 
     margin: 60px;
 }
+
+#all-projects {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 25px;
+}
+
+.project-div {
+    text-align: center;
+    border: 3px solid black;
+    margin: 25px;
+    border-radius: 20px;
+}
+
+.project-div a {
+    color: black;
+    text-decoration: none;
+}
+
+.project-div h1 {
+    font-size: 40px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.project-div img {
+    height: 300px;
+    margin: 30px 20px;
+}
+
+.project-div p {
+    font-size: 25px;
+    margin-bottom: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
