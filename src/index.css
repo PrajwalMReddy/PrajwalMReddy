@@ -1,4 +1,6 @@
 body {
+    font-family: "Calibri", sans-serif;
+
     --nav-width: 17%;
 
     --background: #FFFFFF;
@@ -18,7 +20,6 @@ body {
 #nav-list {
     list-style: none;
     color: var(--text);
-    font-family: "Calibri", sans-serif;
     font-size: 22px;
 
     padding: 20%;
@@ -66,42 +67,37 @@ body {
 
 #home-heading {
     font-size: 50px;
-    font-family: "Calibri", sans-serif;
     text-align: left;
 }
 
 .home-text {
     font-size: 30px;
-    font-family: "Calibri", sans-serif;
     line-height: 40px;
 }
 
 .home-text-sub {
     font-size: 25px;
-    font-family: "Calibri", sans-serif;
     text-align: justify;
 
     margin-top: 15px;
 }
 
-#skills {
-    font-family: "Calibri", sans-serif;
-
+.blogs {
     padding: 5% 5% 0% 5%;
     display: flex;
     justify-content: center;
     margin-left: var(--nav-width);
 }
 
-.skills-info:not(:last-child) {
+.blogs-info:not(:last-child) {
     margin-right: 50px;
 }
 
-.skills-info {
+.blogs-info {
     background-color: var(--gray);
 }
 
-.skills-heading {
+.blogs-heading {
     text-align: center;
     font-size: 25px;
     color: var(--text);
@@ -109,11 +105,33 @@ body {
     padding: 5%;
 }
 
-.skills-text {
+.blogs-text {
     text-align: justify;
     font-size: 20px;
     line-height: 22px;
     color: var(--text);
 
     padding: 0% 7% 5% 7%;
+}
+
+#contact-heading {
+    font-size: 50px;
+
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+}
+
+#contact-list {
+    margin-left: var(--nav-width);
+    padding-top: 4%;
+    padding-left: 10%;
+}
+
+.contact-element {
+    font-size: 25px;
+}
+
+footer {
+    margin-top: 50px;
 }
