@@ -132,6 +132,31 @@ body {
     font-size: 25px;
 }
 
+#blog-heading {
+    font-size: 50px;
+
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+}
+
+#blog-notice-div {
+    margin-left: var(--nav-width);
+    padding: 3% 5% 0% 5%;
+}
+
+.blog-notice {
+    background-color: var(--gray);
+}
+
+.blog-notice-heading {
+    font-size: 25px;
+    text-align: center;
+    color: var(--text);
+
+    padding: 5%;
+}
+
 footer {
     margin-top: 50px;
 }
