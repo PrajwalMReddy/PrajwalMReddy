@@ -82,38 +82,6 @@ body {
     margin-top: 15px;
 }
 
-.blogs {
-    padding: 5% 5% 0% 5%;
-    display: flex;
-    justify-content: center;
-    margin-left: var(--nav-width);
-}
-
-.blogs-info:not(:last-child) {
-    margin-right: 50px;
-}
-
-.blogs-info {
-    background-color: var(--gray);
-}
-
-.blogs-heading {
-    text-align: center;
-    font-size: 25px;
-    color: var(--text);
-
-    padding: 5%;
-}
-
-.blogs-text {
-    text-align: justify;
-    font-size: 20px;
-    line-height: 22px;
-    color: var(--text);
-
-    padding: 0% 7% 5% 7%;
-}
-
 #contact-heading {
     font-size: 50px;
 
@@ -155,6 +123,54 @@ body {
     color: var(--text);
 
     padding: 5%;
+}
+
+#project-heading {
+    font-size: 50px;
+
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+}
+
+.project-line {
+    padding: 5% 5% 0% 5%;
+    display: flex;
+    justify-content: center;
+    margin-left: var(--nav-width);
+}
+
+.project-info:not(:last-child) {
+    margin-right: 50px;
+}
+
+.project-info {
+    background-color: var(--gray);
+}
+
+.project-title {
+    text-align: center;
+    font-size: 25px;
+    color: var(--text);
+
+    padding: 5%;
+}
+
+.project-image {
+    height: 100px;
+
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.project-text {
+    text-align: justify;
+    font-size: 20px;
+    line-height: 22px;
+    color: var(--text);
+
+    padding: 5% 7% 5% 7%;
 }
 
 footer {
