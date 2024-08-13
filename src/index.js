@@ -1,4 +1,5 @@
-function backToTop() {
-    document.documentElement.scrollTop = 0; // Firefox, Chrome, Internet Explorer
-    document.body.scrollTop = 0; // Safari
+function languageChoiceChange() {
+    let languageChoice = document.getElementById("nav-language-choice");
+    let language = languageChoice.options[languageChoice.selectedIndex].text;
+    localStorage.setItem("language", language);
 }

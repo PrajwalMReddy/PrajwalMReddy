@@ -48,6 +48,25 @@ body {
     cursor: pointer;
 }
 
+#nav-language-div {
+    position: absolute;
+    bottom: 4%;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+#nav-language-text {
+    font-size: 15px;
+}
+
+#nav-language-choice {
+    background-color: var(--gray);
+    border: 1px solid;
+    cursor: pointer;
+}
+
 #home {
     color: var(--text);
 
@@ -230,10 +249,4 @@ footer {
     font-size: 15px;
 
     margin-top: 5px;
-}
-
-.footer-btt {
-    background-color: var(--gray);
-    border: 1px solid;
-    cursor: pointer;
 }

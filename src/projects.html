@@ -16,6 +16,14 @@
             <li class="nav-element"><a href="blog.html" class="nav-link">Blog</a></li>
             <li class="nav-element"><a href="contact.html" class="nav-link">Contact Me</a></li>
         </ul>
+
+        <div id="nav-language-div">
+            <label id="nav-language-text" for="nav-language-choice">Change Language</label>
+            <select id="nav-language-choice" onchange="languageChoiceChange()" name="languages">
+                <option class="nav-language-option" value="language-one">ಕನ್ನಡ</option>
+                <option class="nav-language-option" value="language-two">English</option>
+            </select>
+        </div>
     </nav>
 
     <h1 id="project-heading">My Projects</h1>
@@ -49,7 +57,7 @@
         <div class="footer-div">
             <img class="footer-logo" src="../img/hurricane.png" alt="Hurricane Logo">
             <p class="footer-copyright">Copyright 2024 - Prajwal Reddy</p>
-            <button class="footer-btt" onclick="backToTop()">Back To Top</button>
+            <div id="footer-third"><!-- Empty Div So Other Elements Are Aligned Properly --></div>
         </div>
     </footer>
 </body>
