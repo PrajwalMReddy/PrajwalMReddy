@@ -58,7 +58,6 @@ body {
 
 #home-info {
     border: solid var(--text);
-    border-radius: 10px;
 
     margin-top: 40px;
     margin-right: 6%;
@@ -92,12 +91,23 @@ body {
 
 #contact-list {
     margin-left: var(--nav-width);
-    padding-top: 4%;
+    padding-top: 3%;
     padding-left: 10%;
 }
 
 .contact-element {
     font-size: 25px;
+    margin-bottom: 30px;
+}
+
+.contact-link {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.contact-link:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 #blog-heading {
@@ -173,6 +183,57 @@ body {
     padding: 5% 7% 5% 7%;
 }
 
+#skill-div {
+    color: var(--text);
+
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+#skill-heading {
+    font-size: 40px;
+}
+
+.skill-line {
+    margin-top: 40px;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.skill-info {
+    font-size: 25px;
+}
+
 footer {
     margin-top: 50px;
+}
+
+.footer-div {
+    padding-left: 6%;
+    padding-right: 6%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: var(--nav-width);
+}
+
+.footer-logo {
+    height: 30px;
+}
+
+.footer-copyright {
+    font-size: 15px;
+
+    margin-top: 5px;
+}
+
+.footer-btt {
+    background-color: var(--gray);
+    border: 1px solid;
+    cursor: pointer;
 }
