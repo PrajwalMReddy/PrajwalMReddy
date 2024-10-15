@@ -1,5 +1,6 @@
 let languageCodes = {
     "kn": "ಕನ್ನಡ", "en": "English",
+    "ಕನ್ನಡ": "kn", "English": "en",
 };
 
 // Changing the language of a page on load if preferred language is different from loaded page's language
@@ -27,29 +28,31 @@ function languageChoiceChange() {
     loadPreferredLanguagePage(fullURL, language, currentPage);
 }
 
-let languageIndexes = {
+// TODO Remove the /ln codes
+let languagePageMappings = {
     "ಕನ್ನಡ": {
-        "index": "/kn/mane",
-        "projects": "/kn/yojanegalu",
-        "blog": "/kn/mimbaraha",
-        "contact": "/kn/samparka",
+        "index": "mane",
+        "projects": "yojanegalu",
+        "blog": "mimbaraha",
+        "contact": "samparka",
     }, "English": {
-        "mane": "/en/index",
-        "yojanegalu": "/en/projects",
-        "mimbaraha": "/en/blog",
-        "samparka": "/en/contact",
+        "mane": "index",
+        "yojanegalu": "projects",
+        "mimbaraha": "blog",
+        "samparka": "contact",
     },
 };
 
 function loadPreferredLanguagePage(url, newLanguage, currentPage) {
-    let preferredLanguagePage = languageIndexes[newLanguage][currentPage];
+    let preferredLanguagePage = languagePageMappings[newLanguage][currentPage];
+    preferredLanguagePage = "/" + languageCodes[newLanguage] + "/" + preferredLanguagePage;
 
     if (preferredLanguagePage === undefined) {
         return; // To be decided how to handle this case
     }
 
     let urlStem = "";
-    if (preferredLanguagePage.includes("blog") || preferredLanguagePage.includes("mimbaraha")) {
+    if (preferredLanguagePage.includes("blogs") || preferredLanguagePage.includes("mimbarahagalu")) {
         urlStem = url.substring(0, url.lastIndexOf('/', (url.lastIndexOf('/', url.lastIndexOf('/') - 1) - 1)));
     } else {
         urlStem = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
