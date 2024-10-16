@@ -167,8 +167,16 @@ body {
     padding-left: 6%;
 }
 
+.project-type-heading {
+    margin-left: var(--nav-width);
+
+    font-size: 35px;
+    padding-top: 3%;
+    padding-left: 6%;
+}
+
 .project-line {
-    padding: 5% 5% 0% 5%;
+    padding: 3% 5% 0% 5%;
     display: flex;
     justify-content: center;
     margin-left: var(--nav-width);
