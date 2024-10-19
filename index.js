@@ -1,62 +1,53 @@
-let languageCodes = {
-    "kn": "ಕನ್ನಡ", "en": "English",
-    "ಕನ್ನಡ": "kn", "English": "en",
+let languageCodeMappings = {
+    "kn": "ಕನ್ನಡ", "en": "English", "ಕನ್ನಡ": "kn", "English": "en",
 };
 
-// Changing the language of a page on load if preferred language is different from loaded page's language
-window.addEventListener("load", (event) => {
-    let fullURL = window.location.href;
-    let currentPage = fullURL.substring(fullURL.lastIndexOf('/') + 1, fullURL.lastIndexOf('.'));
-
-    let preferredLanguage = localStorage.getItem("language");
-    let currentLanguage = languageCodes[fullURL.substring(fullURL.lastIndexOf('/', fullURL.lastIndexOf('/') - 1) + 1, fullURL.lastIndexOf('/'))];
-
-    if ((preferredLanguage !== currentLanguage)) {
-        loadPreferredLanguagePage(fullURL, preferredLanguage, currentPage);
-    }
-});
-
-function languageChoiceChange() {
-    let languageChoice = document.getElementById("nav-language-choice");
-    let language = languageChoice.options[languageChoice.selectedIndex].text;
-
-    // Temporary Code
-    let fullURL = window.location.href;
-    let currentPage = fullURL.substring(fullURL.lastIndexOf('/') + 1, fullURL.lastIndexOf('.'));
-
-    localStorage.setItem("language", language);
-    loadPreferredLanguagePage(fullURL, language, currentPage);
-}
-
-// TODO Remove the /ln codes
 let languagePageMappings = {
     "ಕನ್ನಡ": {
         "index": "mane",
         "projects": "yojanegalu",
         "blog": "mimbaraha",
         "contact": "samparka",
+
+        "blogs/test-blog": "mimbarahagalu/parikshe-mimbaraha",
     }, "English": {
         "mane": "index",
         "yojanegalu": "projects",
         "mimbaraha": "blog",
         "samparka": "contact",
+
+        "mimbarahagalu/parikshe-mimbaraha": "blogs/test-blog",
     },
 };
 
-function loadPreferredLanguagePage(url, newLanguage, currentPage) {
-    let preferredLanguagePage = languagePageMappings[newLanguage][currentPage];
-    preferredLanguagePage = "/" + languageCodes[newLanguage] + "/" + preferredLanguagePage;
+// Changing the language of a page on load if preferred language is different from loaded page's language
+window.addEventListener("load", (event) => {
+    loadPreferredLanguagePage(window.location.href, localStorage.getItem("language"));
+});
 
-    if (preferredLanguagePage === undefined) {
-        return; // To be decided how to handle this case
-    }
+function languageChoiceChange() {
+    let languageChoice = document.getElementById("nav-language-choice");
+    let language = languageChoice.options[languageChoice.selectedIndex].text;
 
-    let urlStem = "";
-    if (preferredLanguagePage.includes("blogs") || preferredLanguagePage.includes("mimbarahagalu")) {
-        urlStem = url.substring(0, url.lastIndexOf('/', (url.lastIndexOf('/', url.lastIndexOf('/') - 1) - 1)));
-    } else {
-        urlStem = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
-    }
+    localStorage.setItem("language", language);
+    loadPreferredLanguagePage(window.location.href, language);
+}
 
-    window.location.href = urlStem + preferredLanguagePage + ".html";
+// Returns everything after the language code till the file type
+// That is, everything after en/ or kn/ and before .html
+function getCurrentPage(url, oldLanguage) {
+    return url.substring(url.indexOf(languageCodeMappings[oldLanguage]) + 3, url.indexOf(".html"));
+}
+
+function loadPreferredLanguagePage(url, newLanguage) {
+    let oldLanguage; if (newLanguage === "ಕನ್ನಡ") oldLanguage = "English"; else if (newLanguage === "English") oldLanguage = "ಕನ್ನಡ";
+
+    let preferredLanguagePage = languagePageMappings[newLanguage][getCurrentPage(url, oldLanguage)];
+    if (preferredLanguagePage === undefined) return; // TODO Decide how to handle this case
+
+    let subdirectory = languageCodeMappings[newLanguage] + "/" + preferredLanguagePage + ".html"; // Constructing the entire subdirectory link
+    let domain = url.substring(0, url.indexOf(languageCodeMappings[oldLanguage]) - 1); // Constructing the domain name
+
+    // Adding it all together
+    window.location.href = domain + "/" + subdirectory;
 }
