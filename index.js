@@ -1,5 +1,6 @@
 let languageCodeMappings = {
-    "kn": "ಕನ್ನಡ", "en": "English", "ಕನ್ನಡ": "kn", "English": "en",
+    "kn": "ಕನ್ನಡ", "en": "English", "es": "español",
+    "ಕನ್ನಡ": "kn", "English": "en", "español": "es"
 };
 
 let languagePageMappings = {
@@ -40,6 +41,7 @@ function getCurrentPage(url, oldLanguage) {
 }
 
 function loadPreferredLanguagePage(url, newLanguage) {
+    // TODO Change to handle Spanish
     let oldLanguage; if (newLanguage === "ಕನ್ನಡ") oldLanguage = "English"; else if (newLanguage === "English") oldLanguage = "ಕನ್ನಡ";
 
     let preferredLanguagePage = languagePageMappings[newLanguage][getCurrentPage(url, oldLanguage)];
