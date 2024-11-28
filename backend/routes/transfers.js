@@ -1,37 +1,23 @@
 const express = require("express");
-const Transfer = require("../models/transfers");
 const router = express.Router();
+const {
+    getTransfers, getTransfer, createTransfer, deleteTransfer, updateTransfer
+} = require("../controllers/transfers");
 
 // Gets all transfers listed
-router.get('/', (req, res) => {
-    res.json({message: "GET All Transfers"});
-});
+router.get('/', getTransfers);
 
 // Gets the specified transfer
-router.get("/:id", (req, res) => {
-    res.json({message: "GET Single Transfer"});
-});
+router.get("/:id", getTransfer);
 
 // Adds a new transfer
-router.post('/', async (req, res) => {
-    const {transaction, date, description, category, value} = req.body;
-
-    try {
-        const transfer = await Transfer.create({transaction, date, description, category, value});
-        res.status(200).json(transfer);
-    } catch (error) {
-        res.status(400).json({error: error.message});
-    }
-});
+router.post('/', createTransfer);
 
 // Deletes a new transfer
-router.delete("/:id", (req, res) => {
-    res.json({message: "DELETE Single Transfer"});
-});
+router.delete("/:id", deleteTransfer);
 
 // Updates a new transfer
-router.patch("/:id", (req, res) => {
-    res.json({message: "UPDATE Single Transfer"});
-});
+router.patch("/:id", updateTransfer);
+
 
 module.exports = router;
