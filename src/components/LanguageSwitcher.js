@@ -1,8 +1,8 @@
 import React from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import {useLanguage} from '../context/LanguageContext';
 
 const LanguageSwitcher = () => {
-    const { language, setLanguage, t } = useLanguage();
+    const {language, setLanguage, t} = useLanguage();
 
     const handleLanguageChange = (event) => {
         setLanguage(event.target.value === 'language-two' ? 'en' : 'kn');

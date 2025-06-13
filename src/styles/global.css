@@ -262,6 +262,7 @@ footer {
     display: flex;
     justify-content: center;
     margin-left: var(--nav-width);
+    gap: 50px;
 }
 
 .project-link {
@@ -271,10 +272,20 @@ footer {
 .project-info {
     background-color: var(--gray);
     width: 100%;
+    max-width: 500px;
 }
 
 .project-info:not(:last-child) {
-    margin-right: 50px;
+    margin-right: 0;
+}
+
+.project-line:has(.project-info:only-child) {
+    justify-content: center;
+}
+
+.project-line:has(.project-info:only-child) .project-info {
+    width: 100%;
+    max-width: 500px;
 }
 
 .project-title {
