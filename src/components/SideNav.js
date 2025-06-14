@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import {useLanguage} from '../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -7,10 +8,10 @@ const SideNav = () => {
     return (
         <nav id="nav-div">
             <ul id="nav-list">
-                <li id="nav-main"><a href="/" className="nav-link">{t('navName')}</a></li>
-                <li className="nav-element"><a href="/projects" className="nav-link">{t('project')}</a></li>
-                <li className="nav-element"><a href="/blog" className="nav-link">{t('blog')}</a></li>
-                <li className="nav-element"><a href="/contact" className="nav-link">{t('contact')}</a></li>
+                <li id="nav-main"><Link to="/" className="nav-link">{t('navName')}</Link></li>
+                <li className="nav-element"><Link to="/projects" className="nav-link">{t('project')}</Link></li>
+                <li className="nav-element"><Link to="/blog" className="nav-link">{t('blog')}</Link></li>
+                <li className="nav-element"><Link to="/contact" className="nav-link">{t('contact')}</Link></li>
             </ul>
             <LanguageSwitcher/>
         </nav>
