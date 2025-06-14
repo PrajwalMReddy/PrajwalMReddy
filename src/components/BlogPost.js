@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {useLanguage} from '../context/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
-import { getBlogPostBySlug } from '../utils/blogUtils';
+import {getBlogPostBySlug} from '../utils/blogUtils';
 
 const BlogPost = () => {
-    const { slug } = useParams();
+    const {slug} = useParams();
     const navigate = useNavigate();
-    const { language } = useLanguage();
+    const {language} = useLanguage();
     const [blogData, setBlogData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,11 +37,11 @@ const BlogPost = () => {
     if (loading) {
         return (
             <div id="app-root">
-                <SideNav />
+                <SideNav/>
                 <main>
                     <div className="blog-post-loading">Loading...</div>
                 </main>
-                <Footer />
+                <Footer/>
             </div>
         );
     }
@@ -49,11 +49,11 @@ const BlogPost = () => {
     if (error) {
         return (
             <div id="app-root">
-                <SideNav />
+                <SideNav/>
                 <main>
                     <div className="blog-post-error">Error: {error}</div>
                 </main>
-                <Footer />
+                <Footer/>
             </div>
         );
     }
@@ -62,7 +62,7 @@ const BlogPost = () => {
 
     return (
         <div id="app-root">
-            <SideNav />
+            <SideNav/>
             <main>
                 <article className="blog-post">
                     <header className="blog-post-header">
@@ -75,13 +75,13 @@ const BlogPost = () => {
                             )}
                         </div>
                     </header>
-                    <div 
+                    <div
                         className="blog-post-content"
-                        dangerouslySetInnerHTML={{ __html: blogData.content }}
+                        dangerouslySetInnerHTML={{__html: blogData.content}}
                     />
                 </article>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };

@@ -13,11 +13,11 @@ import {translations} from './locales';
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { hasError: false, error: null };
+        this.state = {hasError: false, error: null};
     }
 
     static getDerivedStateFromError(error) {
-        return { hasError: true, error };
+        return {hasError: true, error};
     }
 
     componentDidCatch(error, errorInfo) {
@@ -27,7 +27,7 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div style={{ padding: '20px', color: 'red' }}>
+                <div style={{padding: '20px', color: 'red'}}>
                     <h1>Something went wrong.</h1>
                     <pre>{this.state.error?.toString()}</pre>
                 </div>
@@ -41,7 +41,7 @@ class ErrorBoundary extends React.Component {
 function TitleUpdater() {
     const {language} = useLanguage();
     const location = useLocation();
-    
+
     useEffect(() => {
         console.log('Location changed:', location);
         try {
@@ -75,7 +75,7 @@ function AppWithTitle() {
     return (
         <ErrorBoundary>
             <Router>
-                <TitleUpdater />
+                <TitleUpdater/>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>

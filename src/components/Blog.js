@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useLanguage} from '../context/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
-import { getAllBlogPosts } from '../utils/blogUtils';
+import {getAllBlogPosts} from '../utils/blogUtils';
 
 const Blog = () => {
-    const { t, language } = useLanguage();
+    const {t, language} = useLanguage();
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -31,7 +31,7 @@ const Blog = () => {
 
     return (
         <div id="app-root">
-            <SideNav />
+            <SideNav/>
             <main>
                 <h1 id="blog-heading">{t('blogHeading')}</h1>
                 {loading ? (
@@ -50,9 +50,9 @@ const Blog = () => {
                         {blogPosts.length > 0 && (
                             <div className="blog-grid">
                                 {blogPosts.map((post) => (
-                                    <Link 
-                                        to={`/blog/${post.slug}`} 
-                                        key={post.slug} 
+                                    <Link
+                                        to={`/blog/${post.slug}`}
+                                        key={post.slug}
                                         className="blog-card"
                                     >
                                         <h2 className="blog-title">{post.title}</h2>
@@ -70,7 +70,7 @@ const Blog = () => {
                     </>
                 )}
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };

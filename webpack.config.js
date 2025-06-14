@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
     const isServeDist = process.env.SERVE_DIST === 'true';
-    
+
     return {
         entry: './src/index.js',
         output: {
@@ -78,8 +78,8 @@ module.exports = (env, argv) => {
             historyApiFallback: {
                 disableDotRule: true,
                 rewrites: [
-                    { from: /^\/$/, to: '/index.html' },
-                    { from: /./, to: '/index.html' }
+                    {from: /^\/$/, to: '/index.html'},
+                    {from: /./, to: '/index.html'}
                 ]
             },
             static: {
