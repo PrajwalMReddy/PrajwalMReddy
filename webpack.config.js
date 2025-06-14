@@ -1,98 +1,57 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
-module.exports = (env, argv) => {
-    const isProduction = argv.mode === 'production';
-    const isServeDist = process.env.SERVE_DIST === 'true';
-
-    return {
-        entry: './src/index.js',
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: 'bundle.js',
-            publicPath: isServeDist ? './' : (isProduction ? '/' : '/'),
-            clean: true // Clean the output directory before emit
+module.exports = {
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js',
+        publicPath: '/', // important for routing
+    },
+    resolve: {
+        alias: {
+            '@img': path.resolve(__dirname, 'src/assets/img'),
         },
-        module: {
-            rules: [
-                {
-                    test: /\.(js|jsx)$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['@babel/preset-env', '@babel/preset-react']
-                        }
-                    }
+        extensions: ['.js', '.jsx', '.json'], // ensure JSX files are handled
+    },
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/, // .js and .jsx files
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
                 },
-                {
-                    test: /\.css$/,
-                    use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/images/[name][ext]', // ensure image output path
                 },
-                {
-                    test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
-                    type: 'asset/resource',
-                    generator: {
-                        filename: 'assets/images/[name][ext]'
-                    }
-                }
-            ]
-        },
-        resolve: {
-            extensions: ['.js', '.jsx'],
-            alias: {
-                '@img': path.resolve(__dirname, 'src/assets/img'),
-                '@favicon': path.resolve(__dirname, 'src/assets/favicon')
-            }
-        },
-        plugins: [
-            new HtmlWebpackPlugin({
-                template: './public/index.html',
-                favicon: './src/assets/favicon/hurricane.ico',
-                inject: true,
-                minify: isProduction ? {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    removeRedundantAttributes: true,
-                    useShortDoctype: true,
-                    removeEmptyAttributes: true,
-                    removeStyleLinkTypeAttributes: true,
-                    keepClosingSlash: true,
-                    minifyJS: true,
-                    minifyCSS: true,
-                    minifyURLs: true
-                } : false,
-                base: isServeDist ? './' : undefined
-            }),
-            new CopyWebpackPlugin({
-                patterns: [
-                    {
-                        from: 'src/assets/img',
-                        to: 'assets/images'
-                    }
-                ]
-            })
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
         ],
-        devServer: {
-            historyApiFallback: {
-                disableDotRule: true,
-                rewrites: [
-                    {from: /^\/$/, to: '/index.html'},
-                    {from: /./, to: '/index.html'}
-                ]
-            },
-            static: {
-                directory: path.join(__dirname, 'public'),
-                publicPath: '/'
-            },
-            port: 3000,
-            hot: true,
-            open: true,
-            client: {
-                overlay: true,
-                progress: true
-            }
-        }
-    };
-}; 
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './public/index.html',
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'public/blog_content'),
+                    to: 'blog_content',
+                },
+            ],
+        }),
+    ],
+    devServer: {
+        historyApiFallback: true,
+    },
+    mode: 'production',
+};
