@@ -1,8 +1,12 @@
-import {navigation} from './navigation';
 import {home} from './home';
 import {projects} from './projects';
 import {blog} from './blog';
 import {contact} from './contact';
+import {footer} from './footer';
+import {languageSwitcher} from './languageSwitcher';
+import {sideNav} from './sideNav';
+import {projectCard} from './projectCard';
+import {meta} from './meta';
 
 // Deep merge function to combine objects
 const deepMerge = (target, source) => {
@@ -19,24 +23,6 @@ const deepMerge = (target, source) => {
 
 // Combine all translations
 export const translations = {
-    en: deepMerge(
-        deepMerge(
-            deepMerge(
-                deepMerge(navigation.en, home.en),
-                projects.en
-            ),
-            blog.en
-        ),
-        contact.en
-    ),
-    kn: deepMerge(
-        deepMerge(
-            deepMerge(
-                deepMerge(navigation.kn, home.kn),
-                projects.kn
-            ),
-            blog.kn
-        ),
-        contact.kn
-    )
+    en: deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(home.en, projects.en), blog.en), contact.en), footer.en), languageSwitcher.en), sideNav.en), projectCard.en), meta.en),
+    kn: deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(home.kn, projects.kn), blog.kn), contact.kn), footer.kn), languageSwitcher.kn), sideNav.kn), projectCard.kn), meta.kn)
 }; 
