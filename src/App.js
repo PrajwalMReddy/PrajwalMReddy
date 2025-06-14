@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
+import BlogPost from './components/BlogPost';
 import './styles/global.css';
 import {translations} from './locales';
 
@@ -79,9 +80,7 @@ function AppWithTitle() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>
                     <Route path="/blog" element={<Blog/>}/>
-                    <Route path="/contact" element={<Contact/>}/>
-
-                    {/* Blog Post Paths */}
+                    <Route path="/blog/:slug" element={<BlogPost/>}/>
                     <Route path="/contact" element={<Contact/>}/>
                 </Routes>
             </Router>
