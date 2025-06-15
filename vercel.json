@@ -31,10 +31,6 @@
     {
       "src": "/hurricane.ico",
       "dest": "/hurricane.ico"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
