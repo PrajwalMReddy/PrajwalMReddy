@@ -1,5 +1,5 @@
 import React from 'react';
-import {useLanguage} from '../context/LanguageContext';
+import {useLanguage} from '../utils/LanguageContext';
 import hurricaneLogo from '@img/hurricane.png';
 
 const Footer = () => {

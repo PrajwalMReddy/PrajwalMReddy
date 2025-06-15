@@ -41,4 +41,4 @@ export const getBlogPostBySlug = async (slug) => {
     const content = await fetchBlogContent(`${slug}.md`);
     const htmlContent = parseBlogContent(content);
     return {...post, content: htmlContent};
-}; 
+};

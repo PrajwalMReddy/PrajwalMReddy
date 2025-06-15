@@ -1,13 +1,14 @@
 import React, {useEffect} from 'react';
 import {HashRouter as Router, Route, Routes, useLocation} from 'react-router-dom';
-import {LanguageProvider, useLanguage} from './context/LanguageContext';
+import {LanguageProvider, useLanguage} from './utils/LanguageContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
 import BlogPost from './components/BlogPost';
-import './styles/global.css';
+import './styles.css';
 import {translations} from './locales';
+import NotFound from "./components/NotFound";
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -26,12 +27,10 @@ class ErrorBoundary extends React.Component {
 
     render() {
         if (this.state.hasError) {
-            return (
-                <div style={{padding: '20px', color: 'red'}}>
-                    <h1>Something went wrong.</h1>
-                    <pre>{this.state.error?.toString()}</pre>
-                </div>
-            );
+            return (<div style={{padding: '20px', color: 'red'}}>
+                <h1>Something went wrong.</h1>
+                <pre>{this.state.error?.toString()}</pre>
+            </div>);
         }
         return this.props.children;
     }
@@ -72,31 +71,29 @@ function TitleUpdater() {
 }
 
 function AppWithTitle() {
-    return (
-        <ErrorBoundary>
-            <Router>
-                <TitleUpdater/>
-                <Routes>
-                    <Route path="/" element={<Home/>}/>
-                    <Route path="/projects" element={<Projects/>}/>
-                    <Route path="/blog" element={<Blog/>}/>
-                    <Route path="/blog/:slug" element={<BlogPost/>}/>
-                    <Route path="/contact" element={<Contact/>}/>
-                </Routes>
-            </Router>
-        </ErrorBoundary>
-    );
+    return (<ErrorBoundary>
+        <Router>
+            <TitleUpdater/>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/projects" element={<Projects/>}/>
+                <Route path="/blog" element={<Blog/>}/>
+                <Route path="/blog/:slug" element={<BlogPost/>}/>
+                <Route path="/contact" element={<Contact/>}/>
+
+                <Route path="*" element={<NotFound/>}/>
+            </Routes>
+        </Router>
+    </ErrorBoundary>);
 }
 
 function App() {
     console.log('App component rendering');
-    return (
-        <ErrorBoundary>
-            <LanguageProvider>
-                <AppWithTitle/>
-            </LanguageProvider>
-        </ErrorBoundary>
-    );
+    return (<ErrorBoundary>
+        <LanguageProvider>
+            <AppWithTitle/>
+        </LanguageProvider>
+    </ErrorBoundary>);
 }
 
 export default App; 

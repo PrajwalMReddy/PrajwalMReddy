@@ -5,13 +5,17 @@ export const meta = {
             projects: "Projects | Prajwal Reddy",
             blog: "Blog | Prajwal Reddy",
             contact: "Contact Me | Prajwal Reddy"
-        }
+        },
+        notFoundHeading: "Error 404",
+        notFoundMessage: "The requested webpage was not found. Please check your URL again.",
     }, kn: {
         pageTitles: {
             home: "ಮನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             projects: "ಯೋಜನೆಗಳು | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             blog: "ಮಿಂಬರಹ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             contact: "ಸಂಪರ್ಕಿಸಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ"
-        }
+        },
+        notFoundHeading: "ತಪ್ಪು ೪೦೪",
+        notFoundMessage: "ನೀವು ಕೋರಿದ ಮಿಂಪುಟ ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಏ.ಸಂ.ಸ್ತ.ವನ್ನು ಇನ್ನೊಮ್ಮೆ ನೋಡಿ.",
     }
-}; 
+};

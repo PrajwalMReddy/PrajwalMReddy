@@ -709,4 +709,19 @@ footer {
     flex-direction: column;
     min-height: 100vh;
     height: 100%;
-} 
+}
+
+/* 404 Section */
+#not-found-heading {
+    font-size: 50px;
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+}
+
+.not-found-element {
+    font-size: 25px;
+    margin-left: var(--nav-width);
+    padding-top: 3%;
+    padding-left: 6%;
+}
