@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {HashRouter as Router, Route, Routes, useLocation} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes, useLocation} from 'react-router-dom';
 import {LanguageProvider, useLanguage} from './utils/LanguageContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
