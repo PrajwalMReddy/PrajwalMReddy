@@ -18,11 +18,6 @@ const BlogPost = () => {
             try {
                 setLoading(true);
                 const post = await getBlogPostBySlug(slug);
-                // Check if the blog post is available in the current language
-                if (post.language && post.language !== language) {
-                    navigate('/blog');
-                    return;
-                }
                 setBlogData(post);
             } catch (err) {
                 setError(err.message);

@@ -29,50 +29,37 @@ const Blog = () => {
         loadBlogPosts();
     }, [language]);
 
-    return (
-        <div id="app-root">
-            <SideNav/>
-            <main>
-                <h1 id="blog-heading">{t('blogHeading')}</h1>
-                {loading ? (
-                    <div className="blog-loading">Loading...</div>
-                ) : error ? (
-                    <div className="blog-error">Error: {error}</div>
-                ) : (
-                    <>
-                        <div id="blog-notice-div">
-                            <div className="blog-notice">
-                                <h1 className="blog-notice-heading">
-                                    {blogPosts.length === 0 ? t('blogNoticeEmpty') : t('blogNotice')}
-                                </h1>
-                            </div>
+    return (<div id="app-root">
+        <SideNav/>
+        <main>
+            <h1 id="blog-heading">{t('blogHeading')}</h1>
+            {loading ? (<div className="blog-loading">Loading...</div>) : error ? (
+                <div className="blog-error">Error: {error}</div>) : (<>
+                <div id="blog-notice-div">
+                    <div className="blog-notice">
+                        <h1 className="blog-notice-heading">
+                            {blogPosts.length === 0 ? t('blogNoticeEmpty') : t('blogNotice')}
+                        </h1>
+                    </div>
+                </div>
+                {blogPosts.length > 0 && (<div className="blog-grid">
+                    {blogPosts.map((post) => (<Link
+                        to={`/blog/${post.slug}`}
+                        key={post.slug}
+                        className="blog-card"
+                    >
+                        <h2 className="blog-title">{post.title}</h2>
+                        <p className="blog-excerpt">{post.description}</p>
+                        <div className="blog-meta">
+                            <time className="blog-date">{post.date}</time>
+                            {post.author && (<span className="blog-author">by {post.author}</span>)}
                         </div>
-                        {blogPosts.length > 0 && (
-                            <div className="blog-grid">
-                                {blogPosts.map((post) => (
-                                    <Link
-                                        to={`/blog/${post.slug}`}
-                                        key={post.slug}
-                                        className="blog-card"
-                                    >
-                                        <h2 className="blog-title">{post.title}</h2>
-                                        <p className="blog-excerpt">{post.description}</p>
-                                        <div className="blog-meta">
-                                            <time className="blog-date">{post.date}</time>
-                                            {post.author && (
-                                                <span className="blog-author">by {post.author}</span>
-                                            )}
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-            </main>
-            <Footer/>
-        </div>
-    );
+                    </Link>))}
+                </div>)}
+            </>)}
+        </main>
+        <Footer/>
+    </div>);
 };
 
 export default Blog; 

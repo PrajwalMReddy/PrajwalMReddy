@@ -480,7 +480,7 @@ footer {
     background-color: var(--gray);
     border: 2px solid var(--accent-color);
     border-radius: 8px;
-    padding: 1rem 2rem 1.5rem 2rem;
+    padding: 1.5rem 2rem 1rem 2rem;
     font-size: 1.1rem;
     line-height: 1.6;
     color: var(--text);
@@ -494,10 +494,48 @@ footer {
 .blog-post-content h6 {
     margin: 1.5rem 0 1rem;
     color: var(--text);
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.blog-post-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+}
+
+.blog-post-content h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--accent-color);
+    padding-bottom: 0.4rem;
+}
+
+.blog-post-content h3 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.blog-post-content h4 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.blog-post-content h5 {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.blog-post-content h6 {
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
 .blog-post-content p {
     margin-bottom: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
 }
 
 .blog-post-content img {
@@ -600,20 +638,20 @@ footer {
     :root {
         --nav-width: 20%;
     }
-    
+
     #home-heading {
         font-size: 40px;
     }
-    
+
     .home-text {
         font-size: 25px;
         line-height: 35px;
     }
-    
+
     .home-text-sub {
         font-size: 20px;
     }
-    
+
     .skill-info {
         font-size: 20px;
         padding: 8px 16px;
@@ -624,39 +662,39 @@ footer {
     :root {
         --nav-width: 25%;
     }
-    
+
     #nav-list {
         font-size: 20px;
         padding: 15%;
     }
-    
+
     #nav-main {
         font-size: 22px;
     }
-    
+
     .nav-element {
         font-size: 20px;
         padding-top: 30%;
     }
-    
+
     #home-heading {
         font-size: 35px;
     }
-    
+
     .home-text {
         font-size: 22px;
         line-height: 32px;
     }
-    
+
     .home-text-sub {
         font-size: 18px;
     }
-    
+
     .skill-line {
         flex-wrap: wrap;
         gap: 15px;
     }
-    
+
     .skill-info {
         flex: 1 1 calc(50% - 15px);
         min-width: 200px;
@@ -667,33 +705,32 @@ footer {
     :root {
         --nav-width: 70%;
     }
-    
+
     .hamburger-menu {
-        display: block !important;
+        display: none;
         position: fixed;
         top: 20px;
         left: 20px;
-        z-index: 9999 !important;
-        width: 48px !important;
-        height: 48px !important;
-        background: rgba(255,255,255,0.95);
+        z-index: 9999;
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(44,62,80,0.12);
+        box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
         border: 1.5px solid var(--accent-color, #7D9BA6);
         cursor: pointer;
         padding: 10px;
-        display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         transition: box-shadow 0.2s, background 0.2s;
     }
-    
+
     .hamburger-menu:hover {
         background: #f0f4f8;
-        box-shadow: 0 6px 20px rgba(44,62,80,0.18);
+        box-shadow: 0 6px 20px rgba(44, 62, 80, 0.18);
     }
-    
+
     .hamburger-menu span {
         display: block;
         width: 28px;
@@ -703,49 +740,49 @@ footer {
         border-radius: 2px;
         transition: all 0.3s;
     }
-    
+
     .hamburger-menu:active span {
         background-color: var(--accent-color, #7D9BA6);
         width: 32px;
     }
-    
+
     .overlay {
         display: block;
     }
-    
+
     #nav-div {
         transform: translateX(-100%);
         width: min(70vw, 400px) !important;
     }
-    
+
     #nav-div.open {
         transform: translateX(0);
     }
-    
+
     #nav-list {
         display: flex;
         flex-direction: column;
         padding: 60px 20px 20px;
     }
-    
+
     #nav-main {
         width: 100%;
         text-align: left;
         font-size: 24px;
         margin-bottom: 20px;
     }
-    
+
     .nav-element {
         padding: 10px 0;
     }
-    
+
     #nav-language-div {
         position: relative;
         padding: 20px;
         justify-content: center;
         gap: 10px;
     }
-    
+
     #home,
     #skill-div,
     .footer-div,
@@ -761,66 +798,66 @@ footer {
     .not-found-element {
         margin-left: 0 !important;
     }
-    
+
     #home-heading {
         font-size: 32px;
         text-align: center;
     }
-    
+
     .home-text {
         font-size: 20px;
         line-height: 30px;
         text-align: center;
     }
-    
+
     .home-text-sub {
         font-size: 16px;
         text-align: center;
     }
-    
+
     #skill-heading {
         font-size: 28px;
         text-align: center;
     }
-    
+
     .skill-line {
         justify-content: center;
     }
-    
+
     .skill-info {
         flex: 1 1 100%;
         text-align: center;
     }
-    
+
     .project-line {
         flex-direction: column;
         gap: 20px;
     }
-    
+
     .project-info {
         width: 100%;
     }
-    
+
     .blog-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .blog-card {
         margin: 0;
     }
-    
+
     .contact-info {
         grid-template-columns: 1fr;
     }
-    
+
     .project-info {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
-    
+
     .project-info img {
         width: 55% !important;
         max-width: 180px !important;
@@ -832,7 +869,7 @@ footer {
         margin-right: auto;
         object-fit: contain;
     }
-    
+
     .footer-div {
         padding-left: 0 !important;
         padding-right: 0 !important;
@@ -842,7 +879,7 @@ footer {
         text-align: center;
         width: 100%;
     }
-    
+
     .container, main {
         width: 100% !important;
         max-width: 100% !important;
@@ -851,25 +888,25 @@ footer {
         padding-right: 10px !important;
         box-sizing: border-box;
     }
-    
+
     body {
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
-    
+
     #blog-notice-div {
         margin: 16px auto !important;
         width: 100% !important;
         display: flex;
         justify-content: center;
     }
-    
+
     .blog-notice {
         width: 100% !important;
         text-align: center;
         box-sizing: border-box;
     }
-    
+
     main {
         margin-top: 60px !important;
     }
@@ -881,53 +918,53 @@ footer {
         align-items: center;
         gap: 10px;
     }
-    
+
     #nav-main {
         font-size: 22px;
     }
-    
+
     .nav-element {
         font-size: 18px;
     }
-    
+
     #home-heading {
         font-size: 28px;
     }
-    
+
     .home-text {
         font-size: 18px;
         line-height: 26px;
     }
-    
+
     .home-text-sub {
         font-size: 14px;
     }
-    
+
     #skill-heading {
         font-size: 24px;
     }
-    
+
     .skill-info {
         font-size: 16px;
         padding: 6px 12px;
     }
-    
+
     .footer-div {
         flex-direction: column;
         align-items: center;
         gap: 15px;
         text-align: center;
     }
-    
+
     .blog-post-title {
         font-size: 24px;
     }
-    
+
     .blog-post-meta {
         flex-direction: column;
         gap: 5px;
     }
-    
+
     .contact-element {
         font-size: 18px;
     }
@@ -963,7 +1000,7 @@ img {
         padding: 12px;
         margin: 8px 0;
     }
-    
+
     .form-group {
         margin-bottom: 20px;
     }
@@ -983,15 +1020,15 @@ img {
         font-size: 16px;
         line-height: 1.6;
     }
-    
+
     .blog-post-content h1 {
         font-size: 24px;
     }
-    
+
     .blog-post-content h2 {
         font-size: 20px;
     }
-    
+
     .blog-post-content pre {
         padding: 10px;
         font-size: 14px;
@@ -1003,11 +1040,11 @@ img {
     .project-info {
         padding: 15px;
     }
-    
+
     .project-title {
         font-size: 20px;
     }
-    
+
     .project-text {
         font-size: 16px;
     }
@@ -1020,12 +1057,12 @@ img {
         text-align: center;
         margin-left: 0;
     }
-    
+
     #contact-list {
         margin-left: 0;
         padding: 20px;
     }
-    
+
     .contact-element {
         text-align: center;
     }
@@ -1036,7 +1073,7 @@ img {
     main {
         padding: 20px 0;
     }
-    
+
     section {
         margin-bottom: 30px;
     }
@@ -1048,7 +1085,7 @@ img {
         outline: 2px solid var(--accent-color);
         outline-offset: 2px;
     }
-    
+
     a, button {
         min-height: 44px;
         min-width: 44px;
@@ -1079,29 +1116,34 @@ img {
 
 /* Hamburger Menu Styles */
 .hamburger-menu {
-    display: block !important;
+    display: none;
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 9999 !important;
-    width: 48px !important;
-    height: 48px !important;
-    background: rgba(255,255,255,0.95);
+    z-index: 9999;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(44,62,80,0.12);
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
     border: 1.5px solid var(--accent-color, #7D9BA6);
     cursor: pointer;
     padding: 10px;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     transition: box-shadow 0.2s, background 0.2s;
 }
 
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex !important;
+    }
+}
+
 .hamburger-menu:hover {
     background: #f0f4f8;
-    box-shadow: 0 6px 20px rgba(44,62,80,0.18);
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.18);
 }
 
 .hamburger-menu span {
