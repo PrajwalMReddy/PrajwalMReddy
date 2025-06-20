@@ -6,6 +6,8 @@ import Projects from './components/Projects';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
 import BlogPost from './components/BlogPost';
+import Research from './components/Research';
+import BengaluruTeluguDictionary from './components/BengaluruTeluguDictionary';
 import './styles.css';
 import {translations} from './locales';
 import NotFound from "./components/NotFound";
@@ -80,6 +82,9 @@ function AppWithTitle() {
                 <Route path="/blog" element={<Blog/>}/>
                 <Route path="/blog/:slug" element={<BlogPost/>}/>
                 <Route path="/contact" element={<Contact/>}/>
+
+                <Route path="/research" element={<Research/>}/>
+                <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
 
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
