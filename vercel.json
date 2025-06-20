@@ -15,6 +15,10 @@
       "dest": "/blog_content/$1"
     },
     {
+      "src": "/research_content/(.*)",
+      "dest": "/research_content/$1"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/assets/$1",
       "headers": {

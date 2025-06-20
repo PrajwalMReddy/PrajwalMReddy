@@ -47,6 +47,10 @@ module.exports = {
                     from: path.resolve(__dirname, 'public/blog_content'),
                     to: 'blog_content',
                 },
+                {
+                    from: path.resolve(__dirname, 'public/research_content'),
+                    to: 'research_content',
+                },
             ],
         }),
     ],
