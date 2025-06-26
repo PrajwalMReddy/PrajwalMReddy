@@ -8,6 +8,7 @@ import Contact from './components/Contact';
 import BlogPost from './components/BlogPost';
 import Research from './components/Research';
 import BengaluruTeluguDictionary from './components/BengaluruTeluguDictionary';
+import Photography from './components/Photography';
 import './styles.css';
 import {translations} from './locales';
 import NotFound from "./components/NotFound";
@@ -85,6 +86,7 @@ function AppWithTitle() {
 
                 <Route path="/research" element={<Research/>}/>
                 <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
+                <Route path="/photography" element={<Photography/>}/>
 
                 <Route path="*" element={<NotFound/>}/>
             </Routes>

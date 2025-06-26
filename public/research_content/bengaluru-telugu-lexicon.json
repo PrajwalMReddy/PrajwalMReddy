@@ -1,10 +1,6603 @@
 [
   {
-    "telugu": "f",
-    "ipa": "f",
-    "pos": "f",
+    "telugu": "ಅಕಡ",
+    "ipa": "əkəɖə",
+    "pos": "adverb",
     "meaning": [
-      "f"
+      "There"
+    ]
+  },
+  {
+    "telugu": "ಅಕ್ಸ್‌ಮಾತ್",
+    "ipa": "əksmaːt̪",
+    "pos": "adverb",
+    "meaning": [
+      "By chance",
+      "Accidently"
+    ]
+  },
+  {
+    "telugu": "ಅಗೋ",
+    "ipa": "əgoː",
+    "pos": "verb",
+    "meaning": [
+      "Look",
+      "Over there"
+    ],
+    "note": [
+      "Usage: only as an interjection telling someone to look somewhere"
+    ]
+  },
+  {
+    "telugu": "ಅಂಗಡಿ",
+    "ipa": "əŋgəɖi",
+    "pos": "noun",
+    "meaning": [
+      "Store",
+      "Shop",
+      "Lots of objects strewn out everywhere",
+      "A big mess with lots of objects/possessions"
+    ]
+  },
+  {
+    "telugu": "ಅಂಗಡಿ ಏಯಿ",
+    "ipa": "əŋgəɖi eːi",
+    "pos": "verb",
+    "meaning": [
+      "Make a mess by strewing objects everywhere"
+    ]
+  },
+  {
+    "telugu": "ಅಂಚೆಪು",
+    "ipa": "əɲtʃɛpu",
+    "pos": "adverb",
+    "meaning": [
+      "That much time"
+    ]
+  },
+  {
+    "telugu": "ಅಡ್ಡಡಮ್",
+    "ipa": "əɖːəɖəm",
+    "pos": "adjective",
+    "meaning": [
+      "Sideways",
+      "Turned around",
+      "On the side"
+    ]
+  },
+  {
+    "telugu": "ಅಡಮ್",
+    "ipa": "əɖəm",
+    "pos": "noun",
+    "meaning": [
+      "Obstacle",
+      "Blocking"
+    ]
+  },
+  {
+    "telugu": "ಅಡಮೇಯಿ",
+    "ipa": "əɖəmeːi",
+    "pos": "verb",
+    "meaning": [
+      "Block",
+      "Try to stop",
+      "Be an obstacle"
+    ]
+  },
+  {
+    "telugu": "ಅಂಟಿ",
+    "ipa": "əɳʈi",
+    "pos": "verb",
+    "meaning": [
+      "Light up (a lamp, candle)",
+      "Stick",
+      "Glue",
+      "Paste",
+      "Attach"
+    ]
+  },
+  {
+    "telugu": "ಅತ್ಲ",
+    "ipa": "ət̪ɬə",
+    "pos": "adverb",
+    "meaning": [
+      "That way"
+    ]
+  },
+  {
+    "telugu": "ಅದಿ",
+    "ipa": "əd̪i",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine nominative pronoun (distal)",
+      "Third person singular neuter nominative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ಅದೆ",
+    "ipa": "əd̪ɛ",
+    "pos": "adverb",
+    "meaning": [
+      "That is what",
+      "Exactly"
+    ]
+  },
+  {
+    "telugu": "ಅದ್ಮು",
+    "ipa": "əd̪mu",
+    "pos": "verb",
+    "meaning": [
+      "Press"
+    ]
+  },
+  {
+    "telugu": "ಅದ್ರು",
+    "ipa": "əd̪ru",
+    "pos": "adposition",
+    "meaning": [
+      "Close",
+      "Close by"
+    ]
+  },
+  {
+    "telugu": "ಅಂತ",
+    "ipa": "ənt̪ə",
+    "pos": "adjective",
+    "meaning": [
+      "Everything",
+      "All"
+    ]
+  },
+  {
+    "telugu": "ಅಂತ",
+    "ipa": "ənt̪ə",
+    "pos": "verb",
+    "meaning": [
+      "Used to specify something is quoted",
+      "As reported/heard (by someone)",
+      "Used to introduce a subordinate clause"
+    ]
+  },
+  {
+    "telugu": "ಅಂತ",
+    "ipa": "ənt̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "That much"
+    ]
+  },
+  {
+    "telugu": "ಅಂತಲ್ಕಿ",
+    "ipa": "ənt̪əlki",
+    "pos": "adverb",
+    "meaning": [
+      "Until that time",
+      "Up until then",
+      "Until that point"
+    ]
+  },
+  {
+    "telugu": "ಅಂತೂ",
+    "ipa": "ənt̪uː",
+    "pos": "adjective",
+    "meaning": [
+      "As for",
+      "Concerning",
+      "Regarding",
+      "Speaking of"
+    ]
+  },
+  {
+    "telugu": "ಅಂತೆ",
+    "ipa": "ənt̪e",
+    "pos": "verb",
+    "meaning": [
+      "If one says",
+      "Used to highlight/emphasize previously said word or phrase"
+    ],
+    "note": [
+      "Etymology: Conditional form of ಅನ್ನು"
+    ]
+  },
+  {
+    "telugu": "ಅಂತೆ",
+    "ipa": "ənt̪e",
+    "pos": "adjective",
+    "meaning": [
+      "That is it",
+      "That is all"
+    ]
+  },
+  {
+    "telugu": "ಅಂತೊಟ್",
+    "ipa": "ənt̪oʈ",
+    "pos": "noun",
+    "meaning": [
+      "That much"
+    ]
+  },
+  {
+    "telugu": "ಅಂತ್ಲಾಮ್",
+    "ipa": "ənt̪ɬäm",
+    "pos": "adverb",
+    "meaning": [
+      "That big"
+    ]
+  },
+  {
+    "telugu": "ಅಂದ್ರು",
+    "ipa": "ənd̪ru",
+    "pos": "noun",
+    "meaning": [
+      "Everyone"
+    ]
+  },
+  {
+    "telugu": "ಅನೊಟ್",
+    "ipa": "ənoʈ",
+    "pos": "noun",
+    "meaning": [
+      "That many"
+    ]
+  },
+  {
+    "telugu": "ಅನ್ಕೊ",
+    "ipa": "əŋko",
+    "pos": "verb",
+    "meaning": [
+      "Think",
+      "Plan",
+      "Do (a small action)"
+    ]
+  },
+  {
+    "telugu": "ಅನ್ನಿ",
+    "ipa": "ənːi",
+    "pos": "adjective",
+    "meaning": [
+      "Alternative of ಅಂತ"
+    ]
+  },
+  {
+    "telugu": "ಅನ್ನು",
+    "ipa": "ənːu",
+    "pos": "verb",
+    "meaning": [
+      "Tell",
+      "A more general ಸೆಪ್ಪು"
+    ]
+  },
+  {
+    "telugu": "ಅನ್ಪಿ",
+    "ipa": "ənpi",
+    "pos": "verb",
+    "meaning": [
+      "Feel"
+    ]
+  },
+  {
+    "telugu": "ಅಂಪಿ",
+    "ipa": "əmpi",
+    "pos": "verb",
+    "meaning": [
+      "Send"
+    ]
+  },
+  {
+    "telugu": "ಅಪದು",
+    "ipa": "apəd̪u",
+    "pos": "adverb",
+    "meaning": [
+      "That day"
+    ],
+    "note": [
+      "Compare: Kananda ಅವತ್ತು"
+    ]
+  },
+  {
+    "telugu": "ಅಮ್ಮಿ",
+    "ipa": "əmːi",
+    "pos": "verb",
+    "meaning": [
+      "Sell",
+      "Get rid of"
+    ]
+  },
+  {
+    "telugu": "ಅಯ್ದು",
+    "ipa": "ajd̪u",
+    "pos": "adjective",
+    "meaning": [
+      "Five"
+    ]
+  },
+  {
+    "telugu": "ಅರಾಮ್",
+    "ipa": "əraːm",
+    "pos": "adjective",
+    "meaning": [
+      "Calm",
+      "All is well",
+      "At ease"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ಗು",
+    "ipa": "ʌrgu",
+    "pos": "verb",
+    "meaning": [
+      "Ask"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ತ್ಮು",
+    "ipa": "ʌrt̪mu",
+    "pos": "noun",
+    "meaning": [
+      "Meaning",
+      "Understanding"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ತ್ಮಾಯಿ",
+    "ipa": "ʌrt̪maːi",
+    "pos": "verb",
+    "meaning": [
+      "Understand (passively)",
+      "Realize"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ತಮ್ಸೇಯಿ",
+    "ipa": "ʌrt̪əmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Understand (actively)"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ದಮ್",
+    "ipa": "ʌrd̪əm",
+    "pos": "noun",
+    "meaning": [
+      "Half"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ದಮ್ಬರ್ದಮ್",
+    "ipa": "ʌrd̪əmbʌrd̪əm",
+    "pos": "adverb",
+    "meaning": [
+      "Half done",
+      "Not fully complete"
+    ]
+  },
+  {
+    "telugu": "ಅರ್ಪು",
+    "ipa": "ʌrpu",
+    "pos": "verb",
+    "meaning": [
+      "Turn off"
+    ]
+  },
+  {
+    "telugu": "ಅಲ್ಲಾಡು",
+    "ipa": "əlːaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Shake",
+      "Rock (back and forth)",
+      "Tremble"
+    ]
+  },
+  {
+    "telugu": "ಅವಿ",
+    "ipa": "əʋi",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural neuter nominative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ಅಸೇಮ್",
+    "ipa": "əseːm",
+    "pos": "adjective",
+    "meaning": [
+      "Disgusting",
+      "Gross",
+      "Yucky"
+    ]
+  },
+  {
+    "telugu": "ಆ",
+    "ipa": "aː",
+    "pos": "adjective",
+    "meaning": [
+      "That"
+    ]
+  },
+  {
+    "telugu": "ಆಕು",
+    "ipa": "aːku",
+    "pos": "noun",
+    "meaning": [
+      "Leaf"
+    ]
+  },
+  {
+    "telugu": "ಆಕಲ್ಪೆಟು",
+    "ipa": "aːkəlpɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Make someone hungry",
+      "Deprive someone of food"
+    ]
+  },
+  {
+    "telugu": "ಆಕ್ಲಿ",
+    "ipa": "aːkli",
+    "pos": "noun",
+    "meaning": [
+      "Hunger"
+    ]
+  },
+  {
+    "telugu": "ಆಂಕಾರ",
+    "ipa": "aːŋkaːrə",
+    "pos": "noun",
+    "meaning": [
+      "Arrogance"
+    ]
+  },
+  {
+    "telugu": "ಆಟಸಾಮಾನ್",
+    "ipa": "aːʈəsaːmaːn",
+    "pos": "noun",
+    "meaning": [
+      "Toy"
+    ]
+  },
+  {
+    "telugu": "ಆಡ",
+    "ipa": "aːɖə",
+    "pos": "adverb",
+    "meaning": [
+      "There"
+    ]
+  },
+  {
+    "telugu": "ಆಡು",
+    "ipa": "aːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Play",
+      "Behave",
+      "Act"
+    ]
+  },
+  {
+    "telugu": "ಆಡ್ಕೆ",
+    "ipa": "aːɖkɛ",
+    "pos": "adverb",
+    "meaning": [
+      "Even then",
+      "Even so"
+    ]
+  },
+  {
+    "telugu": "ಆಡ್ಪಿ",
+    "ipa": "aːɖpi",
+    "pos": "verb",
+    "meaning": [
+      "Play with (someone)",
+      "Make someone play"
+    ]
+  },
+  {
+    "telugu": "ಆತರ",
+    "ipa": "aːt̪ərə",
+    "pos": "adverb",
+    "meaning": [
+      "Like that",
+      "That type"
+    ]
+  },
+  {
+    "telugu": "ಆತ್ರಮ್",
+    "ipa": "aːt̪rəm",
+    "pos": "noun",
+    "meaning": [
+      "Hurry",
+      "In a rush",
+      "Quickness",
+      "Haste"
+    ]
+  },
+  {
+    "telugu": "ಆತ್ರಮ್ಪೊಡು",
+    "ipa": "aːt̪rəmpoɖu",
+    "pos": "verb",
+    "meaning": [
+      "Be in haste",
+      "Go quickly",
+      "Rush"
+    ]
+  },
+  {
+    "telugu": "ಆನು",
+    "ipa": "äːnu",
+    "pos": "verb",
+    "meaning": [
+      "Go close to someone",
+      "Tailgate"
+    ]
+  },
+  {
+    "telugu": "ಆಪಕ್ಕ",
+    "ipa": "aːpəkːə",
+    "pos": "noun",
+    "meaning": [
+      "That side",
+      "There"
+    ]
+  },
+  {
+    "telugu": "ಆಮಿಟ್ಕಿ",
+    "ipa": "aːmɪʈki",
+    "pos": "adverb",
+    "meaning": [
+      "After",
+      "Afterwards (more immediate)"
+    ]
+  },
+  {
+    "telugu": "ಆಯಿ",
+    "ipa": "aːi",
+    "pos": "verb",
+    "meaning": [
+      "Become",
+      "Happen",
+      "Occur"
+    ]
+  },
+  {
+    "telugu": "ಆಯ್ಪೊ",
+    "ipa": "aipo",
+    "pos": "verb",
+    "meaning": [
+      "Finish",
+      "Happen (more passively)"
+    ]
+  },
+  {
+    "telugu": "ಆಯ್ನಂಕ",
+    "ipa": "ainəŋkə",
+    "pos": "adverb",
+    "meaning": [
+      "After",
+      "After that happens (less immediate)"
+    ]
+  },
+  {
+    "telugu": "ಆರು",
+    "ipa": "aːru",
+    "pos": "adjective",
+    "meaning": [
+      "Six"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಡಾವ್ಡೆ",
+    "ipa": "aːʋɖaːʋɖe",
+    "pos": "adverb",
+    "meaning": [
+      "Every so often",
+      "Once in a while"
+    ],
+    "note": [
+      "Etymology: reduplication of ಆವ್ಡು"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಡು",
+    "ipa": "aːʋɖu",
+    "pos": "adverb",
+    "meaning": [
+      "That time",
+      "Then"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಟ್‌ಲ",
+    "ipa": "aːʋt̪ɬə",
+    "pos": "adposition",
+    "meaning": [
+      "Outside"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ನು",
+    "ipa": "aːʋnu",
+    "pos": "adverb",
+    "meaning": [
+      "Yes",
+      "Used to express agreement"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಮಾನ್ಮು",
+    "ipa": "aːʋmaːnmu",
+    "pos": "noun",
+    "meaning": [
+      "Insult",
+      "Embarrassment",
+      "Dishonor"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಮಾನಮ್ಸೇಯಿ",
+    "ipa": "aːʋmaːnəmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Insult",
+      "Curse",
+      "Cause embarrassment",
+      "Belittle"
+    ]
+  },
+  {
+    "telugu": "ಆವ್ಲಿಚ್ಕೊ",
+    "ipa": "aːʋlɪtʃko",
+    "pos": "verb",
+    "meaning": [
+      "Yawn"
+    ]
+  },
+  {
+    "telugu": "ಇಕ್ಕಟ್",
+    "ipa": "ikːəʈ",
+    "pos": "noun",
+    "meaning": [
+      "Small/narrow space"
+    ]
+  },
+  {
+    "telugu": "ಇಕಡ",
+    "ipa": "ɪkəɖə",
+    "pos": "adverb",
+    "meaning": [
+      "Here"
+    ]
+  },
+  {
+    "telugu": "ಇಂಗ",
+    "ipa": "ɪŋgə",
+    "pos": "adverb",
+    "meaning": [
+      "Still",
+      "Yet"
+    ]
+  },
+  {
+    "telugu": "ಇಂಗೊಕ್ಟಿ",
+    "ipa": "ɪŋgokʈi",
+    "pos": "adjective",
+    "meaning": [
+      "Another (one)",
+      "One more"
+    ]
+  },
+  {
+    "telugu": "ಇಂಗ್ಮೀಟ",
+    "ipa": "ɪŋgmiːʈə",
+    "pos": "adverb",
+    "meaning": [
+      "From now",
+      "From now on"
+    ]
+  },
+  {
+    "telugu": "ಇಂಚೆಪು",
+    "ipa": "ɪɲtʃɛpu",
+    "pos": "adverb",
+    "meaning": [
+      "This much time"
+    ]
+  },
+  {
+    "telugu": "ಇಡಿ",
+    "ipa": "ɪɖi",
+    "pos": "verb",
+    "meaning": [
+      "Let go",
+      "Leave",
+      "Allow",
+      "Permit",
+      "Except",
+      "Exclude",
+      "Drive (a vehicle)",
+      "A type of intensitive word"
+    ]
+  },
+  {
+    "telugu": "ಇಡ್ಸಿ",
+    "ipa": "ɪɖsi",
+    "pos": "adjective",
+    "meaning": [
+      "Except for"
+    ]
+  },
+  {
+    "telugu": "ಇದಿ",
+    "ipa": "ɪd̪i",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine nominative pronoun (proximal)",
+      "Third person singular neuter nominative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ಇತ್ಲ",
+    "ipa": "ɪt̪ɬə",
+    "pos": "adverb",
+    "meaning": [
+      "This way"
+    ]
+  },
+  {
+    "telugu": "ಇದ್ರು",
+    "ipa": "ɪd̪ru",
+    "pos": "noun",
+    "meaning": [
+      "Two people"
+    ]
+  },
+  {
+    "telugu": "ಇಂತ",
+    "ipa": "ɪnt̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "This much"
+    ]
+  },
+  {
+    "telugu": "ಇಂತಲ್ಕಿ",
+    "ipa": "ɪnt̪əlki",
+    "pos": "adverb",
+    "meaning": [
+      "By now",
+      "By this time",
+      "Until this point",
+      "Until here"
+    ]
+  },
+  {
+    "telugu": "ಇಂತೆ",
+    "ipa": "ɪnt̪e",
+    "pos": "adjective",
+    "meaning": [
+      "This is it",
+      "This is all"
+    ]
+  },
+  {
+    "telugu": "ಇಂತೇಂತ್",
+    "ipa": "ɪnt̪eːnt̪",
+    "pos": "adjective",
+    "meaning": [
+      "This (very little) amount"
+    ]
+  },
+  {
+    "telugu": "ಇಂತೊಟ್",
+    "ipa": "ɪnt̪oʈ",
+    "pos": "noun",
+    "meaning": [
+      "This much"
+    ]
+  },
+  {
+    "telugu": "ಇಂತ್ಲಾಮ್",
+    "ipa": "ɪnt̪ɬäm",
+    "pos": "adverb",
+    "meaning": [
+      "This big"
+    ]
+  },
+  {
+    "telugu": "ಇಂದ",
+    "ipa": "ɪnd̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "Here (as in ‘here, take it’)"
+    ]
+  },
+  {
+    "telugu": "ಇನು",
+    "ipa": "ɪnːu",
+    "pos": "verb",
+    "meaning": [
+      "Listen",
+      "Hear"
+    ]
+  },
+  {
+    "telugu": "ಇನೊಟ್",
+    "ipa": "ɪnoʈ",
+    "pos": "noun",
+    "meaning": [
+      "This many"
+    ]
+  },
+  {
+    "telugu": "ಇಪದು",
+    "ipa": "ipəd̪u",
+    "pos": "adverb",
+    "meaning": [
+      "Today"
+    ],
+    "note": [
+      "Compare: Kananda ಇವತ್ತು"
+    ]
+  },
+  {
+    "telugu": "ಇರ್ಕು",
+    "ipa": "ɪrku",
+    "pos": "verb",
+    "meaning": [
+      "Break (transitively)"
+    ]
+  },
+  {
+    "telugu": "ಇರ್ಕ್ಪೊ",
+    "ipa": "ɪrkpo",
+    "pos": "verb",
+    "meaning": [
+      "Be broken",
+      "Break (intransitively)"
+    ]
+  },
+  {
+    "telugu": "ಇಲ್ಲು",
+    "ipa": "ɪlːu",
+    "pos": "noun",
+    "meaning": [
+      "House"
+    ]
+  },
+  {
+    "telugu": "ಇವಿ",
+    "ipa": "ɪʋi",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural neuter nominative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ಇಶ್ಟ್‌ಮು",
+    "ipa": "ɪʃʈmu",
+    "pos": "noun",
+    "meaning": [
+      "Like"
+    ]
+  },
+  {
+    "telugu": "ಈ",
+    "ipa": "iː",
+    "pos": "adjective",
+    "meaning": [
+      "This"
+    ]
+  },
+  {
+    "telugu": "ಈಡ",
+    "ipa": "iːɖə",
+    "pos": "adverb",
+    "meaning": [
+      "Here"
+    ]
+  },
+  {
+    "telugu": "ಈಡಿ",
+    "ipa": "iːɖi",
+    "pos": "verb",
+    "meaning": [
+      "Pull",
+      "Drag"
+    ]
+  },
+  {
+    "telugu": "ಈತರ",
+    "ipa": "iːt̪ərə",
+    "pos": "adverb",
+    "meaning": [
+      "Like this",
+      "This type"
+    ]
+  },
+  {
+    "telugu": "ಈನುರ್ಮು",
+    "ipa": "iːnərmu",
+    "pos": "adverb",
+    "meaning": [
+      "Recently",
+      "Recent days"
+    ]
+  },
+  {
+    "telugu": "ಈಪಕ್ಕ",
+    "ipa": "iːpəkːə",
+    "pos": "noun",
+    "meaning": [
+      "This side",
+      "Here"
+    ]
+  },
+  {
+    "telugu": "ಈಪಿಚ್ಕೊ",
+    "ipa": "iːpɪtʃko",
+    "pos": "verb",
+    "meaning": [
+      "Receive",
+      "Take (from someone)"
+    ]
+  },
+  {
+    "telugu": "ಈಯಿ",
+    "ipa": "iːi",
+    "pos": "verb",
+    "meaning": [
+      "Give"
+    ]
+  },
+  {
+    "telugu": "ಉಪ್ಪು",
+    "ipa": "ɤpːu",
+    "pos": "noun",
+    "meaning": [
+      "Salt"
+    ]
+  },
+  {
+    "telugu": "ಉಪ್ಪು ಕಾರಮ್",
+    "ipa": "ɤpːukaːrəm",
+    "pos": "noun",
+    "meaning": [
+      "Spices"
+    ]
+  },
+  {
+    "telugu": "ಉಸಿರು",
+    "ipa": "ʊsiru",
+    "pos": "noun",
+    "meaning": [
+      "Breath"
+    ]
+  },
+  {
+    "telugu": "ಉಸಿರಾಡು",
+    "ipa": "ʊsiraːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Breathe",
+      "Breath heavily",
+      "Struggle for breath (especially after exercise/physical work)"
+    ]
+  },
+  {
+    "telugu": "ಊರು",
+    "ipa": "uːru",
+    "pos": "noun",
+    "meaning": [
+      "Village"
+    ]
+  },
+  {
+    "telugu": "ಎಕಡ",
+    "ipa": "ɛkəɖə",
+    "pos": "adverb",
+    "meaning": [
+      "Where"
+    ]
+  },
+  {
+    "telugu": "ಎಕ್ಕು",
+    "ipa": "ɛkːu",
+    "pos": "verb",
+    "meaning": [
+      "Climb"
+    ]
+  },
+  {
+    "telugu": "ಎಗೆರು",
+    "ipa": "ɛgəru",
+    "pos": "verb",
+    "meaning": [
+      "Jump",
+      "Jump around",
+      "Leap"
+    ]
+  },
+  {
+    "telugu": "ಎಗೆರ್ಕೊ",
+    "ipa": "ɛgərko",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ಎಗೆರ್ಲಾಡು",
+    "ipa": "ɛgərlaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Jump around",
+      "Be bursting with energy"
+    ]
+  },
+  {
+    "telugu": "ಎಜ್",
+    "ipa": "ɛdʒ",
+    "pos": "noun",
+    "meaning": [
+      "Step"
+    ]
+  },
+  {
+    "telugu": "ಎಜ್ಪೆಟು",
+    "ipa": "ɛdʒpɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Step",
+      "Take a step"
+    ]
+  },
+  {
+    "telugu": "ಎಂಚೆಪು",
+    "ipa": "ɛɲtʃɛpu",
+    "pos": "adverb",
+    "meaning": [
+      "How long",
+      "At what time"
+    ]
+  },
+  {
+    "telugu": "ಎಂಡ",
+    "ipa": "ɛɳɖə",
+    "pos": "noun",
+    "meaning": [
+      "Sunlight"
+    ]
+  },
+  {
+    "telugu": "ಎಂಡು",
+    "ipa": "ɛɳɖu",
+    "pos": "verb",
+    "meaning": [
+      "Dry (in the sun or air)"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ಕೊ",
+    "ipa": "ɛt̪ko",
+    "pos": "verb",
+    "meaning": [
+      "Take (by yourself)"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ಕೊನ್ರಾ",
+    "ipa": "ɛt̪konraː",
+    "pos": "verb",
+    "meaning": [
+      "Bring it"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ಕೊನ್ಪೊ",
+    "ipa": "ɛt̪konpo",
+    "pos": "verb",
+    "meaning": [
+      "Take it and go"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ಪೆಟು",
+    "ipa": "ɛt̪pɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Put away",
+      "Put inside"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ತು",
+    "ipa": "ɛt̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Raise",
+      "Lift",
+      "Take out"
+    ],
+    "note": [
+      "Usage: commonly as a compound verb"
+    ]
+  },
+  {
+    "telugu": "ಎತ್ಲ",
+    "ipa": "ɛt̪ɬə",
+    "pos": "adverb",
+    "meaning": [
+      "How",
+      "Which way"
+    ]
+  },
+  {
+    "telugu": "ಎದ್ರು",
+    "ipa": "ɛd̪ru",
+    "pos": "adposition",
+    "meaning": [
+      "In front (but a little way)",
+      "Opposite"
+    ]
+  },
+  {
+    "telugu": "ಎಂತ",
+    "ipa": "ɛnt̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "How much"
+    ]
+  },
+  {
+    "telugu": "ಎಂತೊಟ್",
+    "ipa": "ɛnt̪oʈ",
+    "pos": "noun",
+    "meaning": [
+      "How much"
+    ]
+  },
+  {
+    "telugu": "ಎಂತ್ಲಾಮ್",
+    "ipa": "ɛnt̪ɬäm",
+    "pos": "adverb",
+    "meaning": [
+      "How big"
+    ]
+  },
+  {
+    "telugu": "ಎಂದ",
+    "ipa": "ɛnd̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "Where (as a standalone question)"
+    ]
+  },
+  {
+    "telugu": "ಎನಕ",
+    "ipa": "ɛnəkə~ɛŋkə",
+    "pos": "adposition",
+    "meaning": [
+      "Behind"
+    ]
+  },
+  {
+    "telugu": "ಎನಮ್ದಿ",
+    "ipa": "ɛnəmd̪i",
+    "pos": "adjective",
+    "meaning": [
+      "Eight"
+    ]
+  },
+  {
+    "telugu": "ಎನೊಟ್",
+    "ipa": "ɛnoʈ",
+    "pos": "noun",
+    "meaning": [
+      "How many"
+    ]
+  },
+  {
+    "telugu": "ಎನ್ನಿ",
+    "ipa": "ɛnːi",
+    "pos": "adverb",
+    "meaning": [
+      "How many"
+    ]
+  },
+  {
+    "telugu": "ಎನ್ಸ್‌ಕೊ",
+    "ipa": "ɛnsko",
+    "pos": "verb",
+    "meaning": [
+      "Count"
+    ]
+  },
+  {
+    "telugu": "ಎಳೆಗು",
+    "ipa": "ɛɭɛgu~ɛɭəgu",
+    "pos": "noun",
+    "meaning": [
+      "(Natural) light",
+      "Sunlight",
+      "Brightness (there is light)"
+    ]
+  },
+  {
+    "telugu": "ಏಟ್ಲು",
+    "ipa": "eːt̪ɬu",
+    "pos": "noun",
+    "meaning": [
+      "Hits",
+      "Beatings"
+    ],
+    "note": [
+      "ಏಟ್ಲು is morphologically and semantically plural"
+    ]
+  },
+  {
+    "telugu": "ಏಟ್ಲುಪೊಡು",
+    "ipa": "eːt̪ɬupodu",
+    "pos": "verb",
+    "meaning": [
+      "To receive beatings",
+      "To get beaten",
+      "To get hit"
+    ]
+  },
+  {
+    "telugu": "ಏಡಿ",
+    "ipa": "eːɖi",
+    "pos": "verb",
+    "meaning": [
+      "Cry",
+      "Be highly reluctant to do (as in cries if needs to do something)"
+    ]
+  },
+  {
+    "telugu": "ಏಮಿ",
+    "ipa": "eːmi",
+    "pos": "noun",
+    "meaning": [
+      "What"
+    ]
+  },
+  {
+    "telugu": "ಏಮನ",
+    "ipa": "eːmənə",
+    "pos": "noun",
+    "meaning": [
+      "Anything",
+      "Whatever"
+    ]
+  },
+  {
+    "telugu": "ಏಮಿಟ್ಕಿ",
+    "ipa": "eːmɪʈki",
+    "pos": "noun",
+    "meaning": [
+      "For what",
+      "Why"
+    ]
+  },
+  {
+    "telugu": "ಏಮೋ",
+    "ipa": "eːmoː",
+    "pos": "noun",
+    "meaning": [
+      "Something"
+    ]
+  },
+  {
+    "telugu": "ಏಯಿ",
+    "ipa": "eːi",
+    "pos": "verb",
+    "meaning": [
+      "Put",
+      "Place",
+      "Close (as in a door)"
+    ]
+  },
+  {
+    "telugu": "ಏಸ್ಕೊ",
+    "ipa": "eːsko",
+    "pos": "verb",
+    "meaning": [
+      "Put on (as in clothes)"
+    ]
+  },
+  {
+    "telugu": "ಒಕ್ಚೂರು",
+    "ipa": "oktʃuːru",
+    "pos": "adjective",
+    "meaning": [
+      "Very little",
+      "Small amount"
+    ]
+  },
+  {
+    "telugu": "ಒಟ್ಟು",
+    "ipa": "oʈːu",
+    "pos": "noun",
+    "meaning": [
+      "Together",
+      "All together",
+      "Joined"
+    ]
+  },
+  {
+    "telugu": "ಒಪ್ಪು",
+    "ipa": "opːu",
+    "pos": "verb",
+    "meaning": [
+      "Agree"
+    ]
+  },
+  {
+    "telugu": "ಕಟ್ಟು",
+    "ipa": "kəʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Tie",
+      "Build",
+      "Pay"
+    ]
+  },
+  {
+    "telugu": "ಕತ",
+    "ipa": "kət̪ə",
+    "pos": "noun",
+    "meaning": [
+      "Story",
+      "Tale",
+      "Big deal",
+      "Situation (generally negative)",
+      "Issue",
+      "Problem",
+      "Fuss; making a mountain out of a molehill"
+    ]
+  },
+  {
+    "telugu": "ಕದ",
+    "ipa": "kəd̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "Is it not so? (after a question, implying a negative response)"
+    ]
+  },
+  {
+    "telugu": "ಕದ್ಲು",
+    "ipa": "kəd̪lu",
+    "pos": "verb",
+    "meaning": [
+      "Shake",
+      "Quiver",
+      "Make a fuss; shake and make a fuss"
+    ]
+  },
+  {
+    "telugu": "ಕನ್ನು",
+    "ipa": "kənːu",
+    "pos": "noun",
+    "meaning": [
+      "Eye"
+    ]
+  },
+  {
+    "telugu": "ಕನ್ಪೆಟು",
+    "ipa": "kənpɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Watch",
+      "Keep an eye on"
+    ]
+  },
+  {
+    "telugu": "ಕನ್ಸು",
+    "ipa": "kənsu",
+    "pos": "noun",
+    "meaning": [
+      "Dream"
+    ]
+  },
+  {
+    "telugu": "ಕಮಿ",
+    "ipa": "kəmi",
+    "pos": "adjective",
+    "meaning": [
+      "Less",
+      "Lower"
+    ]
+  },
+  {
+    "telugu": "ಕಂಬಿ",
+    "ipa": "kəmbi",
+    "pos": "noun",
+    "meaning": [
+      "Pole"
+    ]
+  },
+  {
+    "telugu": "ಕರ್ಚ್",
+    "ipa": "kərtʃ",
+    "pos": "noun",
+    "meaning": [
+      "Expense",
+      "Expenditure"
+    ]
+  },
+  {
+    "telugu": "ಕರ್ಚ್ಸೇಯಿ",
+    "ipa": "kərtʃseːi",
+    "pos": "verb",
+    "meaning": [
+      "Spend",
+      "Make a purchase"
+    ]
+  },
+  {
+    "telugu": "ಕರ್ಪು",
+    "ipa": "kərpu",
+    "pos": "noun",
+    "meaning": [
+      "Stomach"
+    ]
+  },
+  {
+    "telugu": "ಕಲ್ಕೊ",
+    "ipa": "kəlko",
+    "pos": "verb",
+    "meaning": [
+      "Make a fuss",
+      "Make a big deal"
+    ]
+  },
+  {
+    "telugu": "ಕಶ್ಟಮ್",
+    "ipa": "kəʃʈəm",
+    "pos": "noun",
+    "meaning": [
+      "Difficulty"
+    ]
+  },
+  {
+    "telugu": "ಕಶ್ಟಮ್ಪೊಡು",
+    "ipa": "kəʃʈəmpoɖu",
+    "pos": "verb",
+    "meaning": [
+      "To go through difficulty"
+    ]
+  },
+  {
+    "telugu": "ಕಳ್ಳ",
+    "ipa": "kəɭːə",
+    "pos": "noun",
+    "meaning": [
+      "Thief",
+      "Robber"
+    ]
+  },
+  {
+    "telugu": "ಕಾ",
+    "ipa": "kaː",
+    "pos": "verb",
+    "meaning": [
+      "Alternative form of ಆಯಿ in certain morphosyntactic contexts"
+    ]
+  },
+  {
+    "telugu": "ಕಾಚ",
+    "ipa": "kaːtʃə",
+    "pos": "noun",
+    "meaning": [
+      "Underwear"
+    ]
+  },
+  {
+    "telugu": "ಕಾಡು",
+    "ipa": "kaːɖu",
+    "pos": "noun",
+    "meaning": [
+      "Forest",
+      "Woods"
+    ]
+  },
+  {
+    "telugu": "ಕಾದ",
+    "ipa": "kaːd̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "See ಕದ"
+    ]
+  },
+  {
+    "telugu": "ಕಾದು",
+    "ipa": "kaːd̪u",
+    "pos": "adverb",
+    "meaning": [
+      "Not that",
+      "Not of that type"
+    ]
+  },
+  {
+    "telugu": "ಕಾರಮ್",
+    "ipa": "kaːrəm",
+    "pos": "noun",
+    "meaning": [
+      "Spice"
+    ]
+  },
+  {
+    "telugu": "ಕಾರಮ್",
+    "ipa": "kaːrəm",
+    "pos": "adjective",
+    "meaning": [
+      "Spicy"
+    ]
+  },
+  {
+    "telugu": "ಕಾಲ್",
+    "ipa": "kaːl",
+    "pos": "adjective",
+    "meaning": [
+      "One quarter",
+      "Fifteen minutes (while telling time)"
+    ]
+  },
+  {
+    "telugu": "ಕಾಲು",
+    "ipa": "kaːlu",
+    "pos": "noun",
+    "meaning": [
+      "Leg"
+    ]
+  },
+  {
+    "telugu": "ಕಾವ್",
+    "ipa": "kaːʋu",
+    "pos": "noun",
+    "meaning": [
+      "Arrogance",
+      "Conceit"
+    ]
+  },
+  {
+    "telugu": "ಕಾವೆಕ್ಕು",
+    "ipa": "kaːʋuɛkːu",
+    "pos": "verb",
+    "meaning": [
+      "Become arrogant",
+      "Have one’s arrogance increase"
+    ]
+  },
+  {
+    "telugu": "ಕಾವಲ",
+    "ipa": "kaːʋələ",
+    "pos": "verb",
+    "meaning": [
+      "Should happen",
+      "Want"
+    ]
+  },
+  {
+    "telugu": "ಕಾವಲ್ಸ್‌ಗ",
+    "ipa": "kaːʋəlsgə~kaːʋʊlsgə",
+    "pos": "adverb",
+    "meaning": [
+      "On purpose",
+      "Intentionally"
+    ]
+  },
+  {
+    "telugu": "ಕಾವಲ್ಸ್‌ಲೆ",
+    "ipa": "kaːʋəlsle",
+    "pos": "adverb",
+    "meaning": [
+      "Not needed",
+      "Do not want",
+      "Not required"
+    ]
+  },
+  {
+    "telugu": "ಕಾಯಿ",
+    "ipa": "kaːi",
+    "pos": "noun",
+    "meaning": [
+      "Fruit"
+    ]
+  },
+  {
+    "telugu": "ಕಾಲಮ್",
+    "ipa": "kaːləm",
+    "pos": "noun",
+    "meaning": [
+      "Time (period)",
+      "Age",
+      "Era"
+    ]
+  },
+  {
+    "telugu": "ಕಾಲಿ",
+    "ipa": "kaːli",
+    "pos": "adjective",
+    "meaning": [
+      "Empty"
+    ]
+  },
+  {
+    "telugu": "ಕಾಲಿ ಕೊಟ್ಕೊ",
+    "ipa": "kaːli koʈko",
+    "pos": "verb",
+    "meaning": [
+      "Be empty (perhaps surprisingly or suspiciously so)"
+    ]
+  },
+  {
+    "telugu": "ಕಾಸ್ಲು",
+    "ipa": "kaːslu",
+    "pos": "noun",
+    "meaning": [
+      "Money",
+      "Cash"
+    ],
+    "note": [
+      "Note: ಕಾಸ್ಲು is morphologically plural"
+    ]
+  },
+  {
+    "telugu": "ಕಿಟ್ಕಿ",
+    "ipa": "kɪʈki",
+    "pos": "noun",
+    "meaning": [
+      "Window"
+    ]
+  },
+  {
+    "telugu": "ಕಿಟ್ಕಿಟಾಕ್",
+    "ipa": "kɪʈkiʈak",
+    "pos": "adverb",
+    "meaning": [
+      "Again and again (discretely)"
+    ]
+  },
+  {
+    "telugu": "ಕಿತ",
+    "ipa": "kɪt̪ə",
+    "pos": "noun",
+    "meaning": [
+      "Time (repetition; round)",
+      "See also ಸೆತಿ"
+    ]
+  },
+  {
+    "telugu": "ಕಿಂದ",
+    "ipa": "kɪnd̪ə",
+    "pos": "adposition",
+    "meaning": [
+      "Below",
+      "Bottom",
+      "Under"
+    ]
+  },
+  {
+    "telugu": "ಕುಕ್ಕ",
+    "ipa": "kukːə",
+    "pos": "noun",
+    "meaning": [
+      "Dog"
+    ]
+  },
+  {
+    "telugu": "ಕುಚ್ಚು",
+    "ipa": "kʊtʃːu",
+    "pos": "verb",
+    "meaning": [
+      "Poke",
+      "Stab"
+    ]
+  },
+  {
+    "telugu": "ಕುಡ",
+    "ipa": "kʊɖə",
+    "pos": "adjective",
+    "meaning": [
+      "Also",
+      "In addition",
+      "Too"
+    ]
+  },
+  {
+    "telugu": "ಕುನ್ಸ್‌ಲಾಡು",
+    "ipa": "kunslaːɖu",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ಕುಶಿ",
+    "ipa": "kʊʃi",
+    "pos": "noun",
+    "meaning": [
+      "Happiness"
+    ]
+  },
+  {
+    "telugu": "ಕುಶಿಪೊಡು",
+    "ipa": "kʊʃipodu",
+    "pos": "verb",
+    "meaning": [
+      "To feel happy"
+    ]
+  },
+  {
+    "telugu": "ಕೂಕೊ",
+    "ipa": "kuːko",
+    "pos": "verb",
+    "meaning": [
+      "Sit"
+    ]
+  },
+  {
+    "telugu": "ಕೂಚೊ",
+    "ipa": "kuːtʃo",
+    "pos": "verb",
+    "meaning": [
+      "Sit (more informal, usually to children)"
+    ]
+  },
+  {
+    "telugu": "ಕೇಡಿ",
+    "ipa": "keːɖi",
+    "pos": "noun",
+    "meaning": [
+      "Thief",
+      "Villain"
+    ]
+  },
+  {
+    "telugu": "ಕೊಟ್ಕೊ",
+    "ipa": "koʈko",
+    "pos": "verb",
+    "meaning": [
+      "Yell",
+      "Make a ruckus"
+    ]
+  },
+  {
+    "telugu": "ಕೊಟ್ಟೀಯಿ",
+    "ipa": "koʈːeːi",
+    "pos": "verb",
+    "meaning": [
+      "Hit (someone strongly)",
+      "Beat (someone strongly)"
+    ]
+  },
+  {
+    "telugu": "ಕೊಟ್ಟು",
+    "ipa": "koʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Hit",
+      "Beat"
+    ]
+  },
+  {
+    "telugu": "ಕೊನ್",
+    "ipa": "kon",
+    "pos": "noun",
+    "meaning": [
+      "Corner"
+    ]
+  },
+  {
+    "telugu": "ಕೊನಾಕಿ",
+    "ipa": "konaːki",
+    "pos": "adverb",
+    "meaning": [
+      "In the end",
+      "Finally",
+      "At last"
+    ]
+  },
+  {
+    "telugu": "ಕೊನ್ಕೊ",
+    "ipa": "konko",
+    "pos": "verb",
+    "meaning": [
+      "Buy"
+    ],
+    "note": [
+      "Compare: Kannada ಕೊಂಡುಕೊ"
+    ]
+  },
+  {
+    "telugu": "ಕೊರ್ಕು",
+    "ipa": "korku",
+    "pos": "verb",
+    "meaning": [
+      "Bite"
+    ]
+  },
+  {
+    "telugu": "-ಕೊಸ್ರೂಮ್",
+    "ipa": "kosrʊːm",
+    "pos": "noun",
+    "meaning": [
+      "For you",
+      "For your sake"
+    ],
+    "note": [
+      "Usage: after a noun in the genitive case, possibly reanalyzed from dative + word construction"
+    ]
+  },
+  {
+    "telugu": "ಕ್ವತು",
+    "ipa": "kʋət̪u~kʷət̪u",
+    "pos": "adjective",
+    "meaning": [
+      "New"
+    ]
+  },
+  {
+    "telugu": "ಕ್ವಾಪ್ಮು",
+    "ipa": "kʋaːpmu",
+    "pos": "noun",
+    "meaning": [
+      "Anger",
+      "Rage"
+    ]
+  },
+  {
+    "telugu": "ಗಜಿಬಿಜಿ",
+    "ipa": "gədʒibɪdʒi",
+    "pos": "adverb",
+    "meaning": []
+  },
+  {
+    "telugu": "ಗಟ್ಟ್",
+    "ipa": "gəʈː",
+    "pos": "adjective",
+    "meaning": [
+      "Hard",
+      "Strong",
+      "Thick (said of liquids)",
+      "Loud (voice)"
+    ]
+  },
+  {
+    "telugu": "ಗಡ್ಡಮ್",
+    "ipa": "gəɖːəm",
+    "pos": "noun",
+    "meaning": [
+      "Beard"
+    ]
+  },
+  {
+    "telugu": "ಗಬ್ಕೊಟ್ಕೊ",
+    "ipa": "gəbkoʈko",
+    "pos": "verb",
+    "meaning": [
+      "To stink strongly",
+      "To have a bad stench"
+    ]
+  },
+  {
+    "telugu": "ಗಬ್ಬು",
+    "ipa": "gəbːu",
+    "pos": "noun",
+    "meaning": [
+      "Dirtiness"
+    ]
+  },
+  {
+    "telugu": "ಗಲೀಜ್",
+    "ipa": "gəliːdʒ",
+    "pos": "noun",
+    "meaning": [
+      "Dirtiness",
+      "Trash",
+      "Waste"
+    ]
+  },
+  {
+    "telugu": "ಗಾಜ್",
+    "ipa": "gaːdʒ",
+    "pos": "noun",
+    "meaning": [
+      "Jewel",
+      "Diamond",
+      "Glass"
+    ]
+  },
+  {
+    "telugu": "ಗಾಟ್",
+    "ipa": "gaːʈ",
+    "pos": "adjective",
+    "meaning": [
+      "Pungent"
+    ]
+  },
+  {
+    "telugu": "ಗಾಡಿ",
+    "ipa": "gaːɖi",
+    "pos": "noun",
+    "meaning": [
+      "Vehicle",
+      "Car"
+    ]
+  },
+  {
+    "telugu": "ಗಾರ್ದ್",
+    "ipa": "gaːrd̪",
+    "pos": "noun",
+    "meaning": [
+      "Donkey",
+      "Insult that means donkey"
+    ]
+  },
+  {
+    "telugu": "ಗಾಸೆ",
+    "ipa": "gaːsɛ",
+    "pos": "noun",
+    "meaning": [
+      "Physical exertion"
+    ]
+  },
+  {
+    "telugu": "ಗಾಸ್ಪೊಡು",
+    "ipa": "gaːspoɖu",
+    "pos": "verb",
+    "meaning": [
+      "Do something exerting a lot of effort"
+    ]
+  },
+  {
+    "telugu": "ಗಾಳಿ",
+    "ipa": "gaːɭi",
+    "pos": "noun",
+    "meaning": [
+      "Wind",
+      "Air"
+    ]
+  },
+  {
+    "telugu": "ಗಿಂಚ್ಕೊ",
+    "ipa": "gɪɲtʃko",
+    "pos": "verb",
+    "meaning": [
+      "Smile widely",
+      "Smile with the teeth showing"
+    ]
+  },
+  {
+    "telugu": "ಗಿಲ್ಲು",
+    "ipa": "gɪlːu",
+    "pos": "verb",
+    "meaning": [
+      "Pinch",
+      "Scratch"
+    ]
+  },
+  {
+    "telugu": "ಗುದೀಡಿ",
+    "ipa": "gud̪iːɖi",
+    "pos": "verb",
+    "meaning": [
+      "Be naked",
+      "Go around naked"
+    ]
+  },
+  {
+    "telugu": "ಗುದ್ಕಾವ್",
+    "ipa": "gʊd̪kaːu",
+    "pos": "noun",
+    "meaning": [
+      "Arrogance"
+    ]
+  },
+  {
+    "telugu": "ಗುದ್ದು",
+    "ipa": "gud̪ːu",
+    "pos": "noun",
+    "meaning": [
+      "Vulgar word for rear end"
+    ]
+  },
+  {
+    "telugu": "ಗುದ್ದು",
+    "ipa": "gud̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Touch (harshly and strongly, likely causing damage)"
+    ]
+  },
+  {
+    "telugu": "ಗುದ್ಮೂಯಿ",
+    "ipa": "gud̪muːi",
+    "pos": "verb",
+    "meaning": [
+      "Ruder way to say shut up"
+    ]
+  },
+  {
+    "telugu": "ಗುರ್ತ್",
+    "ipa": "gərt̪",
+    "pos": "noun",
+    "meaning": [
+      "Marking",
+      "Identification",
+      "Sign"
+    ],
+    "note": [
+      "Recognition",
+      "Compare: Kannada ಗುರುತು"
+    ]
+  },
+  {
+    "telugu": "ಗೂಬ",
+    "ipa": "guːbə",
+    "pos": "noun",
+    "meaning": [
+      "Owl",
+      "Insult used to scold someone; idiot"
+    ]
+  },
+  {
+    "telugu": "ಗೆಲ್ಲು",
+    "ipa": "gɛlːu",
+    "pos": "verb",
+    "meaning": [
+      "Win",
+      "Triumph"
+    ]
+  },
+  {
+    "telugu": "ಗೊಂಟ್",
+    "ipa": "goɳʈ",
+    "pos": "noun",
+    "meaning": [
+      "Throat",
+      "Neck",
+      "(By extension) voice; vocal chords"
+    ]
+  },
+  {
+    "telugu": "ಗೊಣ್ಮುಕ್ಕ",
+    "ipa": "goɳmʊkːə",
+    "pos": "noun",
+    "meaning": [
+      "A runny nose",
+      "Mucus that drips from the nose"
+    ]
+  },
+  {
+    "telugu": "ಗೊಣ್ಣ",
+    "ipa": "goɳːə",
+    "pos": "noun",
+    "meaning": [
+      "Mucus that drips from the nose"
+    ]
+  },
+  {
+    "telugu": "ಗೊತ್ತು",
+    "ipa": "got̪ːu",
+    "pos": "noun",
+    "meaning": [
+      "Knowledge",
+      "Information"
+    ]
+  },
+  {
+    "telugu": "ಗೋಡ್",
+    "ipa": "gwɑɖ~gɑɖ",
+    "pos": "noun",
+    "meaning": [
+      "Wall"
+    ]
+  },
+  {
+    "telugu": "ಗೋರು",
+    "ipa": "goːru",
+    "pos": "noun",
+    "meaning": [
+      "(Human) nail"
+    ]
+  },
+  {
+    "telugu": "ಗೋಳು",
+    "ipa": "goːɭu",
+    "pos": [
+      "noun",
+      "interjection"
+    ],
+    "meaning": [
+      "Ruckus",
+      "Disturbance",
+      "Problem/issue (of extreme annoyance)"
+    ]
+  },
+  {
+    "telugu": "ಚಾಕು",
+    "ipa": "tʃaːku",
+    "pos": "noun",
+    "meaning": [
+      "Knife"
+    ]
+  },
+  {
+    "telugu": "ಚೆಂದಾಲಮ್",
+    "ipa": "tʃɛnd̪aːləm",
+    "pos": "adjective",
+    "meaning": [
+      "Horrible",
+      "Bad"
+    ]
+  },
+  {
+    "telugu": "ಚೇಸ್ತ್‌ಲು",
+    "ipa": "tʃeːst̪ɬu",
+    "pos": "noun",
+    "meaning": [
+      "Tricks",
+      "Pranks",
+      "Games",
+      "Other childish activities",
+      "Naughtiness (childhood innocence)"
+    ]
+  },
+  {
+    "telugu": "ಜಗಳಮ್",
+    "ipa": "dʒəgəɭəm",
+    "pos": "noun",
+    "meaning": [
+      "Fight",
+      "Disagreement"
+    ]
+  },
+  {
+    "telugu": "ಜಗಳಮ್ಸೇಯಿ",
+    "ipa": "dʒəgəɭəmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Fight",
+      "Disagree"
+    ]
+  },
+  {
+    "telugu": "ಜರ್ಮು",
+    "ipa": "dʒərmu",
+    "pos": "noun",
+    "meaning": [
+      "Fever",
+      "Sickness"
+    ]
+  },
+  {
+    "telugu": "ಜನ",
+    "ipa": "dʒəna~dʒɛna",
+    "pos": "noun",
+    "meaning": [
+      "Person"
+    ]
+  },
+  {
+    "telugu": "ಜಮಮ್",
+    "ipa": "dʒəməm",
+    "pos": "noun",
+    "meaning": [
+      "Fuss",
+      "Envy",
+      "Jealousy"
+    ]
+  },
+  {
+    "telugu": "ಜಾಗ",
+    "ipa": "dʒaːgə",
+    "pos": "noun",
+    "meaning": [
+      "(Available) space",
+      "Place",
+      "Position",
+      "Location"
+    ]
+  },
+  {
+    "telugu": "ಜಾಗ ಇಡಿ",
+    "ipa": "dʒaːgə ɪɖi",
+    "pos": "verb",
+    "meaning": [
+      "Give space",
+      "Make way",
+      "Move"
+    ]
+  },
+  {
+    "telugu": "ಜಾನಮ್",
+    "ipa": "dʒaːnəm",
+    "pos": "noun",
+    "meaning": [
+      "Bed"
+    ]
+  },
+  {
+    "telugu": "ಜಾರು",
+    "ipa": "dʒaːru",
+    "pos": "verb",
+    "meaning": [
+      "Slip (and fall)",
+      "Skid"
+    ]
+  },
+  {
+    "telugu": "ಜಾಸ್ತಿ",
+    "ipa": "dʒaːst̪i",
+    "pos": "adjective",
+    "meaning": [
+      "Too much"
+    ]
+  },
+  {
+    "telugu": "ಜೆರ್ಗು",
+    "ipa": "dʒərgu",
+    "pos": "verb",
+    "meaning": [
+      "Move over",
+      "Scoot",
+      "Make space"
+    ]
+  },
+  {
+    "telugu": "ಜೆಲ್ದಿ",
+    "ipa": "dʒeld̪i",
+    "pos": "adverb",
+    "meaning": [
+      "Fast",
+      "Quickly"
+    ]
+  },
+  {
+    "telugu": "ಜೊತ್ಲ",
+    "ipa": "dʒotlə",
+    "pos": "adjective",
+    "meaning": [
+      "With",
+      "Together"
+    ],
+    "note": [
+      "Note: Morphologically in the locative case"
+    ]
+  },
+  {
+    "telugu": "ಜೋಬು",
+    "ipa": "dʒoːbu",
+    "pos": "noun",
+    "meaning": [
+      "Pocket"
+    ]
+  },
+  {
+    "telugu": "ಜೋರು",
+    "ipa": "dʒoːru",
+    "pos": "adjective",
+    "meaning": [
+      "Fast",
+      "Fiercely",
+      "Harshly",
+      "Strongly",
+      "Loud (as in speaking)"
+    ]
+  },
+  {
+    "telugu": "ಟಕ್ಟಕ್",
+    "ipa": "ʈəkʈək",
+    "pos": "adverb",
+    "meaning": [
+      "Quickly"
+    ],
+    "note": [
+      "Etymology: ideophonic reduplication of ಟಕ್"
+    ]
+  },
+  {
+    "telugu": "ಟೋಪಿ",
+    "ipa": "ʈoːpi",
+    "pos": "noun",
+    "meaning": [
+      "Hat"
+    ]
+  },
+  {
+    "telugu": "ಟೋಪಿ ಏಯಿ",
+    "ipa": "ʈoːpi eːi",
+    "pos": "verb",
+    "meaning": [
+      "Scam"
+    ]
+  },
+  {
+    "telugu": "ತಕ್ಶ್‌ಮು",
+    "ipa": "t̪əkʃmu",
+    "pos": "adverb",
+    "meaning": [
+      "As soon as",
+      "Immediately"
+    ],
+    "note": [
+      "Usage: after a verb"
+    ]
+  },
+  {
+    "telugu": "ತಗ್ಲು",
+    "ipa": "t̪əglu",
+    "pos": "verb",
+    "meaning": [
+      "Touch (by accident; usually something that can cause damage)",
+      "Stick",
+      "Attach"
+    ]
+  },
+  {
+    "telugu": "ತಟ್ಟ",
+    "ipa": "t̪əʈːə",
+    "pos": "noun",
+    "meaning": [
+      "Plate"
+    ]
+  },
+  {
+    "telugu": "ತಟ್ಟು",
+    "ipa": "t̪əʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Hit",
+      "Beat up"
+    ]
+  },
+  {
+    "telugu": "ತನೆ",
+    "ipa": "t̪əne",
+    "pos": "adverb",
+    "meaning": [
+      "Is it not so? (after a question, expecting a positive confirmation)"
+    ]
+  },
+  {
+    "telugu": "ತಪಿಚ್ಕೊ",
+    "ipa": "t̪əpɪtʃko",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ತಪೀಲ್",
+    "ipa": "t̪əpiːl",
+    "pos": "noun",
+    "meaning": [
+      "Blow",
+      "Hitting",
+      "Beating"
+    ]
+  },
+  {
+    "telugu": "ತಪೀಲೀಯಿ",
+    "ipa": "t̪əpiːliːi",
+    "pos": "verb",
+    "meaning": [
+      "Beat up",
+      "Hit"
+    ]
+  },
+  {
+    "telugu": "ತಪ್ಪು",
+    "ipa": "t̪əpːu",
+    "pos": "noun",
+    "meaning": [
+      "Wrong",
+      "Mistake"
+    ]
+  },
+  {
+    "telugu": "ತಪ್ಸೇಯಿ",
+    "ipa": "t̪əpseːi",
+    "pos": "verb",
+    "meaning": [
+      "Make a mistake",
+      "Err",
+      "Go wrong"
+    ]
+  },
+  {
+    "telugu": "ತರ",
+    "ipa": "t̪ərə",
+    "pos": "adjective",
+    "meaning": [
+      "Like",
+      "Type"
+    ],
+    "note": [
+      "Usage: After another word, e.g., ನಾ ತರ"
+    ]
+  },
+  {
+    "telugu": "ತರಲೆ",
+    "ipa": "t̪ərəle",
+    "pos": "noun",
+    "meaning": [
+      "Naughtiness (with stronger scolding connotations)"
+    ]
+  },
+  {
+    "telugu": "ತರ್ಮು",
+    "ipa": "t̪ərmu",
+    "pos": "verb",
+    "meaning": [
+      "Kick out",
+      "Get rid of",
+      "Drive away"
+    ]
+  },
+  {
+    "telugu": "ತರ್ಮ್ಲಾಡು",
+    "ipa": "t̪ərmlaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Chase around",
+      "Kick out",
+      "Make go away"
+    ]
+  },
+  {
+    "telugu": "ತಲ",
+    "ipa": "t̪ələ",
+    "pos": "noun",
+    "meaning": [
+      "Head",
+      "Brains"
+    ]
+  },
+  {
+    "telugu": "ತಲದಿಂಬು",
+    "ipa": "t̪ələd̪ɪmbu",
+    "pos": "noun",
+    "meaning": [
+      "Pillow"
+    ]
+  },
+  {
+    "telugu": "ತಲಾಟ್",
+    "ipa": "t̪əlaːʈ",
+    "pos": "noun",
+    "meaning": [
+      "Naughtiness (more of scolding connotations)"
+    ]
+  },
+  {
+    "telugu": "ತಲ್ಕಾಯ್",
+    "ipa": "t̪əlkaːi",
+    "pos": "noun",
+    "meaning": [
+      "Insult used to scold someone"
+    ],
+    "note": [
+      "Usage: As in ನೀ ತಲ್ಕಾಯ್"
+    ]
+  },
+  {
+    "telugu": "ತಲ್ತಿನು",
+    "ipa": "t̪əlt̪inu",
+    "pos": "verb",
+    "meaning": [
+      "Drive someone crazy",
+      "Annoy someone"
+    ]
+  },
+  {
+    "telugu": "ತಲ್ನಪ್ಪಿ",
+    "ipa": "t̪əlnəpːi",
+    "pos": "noun",
+    "meaning": [
+      "Headache"
+    ]
+  },
+  {
+    "telugu": "ತವ",
+    "ipa": "t̪əʋə",
+    "pos": "adjective",
+    "meaning": [
+      "Towards",
+      "With",
+      "Side",
+      "Area",
+      "Locality (small)"
+    ]
+  },
+  {
+    "telugu": "ತಾಗು",
+    "ipa": "t̪aːgu",
+    "pos": "verb",
+    "meaning": [
+      "Drink"
+    ]
+  },
+  {
+    "telugu": "ತಾನೆ",
+    "ipa": "t̪aːne",
+    "pos": "adverb",
+    "meaning": [
+      "See ತನೆ"
+    ]
+  },
+  {
+    "telugu": "ತಿಕ್ಲು",
+    "ipa": "t̪ɪklu",
+    "pos": "noun",
+    "meaning": [
+      "Craziness"
+    ]
+  },
+  {
+    "telugu": "ತಿಕ್ಲು ಪಟು",
+    "ipa": "t̪ɪklu pəʈu",
+    "pos": "verb",
+    "meaning": [
+      "Become crazy",
+      "Go crazy",
+      "Be mad"
+    ]
+  },
+  {
+    "telugu": "ತಿನು",
+    "ipa": "t̪ɪnu",
+    "pos": "verb",
+    "meaning": [
+      "Eat"
+    ]
+  },
+  {
+    "telugu": "ತಿನ್ಪಿ",
+    "ipa": "t̪ɪnpi",
+    "pos": "verb",
+    "meaning": [
+      "Feed"
+    ]
+  },
+  {
+    "telugu": "ತಿರ್ಗ",
+    "ipa": "t̪ɪrgə",
+    "pos": "verb",
+    "meaning": [
+      "Again"
+    ]
+  },
+  {
+    "telugu": "ತಿರ್ಗು",
+    "ipa": "t̪ɪrgu",
+    "pos": "verb",
+    "meaning": [
+      "Turn (intransitively)",
+      "Wander (small scale); pace; move around; wander around; roam"
+    ]
+  },
+  {
+    "telugu": "ತಿಪ್",
+    "ipa": "t̪ɪp",
+    "pos": "noun",
+    "meaning": [
+      "Dump; dirty place; trash filled place"
+    ]
+  },
+  {
+    "telugu": "ತಿಪ್ಪು",
+    "ipa": "t̪ɪpːu",
+    "pos": "verb",
+    "meaning": [
+      "Turn (transitively)",
+      "Stir"
+    ]
+  },
+  {
+    "telugu": "ತಿಟ್ಟು",
+    "ipa": "t̪ɪʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Scold"
+    ]
+  },
+  {
+    "telugu": "ತೀಪು",
+    "ipa": "tiːpu",
+    "pos": "adjective",
+    "meaning": [
+      "Sweet"
+    ]
+  },
+  {
+    "telugu": "ತುರ್ಕು",
+    "ipa": "t̪ʊrku",
+    "pos": "verb",
+    "meaning": [
+      "Stuff"
+    ]
+  },
+  {
+    "telugu": "ತೂಟ್",
+    "ipa": "t̪uːʈ",
+    "pos": "noun",
+    "meaning": [
+      "Hole (especially those in clothes)"
+    ]
+  },
+  {
+    "telugu": "ತುರ್ಸ್ಕೊ",
+    "ipa": "t̪ərsko",
+    "pos": "verb",
+    "meaning": [
+      "Hold in/control (especially anger/rage)"
+    ]
+  },
+  {
+    "telugu": "ತೂಡಿ",
+    "ipa": "t̪uːɖi",
+    "pos": "verb",
+    "meaning": [
+      "Nod asleep; gradually fall asleep; be half asleep, moving towards sleep"
+    ]
+  },
+  {
+    "telugu": "ತೆರ್ಕಿ",
+    "ipa": "t̪ərki",
+    "pos": "verb",
+    "meaning": [
+      "Search"
+    ]
+  },
+  {
+    "telugu": "ತೆಲ್ಸು",
+    "ipa": "t̪elsu",
+    "pos": "verb",
+    "meaning": [
+      "Know"
+    ]
+  },
+  {
+    "telugu": "ತೆಲ್ಲೆ",
+    "ipa": "t̪elːe",
+    "pos": "verb",
+    "meaning": [
+      "Do not know"
+    ]
+  },
+  {
+    "telugu": "ತೇಡ",
+    "ipa": "t̪eːɖə",
+    "pos": "adjective",
+    "meaning": [
+      "Different",
+      "Weird",
+      "Strange",
+      "Odd"
+    ]
+  },
+  {
+    "telugu": "ತೀಯಿ",
+    "ipa": "t̪iːi",
+    "pos": "verb",
+    "meaning": [
+      "Take out",
+      "Remove",
+      "Open (as in a door)"
+    ]
+  },
+  {
+    "telugu": "ತೀಸಿ",
+    "ipa": "t̪iːsi",
+    "pos": "verb",
+    "meaning": [
+      "Buy"
+    ]
+  },
+  {
+    "telugu": "ತೀಸ್ಕೊ",
+    "ipa": "t̪iːsko",
+    "pos": "verb",
+    "meaning": [
+      "Take (from someone)",
+      "Buy (for oneself)"
+    ]
+  },
+  {
+    "telugu": "ತೊಕು",
+    "ipa": "t̪oku",
+    "pos": "verb",
+    "meaning": [
+      "Step (on)",
+      "Press with the feet",
+      "Stamp around (and make a mess)"
+    ]
+  },
+  {
+    "telugu": "ತೊಟ್",
+    "ipa": "t̪oʈ",
+    "pos": "noun",
+    "meaning": [
+      "Farm",
+      "Side; area; place; direction",
+      "Added to adpositions to create a noun of that adposition"
+    ]
+  },
+  {
+    "telugu": "ತೊನಲು",
+    "ipa": "t̪onəlu",
+    "pos": "noun",
+    "meaning": [
+      "Beatings; blows"
+    ]
+  },
+  {
+    "telugu": "ತೊನಲ್ತಿನು",
+    "ipa": "t̪onəlt̪inu",
+    "pos": "verb",
+    "meaning": [
+      "Get beaten up"
+    ],
+    "note": [
+      "Note: Literally ‘eat my blows’"
+    ]
+  },
+  {
+    "telugu": "ತೊನ್ನು",
+    "ipa": "t̪onːu",
+    "pos": "verb",
+    "meaning": [
+      "Hit",
+      "Beat"
+    ]
+  },
+  {
+    "telugu": "ತೊನ್ಲಾಡು",
+    "ipa": "t̪onlaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Struggle",
+      "Toss and turn"
+    ]
+  },
+  {
+    "telugu": "ತೊಮ್ದಿ",
+    "ipa": "t̪omd̪i",
+    "pos": "adjective",
+    "meaning": [
+      "Nine"
+    ]
+  },
+  {
+    "telugu": "ತೋಯಿ",
+    "ipa": "t̪oːi",
+    "pos": "verb",
+    "meaning": [
+      "Push",
+      "Bring",
+      "Drag"
+    ]
+  },
+  {
+    "telugu": "ತೊಳ್ಕೊ",
+    "ipa": "t̪oɭko",
+    "pos": "verb",
+    "meaning": [
+      "Bring/take along (a person)"
+    ]
+  },
+  {
+    "telugu": "ತೊಂದ್ರು",
+    "ipa": "t̪ond̪ru",
+    "pos": "noun",
+    "meaning": [
+      "Problem",
+      "Complication"
+    ]
+  },
+  {
+    "telugu": "ತ್ಯಾ",
+    "ipa": "t̪jaː",
+    "pos": "verb",
+    "meaning": [
+      "Bring",
+      "Buy"
+    ]
+  },
+  {
+    "telugu": "ತ್ಯಾಮ್",
+    "ipa": "t̪jaːm",
+    "pos": "adjective",
+    "meaning": [
+      "Wet"
+    ]
+  },
+  {
+    "telugu": "ದಗು",
+    "ipa": "d̪əgu",
+    "pos": "verb",
+    "meaning": [
+      "Cough"
+    ]
+  },
+  {
+    "telugu": "ದಪ್ಮು",
+    "ipa": "d̪əpmu",
+    "pos": "adjective",
+    "meaning": [
+      "Fat"
+    ]
+  },
+  {
+    "telugu": "ದಬು",
+    "ipa": "d̪əbu",
+    "pos": "verb",
+    "meaning": [
+      "Drop; let go; Dump; off load"
+    ]
+  },
+  {
+    "telugu": "ದಾಕೊ",
+    "ipa": "d̪aːko",
+    "pos": "verb",
+    "meaning": [
+      "Hide (oneself); move away so one cannot be found"
+    ]
+  },
+  {
+    "telugu": "ದಾಟು",
+    "ipa": "d̪aːʈu",
+    "pos": "verb",
+    "meaning": [
+      "Cross"
+    ]
+  },
+  {
+    "telugu": "ದಾನ್",
+    "ipa": "d̪aːn",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine genitive pronoun (distal); Third person singular neuter genitive pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ದಾನೆ",
+    "ipa": "d̪aːnɛ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine vocative pronoun (distal); Third person singular neuter vocative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ದಾನ್ಕಿ",
+    "ipa": "d̪aːnki",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine dative pronoun (distal); Third person singular neuter dative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ದಾನ್ಕೆ",
+    "ipa": "d̪aːnke",
+    "pos": "adverb",
+    "meaning": [
+      "That is why"
+    ]
+  },
+  {
+    "telugu": "ದಾನ್ನಿ",
+    "ipa": "d̪aːnːi",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine accusative pronoun (distal); Third person singular neuter accusative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ದಾನ್ನಿಂಕ",
+    "ipa": "d̪aːnːɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine ablative pronoun (distal); Third person singular neuter ablative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ದಾಪೆಟು",
+    "ipa": "d̪aːpɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Hide (something); put away so it cannot be found"
+    ]
+  },
+  {
+    "telugu": "ದಾಯ್ರಿಯಮ್",
+    "ipa": "d̪aːiriəm",
+    "pos": "noun",
+    "meaning": [
+      "Braveness; courage; boldness"
+    ]
+  },
+  {
+    "telugu": "ದಾವ್",
+    "ipa": "d̪au",
+    "pos": "noun",
+    "meaning": [
+      "Path; Way"
+    ]
+  },
+  {
+    "telugu": "ದಿಗು",
+    "ipa": "d̪ɪgu",
+    "pos": "verb",
+    "meaning": [
+      "Go down; move down; Get out of a vehicle; climb out; deboard"
+    ]
+  },
+  {
+    "telugu": "ದಿಗ್ಲು",
+    "ipa": "d̪ɪglu",
+    "pos": "noun",
+    "meaning": [
+      "Fear; Scare; shock; surprise"
+    ]
+  },
+  {
+    "telugu": "ದಿಗ್ಲುಪೆಟು",
+    "ipa": "d̪ɪglupɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Incite fear (long term); cause to fear; to make someone have a fear of something"
+    ]
+  },
+  {
+    "telugu": "ದಿಗ್ಲುಪೊಡು",
+    "ipa": "d̪ɪglupodu",
+    "pos": "verb",
+    "meaning": [
+      "Feel scared; be scared"
+    ]
+  },
+  {
+    "telugu": "ದಿನ್ಮು",
+    "ipa": "d̪ɪnmu",
+    "pos": "noun",
+    "meaning": [
+      "Day"
+    ]
+  },
+  {
+    "telugu": "ದಿನ್ಮು",
+    "ipa": "d̪ɪnmu",
+    "pos": "adverb",
+    "meaning": [
+      "Daily; every day"
+    ]
+  },
+  {
+    "telugu": "ದೀಪ್ಮಂಟಿ",
+    "ipa": "d̪iːpməɳʈi",
+    "pos": "verb",
+    "meaning": [
+      "Light up the lamp/candle"
+    ]
+  },
+  {
+    "telugu": "ದೀಪ್ಮು",
+    "ipa": "d̪iːpmu",
+    "pos": "noun",
+    "meaning": [
+      "Lamp; candle"
+    ]
+  },
+  {
+    "telugu": "ದೀನ್",
+    "ipa": "d̪iːn",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine genitive pronoun (proximal); Third person singular neuter genitive pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ದೀನೆ",
+    "ipa": "d̪iːnɛ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine vocative pronoun (proximal); Third person singular neuter vocative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ದೀನ್ಕಿ",
+    "ipa": "d̪iːnki",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine dative pronoun (proximal); Third person singular neuter dative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ದೀನ್ನಿ",
+    "ipa": "d̪iːnːi",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine accusative pronoun (proximal); Third person singular neuter accusative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ದೀನ್ನಿಂಕ",
+    "ipa": "d̪iːnːɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular feminine ablative pronoun (proximal); Third person singular neuter ablative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ದುಬ್",
+    "ipa": "d̪ʊb",
+    "pos": "noun",
+    "meaning": [
+      "A large/fat stomach"
+    ]
+  },
+  {
+    "telugu": "ದುಬನ್",
+    "ipa": "d̪ubən",
+    "pos": "noun",
+    "meaning": [
+      "Comb"
+    ]
+  },
+  {
+    "telugu": "ದುಬು",
+    "ipa": "d̪ubu",
+    "pos": "verb",
+    "meaning": [
+      "Comb"
+    ]
+  },
+  {
+    "telugu": "ದುಬೇಸ್ಕೊ",
+    "ipa": "d̪ʊbeːsko",
+    "pos": "verb",
+    "meaning": [
+      "To have a large/fat stomach; To shamelessly display said stomach"
+    ]
+  },
+  {
+    "telugu": "ದುಮ್ಮ",
+    "ipa": "d̪ʊmːə",
+    "pos": "noun",
+    "meaning": [
+      "(Informally; rudely) a fat man"
+    ]
+  },
+  {
+    "telugu": "ದುಮ್ಮಿ",
+    "ipa": "d̪ʊmːi",
+    "pos": "noun",
+    "meaning": [
+      "(Informally; rudely) a fat woman"
+    ]
+  },
+  {
+    "telugu": "ದುರ್ಸಿ",
+    "ipa": "d̪ɤrsi",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ದೂರ್ಮು",
+    "ipa": "d̪uːrmu",
+    "pos": "noun",
+    "meaning": [
+      "Far(ness); at a distance"
+    ]
+  },
+  {
+    "telugu": "ದೂಳ್",
+    "ipa": "d̪uːɭ",
+    "pos": "noun",
+    "meaning": [
+      "Dust"
+    ]
+  },
+  {
+    "telugu": "ದೊಂಗ",
+    "ipa": "d̪oŋgə",
+    "pos": "noun",
+    "meaning": [
+      "Thief; robber"
+    ]
+  },
+  {
+    "telugu": "ದೊಂಗಪಾಪ",
+    "ipa": "d̪oŋgəpaːpə",
+    "pos": "noun",
+    "meaning": [
+      "A(n endearing) term for a sly/naughty person (especially children)"
+    ]
+  },
+  {
+    "telugu": "ದೊಂಗ್ತರ್ಮ್",
+    "ipa": "d̪oŋgt̪arm",
+    "pos": "noun",
+    "meaning": [
+      "Thievery; stealing"
+    ]
+  },
+  {
+    "telugu": "ದೆಗ್ರ",
+    "ipa": "d̪ɛgrə",
+    "pos": "adjective",
+    "meaning": [
+      "With; Vicinity; location"
+    ],
+    "note": [
+      "Usage: after a noun in the genitive case"
+    ]
+  },
+  {
+    "telugu": "ನಗು",
+    "ipa": "nəgu",
+    "pos": "noun",
+    "meaning": [
+      "Laugh; Smile"
+    ]
+  },
+  {
+    "telugu": "ನಗು",
+    "ipa": "nəgu",
+    "pos": "verb",
+    "meaning": [
+      "Laugh; Smile"
+    ]
+  },
+  {
+    "telugu": "ನಡಿ",
+    "ipa": "nəɖi",
+    "pos": "verb",
+    "meaning": [
+      "Walk; Run; occur (as an event)"
+    ]
+  },
+  {
+    "telugu": "ನಡ್ಪಿ",
+    "ipa": "nəɖpi",
+    "pos": "verb",
+    "meaning": [
+      "Run; manage; conduct"
+    ]
+  },
+  {
+    "telugu": "ನಡಿ",
+    "ipa": "nəɖi",
+    "pos": "adjective",
+    "meaning": [
+      "Center, middle"
+    ]
+  },
+  {
+    "telugu": "ನದಿ",
+    "ipa": "nəd̪i",
+    "pos": "noun",
+    "meaning": [
+      "River"
+    ]
+  },
+  {
+    "telugu": "ನನ್",
+    "ipa": "nən",
+    "pos": "noun",
+    "meaning": [
+      "First person singular accusative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನಪ್ಪಿ",
+    "ipa": "nəpːi",
+    "pos": "noun",
+    "meaning": [
+      "Pain; Ache"
+    ]
+  },
+  {
+    "telugu": "ನಂಬು",
+    "ipa": "nəmbu",
+    "pos": "verb",
+    "meaning": [
+      "Believe"
+    ]
+  },
+  {
+    "telugu": "ನಲ್ಗ್‌ರು",
+    "ipa": "nəlgru",
+    "pos": "noun",
+    "meaning": [
+      "Four people"
+    ]
+  },
+  {
+    "telugu": "ನಾ",
+    "ipa": "naː",
+    "pos": "noun",
+    "meaning": [
+      "First person singular genitive pronoun"
+    ]
+  },
+  {
+    "telugu": "ನಾಕಿ",
+    "ipa": "naːki",
+    "pos": "noun",
+    "meaning": [
+      "First person singular dative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನಾಕು",
+    "ipa": "naːku",
+    "pos": "verb",
+    "meaning": [
+      "Lick"
+    ]
+  },
+  {
+    "telugu": "ನಾನಿಂಕ",
+    "ipa": "naːnɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "First person singular ablative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನಾಯ್ಯಲ",
+    "ipa": "naːjːələ",
+    "pos": "noun",
+    "meaning": [
+      "An insult, used as a suffix to intensify the first component’s meaning"
+    ],
+    "note": [
+      "Usage: As in ಗಬ್ನಾಯ್ಯಲ"
+    ]
+  },
+  {
+    "telugu": "ನಾರ",
+    "ipa": "naːra",
+    "pos": "adjective",
+    "meaning": [
+      "Half; Thirty minutes (while telling time)"
+    ]
+  },
+  {
+    "telugu": "ನಾಲ್ಗು",
+    "ipa": "naːlgu",
+    "pos": "adjective",
+    "meaning": [
+      "Four"
+    ]
+  },
+  {
+    "telugu": "ನಾಳು",
+    "ipa": "naːɭu",
+    "pos": "noun",
+    "meaning": [
+      "Day"
+    ]
+  },
+  {
+    "telugu": "ನಿಗರ್ಕೊ",
+    "ipa": "nɪgərko",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ನಿಜಮ್",
+    "ipa": "nɪdʒəm",
+    "pos": "noun",
+    "meaning": [
+      "Truth"
+    ]
+  },
+  {
+    "telugu": "ನಿಜಮ್ಗ",
+    "ipa": "nɪdʒəmgə",
+    "pos": "adverb",
+    "meaning": [
+      "Truely; Actually"
+    ]
+  },
+  {
+    "telugu": "ನಿದಾನಮ್",
+    "ipa": "nɪd̪aːnəm",
+    "pos": "adjective",
+    "meaning": [
+      "Slow; Gentle; careful"
+    ]
+  },
+  {
+    "telugu": "ನಿದ್ರೆ",
+    "ipa": "nɪd̪re",
+    "pos": "noun",
+    "meaning": [
+      "Sleep"
+    ]
+  },
+  {
+    "telugu": "ನಿನ್",
+    "ipa": "nɪn",
+    "pos": "pronoun",
+    "meaning": [
+      "Second person singular accusative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನಿಂತ್ಕೊ",
+    "ipa": "nɪnt̪ko",
+    "pos": "verb",
+    "meaning": [
+      "Become full; be full (passively); Stand still (as traffic jams)"
+    ]
+  },
+  {
+    "telugu": "ನಿಂಪು",
+    "ipa": "nɪmpu",
+    "pos": "verb",
+    "meaning": [
+      "Fill up; stuff (actively)"
+    ]
+  },
+  {
+    "telugu": "ನಿಮ್ಶ್‌ಮು",
+    "ipa": "nɪmʃmu",
+    "pos": "noun",
+    "meaning": [
+      "Minute; second; Moment; instant; short time period"
+    ]
+  },
+  {
+    "telugu": "ನಿರಾಲಮ್",
+    "ipa": "nɪraːləm",
+    "pos": "adjective",
+    "meaning": [
+      "Peaceful; calm"
+    ]
+  },
+  {
+    "telugu": "ನಿಲು",
+    "ipa": "nɪlu",
+    "pos": "verb",
+    "meaning": [
+      "Stop"
+    ]
+  },
+  {
+    "telugu": "ನಿಲ್ಪಿ",
+    "ipa": "nɪlpi",
+    "pos": "verb",
+    "meaning": [
+      "Cause to stop; stop; pull over"
+    ]
+  },
+  {
+    "telugu": "ನಿಲ್ಪು",
+    "ipa": "nɪlpu",
+    "pos": "verb",
+    "meaning": [
+      "Park"
+    ]
+  },
+  {
+    "telugu": "ನಿಲ್ಸ್‌ಕೊ",
+    "ipa": "nɪlsko",
+    "pos": "verb",
+    "meaning": [
+      "Stand"
+    ]
+  },
+  {
+    "telugu": "ನೀ",
+    "ipa": "niː",
+    "pos": "noun",
+    "meaning": [
+      "Second person singular genitive pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೀಕಿ",
+    "ipa": "niːki",
+    "pos": "noun",
+    "meaning": [
+      "Second person singular dative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೀಡ್",
+    "ipa": "niːɖ",
+    "pos": "noun",
+    "meaning": [
+      "Shade"
+    ]
+  },
+  {
+    "telugu": "ನೀನಿಂಕ",
+    "ipa": "niːnɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "Second person singular ablative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೀಲು",
+    "ipa": "niːlu",
+    "pos": "noun",
+    "meaning": [
+      "Water"
+    ]
+  },
+  {
+    "telugu": "ನೀಲ್ಗ",
+    "ipa": "niːlgə",
+    "pos": "adverb",
+    "meaning": [
+      "Watery"
+    ]
+  },
+  {
+    "telugu": "ನೀಲ್ಪೋಸ್ಕೊ",
+    "ipa": "niːlpoːsko",
+    "pos": "verb",
+    "meaning": [
+      "Take a shower; take a bath"
+    ]
+  },
+  {
+    "telugu": "ನುಗಿ",
+    "ipa": "nugi",
+    "pos": "verb",
+    "meaning": [
+      "Push; shove; Move ahead, perhaps forcefully"
+    ]
+  },
+  {
+    "telugu": "ನೂರು",
+    "ipa": "nuːru",
+    "pos": "adjective",
+    "meaning": [
+      "Hundred"
+    ]
+  },
+  {
+    "telugu": "ನೂವು",
+    "ipa": "nuːʋu",
+    "pos": "noun",
+    "meaning": [
+      "Second person singular nominative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೂವೆ",
+    "ipa": "nuːʋɛ",
+    "pos": "noun",
+    "meaning": [
+      "Second person singular vocative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೊವು",
+    "ipa": "noːʋu",
+    "pos": "verb",
+    "meaning": [
+      "Pain; Hurt"
+    ]
+  },
+  {
+    "telugu": "ನೆಟ್ಟ್",
+    "ipa": "nɛʈː",
+    "pos": "adjective",
+    "meaning": [
+      "Straight"
+    ]
+  },
+  {
+    "telugu": "ನೆನ್ನ",
+    "ipa": "nɛnːə",
+    "pos": "noun",
+    "meaning": [
+      "Yesterday"
+    ]
+  },
+  {
+    "telugu": "ನೆಮ್ದಿ",
+    "ipa": "nɛmd̪i",
+    "pos": "noun",
+    "meaning": [
+      "Peace; Peace of mind"
+    ]
+  },
+  {
+    "telugu": "ನೆಲ್",
+    "ipa": "nɛl",
+    "pos": "noun",
+    "meaning": [
+      "Floor"
+    ]
+  },
+  {
+    "telugu": "ನೆಲ",
+    "ipa": "nɛla",
+    "pos": "noun",
+    "meaning": [
+      "Month"
+    ]
+  },
+  {
+    "telugu": "ನೇನು",
+    "ipa": "neːnu",
+    "pos": "noun",
+    "meaning": [
+      "First person singular nominative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೇನೆ",
+    "ipa": "neːnɛ",
+    "pos": "noun",
+    "meaning": [
+      "First person singular vocative pronoun"
+    ]
+  },
+  {
+    "telugu": "ನೇರು",
+    "ipa": "neːru",
+    "pos": "verb",
+    "meaning": [
+      "Learn"
+    ]
+  },
+  {
+    "telugu": "ನೇರ್ಪಿ",
+    "ipa": "neːrpi",
+    "pos": "verb",
+    "meaning": [
+      "Teach"
+    ]
+  },
+  {
+    "telugu": "ನೊಮ್ಲು",
+    "ipa": "nomlu",
+    "pos": "verb",
+    "meaning": [
+      "Chew; chew and swallow"
+    ]
+  },
+  {
+    "telugu": "ನೋರು",
+    "ipa": "noːru",
+    "pos": "noun",
+    "meaning": [
+      "Mouth"
+    ]
+  },
+  {
+    "telugu": "ನೋರ್ಮೂಯಿ",
+    "ipa": "noːrmuːi",
+    "pos": "verb",
+    "meaning": [
+      "Shut up; be quiet"
+    ]
+  },
+  {
+    "telugu": "ನ್ಯಾನಮ್",
+    "ipa": "ɲjaːnəm",
+    "pos": "noun",
+    "meaning": [
+      "Knowledge; Brains; Awareness; conscious"
+    ]
+  },
+  {
+    "telugu": "ನ್ಯಾಪ್ಮು",
+    "ipa": "ɲjaːpmu",
+    "pos": "noun",
+    "meaning": [
+      "Memory; Remembrance"
+    ]
+  },
+  {
+    "telugu": "ನ್ಯಾಪಮ್ಸೇಯಿ",
+    "ipa": "ɲjaːpəmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Remind; make someone remember"
+    ]
+  },
+  {
+    "telugu": "ನ್ಯಾಲ",
+    "ipa": "njaːla",
+    "pos": "noun",
+    "meaning": [
+      "Floor"
+    ]
+  },
+  {
+    "telugu": "ಪಕ್ಕ",
+    "ipa": "pəkːə",
+    "pos": "noun",
+    "meaning": [
+      "Side",
+      "Towards"
+    ]
+  },
+  {
+    "telugu": "ಪಕ್ಕಿಂಟು",
+    "ipa": "pəkːɪlːu",
+    "pos": "noun",
+    "meaning": [
+      "Neighbor; neighboring house"
+    ]
+  },
+  {
+    "telugu": "ಪಕ್ಲ",
+    "ipa": "pəklə",
+    "pos": "noun",
+    "meaning": [
+      "Side; to the side"
+    ]
+  },
+  {
+    "telugu": "ಪಗ್ಲು",
+    "ipa": "pəglu",
+    "pos": "verb",
+    "meaning": [
+      "Break; shatter"
+    ]
+  },
+  {
+    "telugu": "ಪಗಲ್ಪೊ",
+    "ipa": "pəgəlpo",
+    "pos": "verb",
+    "meaning": [
+      "Break (more passively); shatter (more passively)"
+    ]
+  },
+  {
+    "telugu": "ಪಂಗ್",
+    "ipa": "pɜŋg",
+    "pos": "noun",
+    "meaning": [
+      "Work; usefulness; fruition"
+    ],
+    "note": [
+      "Usage: usually with negative words"
+    ]
+  },
+  {
+    "telugu": "ಪಚ್ಚ",
+    "ipa": "pətʃːə",
+    "pos": "adjective",
+    "meaning": [
+      "Raw"
+    ]
+  },
+  {
+    "telugu": "ಪಂಚಾಯತ್",
+    "ipa": "pəɲtʃaːjət̪",
+    "pos": "noun",
+    "meaning": [
+      "Big problem; big issue; bureaucratic; a problem needing a lot of effort"
+    ],
+    "note": [
+      "Etymology: from the word for village council"
+    ]
+  },
+  {
+    "telugu": "ಪಟು",
+    "ipa": "pəʈu",
+    "pos": "verb",
+    "meaning": [
+      "Catch",
+      "Fill (as in a bottle)"
+    ]
+  },
+  {
+    "telugu": "ಪಟ್ಕೊ",
+    "ipa": "pəʈko~poʈko",
+    "pos": "verb",
+    "meaning": [
+      "Hold",
+      "Catch"
+    ]
+  },
+  {
+    "telugu": "ಪಡ್ತಲೆ",
+    "ipa": "pəɖt̪əle",
+    "pos": "noun",
+    "meaning": [
+      "Be missing; not seen; absconding"
+    ]
+  },
+  {
+    "telugu": "ಪಂಡು",
+    "ipa": "pəɳɖu",
+    "pos": "noun",
+    "meaning": [
+      "Fruit"
+    ]
+  },
+  {
+    "telugu": "ಪಂಡ್ಗ",
+    "ipa": "pəɳɖgə",
+    "pos": "noun",
+    "meaning": [
+      "Festival"
+    ]
+  },
+  {
+    "telugu": "ಪದ್ದು",
+    "ipa": "pəd̪ːu",
+    "pos": "noun",
+    "meaning": [
+      "Time",
+      "Time period"
+    ],
+    "note": [
+      "Compare: Kannada ಹೊತ್ತು"
+    ]
+  },
+  {
+    "telugu": "ಪನ್",
+    "ipa": "pən",
+    "pos": "noun",
+    "meaning": [
+      "Work",
+      "Job"
+    ]
+  },
+  {
+    "telugu": "ಪನಿ",
+    "ipa": "pəni",
+    "pos": "verb",
+    "meaning": [
+      "Bother, annoy"
+    ]
+  },
+  {
+    "telugu": "ಪನ್ಸೇಯಿ",
+    "ipa": "pənseːi",
+    "pos": "verb",
+    "meaning": [
+      "Work; do work",
+      "Function (properly)"
+    ]
+  },
+  {
+    "telugu": "ಪರ್ವಲೆ",
+    "ipa": "pərʋəle",
+    "pos": "adverb",
+    "meaning": [
+      "It is ok; it is fine"
+    ]
+  },
+  {
+    "telugu": "ಪರ್ಶ್ಮು",
+    "ipa": "pərʃmu",
+    "pos": "noun",
+    "meaning": [
+      "Cold",
+      "Sickness"
+    ]
+  },
+  {
+    "telugu": "ಪಲ್ಲು",
+    "ipa": "pəlːu",
+    "pos": "noun",
+    "meaning": [
+      "Tooth"
+    ]
+  },
+  {
+    "telugu": "ಪಳ್ಳಿ",
+    "ipa": "pəɭːi",
+    "pos": "noun",
+    "meaning": [
+      "Village"
+    ]
+  },
+  {
+    "telugu": "ಪಾಗೊಟ್ಟು",
+    "ipa": "paːgoʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Lose (misplace; more actively)"
+    ]
+  },
+  {
+    "telugu": "ಪಾಗೊಟ್ಪೊ",
+    "ipa": "paːgoʈpo",
+    "pos": "verb",
+    "meaning": [
+      "Become lost (misplaced; more passively)"
+    ]
+  },
+  {
+    "telugu": "ಪಾಟ",
+    "ipa": "paːʈə",
+    "pos": "noun",
+    "meaning": [
+      "Song"
+    ]
+  },
+  {
+    "telugu": "ಪಾಡು",
+    "ipa": "paːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Sing",
+      "Play a song (anyhow)"
+    ]
+  },
+  {
+    "telugu": "ಪಾಡ್ಲುಪೊಡು",
+    "ipa": "paːɖɭupodu",
+    "pos": "verb",
+    "meaning": [
+      "To struggle to do something excessively or seemingly without reason"
+    ],
+    "note": [
+      "Alternative: ಪಾಡಲ್ಪೊಡು"
+    ]
+  },
+  {
+    "telugu": "ಪಾತ್",
+    "ipa": "paːt̪",
+    "pos": "adjective",
+    "meaning": [
+      "Old",
+      "Broken; ruined; gone"
+    ],
+    "note": [
+      "Usage: Sense two is usually conveyed only in compound constructions. See ಪಾತ್ಸೇಯಿ"
+    ]
+  },
+  {
+    "telugu": "ಪಾತ್ಸೇಯಿ",
+    "ipa": "paːt̪seːi",
+    "pos": "verb",
+    "meaning": [
+      "Spoil",
+      "Ruin; break"
+    ]
+  },
+  {
+    "telugu": "ಪಾಪ",
+    "ipa": "paːpə",
+    "pos": "noun",
+    "meaning": [
+      "A term of affection, commonly used as a suffix"
+    ]
+  },
+  {
+    "telugu": "ಪಾಪ್ಮು",
+    "ipa": "paːpmu",
+    "pos": "noun",
+    "meaning": [
+      "Poor soul (used as an interjection)",
+      "Sympathy; feeling bad for someone or pity for someone"
+    ]
+  },
+  {
+    "telugu": "ಪಾಮು",
+    "ipa": "paːmu",
+    "pos": "noun",
+    "meaning": [
+      "Snake"
+    ]
+  },
+  {
+    "telugu": "ಪಾಯ್ನ",
+    "ipa": "painə",
+    "pos": "adposition",
+    "meaning": [
+      "Above",
+      "On top"
+    ],
+    "note": [
+      "Usage: This is used generically when not used with a noun as an adposition"
+    ]
+  },
+  {
+    "telugu": "ಪಾರಾಡು",
+    "ipa": "paːraːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Walk around; move around"
+    ]
+  },
+  {
+    "telugu": "ಪಾರು",
+    "ipa": "paːru",
+    "pos": "verb",
+    "meaning": [
+      "Run"
+    ]
+  },
+  {
+    "telugu": "ಪಾರೇಯಿ",
+    "ipa": "paːreːi",
+    "pos": "verb",
+    "meaning": [
+      "Throw away, throw out"
+    ]
+  },
+  {
+    "telugu": "ಪಾರ್ಪಿ",
+    "ipa": "paːrpi",
+    "pos": "verb",
+    "meaning": [
+      "Cause to run; make someone run",
+      "Chase"
+    ],
+    "note": [
+      "Chase // TODO"
+    ]
+  },
+  {
+    "telugu": "ಪಾರ್ಪೊ",
+    "ipa": "paːrpo",
+    "pos": "verb",
+    "meaning": [
+      "Go running; run away; flee"
+    ]
+  },
+  {
+    "telugu": "ಪಾಲು",
+    "ipa": "paːlu",
+    "pos": "noun",
+    "meaning": [
+      "Milk"
+    ]
+  },
+  {
+    "telugu": "ಪಿಲು",
+    "ipa": "pilu",
+    "pos": "noun",
+    "meaning": [
+      "Call"
+    ],
+    "note": [
+      "Usage: Attested only in ಪಿಲ್ಸೇಯಿ"
+    ]
+  },
+  {
+    "telugu": "ಪಿಲು",
+    "ipa": "pilu",
+    "pos": "verb",
+    "meaning": [
+      "Call"
+    ]
+  },
+  {
+    "telugu": "ಪಿಲ್ಪಿ",
+    "ipa": "pɪlpi",
+    "pos": "verb",
+    "meaning": [
+      "Make someone come"
+    ],
+    "note": [
+      "Usage: instead of the causative of ರಾ"
+    ]
+  },
+  {
+    "telugu": "ಪಿಲ್ಲು",
+    "ipa": "pɪlːu",
+    "pos": "noun",
+    "meaning": [
+      "Cat"
+    ]
+  },
+  {
+    "telugu": "ಪಿಸ್ಕು",
+    "ipa": "pɪsku",
+    "pos": "verb",
+    "meaning": [
+      "Squeeze",
+      "Rub"
+    ]
+  },
+  {
+    "telugu": "ಪುಟ್ಟು",
+    "ipa": "pʊʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Be born"
+    ]
+  },
+  {
+    "telugu": "ಪುಟ್ಟು ಪೆರ್ಗು",
+    "ipa": "pʊʈːu pergu",
+    "pos": "verb",
+    "meaning": [
+      "Be born and raised"
+    ]
+  },
+  {
+    "telugu": "ಪುಡಿ",
+    "ipa": "pʊɖi",
+    "pos": "noun",
+    "meaning": [
+      "Powder"
+    ]
+  },
+  {
+    "telugu": "ಪುಡ್ಕಿ",
+    "ipa": "pʊɖki",
+    "pos": "verb",
+    "meaning": [
+      "Search"
+    ]
+  },
+  {
+    "telugu": "ಪುಡ್ಣೆ",
+    "ipa": "pʊɖɳe",
+    "pos": "noun",
+    "meaning": [
+      "Morning"
+    ]
+  },
+  {
+    "telugu": "ಪುಡ್ಣೆಪುಟ್ಟು",
+    "ipa": "pʊɖɳepʊʈːu",
+    "pos": "noun",
+    "meaning": [
+      "Morning time; first thing in the morning"
+    ]
+  },
+  {
+    "telugu": "ಪುದಿ",
+    "ipa": "pəd̪i",
+    "pos": "adjective",
+    "meaning": [
+      "Ten"
+    ]
+  },
+  {
+    "telugu": "ಪುಲ್ಸು",
+    "ipa": "pʊlsu",
+    "pos": "adjective",
+    "meaning": [
+      "Sour"
+    ]
+  },
+  {
+    "telugu": "ಪೂಜ್",
+    "ipa": "puːdʒ",
+    "pos": "noun",
+    "meaning": [
+      "Puja"
+    ]
+  },
+  {
+    "telugu": "ಪೂಜ್ಸೇಯಿ",
+    "ipa": "puːdʒseːi",
+    "pos": "verb",
+    "meaning": [
+      "Conduct a puja; have a puja",
+      "Not use something that one has"
+    ]
+  },
+  {
+    "telugu": "ಪೂರ್ತಿ",
+    "ipa": "puːrt̪i",
+    "pos": "adjective",
+    "meaning": [
+      "Full; complete"
+    ]
+  },
+  {
+    "telugu": "ಪೂಲ್",
+    "ipa": "puːl",
+    "pos": "noun",
+    "meaning": [
+      "Flowers"
+    ],
+    "note": [
+      "Note: this word is in the plural as flowers are generally spoken of together"
+    ]
+  },
+  {
+    "telugu": "ಪೆಟು",
+    "ipa": "pɛʈu",
+    "pos": "verb",
+    "meaning": [
+      "Put, place",
+      "A type of causative",
+      "A type of intensitive word"
+    ]
+  },
+  {
+    "telugu": "ಪೆಟ್ಕೊ",
+    "ipa": "pɛʈko",
+    "pos": "verb",
+    "meaning": [
+      "Keep (with oneself)"
+    ]
+  },
+  {
+    "telugu": "ಪೆದ್ದ",
+    "ipa": "pɛd̪ːə",
+    "pos": "adjective",
+    "meaning": [
+      "Big, large"
+    ]
+  },
+  {
+    "telugu": "ಪೆದ್ಮನ್ಶಿ",
+    "ipa": "pɛd̪mənʃi~pɛd̪məntʃ",
+    "pos": "noun",
+    "meaning": [
+      "Big (influential) person"
+    ],
+    "note": [
+      "Used figuratively"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಕು",
+    "ipa": "perku",
+    "pos": "verb",
+    "meaning": [
+      "Grab",
+      "Pluck",
+      "Break (off; transitively)"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಕ್ಪೇನ",
+    "ipa": "perkpeːnə",
+    "pos": "adjective",
+    "meaning": [
+      "Broken",
+      "Random; useless; bad; horrible"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಕ್ಪೊ",
+    "ipa": "perkpo",
+    "pos": "verb",
+    "meaning": [
+      "Be broken; break (off; intransitively)"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಕ್ಲಾಡು",
+    "ipa": "pərklaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Fight (like sibling); fight pettily"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಗು",
+    "ipa": "pergu",
+    "pos": "noun",
+    "meaning": [
+      "Yogurt"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಗು",
+    "ipa": "pergu",
+    "pos": "verb",
+    "meaning": [
+      "Grow up; be raised"
+    ]
+  },
+  {
+    "telugu": "ಪೆರ್ಲಾಡು",
+    "ipa": "pərlaːɖu",
+    "pos": "verb",
+    "meaning": []
+  },
+  {
+    "telugu": "ಪೆರ್ಸ್ಕೊ",
+    "ipa": "pərsko",
+    "pos": "verb",
+    "meaning": [
+      "Spread; lay out"
+    ]
+  },
+  {
+    "telugu": "ಪೇನ",
+    "ipa": "peːna",
+    "pos": "adposition",
+    "meaning": [
+      "Above",
+      "On top"
+    ],
+    "note": [
+      "Usage: This is used in conjunction with a noun as an adposition"
+    ]
+  },
+  {
+    "telugu": "ಪೇರು",
+    "ipa": "peːru",
+    "pos": "noun",
+    "meaning": [
+      "Name"
+    ]
+  },
+  {
+    "telugu": "ಪೊಂಕೊ",
+    "ipa": "poŋko",
+    "pos": "verb",
+    "meaning": [
+      "Sleep"
+    ]
+  },
+  {
+    "telugu": "ಪೊಚೊ",
+    "ipa": "potʃo",
+    "pos": "verb",
+    "meaning": [
+      "Sleep (more informal, usually to children)"
+    ]
+  },
+  {
+    "telugu": "ಪೊಡು",
+    "ipa": "poɖu",
+    "pos": "verb",
+    "meaning": [
+      "Fall (actively, on purpose)",
+      "Fit (have enough space for)",
+      "Feel; experience (an emotion/feeling); become (an emotion/feeling)",
+      "End up; wind up; fall on",
+      "Fall (upon); become a burden (anyhow)",
+      "Go somewhere and simply be"
+    ]
+  },
+  {
+    "telugu": "ಪೊಡ್ಪೋ",
+    "ipa": "poɖpoː",
+    "pos": "verb",
+    "meaning": [
+      "Fall (passively, by accident)"
+    ]
+  },
+  {
+    "telugu": "ಪೋ",
+    "ipa": "poː",
+    "pos": "verb",
+    "meaning": [
+      "Go"
+    ]
+  },
+  {
+    "telugu": "ಪೋಯಿ",
+    "ipa": "poːi",
+    "pos": "verb",
+    "meaning": [
+      "Pour"
+    ]
+  },
+  {
+    "telugu": "ಪ್ರಕಾರಮ್",
+    "ipa": "prəkaːrəm",
+    "pos": "noun",
+    "meaning": [
+      "According to; as per"
+    ],
+    "note": [
+      "Usage: after a noun in the genitive case"
+    ]
+  },
+  {
+    "telugu": "ಪ್ರಾಣಮ್",
+    "ipa": "praːɳəm",
+    "pos": "noun",
+    "meaning": []
+  },
+  {
+    "telugu": "ಪ್ರಾಣಮ್ತಿನು",
+    "ipa": "praːɳəmt̪inu",
+    "pos": "verb",
+    "meaning": [
+      "Annoy someone"
+    ]
+  },
+  {
+    "telugu": "ಪ್ರಾಣಮ್ಪೋ",
+    "ipa": "praːɳəmpoː",
+    "pos": "verb",
+    "meaning": [
+      "Go crazy (usually with hunger)"
+    ]
+  },
+  {
+    "telugu": "ಪ್ರಪಂಚ್ಮು",
+    "ipa": "prəpəɲtʃmu",
+    "pos": "noun",
+    "meaning": [
+      "World (with slight connotations to everyone and everything inside)"
+    ]
+  },
+  {
+    "telugu": "ಪ್ರಯೋಜಮ್",
+    "ipa": "prajoːdʒəm",
+    "pos": "noun",
+    "meaning": [
+      "Use; benefit"
+    ]
+  },
+  {
+    "telugu": "ಬಗೆ",
+    "ipa": "bəge",
+    "pos": "noun",
+    "meaning": [
+      "About; concerning"
+    ]
+  },
+  {
+    "telugu": "ಬಟ್ಟ",
+    "ipa": "bəʈːə",
+    "pos": "noun",
+    "meaning": [
+      "Article of clothing",
+      "Cloth"
+    ]
+  },
+  {
+    "telugu": "ಬದ್ಕು",
+    "ipa": "bəd̪ku",
+    "pos": "verb",
+    "meaning": [
+      "Live"
+    ]
+  },
+  {
+    "telugu": "ಬದ್ಲು",
+    "ipa": "bədɮu~bodɮu",
+    "pos": "adjective",
+    "meaning": [
+      "Instead of; in its place"
+    ]
+  },
+  {
+    "telugu": "ಬರಿ",
+    "ipa": "bəri",
+    "pos": "adjective",
+    "meaning": [
+      "Just; only"
+    ]
+  },
+  {
+    "telugu": "ಬಸ್ಮು",
+    "ipa": "bəsmu",
+    "pos": "verb",
+    "meaning": [
+      "Turn something to ash",
+      "Eat something quickly (figuratively)"
+    ],
+    "note": [
+      "TODO: confirm figurative usage"
+    ]
+  },
+  {
+    "telugu": "ಬಳೆ",
+    "ipa": "bəɭe",
+    "pos": "adjective",
+    "meaning": [
+      "Very; very much; a lot; to a great extent"
+    ],
+    "note": [
+      "TODO: confirm intensifier usage"
+    ]
+  },
+  {
+    "telugu": "ಬಾಕಿ",
+    "ipa": "baːki",
+    "pos": "adverb",
+    "meaning": [
+      "Remaining; to do"
+    ]
+  },
+  {
+    "telugu": "ಬಾಗ",
+    "ipa": "baːgə",
+    "pos": "adverb",
+    "meaning": [
+      "Good; well",
+      "Used as an intensifier with verbs to show action done to a greater degree"
+    ],
+    "note": [
+      "Note: ಗ is sometimes elided when used with ವುಂಡು"
+    ]
+  },
+  {
+    "telugu": "ಬಾಗಮ್",
+    "ipa": "baːgəm",
+    "pos": "noun",
+    "meaning": [
+      "Part; share"
+    ]
+  },
+  {
+    "telugu": "ಬಾಗು",
+    "ipa": "baːgu",
+    "pos": "noun",
+    "meaning": [
+      "Bend/bow your head"
+    ]
+  },
+  {
+    "telugu": "ಬಾಶ",
+    "ipa": "baːʃə",
+    "pos": "noun",
+    "meaning": [
+      "Language"
+    ]
+  },
+  {
+    "telugu": "ಬಿರೀನ",
+    "ipa": "bɪriːnə",
+    "pos": "adverb",
+    "meaning": [
+      "Fast; quickly"
+    ],
+    "note": [
+      "Usage: commonly reduplicated as ಬಿರ್ಬಿರೀನ or ಬಿರ್ಬೀನ"
+    ]
+  },
+  {
+    "telugu": "ಬುಜಮ್",
+    "ipa": "bʊdʒəm~bʊʒəm",
+    "pos": "noun",
+    "meaning": [
+      "Shoulder"
+    ],
+    "note": [
+      "TODO: confirm pronunciation variants"
+    ]
+  },
+  {
+    "telugu": "ಬುದ್ದಿ",
+    "ipa": "bud̪ːi",
+    "pos": "noun",
+    "meaning": [
+      "Brains",
+      "Common sense; judgment"
+    ]
+  },
+  {
+    "telugu": "ಬುಸ್ಗುಟ್ಟು",
+    "ipa": "bɤsgʊʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Breathe heavily"
+    ]
+  },
+  {
+    "telugu": "ಬೇಜಾರ್",
+    "ipa": "beːʒar~beːdʒar",
+    "pos": "noun",
+    "meaning": [
+      "Boredness"
+    ]
+  },
+  {
+    "telugu": "ಬೊಗ್ಳು",
+    "ipa": "bogɭu",
+    "pos": "verb",
+    "meaning": [
+      "Go on and on; spew nonsense"
+    ]
+  },
+  {
+    "telugu": "ಬೊಮ್",
+    "ipa": "bom",
+    "pos": "noun",
+    "meaning": [
+      "Doll"
+    ]
+  },
+  {
+    "telugu": "ಬೊಮ್ತರ",
+    "ipa": "bomt̪ərə",
+    "pos": "adverb",
+    "meaning": [
+      "Like a doll"
+    ],
+    "note": [
+      "Used of cute/doll like girls"
+    ]
+  },
+  {
+    "telugu": "ಬೋಡಿಚ್ಕೊ",
+    "ipa": "boːɖɪtʃko",
+    "pos": "verb",
+    "meaning": [
+      "Take advantage of"
+    ]
+  },
+  {
+    "telugu": "ಮಕಾಲ್",
+    "ipa": "məkaːl",
+    "pos": "noun",
+    "meaning": []
+  },
+  {
+    "telugu": "ಮಕ್ಮು",
+    "ipa": "məkmu",
+    "pos": "noun",
+    "meaning": [
+      "Face"
+    ]
+  },
+  {
+    "telugu": "ಮಜ",
+    "ipa": "mədʒə",
+    "pos": "noun",
+    "meaning": [
+      "Fun; enjoyment"
+    ]
+  },
+  {
+    "telugu": "ಮಜ ಸೇಯಿ",
+    "ipa": "mədʒə seːi",
+    "pos": "verb",
+    "meaning": [
+      "Have fun; enjoy"
+    ]
+  },
+  {
+    "telugu": "ಮಂಚ್",
+    "ipa": "məɲtʃ",
+    "pos": "adjective",
+    "meaning": [
+      "Good"
+    ]
+  },
+  {
+    "telugu": "ಮಂಚಮ್",
+    "ipa": "məɲtʃəm",
+    "pos": "noun",
+    "meaning": [
+      "Bed"
+    ]
+  },
+  {
+    "telugu": "ಮಡೆ",
+    "ipa": "məɖe",
+    "pos": "adverb",
+    "meaning": [
+      "Then; then what"
+    ]
+  },
+  {
+    "telugu": "ಮಧ್ಯಾನಮ್",
+    "ipa": "məd̪jaːnəm",
+    "pos": "noun",
+    "meaning": [
+      "Afternoon"
+    ]
+  },
+  {
+    "telugu": "ಮಧ್ಯಮ್",
+    "ipa": "məd̪jam",
+    "pos": "noun",
+    "meaning": [
+      "Middle; center"
+    ]
+  },
+  {
+    "telugu": "ಮನಮ್",
+    "ipa": "mənəm",
+    "pos": "noun",
+    "meaning": [
+      "First person plural inclusive genitive pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮನಮು",
+    "ipa": "mənəmu",
+    "pos": "noun",
+    "meaning": [
+      "First person plural inclusive nominative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮನ್ಕಿ",
+    "ipa": "mənki",
+    "pos": "noun",
+    "meaning": [
+      "First person plural inclusive dative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮನ್ನು",
+    "ipa": "mənːu",
+    "pos": "noun",
+    "meaning": [
+      "Dirt; soil; mud"
+    ]
+  },
+  {
+    "telugu": "ಮನ್ಮರಿಯಾದ್",
+    "ipa": "mənmərijaːd̪",
+    "pos": "noun",
+    "meaning": [
+      "Respect; dignity"
+    ]
+  },
+  {
+    "telugu": "ಮನ್ಶಿ",
+    "ipa": "mənʃi~məntʃ",
+    "pos": "noun",
+    "meaning": [
+      "Human; person"
+    ]
+  },
+  {
+    "telugu": "ಮನ್ಸ್",
+    "ipa": "məns",
+    "pos": "noun",
+    "meaning": [
+      "Mind; thoughts"
+    ]
+  },
+  {
+    "telugu": "ಮಸ್ತ್ಗ",
+    "ipa": "məst̪gə",
+    "pos": "adverb",
+    "meaning": [
+      "Plentifully; a lot"
+    ]
+  },
+  {
+    "telugu": "ಮಾ",
+    "ipa": "maː",
+    "pos": "noun",
+    "meaning": [
+      "First person plural inclusive genitive pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮಾಕಿ",
+    "ipa": "maːki",
+    "pos": "noun",
+    "meaning": [
+      "First person plural exclusive dative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ",
+    "ipa": "maːt̪ə",
+    "pos": "noun",
+    "meaning": [
+      "Saying; Word; Promise"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ರಮು",
+    "ipa": "maːt̪rəmu",
+    "pos": "adjective",
+    "meaning": [
+      "Only; just"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ರು",
+    "ipa": "maːt̪rɤ",
+    "pos": "noun",
+    "meaning": [
+      "Medicine; (Medicinal) pill"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ಲಾಡು",
+    "ipa": "maːt̪ɬaːɖu",
+    "pos": "verb",
+    "meaning": [
+      "Speak"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ಲಾಡ್ಪಿ",
+    "ipa": "maːt̪ɬaːɖpi",
+    "pos": "verb",
+    "meaning": [
+      "Make someone talk; Make conversation; talk with someone"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ಲು",
+    "ipa": "maːt̪ɬu",
+    "pos": "noun",
+    "meaning": [
+      "Talking; words"
+    ]
+  },
+  {
+    "telugu": "ಮಾತ್ಲುಕಟ್ಕೊ",
+    "ipa": "maːt̪ɬukəʈko",
+    "pos": "noun",
+    "meaning": [
+      "Believe in what someone says; take (someone) seriously; listen"
+    ]
+  },
+  {
+    "telugu": "ಮಾನಮ್",
+    "ipa": "maːnəm",
+    "pos": "noun",
+    "meaning": [
+      "Tree"
+    ],
+    "note": [
+      "Compare: Kannada ಮರ"
+    ]
+  },
+  {
+    "telugu": "ಮಾಮುಲ್",
+    "ipa": "maːmʊl",
+    "pos": "adjective",
+    "meaning": [
+      "Normal"
+    ]
+  },
+  {
+    "telugu": "ಮಿಂಗು",
+    "ipa": "mɪŋgu",
+    "pos": "verb",
+    "meaning": [
+      "Swallow; chew and swallow"
+    ]
+  },
+  {
+    "telugu": "ಮಿಗ್ಲು",
+    "ipa": "mɪglu",
+    "pos": "verb",
+    "meaning": [
+      "Be left over; be remaining"
+    ]
+  },
+  {
+    "telugu": "ಮೀ",
+    "ipa": "miː",
+    "pos": "noun",
+    "meaning": [
+      "Second person plural genitive pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮೀಕಿ",
+    "ipa": "miːki",
+    "pos": "noun",
+    "meaning": [
+      "Second person plural dative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮೀರು",
+    "ipa": "miːru",
+    "pos": "noun",
+    "meaning": [
+      "Second person plural nominative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮೀಸ್ಲು",
+    "ipa": "miːslu",
+    "pos": "noun",
+    "meaning": [
+      "Mustache"
+    ]
+  },
+  {
+    "telugu": "ಮುಕಾಲ್",
+    "ipa": "mʊkaːl",
+    "pos": "adjective",
+    "meaning": [
+      "Three quarters; Forty five minutes (while telling time)"
+    ]
+  },
+  {
+    "telugu": "ಮುಕ್ಕ",
+    "ipa": "mʊkːə",
+    "pos": "noun",
+    "meaning": [
+      "Nose"
+    ]
+  },
+  {
+    "telugu": "ಮುಚ್ಮು",
+    "ipa": "mʊtʃmu",
+    "pos": "noun",
+    "meaning": [
+      "Cover; container"
+    ]
+  },
+  {
+    "telugu": "ಮುಟ್ಟು",
+    "ipa": "mʊʈːu",
+    "pos": "verb",
+    "meaning": [
+      "Touch"
+    ]
+  },
+  {
+    "telugu": "ಮೂಡು",
+    "ipa": "muːɖu",
+    "pos": "adjective",
+    "meaning": [
+      "Three"
+    ]
+  },
+  {
+    "telugu": "ಮೂಡ್ಪದ್ಲು",
+    "ipa": "muːɖpəd̪lu",
+    "pos": "adverb",
+    "meaning": [
+      "All the time; always (usually for someone doing an action)"
+    ],
+    "note": [
+      "Etymology: literally ‘three times’, i.e. morning, afternoon, evening"
+    ]
+  },
+  {
+    "telugu": "ಮುತ್ತಿ",
+    "ipa": "mut̪ːi",
+    "pos": "noun",
+    "meaning": [
+      "Mouth; Opening (of bottle)"
+    ]
+  },
+  {
+    "telugu": "ಮುದರ್ತಮ್ಸೇಯಿ",
+    "ipa": "mud̪art̪əmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Care; Pander"
+    ]
+  },
+  {
+    "telugu": "ಮುದರ್ತ್ಮು",
+    "ipa": "mud̪art̪mu",
+    "pos": "noun",
+    "meaning": [
+      "Love; affection; care"
+    ]
+  },
+  {
+    "telugu": "ಮುಂದ್ರ",
+    "ipa": "mʊnd̪rə",
+    "pos": "adposition",
+    "meaning": [
+      "In front (directly)"
+    ]
+  },
+  {
+    "telugu": "ಮುಸ್ಲಪ",
+    "ipa": "mʊsləpə",
+    "pos": "noun",
+    "meaning": [
+      "Old man"
+    ]
+  },
+  {
+    "telugu": "ಮುಸ್ಲಮ",
+    "ipa": "mʊsləmə",
+    "pos": "noun",
+    "meaning": [
+      "Old woman"
+    ]
+  },
+  {
+    "telugu": "ಮೂಯಿ",
+    "ipa": "muːi",
+    "pos": "verb",
+    "meaning": [
+      "Close, shut"
+    ]
+  },
+  {
+    "telugu": "ಮುಲಾಜ್",
+    "ipa": "mulaːʒ~mulaːdʒ",
+    "pos": "noun",
+    "meaning": [
+      "Obligation"
+    ]
+  },
+  {
+    "telugu": "ಮೆಟ್ಲು",
+    "ipa": "mɛʈlu",
+    "pos": "noun",
+    "meaning": [
+      "Steps; stairs"
+    ]
+  },
+  {
+    "telugu": "ಮೆತ್ತು",
+    "ipa": "mɛt̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Stick; become stuck; Feast lavishly; eat gluttonously; eat endlessly; overeat; relish food"
+    ]
+  },
+  {
+    "telugu": "ಮೆತ್ಗ",
+    "ipa": "mɛt̪gə",
+    "pos": "adverb",
+    "meaning": [
+      "Softly; gently; Quietly (a voice)"
+    ]
+  },
+  {
+    "telugu": "ಮೆರು",
+    "ipa": "mɵru",
+    "pos": "verb",
+    "meaning": [
+      "Forget (more actively)"
+    ]
+  },
+  {
+    "telugu": "ಮೆರ್ಸ್ಪೊ",
+    "ipa": "mɵrspo",
+    "pos": "",
+    "meaning": [
+      "Forget (more passively)"
+    ]
+  },
+  {
+    "telugu": "ಮೇಮು",
+    "ipa": "meːmu",
+    "pos": "noun",
+    "meaning": [
+      "First person plural exclusive nominative pronoun"
+    ]
+  },
+  {
+    "telugu": "ಮುಗ್ರು",
+    "ipa": "mʊgru",
+    "pos": "noun",
+    "meaning": [
+      "Three people"
+    ]
+  },
+  {
+    "telugu": "ಮುರ್ಕು",
+    "ipa": "mɤrku",
+    "pos": "noun",
+    "meaning": [
+      "Corner; extreme point; further point"
+    ]
+  },
+  {
+    "telugu": "ಮುರ್ಕೇಯಿ",
+    "ipa": "mɤrkeːi",
+    "pos": "verb",
+    "meaning": [
+      "Fold (the clothes); fold and keep (the clothes)"
+    ]
+  },
+  {
+    "telugu": "ಮೂಲ್",
+    "ipa": "muːl",
+    "pos": "noun",
+    "meaning": [
+      "Corner"
+    ]
+  },
+  {
+    "telugu": "ಮೂಲಿಲ್ಲು",
+    "ipa": "muːlɪlːu",
+    "pos": "noun",
+    "meaning": [
+      "Kitchen"
+    ],
+    "note": [
+      "Etymology: literally ‘corner house’ as kitchens are traditionally in the corner"
+    ]
+  },
+  {
+    "telugu": "ಮೊಟ್",
+    "ipa": "moʈ",
+    "pos": "adjective",
+    "meaning": [
+      "Short"
+    ]
+  },
+  {
+    "telugu": "ಮೊಕ್ಕು",
+    "ipa": "mokːu",
+    "pos": "verb",
+    "meaning": [
+      "Touch the feet as a sign of respect; obtain blessings; pray"
+    ]
+  },
+  {
+    "telugu": "ಮೊದ್ಲು",
+    "ipa": "modɮu",
+    "pos": "adverb",
+    "meaning": [
+      "In the beginning, at first; first"
+    ]
+  },
+  {
+    "telugu": "ಮೊಬ್ಬು",
+    "ipa": "mobːu",
+    "pos": "noun",
+    "meaning": [
+      "Darkness"
+    ]
+  },
+  {
+    "telugu": "ಮೋಸ್ಕೊ",
+    "ipa": "moːsko",
+    "pos": "verb",
+    "meaning": [
+      "Carry around; haul; lug"
+    ]
+  },
+  {
+    "telugu": "ಮೋಸ್ಮು",
+    "ipa": "moːsmu",
+    "pos": "noun",
+    "meaning": [
+      "Scam; trick; cheating"
+    ]
+  },
+  {
+    "telugu": "ಯಾ",
+    "ipa": "jaː",
+    "pos": "noun",
+    "meaning": [
+      "Which"
+    ]
+  },
+  {
+    "telugu": "ಯಾಡ",
+    "ipa": "jaːɖə",
+    "pos": "adverb",
+    "meaning": [
+      "Where"
+    ]
+  },
+  {
+    "telugu": "ಯಾಡದಿ",
+    "ipa": "jaːɖəd̪i",
+    "pos": "noun",
+    "meaning": [
+      "Year"
+    ]
+  },
+  {
+    "telugu": "ಯಾತರ",
+    "ipa": "jaːt̪ərə",
+    "pos": "adverb",
+    "meaning": [
+      "Like what; what type"
+    ]
+  },
+  {
+    "telugu": "ಯಾಪದು",
+    "ipa": "jaːpəd̪u",
+    "pos": "adverb",
+    "meaning": [
+      "Which day"
+    ]
+  },
+  {
+    "telugu": "ಯಾಲ",
+    "ipa": "jaːlə",
+    "pos": "adverb",
+    "meaning": [
+      "Why"
+    ]
+  },
+  {
+    "telugu": "ಯಾಲಂಟೆ",
+    "ipa": "jaːləɳʈe",
+    "pos": "conjunction",
+    "meaning": [
+      "Because"
+    ],
+    "note": [
+      "Etymology: ಯಾಲ + ಅಂಟೆ (Conditional of ಅನ್ನು)"
+    ]
+  },
+  {
+    "telugu": "ಯಾವ್ದಿ",
+    "ipa": "jaːud̪i",
+    "pos": "noun",
+    "meaning": [
+      "Which (one)"
+    ]
+  },
+  {
+    "telugu": "ಯಾವ್ಡು",
+    "ipa": "jaːuɖu",
+    "pos": "adverb",
+    "meaning": [
+      "When"
+    ]
+  },
+  {
+    "telugu": "ಯಾವ್ಡುನು",
+    "ipa": "jaːuɖunu",
+    "pos": "adverb",
+    "meaning": [
+      "Always; all the time"
+    ]
+  },
+  {
+    "telugu": "ಯೂಟ್ಲ",
+    "ipa": "juːt̪ɬə",
+    "pos": "adposition",
+    "meaning": [
+      "Outside (not inside)"
+    ]
+  },
+  {
+    "telugu": "ಯೂಡು",
+    "ipa": "juːɖu",
+    "pos": "adverb",
+    "meaning": [
+      "Now"
+    ]
+  },
+  {
+    "telugu": "ಯೋಡು",
+    "ipa": "joːɖu",
+    "pos": "adjective",
+    "meaning": [
+      "Seven"
+    ]
+  },
+  {
+    "telugu": "ಯೋಗತ್",
+    "ipa": "joːgət̪",
+    "pos": "noun",
+    "meaning": [
+      "Ability; aptitude"
+    ]
+  },
+  {
+    "telugu": "ಯೋಚಮ್",
+    "ipa": "joːtʃəm",
+    "pos": "noun",
+    "meaning": [
+      "Thought(s)"
+    ]
+  },
+  {
+    "telugu": "ಯೋಚಮ್ಸೇಯಿ",
+    "ipa": "joːtʃəmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Think; contemplate"
+    ]
+  },
+  {
+    "telugu": "ಯೋರನ",
+    "ipa": "joːrənə",
+    "pos": "noun",
+    "meaning": [
+      "Anyone"
+    ]
+  },
+  {
+    "telugu": "ಯೋರು",
+    "ipa": "joːru",
+    "pos": "noun",
+    "meaning": [
+      "Who"
+    ]
+  },
+  {
+    "telugu": "ಯೋರೋ",
+    "ipa": "joːroː",
+    "pos": "noun",
+    "meaning": [
+      "Someone"
+    ]
+  },
+  {
+    "telugu": "ರಚ್",
+    "ipa": "rətʃ",
+    "pos": "adjective",
+    "meaning": [
+      "Crazy; hyper"
+    ]
+  },
+  {
+    "telugu": "ರಚ್ಪೊ",
+    "ipa": "rətʃpo",
+    "pos": "verb",
+    "meaning": [
+      "Go crazy; become hyper"
+    ]
+  },
+  {
+    "telugu": "ರಜ",
+    "ipa": "rədʒə",
+    "pos": "noun",
+    "meaning": [
+      "Day off; non working day; Holiday(s)"
+    ]
+  },
+  {
+    "telugu": "ರಶು",
+    "ipa": "rəʃu",
+    "pos": "noun",
+    "meaning": [
+      "Large crowd"
+    ],
+    "note": [
+      "Compare: English rush"
+    ]
+  },
+  {
+    "telugu": "ರಾ",
+    "ipa": "raː",
+    "pos": "verb",
+    "meaning": [
+      "Come"
+    ]
+  },
+  {
+    "telugu": "ರಾತ್ರಿ",
+    "ipa": "raːt̪ri",
+    "pos": "noun",
+    "meaning": [
+      "Night, nighttime"
+    ]
+  },
+  {
+    "telugu": "ರಾಯಿ",
+    "ipa": "raːi",
+    "pos": "noun",
+    "meaning": [
+      "Stone, rock"
+    ]
+  },
+  {
+    "telugu": "ರಾಯಿ",
+    "ipa": "raːi",
+    "pos": "verb",
+    "meaning": [
+      "Write"
+    ]
+  },
+  {
+    "telugu": "ರೂಡಿ",
+    "ipa": "ruːɖi",
+    "pos": "noun",
+    "meaning": [
+      "Being used to something; having the practice of something"
+    ]
+  },
+  {
+    "telugu": "ರೆಟ್",
+    "ipa": "rɛʈ",
+    "pos": "noun",
+    "meaning": [
+      "Sleeve"
+    ]
+  },
+  {
+    "telugu": "ರೇಗು",
+    "ipa": "reːgu",
+    "pos": "verb",
+    "meaning": [
+      "Become angry; rage"
+    ]
+  },
+  {
+    "telugu": "ರೇಗ್ಪಿ",
+    "ipa": "reːgpi",
+    "pos": "verb",
+    "meaning": [
+      "Make someone mad/angry; enrage someone"
+    ]
+  },
+  {
+    "telugu": "ರೇಗ್ಪೊ",
+    "ipa": "reːgpo",
+    "pos": "verb",
+    "meaning": [
+      "Go mad; become angry (more passively)"
+    ]
+  },
+  {
+    "telugu": "ರೇಪು",
+    "ipa": "reːpu",
+    "pos": "noun",
+    "meaning": [
+      "Tomorrow"
+    ]
+  },
+  {
+    "telugu": "ರೊಂಚು",
+    "ipa": "rəɲtʃu",
+    "pos": "adjective",
+    "meaning": [
+      "Little"
+    ]
+  },
+  {
+    "telugu": "ರೊಂಚೆಪು",
+    "ipa": "rəɲtʃɛpu",
+    "pos": "noun",
+    "meaning": [
+      "Small amount of time"
+    ]
+  },
+  {
+    "telugu": "ರೊಂಡು",
+    "ipa": "roɳɖu",
+    "pos": "adjective",
+    "meaning": [
+      "Two"
+    ]
+  },
+  {
+    "telugu": "ರೊಪ್",
+    "ipa": "roɸ",
+    "pos": "noun",
+    "meaning": [
+      ""
+    ]
+  },
+  {
+    "telugu": "ರೊಪೇಯಿ",
+    "ipa": "roɸeːi",
+    "pos": "noun",
+    "meaning": [
+      ""
+    ]
+  },
+  {
+    "telugu": "ಲೂಸು",
+    "ipa": "luːzu",
+    "pos": "noun",
+    "meaning": [
+      "Insult used to scold someone; idiot"
+    ],
+    "note": [
+      "Etymology: from English ‘loose’"
+    ]
+  },
+  {
+    "telugu": "ಲೆಕ್ಕ",
+    "ipa": "lɛkːə",
+    "pos": "noun",
+    "meaning": [
+      "Count"
+    ]
+  },
+  {
+    "telugu": "ಲೆಕ್ಕೇಯಿ",
+    "ipa": "lɛkːeːi",
+    "pos": "verb",
+    "meaning": [
+      "Count"
+    ]
+  },
+  {
+    "telugu": "ಲೇ",
+    "ipa": "leː",
+    "pos": "adjective",
+    "meaning": [
+      "(Short form) alternative of ಲೇದು"
+    ]
+  },
+  {
+    "telugu": "ಲೇಕುಂಟೆ",
+    "ipa": "leːkuɳʈe",
+    "pos": "conjunction",
+    "meaning": [
+      "If not; Or"
+    ]
+  },
+  {
+    "telugu": "ಲೇದು",
+    "ipa": "leːd̪u",
+    "pos": "adjective",
+    "meaning": [
+      "Not there; not existing"
+    ]
+  },
+  {
+    "telugu": "ಲೇಯಿ",
+    "ipa": "leːi",
+    "pos": "verb",
+    "meaning": [
+      "Wake up"
+    ]
+  },
+  {
+    "telugu": "ಲೇಪಿ",
+    "ipa": "leːpi",
+    "pos": "verb",
+    "meaning": [
+      "Wake someone up"
+    ]
+  },
+  {
+    "telugu": "ಲೋಕಮ್",
+    "ipa": "loːkəm",
+    "pos": "noun",
+    "meaning": [
+      "World"
+    ]
+  },
+  {
+    "telugu": "ಲೋಗ",
+    "ipa": "loːgə",
+    "pos": "adposition",
+    "meaning": [
+      "Inside; see also ಲೋಪ್ಲ"
+    ]
+  },
+  {
+    "telugu": "ಲೋಪ್ಲ",
+    "ipa": "loːplə",
+    "pos": "adposition",
+    "meaning": [
+      "Inside"
+    ]
+  },
+  {
+    "telugu": "ವಂಕ",
+    "ipa": "ʋəŋkə",
+    "pos": "noun",
+    "meaning": [
+      "Pit; ditch"
+    ]
+  },
+  {
+    "telugu": "ವದ್ದು",
+    "ipa": "ʋɤd̪ːu",
+    "pos": "adjective",
+    "meaning": [
+      "Do not want"
+    ]
+  },
+  {
+    "telugu": "ವರ್ಗು",
+    "ipa": "ʋərgu",
+    "pos": "verb",
+    "meaning": [
+      ""
+    ]
+  },
+  {
+    "telugu": "ವಾಕಂಡ್",
+    "ipa": "ʋaːkənɖ",
+    "pos": "noun",
+    "meaning": [
+      "Front door"
+    ]
+  },
+  {
+    "telugu": "ವಾಕ್ಲಿ",
+    "ipa": "ʋaːkli",
+    "pos": "noun",
+    "meaning": [
+      "Door"
+    ]
+  },
+  {
+    "telugu": "ವಾಡ್",
+    "ipa": "ʋaːɖ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine genitive pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಡೆ",
+    "ipa": "ʋaːɖɛ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine vocative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಡು",
+    "ipa": "ʋaːɖu",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine nominative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಡ್ಕಿ",
+    "ipa": "ʋaːɖki",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine dative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಡ್ನಿ",
+    "ipa": "ʋaːɖni",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine accusative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಡ್ನಿಂಕ",
+    "ipa": "ʋaːɖnɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine ablative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾನ",
+    "ipa": "ʋaːnə",
+    "pos": "noun",
+    "meaning": [
+      "Rain"
+    ],
+    "note": [
+      "Compare: Kannada ಬಾನು"
+    ]
+  },
+  {
+    "telugu": "ವಾಪಸು",
+    "ipa": "ʋaːpəsu",
+    "pos": "adverb",
+    "meaning": [
+      "Return; back"
+    ]
+  },
+  {
+    "telugu": "ವಾಯ್ಸು",
+    "ipa": "ʋaːjsu",
+    "pos": "noun",
+    "meaning": [
+      "Age; Old age"
+    ]
+  },
+  {
+    "telugu": "ವಾರಮ್",
+    "ipa": "ʋaːrəm",
+    "pos": "noun",
+    "meaning": [
+      "Week"
+    ]
+  },
+  {
+    "telugu": "ವಾರ್ಶಮ್",
+    "ipa": "ʋaːrʃəm",
+    "pos": "noun",
+    "meaning": [
+      "Year"
+    ]
+  },
+  {
+    "telugu": "ವಾಸ್ಮು",
+    "ipa": "ʋaːsmu",
+    "pos": "noun",
+    "meaning": [
+      "Stink; stench"
+    ]
+  },
+  {
+    "telugu": "ವಾಳ್ಳ್",
+    "ipa": "ʋaːɭː",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human genitive pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಳ್ಳು",
+    "ipa": "ʋaːɭːu",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human nominative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಾಳ್ಕಿ",
+    "ipa": "ʋaːɭki",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human dative pronoun (distal)"
+    ]
+  },
+  {
+    "telugu": "ವಿಚಾರು",
+    "ipa": "ʋitʃaːru",
+    "pos": "verb",
+    "meaning": [
+      "Scold; give a piece of one’s mind; bash"
+    ]
+  },
+  {
+    "telugu": "ವೀಡ್",
+    "ipa": "ʋiːɖ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine genitive pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಡೆ",
+    "ipa": "ʋiːɖɛ",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine vocative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಡು",
+    "ipa": "ʋiːɖu",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine nominative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಡ್ಕಿ",
+    "ipa": "ʋiːɖki",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine dative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಡ್ನಿ",
+    "ipa": "ʋiːɖni",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine accusative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಡ್ನಿಂಕ",
+    "ipa": "ʋiːɖnɪŋka",
+    "pos": "noun",
+    "meaning": [
+      "Third person singular masculine ablative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಳ್ಳ್",
+    "ipa": "ʋiːɭː",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human genitive pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಳ್ಳು",
+    "ipa": "ʋiːɭːu",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human nominative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವೀಳ್ಕಿ",
+    "ipa": "ʋiːɭki",
+    "pos": "noun",
+    "meaning": [
+      "Third person plural human dative pronoun (proximal)"
+    ]
+  },
+  {
+    "telugu": "ವುಕ್ಟಿ",
+    "ipa": "ʋʊkʈi",
+    "pos": "adjective",
+    "meaning": [
+      "One"
+    ]
+  },
+  {
+    "telugu": "ವುಂಗು",
+    "ipa": "vʊŋgu",
+    "pos": "verb",
+    "meaning": [
+      "Bend (down)"
+    ]
+  },
+  {
+    "telugu": "ವುಜ್ಜು",
+    "ipa": "vʊdʒːu",
+    "pos": "verb",
+    "meaning": [
+      "Clean (with a cloth, etc.)",
+      "Brush (as in teeth)"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವುಂಚು",
+    "ipa": "vʊɲtʃu",
+    "pos": "verb",
+    "meaning": [
+      "Dump out/drain a liquid"
+    ]
+  },
+  {
+    "telugu": "ವುಂಡು",
+    "ipa": "ʋuɳɖu",
+    "pos": "verb",
+    "meaning": [
+      "Be",
+      "Stay; wait; remain"
+    ],
+    "note": [
+      "TODO: Usage as 'Be quiet; stay quiet'"
+    ]
+  },
+  {
+    "telugu": "ವುಂಡ್ಪೊ",
+    "ipa": "ʋuɳɖpo",
+    "pos": "verb",
+    "meaning": [
+      "Stay (for a longer time); remain; stay overnight"
+    ],
+    "note": [
+      "TODO: Confirm"
+    ]
+  },
+  {
+    "telugu": "ವುಂಡೊಚು",
+    "ipa": "ʋuɳɖotʃu",
+    "pos": "adverb",
+    "meaning": [
+      "Could be",
+      "Maybe"
+    ]
+  },
+  {
+    "telugu": "ವುತ್ತು",
+    "ipa": "ʋʊt̪ːu",
+    "pos": "adjective",
+    "meaning": [
+      "Just; only"
+    ]
+  },
+  {
+    "telugu": "ವುತ್ಕಾಲು",
+    "ipa": "ʋʊt̪kaːlu",
+    "pos": "adjective",
+    "meaning": [
+      "Barefoot"
+    ]
+  },
+  {
+    "telugu": "ವುಪಾಸ್ಮು",
+    "ipa": "ʋʊpaːsmu",
+    "pos": "noun",
+    "meaning": [
+      "Fast (not eating)"
+    ]
+  },
+  {
+    "telugu": "ವುಬ್ಬು",
+    "ipa": "ʋʊbːu",
+    "pos": "verb",
+    "meaning": [
+      "Act up (childishly)"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವುಮ್ಮು",
+    "ipa": "ʋʊmːu",
+    "pos": "verb",
+    "meaning": [
+      "Spit; spit out",
+      "Chew out; yell at"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವುರ್ಕ",
+    "ipa": "ʋurkə",
+    "pos": "adjective",
+    "meaning": [
+      "Hot (food and drinks)"
+    ]
+  },
+  {
+    "telugu": "ವುರ್ಕೆ",
+    "ipa": "ʋurke",
+    "pos": "adverb",
+    "meaning": [
+      "Simply"
+    ]
+  },
+  {
+    "telugu": "ವುಲ್ತ",
+    "ipa": "ʋʊlt̪ə",
+    "pos": "adjective",
+    "meaning": [
+      "Backwards",
+      "Upside down"
+    ]
+  },
+  {
+    "telugu": "ವುಶಾರು",
+    "ipa": "ʋʊʃaːru",
+    "pos": "adverb",
+    "meaning": [
+      "Careful; caution",
+      "Take care"
+    ]
+  },
+  {
+    "telugu": "ವುಶಾರ್ಲೆ",
+    "ipa": "ʋʊʃaːrle",
+    "pos": "noun",
+    "meaning": [
+      "Not careful",
+      "Not well, sick"
+    ]
+  },
+  {
+    "telugu": "ವೆರೆ",
+    "ipa": "ʋere",
+    "pos": "adjective",
+    "meaning": [
+      "Too, additionally, as well; to be taken into account (with slightly negative connotations)"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವೇಯಿ",
+    "ipa": "ʋeːji",
+    "pos": "adjective",
+    "meaning": [
+      "Thousand"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವೇರೆ",
+    "ipa": "ʋeːre",
+    "pos": "adjective",
+    "meaning": [
+      "Different"
+    ],
+    "note": [
+      "Compare: Kannada ಬೇರೆ"
+    ]
+  },
+  {
+    "telugu": "ವೇಶಮ್",
+    "ipa": "ʋeːʃəm",
+    "pos": "noun",
+    "meaning": [
+      "Costume; disguise",
+      "(By extension) clothes (that one is wearing)"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವೊಗೆಸಮ",
+    "ipa": "ʋɤgesəmə",
+    "pos": "adverb",
+    "meaning": [
+      "All at once; together",
+      "Without stopping; incessantly; continuously; without break"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವೊಗುಕ್ಟಿ",
+    "ipa": "ʋogʊkʈi",
+    "pos": "adverb",
+    "meaning": [
+      "One by one; each one in turn"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ವೊಗ್ರು",
+    "ipa": "ʋogru",
+    "pos": "noun",
+    "meaning": [
+      "One person"
+    ]
+  },
+  {
+    "telugu": "ವೊತ್ತು",
+    "ipa": "ʋot̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Press",
+      "Press against"
+    ]
+  },
+  {
+    "telugu": "ವೊಳ್ಳ್",
+    "ipa": "ʋoɭː",
+    "pos": "noun",
+    "meaning": [
+      "Body"
+    ],
+    "note": [
+      "TODO: Usage in limited contexts (only in idiomatic language)"
+    ]
+  },
+  {
+    "telugu": "ಶಾನ",
+    "ipa": "ʃaːnə",
+    "pos": "adjective",
+    "meaning": [
+      "A lot"
+    ]
+  },
+  {
+    "telugu": "ಶಾನ ಆಡು",
+    "ipa": "ʃaːnə aːɖu",
+    "pos": "verb",
+    "meaning": [
+      "To misbehave; to act up"
+    ]
+  },
+  {
+    "telugu": "ಶಾರು",
+    "ipa": "ʃaːru",
+    "pos": "noun",
+    "meaning": [
+      "Curry"
+    ]
+  },
+  {
+    "telugu": "ಶುರು",
+    "ipa": "ʃʊru",
+    "pos": "noun",
+    "meaning": [
+      "Start"
+    ]
+  },
+  {
+    "telugu": "ಶೆಕ್ಕ",
+    "ipa": "ʃɛkːə",
+    "pos": "adjective",
+    "meaning": [
+      "Hot (environment)"
+    ]
+  },
+  {
+    "telugu": "ಶೆಂಪ್ಟ",
+    "ipa": "ʃɛmpʈə",
+    "pos": "noun",
+    "meaning": [
+      "Sweat"
+    ],
+    "note": [
+      "TODO: Confirm usage"
+    ]
+  },
+  {
+    "telugu": "ಶೋವ್",
+    "ipa": "ʃoːʋ",
+    "pos": "noun",
+    "meaning": [
+      "Ear"
+    ],
+    "note": [
+      "Compare: Kannada ಕಿವಿ"
+    ]
+  },
+  {
+    "telugu": "ಸಚ್ಪೊ",
+    "ipa": "sətʃpo",
+    "pos": "verb",
+    "meaning": [
+      "Die (more passively; matter of factly)"
+    ]
+  },
+  {
+    "telugu": "ಸಣ್ಣ",
+    "ipa": "səɳːə",
+    "pos": "adjective",
+    "meaning": [
+      "Thin; small"
+    ]
+  },
+  {
+    "telugu": "ಸದ್ಯ",
+    "ipa": "səd̪jə",
+    "pos": "adverb",
+    "meaning": [
+      "At least; at last; thank god"
+    ]
+  },
+  {
+    "telugu": "ಸದ್ಯಮ್",
+    "ipa": "səd̪jəm",
+    "pos": "noun",
+    "meaning": [
+      "Now"
+    ]
+  },
+  {
+    "telugu": "ಸಮಂದ್ಮು",
+    "ipa": "səmənd̪mu",
+    "pos": "noun",
+    "meaning": [
+      "Connection; relation"
+    ]
+  },
+  {
+    "telugu": "ಸಮುದ್ರಮ್",
+    "ipa": "səmʊd̪rəm",
+    "pos": "noun",
+    "meaning": [
+      "Ocean; sea"
+    ]
+  },
+  {
+    "telugu": "ಸಂಪಿ",
+    "ipa": "səmpi",
+    "pos": "verb",
+    "meaning": [
+      "Kill"
+    ]
+  },
+  {
+    "telugu": "ಸರಿ",
+    "ipa": "səri",
+    "pos": "adverb",
+    "meaning": [
+      "An expression of agreement/acknowledgement",
+      "Right; correct",
+      "Good; alright; okay; appropriate"
+    ]
+  },
+  {
+    "telugu": "ಸಲ್ಗ",
+    "ipa": "səlgə",
+    "pos": "adverb",
+    "meaning": [
+      "Cold"
+    ]
+  },
+  {
+    "telugu": "ಸಾದಿಚ್ಕೊ",
+    "ipa": "saːd̪ɪtʃko",
+    "pos": "verb",
+    "meaning": [
+      "Earn; win",
+      "Achieve"
+    ]
+  },
+  {
+    "telugu": "ಸಾದ್ಯಮ್",
+    "ipa": "saːd̪jəm",
+    "pos": "noun",
+    "meaning": [
+      "Possibility; chance"
+    ]
+  },
+  {
+    "telugu": "ಸಲ್ಗಾಳಿ",
+    "ipa": "səlgaːɭi",
+    "pos": "noun",
+    "meaning": [
+      "Cold wind",
+      "Cold air"
+    ]
+  },
+  {
+    "telugu": "ಸಾನ",
+    "ipa": "saːnə",
+    "pos": "adjective",
+    "meaning": [
+      "Alternative of ಶಾನ"
+    ]
+  },
+  {
+    "telugu": "ಸಾಮಾನ್",
+    "ipa": "saːmaːn",
+    "pos": "noun",
+    "meaning": [
+      "Item; thing"
+    ]
+  },
+  {
+    "telugu": "ಸಾಯಿ",
+    "ipa": "saːi",
+    "pos": "verb",
+    "meaning": [
+      "Die (more actively)"
+    ]
+  },
+  {
+    "telugu": "ಸಾರು",
+    "ipa": "saːru",
+    "pos": "noun",
+    "meaning": [
+      "Alternative of ಶಾರು"
+    ]
+  },
+  {
+    "telugu": "ಸಾಲು",
+    "ipa": "saːlu",
+    "pos": "verb",
+    "meaning": [
+      "Enough"
+    ]
+  },
+  {
+    "telugu": "ಸಾಲ್ಲೆ",
+    "ipa": "saːlːe",
+    "pos": "verb",
+    "meaning": [
+      "Not enough"
+    ]
+  },
+  {
+    "telugu": "ಸಿಕ್ಕು",
+    "ipa": "sɪku",
+    "pos": "verb",
+    "meaning": [
+      "Find",
+      "Meet"
+    ],
+    "note": [
+      "Usage: As in Kannada"
+    ]
+  },
+  {
+    "telugu": "ಸಿಕ್ಪೊ",
+    "ipa": "sɪkpo",
+    "pos": "verb",
+    "meaning": [
+      "End up meeting/finding (perhaps by chance)"
+    ]
+  },
+  {
+    "telugu": "ಸಿಗು",
+    "ipa": "sɪgu",
+    "pos": "noun",
+    "meaning": [
+      "Embarrassment"
+    ]
+  },
+  {
+    "telugu": "ಸಿಗ್ಪೊಡು",
+    "ipa": "sɪgpoɖu",
+    "pos": "verb",
+    "meaning": [
+      "Feel embarrassed",
+      "Feel shy"
+    ]
+  },
+  {
+    "telugu": "ಸಿಗುಮಾಮ್",
+    "ipa": "sɪgumaːm",
+    "pos": "noun",
+    "meaning": [
+      "Shame"
+    ]
+  },
+  {
+    "telugu": "ಸಿಂಚು",
+    "ipa": "sɪɲtʃu",
+    "pos": "verb",
+    "meaning": [
+      "Tear",
+      "Rip"
+    ]
+  },
+  {
+    "telugu": "ಸಿಂಚ್ಪೊ",
+    "ipa": "sɪɲtʃpo",
+    "pos": "verb",
+    "meaning": [
+      "Become torn (passively)",
+      "Become ripped (passively)"
+    ]
+  },
+  {
+    "telugu": "ಸಿನ್ನ",
+    "ipa": "sɪnːə",
+    "pos": "adjective",
+    "meaning": [
+      "Small"
+    ]
+  },
+  {
+    "telugu": "ಸೀತ",
+    "ipa": "siːt̪ə",
+    "pos": "adverb",
+    "meaning": [
+      "Straight",
+      "Direct"
+    ]
+  },
+  {
+    "telugu": "ಸೀಮ್",
+    "ipa": "siːm",
+    "pos": "noun",
+    "meaning": [
+      "Ant"
+    ]
+  },
+  {
+    "telugu": "ಸುಂದ್ರು",
+    "ipa": "sʊnd̪ru",
+    "pos": "verb",
+    "meaning": [
+      "Be hungry; be starving"
+    ]
+  },
+  {
+    "telugu": "ಸುಕ್",
+    "ipa": "sʊk",
+    "pos": "noun",
+    "meaning": [
+      "Drop"
+    ],
+    "note": [
+      "TODO",
+      "Note: literally ‘dot’ or ‘point’"
+    ]
+  },
+  {
+    "telugu": "ಸುಕ್ಶಮ್",
+    "ipa": "sukʃəm",
+    "pos": "adjective",
+    "meaning": [
+      "Sensitive",
+      "Secret; sensitive; delicate",
+      "Delicate; gentle"
+    ]
+  },
+  {
+    "telugu": "ಸುತ್ಮುತ್",
+    "ipa": "sʊt̪mʊt̪",
+    "pos": "adjective",
+    "meaning": [
+      "Surroundings; all around"
+    ]
+  },
+  {
+    "telugu": "ಸುದ್ದ್",
+    "ipa": "sʊd̪ː",
+    "pos": "noun",
+    "meaning": [
+      "Topic; matter",
+      "News"
+    ]
+  },
+  {
+    "telugu": "ಸುದ್ದೆತ್ತು",
+    "ipa": "sʊd̪ːɛt̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Bring up a topic"
+    ]
+  },
+  {
+    "telugu": "ಸುಳ್ಳು",
+    "ipa": "sʊɭːu",
+    "pos": "noun",
+    "meaning": [
+      "Lie",
+      "Falsehood"
+    ]
+  },
+  {
+    "telugu": "ಸುಳ್ಸೆಪ್ಪು",
+    "ipa": "sʊɭsepːu",
+    "pos": "verb",
+    "meaning": [
+      "Lie",
+      "Tell a lie"
+    ]
+  },
+  {
+    "telugu": "ಸೂಡಿ",
+    "ipa": "suːɖi",
+    "pos": "verb",
+    "meaning": [
+      "See",
+      "Look"
+    ]
+  },
+  {
+    "telugu": "ಸುತ್ತು",
+    "ipa": "sʊt̪ːu",
+    "pos": "noun",
+    "meaning": [
+      "Round",
+      "Circle"
+    ]
+  },
+  {
+    "telugu": "ಸುತ್ತು",
+    "ipa": "sʊt̪ːu",
+    "pos": "verb",
+    "meaning": [
+      "Go around",
+      "Go in a round"
+    ]
+  },
+  {
+    "telugu": "ಸುತ್ರು",
+    "ipa": "sʊt̪ru",
+    "pos": "adposition",
+    "meaning": [
+      "All around",
+      "Around"
+    ]
+  },
+  {
+    "telugu": "ಸುದ್ವು",
+    "ipa": "səd̪ʋu",
+    "pos": "verb",
+    "meaning": [
+      "Read",
+      "Study"
+    ]
+  },
+  {
+    "telugu": "ಸೂಪಿ",
+    "ipa": "suːpi",
+    "pos": "verb",
+    "meaning": [
+      "Show"
+    ]
+  },
+  {
+    "telugu": "ಸುಸ್ತ್",
+    "ipa": "sʊst̪",
+    "pos": "noun",
+    "meaning": [
+      "Tiredness",
+      "Exhaustion"
+    ]
+  },
+  {
+    "telugu": "ಸುಸ್ತಾಯಿ",
+    "ipa": "sʊst̪aːi",
+    "pos": "verb",
+    "meaning": [
+      "Be tired",
+      "Become tired"
+    ]
+  },
+  {
+    "telugu": "ಸೆಟ್ಟು",
+    "ipa": "sɛʈːu",
+    "pos": "noun",
+    "meaning": [
+      "Plant"
+    ]
+  },
+  {
+    "telugu": "ಸೆಡ್",
+    "ipa": "sɛɖ",
+    "pos": "adjective",
+    "meaning": [
+      "Bad",
+      "Spoiled",
+      "Rotten (as in bad habits)"
+    ]
+  },
+  {
+    "telugu": "ಸೆಡೆ",
+    "ipa": "sɛɖɛ",
+    "pos": "adverb",
+    "meaning": [
+      "At least"
+    ]
+  },
+  {
+    "telugu": "ಸೆತಿ",
+    "ipa": "sɛt̪i",
+    "pos": "noun",
+    "meaning": [
+      "Time (repetition; round)"
+    ]
+  },
+  {
+    "telugu": "ಸೆಪು",
+    "ipa": "sɛpu~sepːu",
+    "pos": "noun",
+    "meaning": [
+      "Time (period, usually short)"
+    ],
+    "note": [
+      "Usually with other qualifiers; see ರೊಂಚೆಪು"
+    ]
+  },
+  {
+    "telugu": "ಸೆಪ್ಪಿ",
+    "ipa": "sɛpːi",
+    "pos": "verb",
+    "meaning": [
+      "Teach",
+      "Instruct"
+    ]
+  },
+  {
+    "telugu": "ಸೆಪ್ಪು",
+    "ipa": "sɛpːu",
+    "pos": "verb",
+    "meaning": [
+      "Say"
+    ]
+  },
+  {
+    "telugu": "ಸೆಪ್ಲಿ",
+    "ipa": "sɛpli",
+    "pos": "noun",
+    "meaning": [
+      "Slipper"
+    ]
+  },
+  {
+    "telugu": "ಸೆರ್ಪೊ",
+    "ipa": "sɤrpo",
+    "pos": "verb",
+    "meaning": [
+      "End up alright"
+    ],
+    "note": [
+      "TODO",
+      "Etymology: Possibly from ಸರಿ + ಪೊ"
+    ]
+  },
+  {
+    "telugu": "ಸೆರ್ಸೇಯಿ",
+    "ipa": "sɤrseːi",
+    "pos": "verb",
+    "meaning": [
+      "Arrange",
+      "Organize",
+      "Make proper",
+      "Fix"
+    ],
+    "note": [
+      "TODO",
+      "Etymology: Possibly from ಸರಿ + ಸೇಯಿ"
+    ]
+  },
+  {
+    "telugu": "ಸೆಲ್ಲು",
+    "ipa": "sɛlːu",
+    "pos": "verb",
+    "meaning": [
+      "Spill"
+    ]
+  },
+  {
+    "telugu": "ಸೇಯಿ",
+    "ipa": "seːi",
+    "pos": "noun",
+    "meaning": [
+      "Hand"
+    ],
+    "note": [
+      "Compare: Kannada ಕಯಿ"
+    ]
+  },
+  {
+    "telugu": "ಸೇಯಿ",
+    "ipa": "seːi",
+    "pos": "verb",
+    "meaning": [
+      "Do",
+      "Make",
+      "Used to verbalize nouns"
+    ]
+  },
+  {
+    "telugu": "ಸೇರಿ",
+    "ipa": "seːri",
+    "pos": "verb",
+    "meaning": [
+      "Join"
+    ]
+  },
+  {
+    "telugu": "ಸೊನ್",
+    "ipa": "son",
+    "pos": "noun",
+    "meaning": [
+      "Small space"
+    ]
+  },
+  {
+    "telugu": "ಸೊಮ್",
+    "ipa": "som",
+    "pos": "noun",
+    "meaning": [
+      "Jewel"
+    ]
+  },
+  {
+    "telugu": "ಸೊಮ್ಸೆ",
+    "ipa": "somse",
+    "pos": "verb",
+    "meaning": [
+      "To undergo wear and tear",
+      "To get worn down"
+    ]
+  },
+  {
+    "telugu": "ಸೊಲ್ಪಿ",
+    "ipa": "solpi",
+    "pos": "verb",
+    "meaning": [
+      "Beat",
+      "Cause to lose"
+    ]
+  },
+  {
+    "telugu": "ಸೊಲ್ಲು",
+    "ipa": "solːu",
+    "pos": "verb",
+    "meaning": [
+      "Lose",
+      "Be defeated"
+    ]
+  },
+  {
+    "telugu": "ಸೊಳ್ಳು",
+    "ipa": "soɭːu",
+    "pos": "noun",
+    "meaning": [
+      "Mosquito",
+      "Pest",
+      "Insect"
+    ]
+  },
+  {
+    "telugu": "ಸ್ನಾನಮ್",
+    "ipa": "snaːnəm",
+    "pos": "noun",
+    "meaning": [
+      "Shower",
+      "Bath"
+    ]
+  },
+  {
+    "telugu": "ಸ್ನಾನಮ್ಸೇಯಿ",
+    "ipa": "snaːnəmseːi",
+    "pos": "verb",
+    "meaning": [
+      "Take a shower",
+      "Take a bath"
+    ]
+  },
+  {
+    "telugu": "ಹೆಗ್ತೆ",
+    "ipa": "hɛgt̪e",
+    "pos": "noun",
+    "meaning": [
+      "The feeling of having eaten too much of the same food"
+    ]
+  },
+  {
+    "telugu": "ಹೆಚ್ಕಮಿ",
+    "ipa": "hɛtʃkəmi",
+    "pos": "noun",
+    "meaning": [
+      "More or less",
+      "Variance"
     ]
   }
 ]

@@ -19,7 +19,7 @@ export const research = {
         // Bengaluru Telugu Research
         researchDictionaryTitle: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ",
         researchDictionarySearchPlaceholder: "ಪದ ಇಲ್ಲವೇ ಅರ್ತದವನ್ನು ಹುಡುಕಿ...",
-        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಕ್ಕಲಿಲ್ಲ.",
+        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ.",
 
         researchCards: [{
             title: "ಆದುನಿಕ ಆಡುವ ಬೆಂಗಳೂರು ತೆಲುಗಿನ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ",

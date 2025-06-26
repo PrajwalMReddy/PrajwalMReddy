@@ -1188,7 +1188,7 @@ img {
     border-radius: 8px;
     padding: 1rem 2rem 1.5rem 2rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
 }
 
 .dictionary-word {
@@ -1306,4 +1306,100 @@ img {
 
 .dictionary-search-input:focus {
     border-color: var(--primary-color);
+}
+
+.dictionary-note {
+    font-size: 0.95em;
+    color: #555;
+    font-style: italic;
+    margin-top: 1em;
+}
+
+#gallery-div {
+    margin-left: var(--nav-width);
+    padding: 2em 5em 0em 6em;
+}
+
+#photography-heading {
+    font-size: 50px;
+    margin-left: 0;
+    padding-top: 6%;
+    padding-left: 0;
+    text-align: left;
+    color: var(--text);
+}
+
+.photo-gallery h1 {
+    text-align: left;
+    margin-bottom: 2rem;
+    color: var(--text);
+}
+
+.photo-gallery {
+    max-width: 1400px;
+    margin: 0 auto;
+    margin-left: var(--nav-width);
+    margin-right: 2rem;
+    padding: 0;
+    background: none;
+}
+
+.gallery-grid {
+    column-count: 3;
+    column-gap: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.gallery-item {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    break-inside: avoid;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    margin: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+@media (max-width: 1200px) {
+    .gallery-grid {
+        column-count: 2;
+    }
+    .photo-gallery {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .gallery-grid {
+        column-count: 1;
+    }
+    .photo-gallery {
+        margin-left: 0;
+    }
+}
+
+#blog-heading, .photo-gallery {
+    margin-left: var(--nav-width);
+    margin-right: 2rem;
+}
+
+@media (max-width: 900px) {
+    #blog-heading, .photo-gallery {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
