@@ -60,6 +60,12 @@ function TitleUpdater() {
                 case '/contact':
                     title = translations[language].pageTitles.contact;
                     break;
+                case '/research':
+                    title = translations[language].pageTitles.research;
+                    break;
+                case '/photography':
+                    title = translations[language].pageTitles.photography;
+                    break;
                 default:
                     title = translations[language].pageTitles.home;
             }

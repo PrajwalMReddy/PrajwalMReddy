@@ -4,7 +4,9 @@ export const meta = {
             home: "Home | Prajwal Reddy",
             projects: "Projects | Prajwal Reddy",
             blog: "Blog | Prajwal Reddy",
-            contact: "Contact Me | Prajwal Reddy"
+            contact: "Contact Me | Prajwal Reddy",
+            research: "Research | Prajwal Reddy",
+            photography: "Photography | Prajwal Reddy"
         },
         notFoundHeading: "Error 404",
         notFoundMessage: "The requested webpage was not found. Please check your URL again.",
@@ -13,7 +15,9 @@ export const meta = {
             home: "ಮನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             projects: "ಯೋಜನೆಗಳು | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             blog: "ಮಿಂಬರಹ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            contact: "ಸಂಪರ್ಕಿಸಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ"
+            contact: "ಸಂಪರ್ಕಿಸಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            research: "ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            photography: "ಚಾಯಾಗ್ರಹಣ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ"
         },
         notFoundHeading: "ತಪ್ಪು ೪೦೪",
         notFoundMessage: "ನೀವು ಕೋರಿದ ಮಿಂಪುಟ ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಏ.ಸಂ.ಸ್ತ.ವನ್ನು ಇನ್ನೊಮ್ಮೆ ನೋಡಿ.",

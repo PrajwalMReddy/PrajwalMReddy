@@ -1,0 +1,42 @@
+[
+  {
+    "filename": "farm-life-1.jpeg",
+    "title": "Farm Life",
+    "location": {
+      "place": "Bengaluru, Karnataka"
+    },
+    "date": "Some Date"
+  },
+  {
+    "filename": "farm-life-2.jpeg",
+    "title": "Farm Life",
+    "location": {
+      "place": "Bengaluru, Karnataka"
+    },
+    "date": "Some Date"
+  },
+  {
+    "filename": "nyc-sunset.jpeg",
+    "title": "Double Rainbow Over Lower Manhattan As Blue Grey Storm Clouds Roll Away At Sunset",
+    "location": {
+      "place": "Jersey City, New Jersey"
+    },
+    "date": "August 12, 2024"
+  },
+  {
+    "filename": "cdg-787.jpeg",
+    "title": "Air India B787 At Paris CDG",
+    "location": {
+      "place": "Paris Charles de Gaulle Airport"
+    },
+    "date": "July 11, 2023"
+  },
+  {
+    "filename": "july4-jc.jpeg",
+    "title": "30 Hudson Street Lit By 4th Of July Fireworks",
+    "location": {
+      "place": "Jersey City, New Jersey"
+    },
+    "date": "July 4, 2024"
+  }
+]

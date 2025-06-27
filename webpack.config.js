@@ -51,6 +51,13 @@ module.exports = {
                     from: path.resolve(__dirname, 'public/research_content'),
                     to: 'research_content',
                 },
+                {
+                    from: path.resolve(__dirname, 'public/photography'),
+                    to: 'photography',
+                    globOptions: {
+                        ignore: ['**/*.jpeg', '**/*.jpg', '**/*.png', '**/*.svg', '**/*.webp']
+                    }
+                },
             ],
         }),
     ],
