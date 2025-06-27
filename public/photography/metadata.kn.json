@@ -13,7 +13,7 @@
     "location": {
       "place": "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ"
     },
-    "date": "ಒಂದು ದಿನ"
+    "date": "ಮೇ ೨೪, ೨೦೨೪"
   },
   {
     "filename": "nyc-sunset.jpeg",
@@ -21,7 +21,7 @@
     "location": {
       "place": "ಜರ್ಸಿ ನಗರ, ಹೊಸ ಜರ್ಸಿ"
     },
-    "date": "ಆಗಸ್ಟ್ ೧೨, ೨೦೨೪"
+    "date": "೧೨ ಆಗಸ್ಟ್, ೨೦೨೪"
   },
   {
     "filename": "cdg-787.jpeg",
@@ -29,7 +29,7 @@
     "location": {
       "place": "ಪಾರಿಸ್ ಚಾರ್ಲ್ಸ್ ಡೆ ಗಾಲ್ ವಿಮಾನ ನಿಲ್ದಾಣ"
     },
-    "date": "ಜುಲೈ ೧೧, ೨೦೨೩"
+    "date": "೧೧ ಜುಲೈ, ೨೦೨೩"
   },
   {
     "filename": "july4-jc.jpeg",
@@ -37,6 +37,38 @@
     "location": {
       "place": "ಜರ್ಸಿ ನಗರ, ಹೊಸ ಜರ್ಸಿ"
     },
-    "date": "ಜುಲೈ ೪, ೨೦೨೪"
+    "date": "೪ ಜುಲೈ, ೨೦೨೪"
+  },
+  {
+    "filename": "fortune-teller.jpeg",
+    "title": "ಭವಿಷ್ಯ ಹೇಳುವ ತೆಂಗಿನಕಾಯಿ",
+    "location": {
+      "place": "ರಾಡಿಸನ್ ಬ್ಲೂ, ಗೋವ"
+    },
+    "date": "೨೨ ಜೂನ್, ೨೦೨೪"
+  },
+  {
+    "filename": "fuertes.jpeg",
+    "title": "ಫುರ್ತೆಸ್ ವೀಕ್ಷಣಾಲಯ",
+    "location": {
+      "place": "ಕೊರ್ನೆಲ್ ವಿಶ್ವವಿದ್ಯಾಲಯ"
+    },
+    "date": "೨೦ ಆಗಸ್ಟ್, ೨೦೨೪"
+  },
+  {
+    "filename": "jellyfish.jpeg",
+    "title": "ಲೋಳೆ ಮೀನು",
+    "location": {
+      "place": "ಕೆನಡಾದ ರಿಪ್ಲೆಯ ಅಕ್ವೇರಿಯಂ"
+    },
+    "date": "೩೧ ಜುಲೈ, ೨೦೨೪"
+  },
+  {
+    "filename": "red-leaves.jpeg",
+    "title": "ಕೆಂಪು ಎಲೆಗಳು",
+    "location": {
+      "place": "ಟೊರೊಂಟೊ, ಒಂಟಾರಿಯೊ"
+    },
+    "date": "೧ ಆಗಸ್ಟ್, ೨೦೨೪"
   }
 ]

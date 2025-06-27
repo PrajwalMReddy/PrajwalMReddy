@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useLanguage} from "../utils/LanguageContext";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
@@ -16,6 +16,9 @@ const Photography = () => {
     const {t, language} = useLanguage();
     const [metadata, setMetadata] = useState([]);
     const [hoveredIdx, setHoveredIdx] = useState(null);
+    const [loadedImages, setLoadedImages] = useState(new Set());
+    const [visibleImages, setVisibleImages] = useState(new Set());
+    const imageRefs = useRef({});
 
     useEffect(() => {
         // Fetch the language-specific metadata file, fallback to English
@@ -37,8 +40,37 @@ const Photography = () => {
         fetchMeta();
     }, [language]);
 
+    // Intersection Observer for lazy loading
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const idx = parseInt(entry.target.dataset.index);
+                if (entry.isIntersecting) {
+                    setVisibleImages(prev => new Set([...prev, idx]));
+                    // Load the image when it becomes visible
+                    setLoadedImages(prev => new Set([...prev, idx]));
+                }
+            });
+        }, {
+            rootMargin: '100px', // Start loading 100px before the image comes into view
+            threshold: 0.1
+        });
+
+        // Observe all image containers
+        Object.values(imageRefs.current).forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
     // Helper to get metadata for a given filename
     const getMeta = (filename) => metadata.find(m => m.filename === filename);
+
+    // Set ref for each image container
+    const setImageRef = useCallback((el, idx) => {
+        imageRefs.current[idx] = el;
+    }, []);
 
     return (<div id="app-root">
         <SideNav/>
@@ -52,15 +84,26 @@ const Photography = () => {
                 </div>) : (<div className="gallery-grid">
                     {images.map((img, idx) => {
                         const meta = getMeta(img.filename);
+                        const isLoaded = loadedImages.has(idx);
+                        const isVisible = visibleImages.has(idx);
+
                         return (<div
                             className="gallery-item"
                             key={idx}
+                            ref={(el) => setImageRef(el, idx)}
+                            data-index={idx}
                             onMouseEnter={() => setHoveredIdx(idx)}
                             onMouseLeave={() => setHoveredIdx(null)}
                             style={{position: "relative"}}
                         >
-                            <img src={img.src} alt={meta?.title || `Photography ${idx + 1}`}/>
-                            {hoveredIdx === idx && meta && (<div className="photo-meta-overlay">
+                            {isLoaded ? (<img
+                                src={img.src}
+                                alt={meta?.title || `Photography ${idx + 1}`}
+                                style={{opacity: isVisible ? 1 : 0.3, transition: 'opacity 0.3s ease'}}
+                            />) : (<div className="image-placeholder">
+                                Loading...
+                            </div>)}
+                            {hoveredIdx === idx && meta && isLoaded && (<div className="photo-meta-overlay">
                                 <div className="photo-meta-title">{meta.title}</div>
                                 <div className="photo-meta-location">
                                     {meta.location && meta.location.place && meta.location.lat && meta.location.lng ? (

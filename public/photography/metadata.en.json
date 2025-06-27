@@ -13,7 +13,7 @@
     "location": {
       "place": "Bengaluru, Karnataka"
     },
-    "date": "Some Date"
+    "date": "May 24, 2024"
   },
   {
     "filename": "nyc-sunset.jpeg",
@@ -38,5 +38,37 @@
       "place": "Jersey City, New Jersey"
     },
     "date": "July 4, 2024"
+  },
+  {
+    "filename": "fortune-teller.jpeg",
+    "title": "Fortune Telling Coconut",
+    "location": {
+      "place": "Radison Blu, Goa"
+    },
+    "date": "June 22, 2024"
+  },
+  {
+    "filename": "fuertes.jpeg",
+    "title": "Fuertes Observatory",
+    "location": {
+      "place": "Cornell University"
+    },
+    "date": "August 20, 2024"
+  },
+  {
+    "filename": "jellyfish.jpeg",
+    "title": "Jellyfish",
+    "location": {
+      "place": "Ripley's Aquarium of Canada"
+    },
+    "date": "July 31, 2024"
+  },
+  {
+    "filename": "red-leaves.jpeg",
+    "title": "Red Leaves",
+    "location": {
+      "place": "Toronto, Ontario"
+    },
+    "date": "August 1, 2024"
   }
 ]
