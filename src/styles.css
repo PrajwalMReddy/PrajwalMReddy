@@ -56,6 +56,11 @@ table {
 }
 
 /* Main Styles */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
 body {
     min-height: 100vh;
     display: flex;
@@ -123,6 +128,23 @@ main {
 .nav-link:hover {
     text-decoration: underline;
     cursor: pointer;
+}
+
+.subsection-link {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    width: 100%;
+}
+
+.subsection-link:hover {
+    text-decoration: underline;
 }
 
 #nav-language-div {
@@ -333,6 +355,42 @@ footer {
     line-height: 22px;
     color: var(--text);
     padding: 5% 7% 5% 7%;
+}
+
+/* Featured Projects Section */
+#featured-projects {
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+#featured-projects-heading {
+    font-size: 40px;
+    color: var(--text);
+    margin-bottom: 40px;
+}
+
+#featured-projects-subheading {
+    font-size: 25px;
+    color: var(--text);
+    margin-bottom: 40px;
+}
+
+#featured-projects .project-line {
+    display: flex;
+    justify-content: flex-start;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 0;
+    margin-left: 0;
+}
+
+#featured-projects .project-info {
+    flex: 0 0 auto;
+    width: calc(33.333% - 20px);
+    min-width: 300px;
+    max-width: 400px;
 }
 
 /* Blog Section */
@@ -870,6 +928,16 @@ footer {
         object-fit: contain;
     }
 
+    #featured-projects .project-line {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #featured-projects .project-info {
+        width: 100%;
+        max-width: 500px;
+    }
+
     .footer-div {
         padding-left: 0 !important;
         padding-right: 0 !important;
@@ -967,6 +1035,14 @@ footer {
 
     .contact-element {
         font-size: 18px;
+    }
+
+    #featured-projects-heading {
+        font-size: 28px;
+    }
+
+    #featured-projects-subheading {
+        font-size: 17px;
     }
 }
 

@@ -5,7 +5,7 @@
     "location": {
       "place": "Bengaluru, Karnataka"
     },
-    "date": "Some Date"
+    "date": "December 16, 2023"
   },
   {
     "filename": "farm-life-2.jpeg",
@@ -70,5 +70,13 @@
       "place": "Toronto, Ontario"
     },
     "date": "August 1, 2024"
+  },
+  {
+    "filename": "cornell-cherry-blossoms.jpeg",
+    "title": "Sakura Clock Tower",
+    "location": {
+      "place": "Cornell University"
+    },
+    "date": "April 21, 2025"
   }
 ]

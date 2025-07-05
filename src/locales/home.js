@@ -18,7 +18,11 @@ export const home = {
             web: "HTML + CSS + JavaScript",
             rust: "Rust",
             arduino: "Arduino"
-        }
+        },
+
+        // Featured Projects Section
+        featuredProjectsTitle: "Featured Projects",
+        featuredProjectsSubTitle: "See All Projects >",
     },
     kn: {
         // Home Page
@@ -39,6 +43,10 @@ export const home = {
             web: "ಏಚ್.ಟಿ.ಎಮ್.ಎಲ್. + ಸಿ.ಎಸ್.ಎಸ್. + ಜಾವಸ್ಕ್ರಿಪ್ಟ್",
             rust: "ರಸ್ಟ್",
             arduino: "ಆರ್ಡ್ವೀನೊ"
-        }
+        },
+
+        // Featured Projects Section
+        featuredProjectsTitle: "ಬೆಳಗಿಸಿದ ಯೋಜನೆಗಳು",
+        featuredProjectsSubTitle: "ಯೋಜನೆಗಳೆಲ್ಲ ನೋಡಲು >",
     }
 }; 

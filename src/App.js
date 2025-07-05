@@ -4,7 +4,6 @@ import {LanguageProvider, useLanguage} from './utils/LanguageContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
-import Contact from './components/Contact';
 import BlogPost from './components/BlogPost';
 import Research from './components/Research';
 import BengaluruTeluguDictionary from './components/BengaluruTeluguDictionary';
@@ -57,9 +56,6 @@ function TitleUpdater() {
                 case '/blog':
                     title = translations[language].pageTitles.blog;
                     break;
-                case '/contact':
-                    title = translations[language].pageTitles.contact;
-                    break;
                 case '/research':
                     title = translations[language].pageTitles.research;
                     break;
@@ -88,7 +84,6 @@ function AppWithTitle() {
                 <Route path="/projects" element={<Projects/>}/>
                 <Route path="/blog" element={<Blog/>}/>
                 <Route path="/blog/:slug" element={<BlogPost/>}/>
-                <Route path="/contact" element={<Contact/>}/>
 
                 <Route path="/research" element={<Research/>}/>
                 <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>

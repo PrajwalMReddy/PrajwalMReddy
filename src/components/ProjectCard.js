@@ -1,10 +1,10 @@
 import React from 'react';
 
-const ProjectCard = ({title, image, description, link}) => {
+const ProjectCard = ({title, image, description, link, linkText}) => {
     const content = (
         <>
             <h1 className="project-title">{title}</h1>
-            <img className="project-image" src={image} alt={title}/>
+            {image && <img className="project-image" src={image} alt={title}/>} 
             <p className="project-text">{description}</p>
         </>
     );

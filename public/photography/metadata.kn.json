@@ -5,7 +5,7 @@
     "location": {
       "place": "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ"
     },
-    "date": "ಒಂದು ದಿನ"
+    "date": "ಡಿಸೆಂಬರ್ ೧೬, ೨೦೨೩"
   },
   {
     "filename": "farm-life-2.jpeg",
@@ -70,5 +70,13 @@
       "place": "ಟೊರೊಂಟೊ, ಒಂಟಾರಿಯೊ"
     },
     "date": "೧ ಆಗಸ್ಟ್, ೨೦೨೪"
+  },
+  {
+    "filename": "cornell-cherry-blossoms.jpeg",
+    "title": "ಸಕುರಾ ಗಡಿಯಾರ ಗೋಪುರ",
+    "location": {
+      "place": "ಕೊರ್ನೆಲ್ ವಿಶ್ವವಿದ್ಯಾಲಯ"
+    },
+    "date": "ಏಪ್ರಿಲ್ ೨೧, ೨೦೨೫"
   }
 ]
