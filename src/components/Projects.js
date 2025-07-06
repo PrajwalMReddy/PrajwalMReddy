@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
@@ -37,6 +37,10 @@ const getImage = (imageName) => {
 
 const Projects = () => {
     const {t} = useLanguage();
+    
+    useEffect(() => {
+        document.title = t('pageTitles.projects');
+    }, [t]);
     
     // Get project cards from translations
     const programmingProjectCards = t('programmingProjectCards') || [];

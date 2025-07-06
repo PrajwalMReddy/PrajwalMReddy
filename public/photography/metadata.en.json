@@ -25,7 +25,7 @@
   },
   {
     "filename": "cdg-787.jpeg",
-    "title": "Air India B787 At Paris CDG",
+    "title": "Air India B787",
     "location": {
       "place": "Paris Charles de Gaulle Airport"
     },
@@ -41,7 +41,7 @@
   },
   {
     "filename": "fortune-teller.jpeg",
-    "title": "Fortune Telling Coconut",
+    "title": "Weather Forecasting Coconut",
     "location": {
       "place": "Radison Blu, Goa"
     },
@@ -78,5 +78,21 @@
       "place": "Cornell University"
     },
     "date": "April 21, 2025"
+  },
+  {
+    "filename": "oculus-nyc.jpeg",
+    "title": "Oculus World Trade Center",
+    "location": {
+      "place": "New York City, New York"
+    },
+    "date": "July 25, 2019"
+  },
+  {
+    "filename": "yana-caves.jpeg",
+    "title": "Yana Caves",
+    "location": {
+      "place": "Yana, Karnataka"
+    },
+    "date": "June 1, 2024"
   }
 ]

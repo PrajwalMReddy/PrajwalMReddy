@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import {BrowserRouter as Router, Route, Routes, useLocation} from 'react-router-dom';
-import {LanguageProvider, useLanguage} from './utils/LanguageContext';
+import React from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {LanguageProvider} from './utils/LanguageContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
@@ -9,7 +9,6 @@ import Research from './components/Research';
 import BengaluruTeluguDictionary from './components/BengaluruTeluguDictionary';
 import Photography from './components/Photography';
 import './styles.css';
-import {translations} from './locales';
 import NotFound from "./components/NotFound";
 
 // Error Boundary Component
@@ -38,47 +37,11 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-// Separate component to handle title updates
-function TitleUpdater() {
-    const {language} = useLanguage();
-    const location = useLocation();
-
-    useEffect(() => {
-        console.log('Location changed:', location);
-        try {
-            // Remove the leading # and / from the pathname
-            const path = location.pathname.replace(/^#/, '');
-            let title;
-            switch (path) {
-                case '/projects':
-                    title = translations[language].pageTitles.projects;
-                    break;
-                case '/blog':
-                    title = translations[language].pageTitles.blog;
-                    break;
-                case '/research':
-                    title = translations[language].pageTitles.research;
-                    break;
-                case '/photography':
-                    title = translations[language].pageTitles.photography;
-                    break;
-                default:
-                    title = translations[language].pageTitles.home;
-            }
-            console.log('Setting title:', title);
-            document.title = title;
-        } catch (error) {
-            console.error('Error in TitleUpdater useEffect:', error);
-        }
-    }, [location, language]);
-
-    return null;
-}
-
-function AppWithTitle() {
+function App() {
+    console.log('App component rendering');
     return (<ErrorBoundary>
+        <LanguageProvider>
         <Router>
-            <TitleUpdater/>
             <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/projects" element={<Projects/>}/>
@@ -92,14 +55,6 @@ function AppWithTitle() {
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>
-    </ErrorBoundary>);
-}
-
-function App() {
-    console.log('App component rendering');
-    return (<ErrorBoundary>
-        <LanguageProvider>
-            <AppWithTitle/>
         </LanguageProvider>
     </ErrorBoundary>);
 }

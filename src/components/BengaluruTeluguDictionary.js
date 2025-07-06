@@ -11,17 +11,22 @@ const getKannadaInitial = (word) => {
     return match ? match[0] : '#';
 };
 
+// Helper function to group entries by initial letter
 const groupByInitial = (entries) => {
     const grouped = {};
     entries.forEach(entry => {
-        const initial = getKannadaInitial(entry.telugu);
-        if (!grouped[initial]) grouped[initial] = [];
-        grouped[initial].push(entry);
+        if (entry.telugu && entry.telugu.length > 0) {
+            const initial = entry.telugu.charAt(0);
+            if (!grouped[initial]) {
+                grouped[initial] = [];
+            }
+            grouped[initial].push(entry);
+        }
     });
     return grouped;
 };
 
-// Helper to split an array into two nearly equal columns
+// Helper function to split array into two columns
 const splitIntoColumns = (arr) => {
     const mid = Math.ceil(arr.length / 2);
     return [arr.slice(0, mid), arr.slice(mid)];
@@ -42,6 +47,9 @@ const BengaluruTeluguDictionary = () => {
                 if (!response.ok) throw new Error('Failed to fetch dictionary');
                 const data = await response.json();
                 setEntries(data);
+                
+                // Set the page title for the dictionary subpage
+                document.title = t('pageTitles.dictionary');
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -49,7 +57,7 @@ const BengaluruTeluguDictionary = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [t]);
 
     // Filter entries by search
     const filteredEntries = entries.filter(entry => {

@@ -12,6 +12,10 @@ const Blog = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        document.title = t('pageTitles.blog');
+    }, [t]);
+
+    useEffect(() => {
         const loadBlogPosts = async () => {
             try {
                 setLoading(true);

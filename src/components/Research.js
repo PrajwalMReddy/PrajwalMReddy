@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ResearchCard from './ResearchCard';
@@ -13,7 +13,12 @@ const chunkArray = (arr, size) => {
 };
 
 const Research = () => {
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
+    
+    useEffect(() => {
+        document.title = t('pageTitles.research');
+    }, [t]);
+    
     // Get research cards from translations
     const researchCards = t('researchCards') || [];
     return (

@@ -21,6 +21,10 @@ const Photography = () => {
     const imageRefs = useRef({});
 
     useEffect(() => {
+        document.title = t('pageTitles.photography');
+    }, [t]);
+
+    useEffect(() => {
         // Fetch the language-specific metadata file, fallback to English
         const fetchMeta = async () => {
             const langFile = `/photography/metadata.${language}.json?v=${Date.now()}`;

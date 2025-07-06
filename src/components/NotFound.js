@@ -1,11 +1,16 @@
 // components/NotFound.jsx
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 
 const NotFound = () => {
     const {t} = useLanguage();
+    
+    useEffect(() => {
+        document.title = t('pageTitles.notFound');
+    }, [t]);
+    
     return (
         <div id="app-root">
             <SideNav/>

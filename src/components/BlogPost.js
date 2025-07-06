@@ -8,7 +8,7 @@ import {getBlogPostBySlug} from '../utils/blogUtils';
 const BlogPost = () => {
     const {slug} = useParams();
     const navigate = useNavigate();
-    const {language} = useLanguage();
+    const {language, t} = useLanguage();
     const [blogData, setBlogData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,6 +19,11 @@ const BlogPost = () => {
                 setLoading(true);
                 const post = await getBlogPostBySlug(slug);
                 setBlogData(post);
+                
+                // Set the page title for individual blog posts
+                const postTitle = post.title;
+                const baseTitle = t('pageTitles.blog');
+                document.title = `${postTitle} | ${baseTitle}`;
             } catch (err) {
                 setError(err.message);
                 navigate('/blog');
@@ -27,7 +32,7 @@ const BlogPost = () => {
             }
         };
         loadBlogPost();
-    }, [slug, language, navigate]);
+    }, [slug, language, navigate, t]);
 
     if (loading) {
         return (

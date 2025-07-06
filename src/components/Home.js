@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
@@ -37,7 +37,11 @@ const getImage = (imageName) => {
 };
 
 const Home = () => {
-    const {t} = useLanguage();
+    const {t, language} = useLanguage();
+
+    useEffect(() => {
+        document.title = t('pageTitles.home');
+    }, [t]);
 
     // Get all project cards and filter for featured ones
     const programmingProjectCards = t('programmingProjectCards') || [];
