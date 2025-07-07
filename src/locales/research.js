@@ -4,6 +4,7 @@ export const research = {
 
         // Bengaluru Telugu Research
         researchDictionaryTitle: "Bengaluru Telugu Dictionary",
+        researchDictionarySearchTitle: "Search",
         researchDictionarySearchPlaceholder: "Search word or meaning...",
         researchNoResults: "No results found.",
 
@@ -18,7 +19,8 @@ export const research = {
 
         // Bengaluru Telugu Research
         researchDictionaryTitle: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ",
-        researchDictionarySearchPlaceholder: "ಪದ ಇಲ್ಲವೇ ಅರ್ತದವನ್ನು ಹುಡುಕಿ...",
+        researchDictionarySearchTitle: "ಹುಡುಕಿ",
+        researchDictionarySearchPlaceholder: "ಪದ ಇಲ್ಲವೇ ಅರ್ತವನ್ನು ಹುಡುಕಿ...",
         researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ.",
 
         researchCards: [{

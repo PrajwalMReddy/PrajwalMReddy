@@ -37,11 +37,15 @@ const getImage = (imageName) => {
 
 const Projects = () => {
     const {t} = useLanguage();
-    
+
     useEffect(() => {
         document.title = t('pageTitles.projects');
     }, [t]);
-    
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Get project cards from translations
     const programmingProjectCards = t('programmingProjectCards') || [];
     const otherProjectCards = t('otherProjectCards') || [];
@@ -54,33 +58,26 @@ const Projects = () => {
                 <h2 className="project-type-heading">{t('programmingProjects')}</h2>
                 {chunkArray(programmingProjectCards, 2).map((row, rowIdx) => (
                     <div className="project-line" key={rowIdx}>
-                        {row.map((item, idx) => (
-                            <ProjectCard
-                                key={idx}
-                                title={item.title}
-                                image={getImage(item.image)}
-                                description={item.description}
-                                link={item.link}
-                            />
-                        ))}
-                    </div>
-                ))}
+                        {row.map((item, idx) => (<ProjectCard
+                            key={idx}
+                            title={item.title}
+                            image={getImage(item.image)}
+                            description={item.description}
+                            link={item.link}
+                        />))}
+                    </div>))}
             </div>
             <div id="project-type-other">
                 <h2 className="project-type-heading">{t('otherProjects')}</h2>
-                {chunkArray(otherProjectCards, 2).map((row, rowIdx) => (
-                    <div className="project-line" key={rowIdx}>
-                        {row.map((item, idx) => (
-                            <ProjectCard
-                                key={idx}
-                                title={item.title}
-                                image={getImage(item.image)}
-                                description={item.description}
-                                link={item.link}
-                            />
-                        ))}
-                    </div>
-                ))}
+                {chunkArray(otherProjectCards, 2).map((row, rowIdx) => (<div className="project-line" key={rowIdx}>
+                    {row.map((item, idx) => (<ProjectCard
+                        key={idx}
+                        title={item.title}
+                        image={getImage(item.image)}
+                        description={item.description}
+                        link={item.link}
+                    />))}
+                </div>))}
             </div>
         </main>
         <Footer/>

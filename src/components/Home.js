@@ -109,6 +109,10 @@ const Home = () => {
                         <a className="contact-link" href="https://www.linkedin.com/in/prajwalmreddy" target="_blank"
                            rel="noopener noreferrer">www.linkedin.com/in/prajwalmreddy</a>
                     </li>
+                    <li className="contact-element">
+                        {t('contactBlog')}
+                        <Link to="/blog" className="contact-link">{t('contactBlogInfo')}</Link>
+                    </li>
                 </ul>
             </div>
         </main>
@@ -116,4 +120,4 @@ const Home = () => {
     </div>;
 };
 
-export default Home; 
+export default Home;

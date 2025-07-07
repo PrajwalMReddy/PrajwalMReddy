@@ -83,6 +83,32 @@ body {
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #181A1B;
+        --text: #F5F7FA;
+        --gray: #23272A;
+        --primary-color: #F5F7FA;
+        --primary-color-rgb: 245, 247, 250;
+        --secondary-color: #AAB7B8;
+        --accent-color: #4A6B8A;
+        --highlight-color: #7D9BA6;
+    }
+}
+
+body.dark-mode {
+    --background: #181A1B;
+    --text: #F5F7FA;
+    --gray: #23272A;
+    --primary-color: #F5F7FA;
+    --primary-color-rgb: 245, 247, 250;
+    --secondary-color: #AAB7B8;
+    --accent-color: #4A6B8A;
+    --highlight-color: #7D9BA6;
+    background-color: var(--background) !important;
+    color: var(--text) !important;
+}
+
 /* Base Styles */
 main {
     flex: 1;
@@ -152,8 +178,23 @@ main {
     bottom: 4%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding-left: 20%;
     padding-right: 20%;
+    gap: 10px;
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--text);
+    transition: color 0.2s;
+}
+
+.dark-mode .dark-mode-toggle {
+    color: var(--text);
 }
 
 #nav-language-text {
@@ -164,6 +205,31 @@ main {
     background-color: var(--gray);
     border: 1px solid var(--text);
     cursor: pointer;
+}
+
+.nav-language-select {
+    background-color: var(--gray);
+    color: var(--text);
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 15px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-language-select:focus {
+    outline: 2px solid var(--primary-color);
+}
+
+.nav-language-option {
+    background-color: var(--gray);
+    color: var(--text);
+}
+
+body.dark-mode .nav-language-select, body.dark-mode .nav-language-option {
+    background-color: var(--gray);
+    color: var(--text);
+    border-color: var(--accent-color);
 }
 
 /* Home Section */
@@ -1250,12 +1316,9 @@ img {
 
 /* Bengaluru Telugu Dictionary Styles */
 .dictionary-list {
-    margin-left: var(--nav-width);
     padding: 2rem 5%;
     max-width: 800px;
-    margin: 0 auto;
-    margin-left: calc(var(--nav-width) + 5%);
-    margin-right: 5%;
+    margin: 0 5% 0 calc(var(--nav-width) + 5%);
 }
 
 .dictionary-entry {
@@ -1308,12 +1371,9 @@ img {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2.5rem;
-    margin-left: var(--nav-width);
     padding: 2rem 5%;
     max-width: 1200px;
-    margin: 0 auto;
-    margin-left: calc(var(--nav-width) + 5%);
-    margin-right: 5%;
+    margin: 0 5% 0 calc(var(--nav-width) + 5%);
 }
 
 .dictionary-section {
@@ -1354,20 +1414,20 @@ img {
 }
 
 .dictionary-search-bar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 800px;
+    margin-left: var(--nav-width);
+    padding-left: 10%;
 }
 
 #project-heading + .dictionary-search-bar {
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
+    margin-top: 4rem;
 }
 
 .dictionary-search-input {
     width: 100%;
     max-width: 500px;
+    margin-bottom: 2.5rem;
     padding: 0.7em 1.2em;
     font-size: 1.1rem;
     border: 2px solid var(--accent-color);
@@ -1438,12 +1498,12 @@ img {
         max-width: 500px;
         margin: 0 auto;
     }
-    
+
     #gallery-div {
         margin-left: 0;
         padding: 1em 1em 0em 1em;
     }
-    
+
     .image-placeholder {
         height: 250px;
     }
@@ -1453,11 +1513,11 @@ img {
     .gallery-grid {
         max-width: 100%;
     }
-    
+
     #gallery-div {
         padding: 0.5em 0.5em 0em 0.5em;
     }
-    
+
     .image-placeholder {
         height: 200px;
     }
@@ -1577,4 +1637,49 @@ img {
     50% {
         opacity: 0.8;
     }
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 22px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.theme-switch input:checked + .slider {
+    background-color: #4A6B8A;
+}
+
+.theme-switch input:checked + .slider:before {
+    transform: translateX(18px);
 }

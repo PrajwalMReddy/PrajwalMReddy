@@ -3,25 +3,25 @@ import SideNav from './SideNav';
 import Footer from './Footer';
 import {useLanguage} from '../utils/LanguageContext';
 
-// Helper to get the first Kannada character
-const getKannadaInitial = (word) => {
-    if (!word) return '#';
-    // Kannada unicode range: 0C80–0CFF
-    const match = word.match(/[\u0C80-\u0CFF]/);
-    return match ? match[0] : '#';
-};
-
 // Helper function to group entries by initial letter
 const groupByInitial = (entries) => {
     const grouped = {};
     entries.forEach(entry => {
         if (entry.telugu && entry.telugu.length > 0) {
-            const initial = entry.telugu.charAt(0);
+            let initial = entry.telugu.charAt(0);
+            if (initial === '-') {
+                initial = entry.telugu.charAt(1);
+            }
+
             if (!grouped[initial]) {
                 grouped[initial] = [];
             }
             grouped[initial].push(entry);
         }
+    });
+
+    Object.keys(grouped).forEach(initial => {
+        grouped[initial].sort((a, b) => a.telugu.localeCompare(b.telugu));
     });
     return grouped;
 };
@@ -47,7 +47,7 @@ const BengaluruTeluguDictionary = () => {
                 if (!response.ok) throw new Error('Failed to fetch dictionary');
                 const data = await response.json();
                 setEntries(data);
-                
+
                 // Set the page title for the dictionary subpage
                 document.title = t('pageTitles.dictionary');
             } catch (err) {
@@ -76,6 +76,7 @@ const BengaluruTeluguDictionary = () => {
         <main>
             <h1 id="project-heading">{t('researchDictionaryTitle')}</h1>
             <div className="dictionary-search-bar">
+                <h2 className="dictionary-section-heading">{t('researchDictionarySearchTitle')}</h2>
                 <input
                     type="text"
                     placeholder={t('researchDictionarySearchPlaceholder')}
@@ -134,4 +135,4 @@ const BengaluruTeluguDictionary = () => {
     </div>);
 };
 
-export default BengaluruTeluguDictionary; 
+export default BengaluruTeluguDictionary;

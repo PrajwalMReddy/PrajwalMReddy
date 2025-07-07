@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {useLanguage} from '../utils/LanguageContext';
-import LanguageSwitcher from './LanguageSwitcher';
+import Settings from './Settings';
 
 const SideNav = () => {
     const {t, language} = useLanguage();
@@ -92,7 +92,7 @@ const SideNav = () => {
                     </button>
                 </li>
             </ul>
-            <LanguageSwitcher/>
+            <Settings/>
         </nav>
         {isOpen && <div className="overlay" onClick={toggleMenu}></div>}
     </>);
