@@ -204,33 +204,57 @@ main {
     color: var(--text);
 }
 
+/* Remove 'all: unset' for dropdown and option */
 #nav-language-text, #nav-language-choice, .nav-language-option {
-    all: unset;
+    /* all: unset; */
 }
 
+/* Style the language select to look like a dropdown */
 .nav-language-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     background-color: var(--gray);
     color: var(--text);
-    border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    padding: 2px 8px;
+    border: 1.5px solid var(--accent-color);
+    border-radius: 5px;
+    padding: 6px 32px 6px 10px;
     font-size: 15px;
-    transition: background 0.2s, color 0.2s;
+    font-family: inherit;
+    font-weight: 500;
+    min-width: 110px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    position: relative;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px 18px;
 }
 
 .nav-language-select:focus {
     outline: 2px solid var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .nav-language-option {
     background-color: var(--gray);
     color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
 }
 
 body.dark-mode .nav-language-select, body.dark-mode .nav-language-option {
     background-color: var(--gray);
     color: var(--text);
     border-color: var(--accent-color);
+}
+
+/* Ensure settings label and dropdown font sizes are constant */
+.settings-label, .nav-language-select, .nav-language-option {
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
 }
 
 /* Home Section */

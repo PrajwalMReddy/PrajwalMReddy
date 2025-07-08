@@ -1,12 +1,13 @@
 import {marked} from 'marked';
 
-// Fetch all blog post metadata from index.json
+// Fetch all blog post metadata from metadata.json
 export const getAllBlogPosts = async () => {
     try {
-        const response = await fetch('/blog_content/index.json');
+        const response = await fetch('/blog/metadata.json');
         if (!response.ok) throw new Error('Failed to fetch blog index');
         const blogIndex = await response.json();
-        return blogIndex;
+        // Only return posts that are public or have no visibility set
+        return blogIndex.filter(post => !post.visibility || post.visibility === 'public');
     } catch (error) {
         console.error('Error fetching blog index:', error);
         return [];
@@ -16,7 +17,7 @@ export const getAllBlogPosts = async () => {
 // Fetch the markdown content for a given slug
 export const fetchBlogContent = async (filename) => {
     try {
-        const response = await fetch(`/blog_content/${filename}`);
+        const response = await fetch(`/blog/${filename}`);
         if (!response.ok) throw new Error('Failed to fetch blog content');
         const content = await response.text();
         return content;
@@ -35,10 +36,18 @@ export const parseBlogContent = (content) => {
 
 // Get a single blog post's metadata and content by slug
 export const getBlogPostBySlug = async (slug) => {
-    const posts = await getAllBlogPosts();
-    const post = posts.find((p) => p.slug === slug);
-    if (!post) throw new Error('Blog post not found');
-    const content = await fetchBlogContent(`${slug}.md`);
-    const htmlContent = parseBlogContent(content);
-    return {...post, content: htmlContent};
+    // Fetch the full index, not filtered by visibility
+    try {
+        const response = await fetch('/blog/metadata.json');
+        if (!response.ok) throw new Error('Failed to fetch blog index');
+        const blogIndex = await response.json();
+        const post = blogIndex.find((p) => p.slug === slug);
+        if (!post) throw new Error('Blog post not found');
+        const content = await fetchBlogContent(`${slug}.md`);
+        const htmlContent = parseBlogContent(content);
+        return {...post, content: htmlContent};
+    } catch (error) {
+        console.error('Error fetching blog post by slug:', error);
+        throw error;
+    }
 };

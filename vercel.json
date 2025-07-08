@@ -11,12 +11,12 @@
   ],
   "routes": [
     {
-      "src": "/blog_content/(.*)",
-      "dest": "/blog_content/$1"
+      "src": "/blog/(.*)",
+      "dest": "/blog/$1"
     },
     {
-      "src": "/research_content/(.*)",
-      "dest": "/research_content/$1"
+      "src": "/research/(.*)",
+      "dest": "/research/$1"
     },
     {
       "src": "/assets/(.*)",

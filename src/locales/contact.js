@@ -7,7 +7,7 @@ export const contact = {
         contactGitHub: "💻 GitHub: ",
         contactLinkedIn: "🌐 LinkedIn: ",
         contactBlog: "📝 Blog: ",
-        contactBlogInfo: "read some of my writings here...",
+        contactBlogInfo: "read some of my thoughts here...",
     }, kn: {
         // Contact Page
         contactTitle: "ಸಂಪರ್ಕಿಸಿ",
@@ -16,6 +16,6 @@ export const contact = {
         contactGitHub: "💻 ಗಿಟ್‌ಹಬ್: ",
         contactLinkedIn: "🌐 ಲಿಂಕ್ಡ್ಇನ್: ",
         contactBlog: "📝 ಮಿಂಬರಹ: ",
-        contactBlogInfo: "ನನ್ನ ಕೆಲವು ಬರಹಗಳನ್ನು ಇಲ್ಲಿ ಓದಿ...",
+        contactBlogInfo: "ನನ್ನ ಕೆಲವು ಯೋಚನೆಗಳನ್ನು ಇಲ್ಲಿ ಓದಿ...",
     }
 };

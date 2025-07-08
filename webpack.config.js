@@ -44,12 +44,12 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, 'public/blog_content'),
-                    to: 'blog_content',
+                    from: path.resolve(__dirname, 'public/blog'),
+                    to: 'blog',
                 },
                 {
-                    from: path.resolve(__dirname, 'public/research_content'),
-                    to: 'research_content',
+                    from: path.resolve(__dirname, 'public/research'),
+                    to: 'research',
                 },
                 {
                     from: path.resolve(__dirname, 'public/photography'),
