@@ -3,6 +3,7 @@ export const sideNav = {
         navName: "Prajwal Reddy",
         project: "Projects",
         skill: "Skills",
+        experience: "Experience",
         contact: "Contact Me",
 
         copyright: "Copyright 2024 - Prajwal Reddy"
@@ -11,6 +12,7 @@ export const sideNav = {
         navName: "ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
         project: "ಯೋಜನೆಗಳು",
         skill: "ಕಲಿಕೆಗಳು",
+        experience: "ಅನುಬವ",
         contact: "ಸಂಪರ್ಕಿಸಿ",
 
         copyright: "ತನ್ನಚ್ಚು ೨೦೨೪ - ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ"

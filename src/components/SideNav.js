@@ -83,6 +83,14 @@ const SideNav = () => {
                         {t('project')}
                     </button>
                 </li>}
+                {/*//TODO <li className="nav-element">
+                    <button
+                        className="nav-link subsection-link"
+                        onClick={() => navigateToSection('experience')}
+                    >
+                        {t('experience')}
+                    </button>
+                </li>*/}
                 <li className="nav-element">
                     <button
                         className="nav-link subsection-link"

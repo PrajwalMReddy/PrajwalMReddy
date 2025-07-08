@@ -23,8 +23,7 @@ export const home = {
         // Featured Projects Section
         featuredProjectsTitle: "Featured Projects",
         featuredProjectsSubTitle: "See All Projects >",
-    },
-    kn: {
+    }, kn: {
         // Home Page
         homeTitle: "ನಮಸ್ಕಾರ!",
         homeIntro: "ನಾನು ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ,",
@@ -49,4 +48,4 @@ export const home = {
         featuredProjectsTitle: "ಬೆಳಗಿಸಿದ ಯೋಜನೆಗಳು",
         featuredProjectsSubTitle: "ಯೋಜನೆಗಳೆಲ್ಲ ನೋಡಲು >",
     }
-}; 
+};
