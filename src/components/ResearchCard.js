@@ -4,7 +4,7 @@ const ResearchCard = ({title, image, description, link, linkText}) => {
     const content = (
         <>
             <h1 className="project-title">{title}</h1>
-            {image && <img className="project-image" src={image} alt={title}/>} 
+            {image && <img className="project-image" src={image} alt={title}/>}
             <p className="project-text">{description}</p>
         </>
     );

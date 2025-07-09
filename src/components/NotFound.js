@@ -6,11 +6,11 @@ import Footer from './Footer';
 
 const NotFound = () => {
     const {t} = useLanguage();
-    
+
     useEffect(() => {
         document.title = t('pageTitles.notFound');
     }, [t]);
-    
+
     return (
         <div id="app-root">
             <SideNav/>

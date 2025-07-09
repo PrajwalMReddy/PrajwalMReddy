@@ -3,13 +3,27 @@ export const blog = {
         // Blog Page
         blogTitle: "My Blog",
         blogHeading: "Blogs",
-        blogNotice: "Here I share my poems, essays, and thoughts on anything I find interesting.",
         blogNoticeEmpty: "There are no blog posts yet. Please check back later.",
+
+        blogNotice: [
+            "Here I share my poems, essays, and thoughts on anything I find interesting.",
+            "“If more of us valued food and cheer and song above hoarded gold, it would be a merrier world.” — J.R.R. Tolkien, The Hobbit",
+            "“I cannot remember the books I've read any more than the meals I have eaten; even so, they have made me.” — Ralph Waldo Emerson",
+            "“Life is like a box of chocolates, you never know what you're going to get.” — Forrest Gump",
+            "“If Tyranny and Oppression come to this land, it will be in the guise of fighting a foreign enemy.” — James Madison",
+            "“In the galaxy of languages, each person’s voice is a star” — Linguasphere Observatory",
+            "“Everyone's different and everyone's the same” — World Trade Center, New York, New York",
+            "“People say nothing is impossible, but I do nothing every day.” — A. A. Milne, Winnie the Pooh"
+        ]
     }, kn: {
         // Blog Page
         blogTitle: "ನನ್ನ ಮಿಂಬರಹ",
         blogHeading: "ಮಿಂಬರಹಗಳು",
-        blogNotice: "ಇಲ್ಲಿ ನನ್ನ ಕವಿತೆಗಳು, ಬರಹಗಳು, ಮತ್ತು ಇಶ್ಟಪಡುವ ವಿಷಯದ ಅನಿಸಿಕೆಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತೇನೆ.",
         blogNoticeEmpty: "ಸದ್ಯಕ್ಕೆ ಮಿಂಬರಹಗಳೇನೂ ಇಲ್ಲ. ನಂತರ ಬಂದು ನೋಡಿ.",
+
+        blogNotice: [
+            "ಇಲ್ಲಿ ನನ್ನ ಕವಿತೆಗಳು, ಬರಹಗಳು, ಮತ್ತು ಇಶ್ಟಪಡುವ ವಿಷಯದ ಅನಿಸಿಕೆಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತೇನೆ.",
+            "“ಏನಾದರೂ ಆಗು, ಮೊದಲು ಮಾನವನಾಗು” — ಸಿದ್ದಯ್ಯ ಪುರಾಣಿಕ",
+        ]
     }
 };

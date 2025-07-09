@@ -5,11 +5,29 @@ import SideNav from './SideNav';
 import Footer from './Footer';
 import {getAllBlogPosts} from '../utils/blogUtils';
 
+
 const Blog = () => {
     const {t, language} = useLanguage();
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const getBlogNoticeText = () => {
+        let blogNoticeArray = t('blogNotice');
+        let blogNotice;
+
+        if (localStorage.getItem('blogNotice') === null) {
+            blogNotice = t('blogNotice')[0];
+            localStorage.setItem('blogNotice', blogNotice);
+        } else if (Math.random() < 0.1) {
+            blogNotice = blogNoticeArray[Math.floor(Math.random() * blogNoticeArray.length)];
+            localStorage.setItem('blogNotice', blogNotice);
+        } else {
+            blogNotice = localStorage.getItem('blogNotice');
+        }
+
+        return blogNotice;
+    };
 
     useEffect(() => {
         document.title = t('pageTitles.blog');
@@ -42,7 +60,7 @@ const Blog = () => {
                 <div id="blog-notice-div">
                     <div className="blog-notice">
                         <h1 className="blog-notice-heading">
-                            {blogPosts.length === 0 ? t('blogNoticeEmpty') : t('blogNotice')}
+                            {blogPosts.length === 0 ? t('blogNoticeEmpty') : getBlogNoticeText()}
                         </h1>
                     </div>
                 </div>
@@ -66,4 +84,4 @@ const Blog = () => {
     </div>);
 };
 
-export default Blog; 
+export default Blog;
