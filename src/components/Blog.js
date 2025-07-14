@@ -16,14 +16,14 @@ const Blog = () => {
         let blogNoticeArray = t('blogNotice');
         let blogNotice;
 
-        if (localStorage.getItem('blogNotice') === null) {
+        if (localStorage.getItem(language + 'BlogNotice') === null) {
             blogNotice = t('blogNotice')[0];
-            localStorage.setItem('blogNotice', blogNotice);
+            localStorage.setItem(language + 'BlogNotice', blogNotice);
         } else if (Math.random() < 0.1) {
             blogNotice = blogNoticeArray[Math.floor(Math.random() * blogNoticeArray.length)];
-            localStorage.setItem('blogNotice', blogNotice);
+            localStorage.setItem(language + 'BlogNotice', blogNotice);
         } else {
-            blogNotice = localStorage.getItem('blogNotice');
+            blogNotice = localStorage.getItem(language + 'BlogNotice');
         }
 
         return blogNotice;

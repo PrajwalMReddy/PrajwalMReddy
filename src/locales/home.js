@@ -2,10 +2,9 @@ export const home = {
     en: {
         // Home Page
         plane: "------\n" + "| | # \\                                      |\n" + "| ____ \\_________|----^\"|\"\"\"\"\"|\"\\___________ |\n" + " \\___\\   PR - 17 >>    `\"\"\"\"\"\"\"\"     =====  \"|D\n" + "       ^^-------____--\"\"\"\"\"\"\"\"\"\"+\"\"--_  __--\"|\n" + "                   `\"\"|\"-->####)+---|`\"\"     |\n" + "                                 \\  \\\n" + "                                <- O -)\n" + "                                  `\"' \n",
-        konami: "Konami!",
 
         homeTitle: "Hello World!",
-        homeIntro: "I'm Prajwal Reddy",
+        homeIntro: "I'm [ˈprə.dʒʋəl ˈrɛ.ɖːi]",
         homeSubtitle: "a student, programmer, and builder.",
         homeDescription: "I am a college student at Cornell University, studying a double major in Computer Science and Economics. However, I am also passionate about Linguistics and Urban Planning, often developing applications that focus on issues in these areas. My other non-academic interests include world building and conlanging.",
 
@@ -29,10 +28,9 @@ export const home = {
     }, kn: {
         // Home Page
         plane: "------\n" + "| | # \\                                      |\n" + "| ____ \\_________|----^\"|\"\"\"\"\"|\"\\___________ |\n" + " \\___\\   ಪ್ರರೆ - ೧೭ >>   `\"\"\"\"\"\"\"\"     =====  \"|D\n" + "       ^^-------____--\"\"\"\"\"\"\"\"\"\"+\"\"--_  __--\"|\n" + "                   `\"\"|\"-->####)+---|`\"\"     |\n" + "                                 \\  \\\n" + "                                <- O -)\n" + "                                  `\"' \n",
-        konami: "ಕೊನಮಿ!",
 
         homeTitle: "ನಮಸ್ಕಾರ!",
-        homeIntro: "ನಾನು ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ,",
+        homeIntro: "ನಾನು [ˈprə.dʒʋəl ˈrɛ.ɖːi]",
         homeSubtitle: "ಕಲಿಗ, ಹಮ್ಮುಗ, ಮತ್ತು ಕಟ್ಟುಗ.",
         homeDescription: "ನಾನು ಕೊರ್ನೆಲ ಮೇಲ್ಕಲಿಮನೆಯಲ್ಲಿ ಕಲಿಗರಾಗಿದ್ದೇನೆ. ಎಣಿಯರಿಮೆ ಮತ್ತು ಸೊಮ್ಮರಿಮೆಯನ್ನು ಓದುತ್ತಿದ್ದೇನೆ. ಹಾಗಿದ್ದರೂ ನುಡಿಯರಿಮೆ ಮತ್ತು ನಗರ ಹಮ್ಮುಗೆಯ ಮೇಲೆ ತುಂಬಾ ಇಶ್ಟಪಡುತೇನೆ. ನನ್ನ ಇತರ ಆಸಕ್ತಿಗಳಲ್ಲಿ ಪ್ರಪಂಚ ಕಟ್ಟುವಿಕೆ ಮತ್ತು ನುಡಿ ಕಟ್ಟುವಿಕೆ ಎರಡು.",
 

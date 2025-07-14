@@ -11,6 +11,8 @@ import Photography from './components/Photography';
 import './styles.css';
 import NotFound from "./components/NotFound";
 import {translations} from './locales';
+import Konami from './components/Konami';
+import KonamiListener from './components/KonamiListener';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -47,37 +49,11 @@ function t(key) {
     return key.split('.').reduce((obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined), translations[lang]) || key;
 }
 
-function KonamiListener() {
-    const position = React.useRef(0);
-    React.useEffect(() => {
-        const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-
-        function onKeyDown(e) {
-            // Optionally ignore if modifier keys are pressed
-            if (e.ctrlKey || e.altKey || e.metaKey) return;
-            if (e.key === konami[position.current]) {
-                position.current++;
-                if (position.current === konami.length) {
-                    alert(t('konami'));
-                    position.current = 0;
-                }
-            } else {
-                position.current = (e.key === konami[0]) ? 1 : 0;
-            }
-        }
-
-        // Use capture phase to catch events before inputs
-        document.addEventListener('keydown', onKeyDown, true);
-        return () => document.removeEventListener('keydown', onKeyDown, true);
-    }, []);
-    return null;
-}
-
 function App() {
     return (<ErrorBoundary>
-        <KonamiListener/>
         <LanguageProvider>
             <Router>
+                <KonamiListener />
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>
@@ -87,6 +63,7 @@ function App() {
                     <Route path="/research" element={<Research/>}/>
                     <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
                     <Route path="/photography" element={<Photography/>}/>
+                    <Route path="/konami" element={<Konami/>}/>
 
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>

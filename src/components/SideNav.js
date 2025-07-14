@@ -55,11 +55,11 @@ const SideNav = () => {
             <ul id="nav-list">
                 <li id="nav-main"><Link to="/" className="nav-link"
                                         onClick={() => setIsOpen(false)}>{t('navName')}</Link></li>
-                {/*<li className="nav-element"><Link to="/projects" className="nav-link"
+                <li className="nav-element"><Link to="/projects" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('project')}</Link></li>
                 <li className="nav-element"><Link to="/blog" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('blog')}</Link></li>
-                <li className="nav-element"><Link to="/research" className="nav-link"
+                {/*<li className="nav-element"><Link to="/research" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('research')}</Link></li>
                 <li className="nav-element"><Link to="/photography" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>
@@ -67,7 +67,7 @@ const SideNav = () => {
                                                   onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>*/}
 
                 {/* Homepage subsections */}
-                <li className="nav-element">
+                {/*<li className="nav-element">
                     <button
                         className="nav-link subsection-link"
                         onClick={() => navigateToSection('skill-div')}
@@ -83,7 +83,7 @@ const SideNav = () => {
                         {t('project')}
                     </button>
                 </li>}
-                {/*//TODO <li className="nav-element">
+                <li className="nav-element">
                     <button
                         className="nav-link subsection-link"
                         onClick={() => navigateToSection('experience')}

@@ -5,11 +5,13 @@ export const meta = {
             projects: "Projects | Prajwal Reddy",
             blog: "Blog | Prajwal Reddy",
             contact: "Contact Me | Prajwal Reddy",
-            research: "Research | Prajwal Reddy",
-            photography: "Photography | Prajwal Reddy",
-            notFound: "Page Not Found | Prajwal Reddy",
 
-            dictionary: "Bengaluru Telugu Dictionary | Research | Prajwal Reddy"
+            research: "Research | Prajwal Reddy",
+            dictionary: "Bengaluru Telugu Dictionary | Research | Prajwal Reddy",
+            photography: "Photography | Prajwal Reddy",
+
+            konami: "Konami",
+            notFound: "Page Not Found | Prajwal Reddy",
         },
 
         notFoundHeading: "Error 404",
@@ -20,11 +22,13 @@ export const meta = {
             projects: "ಯೋಜನೆಗಳು | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             blog: "ಮಿಂಬರಹ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             contact: "ಸಂಪರ್ಕಿಸಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            research: "ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            photography: "ಚಾಯಾಗ್ರಹಣ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            notFound: "ಪುಟ ಸಿಗಲಿಲ್ಲ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
 
-            dictionary: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ | ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ"
+            research: "ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            dictionary: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ | ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            photography: "ಚಾಯಾಗ್ರಹಣ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+
+            konami: "ಕೊನಮಿ",
+            notFound: "ಪುಟ ಸಿಗಲಿಲ್ಲ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
         },
 
         notFoundHeading: "ತಪ್ಪು ೪೦೪",
