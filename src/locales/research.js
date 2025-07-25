@@ -11,7 +11,7 @@ export const research = {
         researchCards: [{
             title: "A Complete Dictionary of Modern Spoken Bengaluru Telugu",
             description: "A complete dictionary of the variety of spoken South Karnataka Telugu native to Bengaluru.",
-            link: "/research/bengaluru-telugu",
+            link: "/content/research/bengaluru-telugu",
             image: ""
         }]
     }, kn: {
@@ -26,7 +26,7 @@ export const research = {
         researchCards: [{
             title: "ಆದುನಿಕ ಆಡುವ ಬೆಂಗಳೂರು ತೆಲುಗಿನ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ",
             description: "ಬೆಂಗಳೂರು ಮೂಲದ ತೆಂಕಣ ಕರ್ನಾಟಕದ ತೆಲುಗು ಆಡುನುಡಿಯ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ.",
-            link: "/research/bengaluru-telugu",
+            link: "/content/research/bengaluru-telugu",
             image: ""
         }]
     }

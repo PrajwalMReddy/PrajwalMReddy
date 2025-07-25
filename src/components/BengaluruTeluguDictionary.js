@@ -43,7 +43,7 @@ const BengaluruTeluguDictionary = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/research/bengaluru-telugu-lexicon.json');
+                const response = await fetch('/content/research/bengaluru-telugu-lexicon.json');
                 if (!response.ok) throw new Error('Failed to fetch dictionary');
                 const data = await response.json();
                 setEntries(data);

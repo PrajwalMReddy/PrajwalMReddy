@@ -1,6 +1,6 @@
 import React from 'react';
 import {useLanguage} from '../utils/LanguageContext';
-import hurricaneLogo from '@img/hurricane.png';
+import hurricaneLogo from '../../content/img/hurricane.png';
 
 const Footer = () => {
     const {t} = useLanguage();

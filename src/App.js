@@ -13,6 +13,7 @@ import NotFound from "./components/NotFound";
 import {translations} from './locales';
 import Konami from './components/Konami';
 import KonamiListener from './components/KonamiListener';
+import './blog.css';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -58,10 +59,10 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>
                     <Route path="/blog" element={<Blog/>}/>
-                    <Route path="/blog/:slug" element={<BlogPost/>}/>
+                    <Route path="/content/blog/:slug" element={<BlogPost/>}/>
 
                     <Route path="/research" element={<Research/>}/>
-                    <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
+                    <Route path="/content/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
                     <Route path="/photography" element={<Photography/>}/>
                     <Route path="/konami" element={<Konami/>}/>
 

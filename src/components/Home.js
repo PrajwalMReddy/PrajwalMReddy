@@ -3,40 +3,18 @@ import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ProjectCard from './ProjectCard';
-import pulsarImg from '@img/pulsar.png';
-import midilangImg from '@img/midilang.png';
-import kannadadiscoImg from '@img/kannadadisco.png';
-import sentimentImg from '@img/research-paper.png';
-import firemediaImg from '@img/firemedia.png';
-import jetblastersImg from '@img/jetblasters.png';
-import robocupImg from '@img/robocup-2023.png';
-import northlandImg from '@img/city-skyline.png';
+import pulsarImg from '../../content/img/pulsar.png';
+import midilangImg from '../../content/img/midilang.png';
+import kannadadiscoImg from '../../content/img/kannadadisco.png';
+import sentimentImg from '../../content/img/research-paper.png';
+import firemediaImg from '../../content/img/firemedia.png';
+import jetblastersImg from '../../content/img/jetblasters.png';
+import robocupImg from '../../content/img/robocup-2023.png';
+import northlandImg from '../../content/img/city-skyline.png';
 import {Link} from "react-router-dom";
 import {colorStopsDark, colorStopsLight, getInterpolatedColorAtPercent, isDarkMode} from '../utils/colorUtils';
 import ExperienceCard from './ExperienceCard';
-
-const chunkArray = (arr, size) => {
-    const result = [];
-    for (let i = 0; i < arr.length; i += size) {
-        result.push(arr.slice(i, i + size));
-    }
-    return result;
-};
-
-// Image mapping function
-const getImage = (imageName) => {
-    const imageMap = {
-        'pulsar': pulsarImg,
-        'midilang': midilangImg,
-        'kannadadisco': kannadadiscoImg,
-        'research-paper': sentimentImg,
-        'firemedia': firemediaImg,
-        'jetblasters': jetblastersImg,
-        'robocup-2023': robocupImg,
-        'city-skyline': northlandImg
-    };
-    return imageMap[imageName] || null;
-};
+import {chunkArray, getImage} from '../utils/componentUtils';
 
 const Home = () => {
     const {t, language} = useLanguage();
