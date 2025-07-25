@@ -7,26 +7,26 @@ import {getAllBlogPosts} from '../utils/blogUtils';
 
 // Helper: Kannada to English month and numeral conversion
 const KN_TO_EN_MONTHS = [
-    { kn: 'ಜನವರಿ', en: 'January' },
-    { kn: 'ಫೆಬ್ರವರಿ', en: 'February' },
-    { kn: 'ಮಾರ್ಚ್', en: 'March' },
-    { kn: 'ಏಪ್ರಿಲ್', en: 'April' },
-    { kn: 'ಮೇ', en: 'May' },
-    { kn: 'ಜೂನ್', en: 'June' },
-    { kn: 'ಜುಲೈ', en: 'July' },
-    { kn: 'ಆಗಸ್ಟ್', en: 'August' },
-    { kn: 'ಸೆಪ್ಟೆಂಬರ್', en: 'September' },
-    { kn: 'ಅಕ್ಟೋಬರ್', en: 'October' },
-    { kn: 'ನವೆಂಬರ್', en: 'November' },
-    { kn: 'ಡಿಸೆಂಬರ್', en: 'December' },
+    {kn: 'ಜನವರಿ', en: 'January'},
+    {kn: 'ಫೆಬ್ರವರಿ', en: 'February'},
+    {kn: 'ಮಾರ್ಚ್', en: 'March'},
+    {kn: 'ಏಪ್ರಿಲ್', en: 'April'},
+    {kn: 'ಮೇ', en: 'May'},
+    {kn: 'ಜೂನ್', en: 'June'},
+    {kn: 'ಜುಲೈ', en: 'July'},
+    {kn: 'ಆಗಸ್ಟ್', en: 'August'},
+    {kn: 'ಸೆಪ್ಟೆಂಬರ್', en: 'September'},
+    {kn: 'ಅಕ್ಟೋಬರ್', en: 'October'},
+    {kn: 'ನವೆಂಬರ್', en: 'November'},
+    {kn: 'ಡಿಸೆಂಬರ್', en: 'December'},
 ];
-const KN_NUMS = ['೦','೧','೨','೩','೪','೫','೬','೭','೮','೯'];
+const KN_NUMS = ['೦', '೧', '೨', '೩', '೪', '೫', '೬', '೭', '೮', '೯'];
 
 function parseBlogDate(dateStr) {
     let d = Date.parse(dateStr);
     if (!isNaN(d)) return d;
     let enDateStr = dateStr;
-    KN_TO_EN_MONTHS.forEach(({ kn, en }) => {
+    KN_TO_EN_MONTHS.forEach(({kn, en}) => {
         enDateStr = enDateStr.replace(kn, en);
     });
     for (let i = 0; i < KN_NUMS.length; i++) {
@@ -87,7 +87,8 @@ const Blog = () => {
                 <div id="blog-notice-div">
                     <div className="blog-notice">
                         <h1 className="blog-notice-heading">
-                            {blogPosts.length === 0 ? <Link to="/photography" className="nav-link">{t('blogNoticeEmpty')}</Link> : getBlogNoticeText()}
+                            {blogPosts.length === 0 ? <Link to="/photography"
+                                                            className="nav-link">{t('blogNoticeEmpty')}</Link> : getBlogNoticeText()}
                         </h1>
                     </div>
                 </div>

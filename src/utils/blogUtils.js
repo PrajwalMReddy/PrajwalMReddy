@@ -6,7 +6,7 @@ function processFootnotes(markdown) {
     const footnoteDefRegex = /^\[\^(.+?)\]:\s+(.+)$/gm;
     let footnotes = [];
     let mainText = markdown.replace(footnoteDefRegex, (match, id, text) => {
-        footnotes.push({ id, text });
+        footnotes.push({id, text});
         return '';
     });
 

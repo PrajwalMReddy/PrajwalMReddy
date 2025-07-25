@@ -73,7 +73,7 @@ const Photography = () => {
 
     // Handle fullscreen toggle
     const toggleFullscreen = (img, meta) => {
-        setFullscreenImage(fullscreenImage ? null : { img, meta });
+        setFullscreenImage(fullscreenImage ? null : {img, meta});
     };
 
     // Close fullscreen on escape key
@@ -83,7 +83,7 @@ const Photography = () => {
                 setFullscreenImage(null);
             }
         };
-        
+
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
     }, [fullscreenImage]);
@@ -116,7 +116,8 @@ const Photography = () => {
                                             <div className="photo-meta-title">{meta.title}</div>
                                             {meta.location && meta.location.place && (
                                                 meta.location.lat && meta.location.lng ? (
-                                                    <a className="photo-meta-location" href={`https://www.google.com/maps?q=${meta.location.lat},${meta.location.lng}`}
+                                                    <a className="photo-meta-location"
+                                                       href={`https://www.google.com/maps?q=${meta.location.lat},${meta.location.lng}`}
                                                        target="_blank" rel="noopener noreferrer">
                                                         {meta.location.place}
                                                     </a>
@@ -137,8 +138,10 @@ const Photography = () => {
                                             aria-label="Expand image"
                                             style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}
                                         >
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" strokeWidth="2">
+                                                <path
+                                                    d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                                             </svg>
                                         </button>
                                     </>
@@ -149,12 +152,12 @@ const Photography = () => {
                 </div>)}
             </div>
         </main>
-        
+
         {/* Fullscreen overlay */}
         {fullscreenImage && (
             <div className="fullscreen-overlay" onClick={() => setFullscreenImage(null)}>
                 <div className="fullscreen-content">
-                    <button 
+                    <button
                         className="close-fullscreen"
                         onClick={(e) => {
                             e.stopPropagation();
@@ -162,16 +165,17 @@ const Photography = () => {
                         }}
                         aria-label="Close fullscreen"
                     >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12"/>
                         </svg>
                     </button>
-                    <img 
-                        src={fullscreenImage.img.src} 
+                    <img
+                        src={fullscreenImage.img.src}
                         alt={fullscreenImage.meta?.title || "Fullscreen image"}
                         onClick={(e) => e.stopPropagation()}
                     />
-                    <div className="image-protector" onClick={e => e.stopPropagation()} />
+                    <div className="image-protector" onClick={e => e.stopPropagation()}/>
                     {fullscreenImage.meta && (
                         <div className="fullscreen-meta">
                             <div className="fullscreen-title">{fullscreenImage.meta.title}</div>
@@ -179,16 +183,20 @@ const Photography = () => {
                                 <div className="fullscreen-date-location">
                                     {fullscreenImage.meta.location && fullscreenImage.meta.location.place && (
                                         fullscreenImage.meta.location.lat && fullscreenImage.meta.location.lng ? (
-                                            <a className="fullscreen-location" href={`https://www.google.com/maps?q=${fullscreenImage.meta.location.lat},${fullscreenImage.meta.location.lng}`}
+                                            <a className="fullscreen-location"
+                                               href={`https://www.google.com/maps?q=${fullscreenImage.meta.location.lat},${fullscreenImage.meta.location.lng}`}
                                                target="_blank" rel="noopener noreferrer">
                                                 {fullscreenImage.meta.location.place}
                                             </a>
                                         ) : (
-                                            <span className="fullscreen-location">{fullscreenImage.meta.location.place}</span>
+                                            <span
+                                                className="fullscreen-location">{fullscreenImage.meta.location.place}</span>
                                         )
                                     )}
-                                    {fullscreenImage.meta.location && fullscreenImage.meta.location.place && fullscreenImage.meta.date && <span> &nbsp;&ndash;&nbsp; </span>}
-                                    {fullscreenImage.meta.date && <span className="fullscreen-date">{fullscreenImage.meta.date}</span>}
+                                    {fullscreenImage.meta.location && fullscreenImage.meta.location.place && fullscreenImage.meta.date &&
+                                        <span> &nbsp;&ndash;&nbsp; </span>}
+                                    {fullscreenImage.meta.date &&
+                                        <span className="fullscreen-date">{fullscreenImage.meta.date}</span>}
                                 </div>
                             )}
                         </div>

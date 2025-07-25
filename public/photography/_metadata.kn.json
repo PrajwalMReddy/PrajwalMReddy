@@ -1,0 +1,170 @@
+[
+  {
+    "filename": "farm-life-1.jpeg",
+    "title": "ಹಳ್ಳಿ ಜೀವನ",
+    "location": {
+      "place": "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ"
+    },
+    "date": "ಡಿಸೆಂಬರ್ ೧೬, ೨೦೨೩"
+  },
+  {
+    "filename": "farm-life-2.jpeg",
+    "title": "ಹಳ್ಳಿ ಜೀವನ",
+    "location": {
+      "place": "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ"
+    },
+    "date": "ಮೇ ೨೪, ೨೦೨೪"
+  },
+  {
+    "filename": "nyc-sunset.jpeg",
+    "title": "ನೀಲಿ ಬೂದು ಬಿರುಗಾಳಿಯ ಮೋಡಗಳು ಮತ್ತು ಎರಡು ಕಾಮನಬಿಲ್ಲುಗಳೊಂದಿಗೆ ಕೆಳಗಿನ ಮಾನ್ಹಾಟ್ಟಾನದ ಸೂರ್ಯಾಸ್ತ",
+    "location": {
+      "place": "ಜರ್ಸಿ ನಗರ, ಹೊಸ ಜರ್ಸಿ"
+    },
+    "date": "೧೨ ಆಗಸ್ಟ್, ೨೦೨೪"
+  },
+  {
+    "filename": "cdg-787.jpeg",
+    "title": "ಏರ್ ಇಂಡಿಯಾ ಬೊ೭೮೭",
+    "location": {
+      "place": "ಪಾರಿಸ್ ಚಾರ್ಲ್ಸ್ ಡೆ ಗಾಲ್ ವಿಮಾನ ನಿಲ್ದಾಣ"
+    },
+    "date": "೧೧ ಜುಲೈ, ೨೦೨೩"
+  },
+  {
+    "filename": "july4-jc.jpeg",
+    "title": "ಜುಲೈ ೪ರ ಪಟಕಿಗಳಿಂದ ಬೆಳಗಿದ ೩೦ ಹಡ್ಸನ್ ರಸ್ತೆ",
+    "location": {
+      "place": "ಜರ್ಸಿ ನಗರ, ಹೊಸ ಜರ್ಸಿ"
+    },
+    "date": "೪ ಜುಲೈ, ೨೦೨೪"
+  },
+  {
+    "filename": "fortune-teller.jpeg",
+    "title": "ಹವಾಮಾನ ಮುನ್ಸೂಚಿಸುವ ತೆಂಗಿನಕಾಯಿ",
+    "location": {
+      "place": "ರಾಡಿಸನ್ ಬ್ಲೂ, ಗೋವ"
+    },
+    "date": "೨೨ ಜೂನ್, ೨೦೨೪"
+  },
+  {
+    "filename": "fuertes.jpeg",
+    "title": "ಫುರ್ತೆಸ್ ವೀಕ್ಷಣಾಲಯ",
+    "location": {
+      "place": "ಕೊರ್ನೆಲ್ ವಿಶ್ವವಿದ್ಯಾಲಯ"
+    },
+    "date": "೨೦ ಆಗಸ್ಟ್, ೨೦೨೪"
+  },
+  {
+    "filename": "jellyfish.jpeg",
+    "title": "ಲೋಳೆ ಮೀನು",
+    "location": {
+      "place": "ಕೆನಡಾದ ರಿಪ್ಲೆಯ ಅಕ್ವೇರಿಯಂ"
+    },
+    "date": "೩೧ ಜುಲೈ, ೨೦೨೪"
+  },
+  {
+    "filename": "red-leaves.jpeg",
+    "title": "ಕೆಂಪು ಎಲೆಗಳು",
+    "location": {
+      "place": "ಟೊರೊಂಟೊ, ಒಂಟಾರಿಯೊ"
+    },
+    "date": "೧ ಆಗಸ್ಟ್, ೨೦೨೪"
+  },
+  {
+    "filename": "cornell-cherry-blossoms.jpeg",
+    "title": "ಸಕುರಾ ಮತ್ತು ಗಡಿಯಾರ ಗೋಪುರ",
+    "location": {
+      "place": "ಕೊರ್ನೆಲ್ ವಿಶ್ವವಿದ್ಯಾಲಯ"
+    },
+    "date": "ಏಪ್ರಿಲ್ ೨೧, ೨೦೨೫"
+  },
+  {
+    "filename": "oculus-nyc.jpeg",
+    "title": "ಒಕುಲಸ್ ವಿಶ್ವ ವಾಣಿಜ್ಯ ಕೇಂದ್ರ",
+    "location": {
+      "place": "ಹೊಸ ಯೊರ್ಕ್ ನಗರ, ಹೊಸ ಯೊರ್ಕ್"
+    },
+    "date": "ಜುಲೈ ೨೫,೨೦೧೯"
+  },
+  {
+    "filename": "yana-caves.jpeg",
+    "title": "ಯಾಣ ಗುಹೆಗಳು",
+    "location": {
+      "place": "ಯಾಣ, ಕರ್ನಾಟಕ"
+    },
+    "date": "ಜೂನ್ ೧, ೨೦೨೪"
+  },
+  {
+    "filename": "clarke-quay.jpeg",
+    "title": "ಕ್ಲಾರ್ಕ್ ಬಂದರು ಕಟ್ಟೆ",
+    "location": {
+      "place": "ಸಿಂಗಾಪುರ"
+    },
+    "date": "ಡಿಸೆಂಬರ್ ೨೫, ೨೦೨೩"
+  },
+  {
+    "filename": "arts-quad-snow-fall.jpeg",
+    "title": "ಶರತ್ಕಾಲದ ಎಲೆಗಳು ಮತ್ತು ನೊವೆಂಬರ ಮಂಜು",
+    "location": {
+      "place": "ಕಲಾ ಚೌಕಾಂಗಣ, ಕೊರ್ನೆಲ್ ವಿಶ್ವವಿದ್ಯಾಲಯ"
+    },
+    "date": "ನೊವೆಂಬರ್ ೨೨, ೨೦೨೪"
+  },
+  {
+    "filename": "ub-city.jpeg",
+    "title": "ಯುಬಿ ಸಿಟಿ",
+    "location": {
+      "place": "ಬೆಂಗಳೂರು, ಕರ್ನಾಟಕ"
+    },
+    "date": "ಜನವರಿ ೧೨, ೨೦೨೫"
+  },
+  {
+    "filename": "singapore-lights.jpeg",
+    "title": "ಸಿಂಗಾಪುರದಲ್ಲಿ ದೀಪಗಳು ಬೆಳಗಿದ್ದು",
+    "location": {
+      "place": "ಕಲಾವಿಜ್ಞಾನ ಸಂಗ್ರಹಾಲಯ, ಸಿಂಗಾಪುರ"
+    },
+    "date": "ಡಿಸೆಂಬರ್ ೨೫, ೨೦೨೩"
+  },
+  {
+    "filename": "singapore-skyline-as.jpeg",
+    "title": "ಸಿಂಗಾಪುರ ನಗರದ ಕಟ್ಟಡಗಳು",
+    "location": {
+      "place": "ಕಲಾವಿಜ್ಞಾನ ಸಂಗ್ರಹಾಲಯ, ಸಿಂಗಾಪುರ"
+    },
+    "date": "ಡಿಸೆಂಬರ್ ೨೫, ೨೦೨೩"
+  },
+  {
+    "filename": "arc-de-triomphe.jpeg",
+    "title": "ಆರ್ಕ್ ಡಿ ಟ್ರಿಯೋಂಫ್",
+    "location": {
+      "place": "ಅವೆನ್ಯೂ ಡೆಸ್ ಚಾಂಪ್ಸ್-ಎಲಿಸೀಸ್, ಪಾರಿಸ್"
+    },
+    "date": "ಜುಲೈ ೮, ೨೦೨೩"
+  },
+  {
+    "filename": "nomads-tent.jpeg",
+    "title": "ಅಲೆಮಾರಿಗಳ ಜೀವನ",
+    "location": {
+      "place": "ಪಂಗೊಂಗ್ ಕೆರೆ, ಭಾರತ-ಟಿಬೆಟ್ ಗಡಿ"
+    },
+    "date": "ಜುಲೈ ೨, ೨೦೨೫"
+  },
+  {
+    "filename": "st-paul-london.jpeg",
+    "title": "ಸಂತ ಪಾಲ್ ಆರಾಧನಮ೦ದಿರ",
+    "location": {
+      "place": "ಲಂಡನ್, ಆಂಗ್ಲನಾಡು"
+    },
+    "date": "ಏಪ್ರಿಲ್ ೨, ೨೦೨೫"
+  },
+  {
+    "filename": "sajjan-garh-palace.jpeg",
+    "title": "ಸಜ್ಜನಗಢ ಅರಮನೆ",
+    "location": {
+      "place": "ಉದಯಪುರ, ರಾಜಸ್ಥಾನ"
+    },
+    "date": "ಜನವರಿ ೨, ೨೦೨೫"
+  }
+]

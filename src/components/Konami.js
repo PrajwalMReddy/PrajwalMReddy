@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
-import { animate } from "../utils/konami/controller";
+import {animate} from "../utils/konami/controller";
 import {TILE_SIZE} from "../utils/konami/model";
 
 const Konami = () => {

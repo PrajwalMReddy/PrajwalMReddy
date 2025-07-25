@@ -54,7 +54,7 @@ function App() {
     return (<ErrorBoundary>
         <LanguageProvider>
             <Router>
-                <KonamiListener />
+                <KonamiListener/>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>
