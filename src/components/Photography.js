@@ -3,14 +3,8 @@ import {useLanguage} from "../utils/LanguageContext";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
 
+// Remove importAll and require.context usage
 // Dynamically import all images from the photography folder
-function importAll(r) {
-    return r.keys().map((key) => ({
-        src: r(key), filename: key.replace(/^\.\//, "")
-    }));
-}
-
-const images = importAll(require.context("../../content/photography", false, /\.(png|jpe?g|svg|webp)$/));
 
 const Photography = () => {
     const {t, language} = useLanguage();
@@ -28,18 +22,18 @@ const Photography = () => {
     useEffect(() => {
         // Fetch the language-specific metadata file, fallback to English
         const fetchMeta = async () => {
-            const langFile = `/content/photography/metadata.${language}.json?v=${Date.now()}`;
+            const langFile = `/photography/_metadata.${language}.json?v=${Date.now()}`;
             try {
                 const res = await fetch(langFile);
                 if (res.ok) {
                     setMetadata(await res.json());
                 } else {
-                    const res = await fetch(langFile);
-                    setMetadata(res.ok ? await res.json() : []);
+                    const fallback = await fetch('/photography/_metadata.en.json');
+                    setMetadata(fallback.ok ? await fallback.json() : []);
                 }
             } catch {
-                const res = await fetch(langFile);
-                setMetadata(res.ok ? await res.json() : []);
+                const fallback = await fetch('/photography/_metadata.en.json');
+                setMetadata(fallback.ok ? await fallback.json() : []);
             }
         };
         fetchMeta();
@@ -99,68 +93,58 @@ const Photography = () => {
         <main>
             <h1 id="blog-heading">{t("pageTitle")}</h1>
             <div id="gallery-div">
-                {images.length === 0 ? (<div id="blog-notice-div">
-                    <div className="blog-notice">
-                        <h1 className="blog-notice-heading">{t("emptyGallery")}</h1>
-                    </div>
-                </div>) : (<div className="gallery-grid">
-                    {images.map((img, idx) => {
-                        const meta = getMeta(img.filename);
-                        const isLoaded = loadedImages.has(idx);
-                        const isVisible = visibleImages.has(idx);
-
-                        return (<div
-                            className="gallery-item"
-                            key={idx}
-                            ref={(el) => setImageRef(el, idx)}
-                            data-index={idx}
-                            onMouseEnter={() => setHoveredIdx(idx)}
-                            onMouseLeave={() => setHoveredIdx(null)}
-                            style={{position: "relative"}}
-                        >
-                            {isLoaded ? (<img
-                                src={img.src}
-                                alt={meta?.title || `Photography ${idx + 1}`}
-                                style={{opacity: isVisible ? 1 : 0.3, transition: 'opacity 0.3s ease'}}
-                            />) : (<div className="image-placeholder">
-                                Loading...
-                            </div>)}
-                            
-                            {/* Expand icon - only visible when hovering */}
-                            {isLoaded && hoveredIdx === idx && (
-                                <button 
-                                    className="expand-icon"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleFullscreen(img, meta);
-                                    }}
-                                    aria-label="Expand image"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                                    </svg>
-                                </button>
-                            )}
-                            
-                            {hoveredIdx === idx && meta && isLoaded && (
-                                <div className="photo-meta-overlay">
-                                    <div className="photo-meta-title">{meta.title}</div>
-                                    {meta.location && meta.location.place && (
-                                        meta.location.lat && meta.location.lng ? (
-                                            <a className="photo-meta-location" href={`https://www.google.com/maps?q=${meta.location.lat},${meta.location.lng}`}
-                                               target="_blank" rel="noopener noreferrer">
-                                                {meta.location.place}
-                                            </a>
-                                        ) : (
-                                            <span className="photo-meta-location">{meta.location.place}</span>
-                                        )
-                                    )}
-                                    {meta.date && (
-                                        <span className="photo-meta-date">{meta.date}</span>
-                                    )}
-                                </div>
-                            )}
-                        </div>);
+                {metadata.length === 0 ? null : (<div className="gallery-grid">
+                    {metadata.map((meta, idx) => {
+                        const imgUrl = `/photography/${meta.filename}`;
+                        return (
+                            <div
+                                className="gallery-item"
+                                key={idx}
+                                style={{position: "relative"}}
+                                onMouseEnter={() => setHoveredIdx(idx)}
+                                onMouseLeave={() => setHoveredIdx(null)}
+                            >
+                                <img
+                                    src={imgUrl}
+                                    alt={meta?.title || `Photography ${idx + 1}`}
+                                    loading="lazy"
+                                    style={{opacity: 1, transition: 'opacity 0.3s ease'}}
+                                />
+                                {hoveredIdx === idx && (
+                                    <>
+                                        <div className="photo-meta-overlay">
+                                            <div className="photo-meta-title">{meta.title}</div>
+                                            {meta.location && meta.location.place && (
+                                                meta.location.lat && meta.location.lng ? (
+                                                    <a className="photo-meta-location" href={`https://www.google.com/maps?q=${meta.location.lat},${meta.location.lng}`}
+                                                       target="_blank" rel="noopener noreferrer">
+                                                        {meta.location.place}
+                                                    </a>
+                                                ) : (
+                                                    <span className="photo-meta-location">{meta.location.place}</span>
+                                                )
+                                            )}
+                                            {meta.date && (
+                                                <span className="photo-meta-date">{meta.date}</span>
+                                            )}
+                                        </div>
+                                        <button
+                                            className="expand-icon"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setFullscreenImage({img: {src: imgUrl}, meta});
+                                            }}
+                                            aria-label="Expand image"
+                                            style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}
+                                        >
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                            </svg>
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        );
                     })}
                 </div>)}
             </div>
@@ -212,7 +196,6 @@ const Photography = () => {
                 </div>
             </div>
         )}
-        
         <Footer/>
     </div>);
 };

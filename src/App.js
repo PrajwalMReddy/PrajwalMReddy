@@ -59,10 +59,10 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/projects" element={<Projects/>}/>
                     <Route path="/blog" element={<Blog/>}/>
-                    <Route path="/content/blog/:slug" element={<BlogPost/>}/>
+                    <Route path="/blog/:slug" element={<BlogPost/>}/>
 
                     <Route path="/research" element={<Research/>}/>
-                    <Route path="/content/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
+                    <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>
                     <Route path="/photography" element={<Photography/>}/>
                     <Route path="/konami" element={<Konami/>}/>
 

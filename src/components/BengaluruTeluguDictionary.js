@@ -43,7 +43,7 @@ const BengaluruTeluguDictionary = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/content/research/bengaluru-telugu-lexicon.json');
+                const response = await fetch('/research/bengaluru-telugu-lexicon.json');
                 if (!response.ok) throw new Error('Failed to fetch dictionary');
                 const data = await response.json();
                 setEntries(data);
@@ -64,7 +64,8 @@ const BengaluruTeluguDictionary = () => {
         const searchLower = search.toLowerCase();
         const teluguMatch = entry.telugu && entry.telugu.toLowerCase().includes(searchLower);
         const meaningMatch = entry.meaning && entry.meaning.some(m => m.toLowerCase().includes(searchLower));
-        return teluguMatch || meaningMatch;
+        const ipaMatch = entry.ipa && entry.ipa.toLowerCase().includes(searchLower);
+        return teluguMatch || meaningMatch || ipaMatch;
     });
 
     // Group entries by initial Kannada letter

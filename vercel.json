@@ -19,14 +19,6 @@
       "dest": "/research/$1"
     },
     {
-      "src": "/photography/(.*)",
-      "dest": "/photography/$1"
-    },
-    {
-      "src": "/img/(.*)",
-      "dest": "/img/$1"
-    },
-    {
       "src": "/assets/(.*)",
       "dest": "/assets/$1",
       "headers": {

@@ -93,7 +93,7 @@ const Blog = () => {
                 </div>
                 {blogPosts.length > 0 && (<div className="blog-grid">
                     {blogPosts.map((post) => (<Link
-                        to={`/content/blog/${post.slug}`}
+                        to={`/blog/${post.slug}`}
                         key={post.slug}
                         className="blog-card"
                     >

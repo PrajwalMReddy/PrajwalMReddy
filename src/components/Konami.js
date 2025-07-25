@@ -25,6 +25,7 @@ const Konami = () => {
             return;
         }
         const displayText = t('displayText');
+        console.log('Canvas and context initialized', canvas, context);
         animate(context, displayText);
     }, [t]);
 

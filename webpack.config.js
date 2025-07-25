@@ -10,7 +10,9 @@ module.exports = {
         publicPath: '/', // important for routing
     },
     resolve: {
-        // No longer using @img alias; all images are in /src/content/img or /src/content/photography
+        alias: {
+            '@img': path.resolve(__dirname, 'public/img'),
+        },
         extensions: ['.js', '.jsx', '.json'], // ensure JSX files are handled
     },
     module: {
@@ -42,20 +44,16 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, 'src/content/blog'),
+                    from: path.resolve(__dirname, 'public/blog'),
                     to: 'blog',
                 },
                 {
-                    from: path.resolve(__dirname, 'src/content/research'),
+                    from: path.resolve(__dirname, 'public/research'),
                     to: 'research',
                 },
                 {
-                    from: path.resolve(__dirname, 'src/content/photography'),
+                    from: path.resolve(__dirname, 'public/photography'),
                     to: 'photography',
-                },
-                {
-                    from: path.resolve(__dirname, 'src/content/img'),
-                    to: 'img',
                 },
             ],
         }),

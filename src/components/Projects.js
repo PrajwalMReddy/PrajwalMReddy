@@ -3,7 +3,7 @@ import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ProjectCard from './ProjectCard';
-import {chunkArray, getImage} from '../utils/componentUtils';
+import {getImage} from '../utils/componentUtils';
 
 const Projects = () => {
     const {t} = useLanguage();

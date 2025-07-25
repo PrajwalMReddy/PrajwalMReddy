@@ -101,7 +101,7 @@
     color: var(--text);
     letter-spacing: 0.02em;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 8px rgba(44,62,80,0.10);
+    text-shadow: 0 2px 8px rgba(44, 62, 80, 0.10);
 }
 
 .blog-post-description {
@@ -294,6 +294,7 @@
         margin-left: 0;
         margin-right: 0;
     }
+
     .blog-post {
         margin-left: 0;
         margin-right: 0;
@@ -367,18 +368,23 @@
     .blog-grid {
         max-width: 100%;
     }
+
     .blog-post {
         padding: 0.5rem 0.2rem;
     }
+
     .blog-post-title {
         font-size: 1.05rem;
     }
+
     .blog-post-description {
         font-size: 0.95rem;
     }
+
     .blog-post-date, .blog-post-author {
         font-size: 0.85rem;
     }
+
     .blog-post-content {
         font-size: 14px;
         padding: 0.5rem 0.2rem;

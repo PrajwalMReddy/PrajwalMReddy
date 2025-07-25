@@ -34,7 +34,7 @@ function processFootnotes(markdown) {
 // Fetch all blog post metadata from metadata.json
 export const getAllBlogPosts = async () => {
     try {
-        const response = await fetch('/content/blog/metadata.json');
+        const response = await fetch('/blog/_metadata.json');
         if (!response.ok) throw new Error('Failed to fetch blog index');
         const blogIndex = await response.json();
         // Only return posts that are public or have no visibility set
@@ -48,7 +48,7 @@ export const getAllBlogPosts = async () => {
 // Fetch the markdown content for a given slug
 export const fetchBlogContent = async (filename) => {
     try {
-        const response = await fetch(`/content/blog/${filename}`);
+        const response = await fetch(`/blog/${filename}`);
         if (!response.ok) throw new Error('Failed to fetch blog content');
         const content = await response.text();
         return content;
@@ -71,7 +71,7 @@ export const parseBlogContent = (content) => {
 export const getBlogPostBySlug = async (slug) => {
     // Fetch the full index, not filtered by visibility
     try {
-        const response = await fetch('/content/blog/metadata.json');
+        const response = await fetch('/blog/_metadata.json');
         if (!response.ok) throw new Error('Failed to fetch blog index');
         const blogIndex = await response.json();
         const post = blogIndex.find((p) => p.slug === slug);

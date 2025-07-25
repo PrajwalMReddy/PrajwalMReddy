@@ -3,7 +3,6 @@ import SideNav from './SideNav';
 import Footer from './Footer';
 import ResearchCard from './ResearchCard';
 import {useLanguage} from '../utils/LanguageContext';
-import {chunkArray} from '../utils/componentUtils';
 
 const Research = () => {
     const {t} = useLanguage();

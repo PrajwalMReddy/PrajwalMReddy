@@ -1509,7 +1509,7 @@ body:not(.dark-mode) .fullscreen-overlay {
 }
 
 body:not(.dark-mode) .fullscreen-content img {
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 1.5px 8px rgba(0,0,0,0.10);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1.5px 8px rgba(0, 0, 0, 0.10);
 }
 
 .image-protector {
@@ -1567,21 +1567,21 @@ body:not(.dark-mode) .fullscreen-content img {
 }
 
 @media (max-width: 600px) {
-  .close-fullscreen {
-    top: 8px;
-    right: 8px;
-    width: 38px;
-    height: 38px;
-  }
+    .close-fullscreen {
+        top: 8px;
+        right: 8px;
+        width: 38px;
+        height: 38px;
+    }
 }
 
 @media (max-width: 400px) {
-  .close-fullscreen {
-    top: 4px;
-    right: 4px;
-    width: 32px;
-    height: 32px;
-  }
+    .close-fullscreen {
+        top: 4px;
+        right: 4px;
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .fullscreen-meta {
@@ -1874,21 +1874,26 @@ body:not(.dark-mode) .fullscreen-content img {
 body:not(.dark-mode) .fullscreen-meta {
     color: #222;
 }
+
 body:not(.dark-mode) .fullscreen-title {
     color: #111;
-    text-shadow: 0 1px 4px rgba(255,255,255,0.5);
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.5);
 }
+
 body:not(.dark-mode) .fullscreen-location {
     color: #333;
-    text-shadow: 0 1px 4px rgba(255,255,255,0.4);
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.4);
 }
+
 body:not(.dark-mode) .fullscreen-date {
     color: #666;
-    text-shadow: 0 1px 4px rgba(255,255,255,0.3);
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.3);
 }
+
 body:not(.dark-mode) .fullscreen-location a {
     color: #1976d2;
 }
+
 body:not(.dark-mode) .fullscreen-location a:hover {
     color: #0d47a1;
 }
@@ -1896,15 +1901,18 @@ body:not(.dark-mode) .fullscreen-location a:hover {
 body.dark-mode .hamburger-menu {
     background: rgba(44, 62, 80, 0.95);
     border: 1.5px solid var(--accent-color, #7D9BA6);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
+
 body.dark-mode .hamburger-menu:hover {
     background: #23272A;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
+
 body.dark-mode .hamburger-menu span {
     background-color: var(--text, #F5F7FA);
 }
+
 body.dark-mode .hamburger-menu:active span {
     background-color: var(--accent-color, #7D9BA6);
 }
