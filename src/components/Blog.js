@@ -6,20 +6,13 @@ import Footer from './Footer';
 import {getAllBlogPosts} from '../utils/blogUtils';
 
 // Helper: Kannada to English month and numeral conversion
-const KN_TO_EN_MONTHS = [
-    {kn: 'ಜನವರಿ', en: 'January'},
-    {kn: 'ಫೆಬ್ರವರಿ', en: 'February'},
-    {kn: 'ಮಾರ್ಚ್', en: 'March'},
-    {kn: 'ಏಪ್ರಿಲ್', en: 'April'},
-    {kn: 'ಮೇ', en: 'May'},
-    {kn: 'ಜೂನ್', en: 'June'},
-    {kn: 'ಜುಲೈ', en: 'July'},
-    {kn: 'ಆಗಸ್ಟ್', en: 'August'},
-    {kn: 'ಸೆಪ್ಟೆಂಬರ್', en: 'September'},
-    {kn: 'ಅಕ್ಟೋಬರ್', en: 'October'},
-    {kn: 'ನವೆಂಬರ್', en: 'November'},
-    {kn: 'ಡಿಸೆಂಬರ್', en: 'December'},
-];
+const KN_TO_EN_MONTHS = [{kn: 'ಜನವರಿ', en: 'January'}, {kn: 'ಫೆಬ್ರವರಿ', en: 'February'}, {
+    kn: 'ಮಾರ್ಚ್', en: 'March'
+}, {kn: 'ಏಪ್ರಿಲ್', en: 'April'}, {kn: 'ಮೇ', en: 'May'}, {kn: 'ಜೂನ್', en: 'June'}, {
+    kn: 'ಜುಲೈ', en: 'July'
+}, {kn: 'ಆಗಸ್ಟ್', en: 'August'}, {kn: 'ಸೆಪ್ಟೆಂಬರ್', en: 'September'}, {kn: 'ಅಕ್ಟೋಬರ್', en: 'October'}, {
+    kn: 'ನವೆಂಬರ್', en: 'November'
+}, {kn: 'ಡಿಸೆಂಬರ್', en: 'December'},];
 const KN_NUMS = ['೦', '೧', '೨', '೩', '೪', '೫', '೬', '೭', '೮', '೯'];
 
 function parseBlogDate(dateStr) {
@@ -43,18 +36,37 @@ const Blog = () => {
     const [error, setError] = useState(null);
 
     const getBlogNoticeText = () => {
-        let blogNoticeArray = t('blogNotice');
-        let blogNotice;
-        if (localStorage.getItem(language + 'BlogNotice') === null) {
-            blogNotice = t('blogNotice')[0];
-            localStorage.setItem(language + 'BlogNotice', blogNotice);
-        } else if (Math.random() < 0.1) {
-            blogNotice = blogNoticeArray[Math.floor(Math.random() * blogNoticeArray.length)];
-            localStorage.setItem(language + 'BlogNotice', blogNotice);
-        } else {
-            blogNotice = localStorage.getItem(language + 'BlogNotice');
+        const blogNoticeArray = t('blogNotice');
+        const storageKey = language + 'BlogNotice';
+
+        const defaultNotice = blogNoticeArray[0];
+        let currentNotice = localStorage.getItem(storageKey);
+
+        // If no notice is stored, set and return default
+        if (!currentNotice) {
+            localStorage.setItem(storageKey, defaultNotice);
+            return defaultNotice;
         }
-        return blogNotice;
+
+        if (currentNotice === defaultNotice) {
+            // 20% chance to switch to another notice
+            if (Math.random() < 0.2) {
+                const randomOther = blogNoticeArray[Math.floor(Math.random() * blogNoticeArray.length)];
+                localStorage.setItem(storageKey, randomOther);
+                return randomOther;
+            } else {
+                return defaultNotice;
+            }
+        } else {
+            // 80% chance to stay on current non-default notice
+            if (Math.random() < 0.8) {
+                return currentNotice;
+            } else {
+                // 20% chance to return to default
+                localStorage.setItem(storageKey, defaultNotice);
+                return defaultNotice;
+            }
+        }
     };
 
     useEffect(() => {
@@ -66,7 +78,7 @@ const Blog = () => {
             try {
                 setLoading(true);
                 const posts = await getAllBlogPosts();
-                const filteredPosts = posts.filter(post => post.language === language);
+                const filteredPosts = posts; // posts.filter(post => post.language === language);
                 const sortedPosts = filteredPosts.sort((a, b) => parseBlogDate(b.date) - parseBlogDate(a.date));
                 setBlogPosts(sortedPosts);
             } catch (err) {
@@ -75,8 +87,14 @@ const Blog = () => {
                 setLoading(false);
             }
         };
+
         loadBlogPosts();
     }, [language]);
+
+    // Blog notice setup (avoids double call)
+    const blogNotice = getBlogNoticeText();
+    const defaultNotice = t('blogNotice')[0];
+    const shouldLinkToPhotography = blogPosts.length === 0 || blogNotice === defaultNotice;
 
     return (<div id="app-root">
         <SideNav/>
@@ -87,11 +105,13 @@ const Blog = () => {
                 <div id="blog-notice-div">
                     <div className="blog-notice">
                         <h1 className="blog-notice-heading">
-                            {blogPosts.length === 0 ? <Link to="/photography"
-                                                            className="nav-link">{t('blogNoticeEmpty')}</Link> : getBlogNoticeText()}
+                            {shouldLinkToPhotography ? (<Link to="/photography" className="nav-link">
+                                {blogPosts.length === 0 ? t('blogNoticeEmpty') : defaultNotice}
+                            </Link>) : (blogNotice)}
                         </h1>
                     </div>
                 </div>
+
                 {blogPosts.length > 0 && (<div className="blog-grid">
                     {blogPosts.map((post) => (<Link
                         to={`/blog/${post.slug}`}

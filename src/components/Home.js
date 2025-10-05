@@ -47,6 +47,22 @@ const Home = () => {
         document.title = t('pageTitles.home');
     }, [t]);
 
+    // TODO Temporary
+    useEffect(() => {
+        const handleLoad = () => {
+            alert('Several images have been corrupted from the server side. Please bear with me as I work to restore them.');
+        };
+
+        // Add event listener for full page load
+        window.addEventListener('load', handleLoad);
+
+        // Cleanup on unmount
+        return () => {
+            window.removeEventListener('load', handleLoad);
+        };
+    }, []);
+
+
     // Get all project cards and filter for featured ones
     const programmingProjectCards = t('programmingProjectCards') || [];
     const otherProjectCards = t('otherProjectCards') || [];
@@ -147,12 +163,19 @@ const Home = () => {
                     <li className="contact-element">
                         {t('contactLinkedIn')}
                         <a className="contact-link" href="https://www.linkedin.com/in/prajwalmreddy" target="_blank"
-                           rel="noopener noreferrer">www.linkedin.com/in/prajwalmreddy</a>
+                           rel="noopener noreferrer">linkedin.com/in/prajwalmreddy</a>
+                    </li>
+                    <li className="contact-element">
+                        {t('contactCalendar')}
+                        <a className="contact-link" href="https://calendly.com/pmr93-cornell" target="_blank"
+                           rel="noopener noreferrer">{t('contactCalendarInfo')}</a>
                     </li>
                     <li className="contact-element">
                         {t('contactBlog')}
                         <Link to="/blog" className="contact-link">{t('contactBlogInfo')}</Link>
                     </li>
+
+                    <p className="contact-element">{t('contactNotice')}</p>
                 </ul>
             </div>
         </main>
