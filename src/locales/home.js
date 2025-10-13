@@ -4,7 +4,7 @@ export const home = {
         plane: "------\n" + "| | # \\                                      |\n" + "| ____ \\_________|----^\"|\"\"\"\"\"|\"\\___________ |\n" + " \\___\\   PR - 17 >>    `\"\"\"\"\"\"\"\"     =====  \"|D\n" + "       ^^-------____--\"\"\"\"\"\"\"\"\"\"+\"\"--_  __--\"|\n" + "                   `\"\"|\"-->####)+---|`\"\"     |\n" + "                                 \\  \\\n" + "                                <- O -)\n" + "                                  `\"' \n",
 
         homeTitle: "Hello World!",
-        homeIntro: "I'm [ˈprə.dʒʋəl ˈrɛ.ɖːi]",
+        homeIntro: "I'm [ˈprɐ.dʒʋəl ˈrɛ.ɖːi]",
         homeSubtitle: "a student, programmer, and builder.",
         homeDescription: "I am a college student at Cornell University, studying a double major in Linguistics and Computer Science, with a specialization in Economics. I am also passionate Urban Planning, often developing applications that focus on issues in these areas. My other non-academic interests include world building and conlanging.",
 

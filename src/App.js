@@ -8,6 +8,7 @@ import BlogPost from './components/BlogPost';
 import Research from './components/Research';
 import BengaluruTeluguDictionary from './components/BengaluruTeluguDictionary';
 import Photography from './components/Photography';
+import Contact from './components/Contact';
 import './styles.css';
 import NotFound from "./components/NotFound";
 import {translations} from './locales';
@@ -60,6 +61,7 @@ function App() {
                     <Route path="/projects" element={<Projects/>}/>
                     <Route path="/blog" element={<Blog/>}/>
                     <Route path="/blog/:slug" element={<BlogPost/>}/>
+                    <Route path="/contact" element={<Contact/>}/>
 
                     <Route path="/research" element={<Research/>}/>
                     <Route path="/research/bengaluru-telugu" element={<BengaluruTeluguDictionary/>}/>

@@ -3,6 +3,7 @@ import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ProjectCard from './ProjectCard';
+import ContactSection from './ContactSection';
 import {Link} from "react-router-dom";
 import {colorStopsDark, colorStopsLight, getInterpolatedColorAtPercent, isDarkMode} from '../utils/colorUtils';
 import ExperienceCard from './ExperienceCard';
@@ -46,21 +47,6 @@ const Home = () => {
     useEffect(() => {
         document.title = t('pageTitles.home');
     }, [t]);
-
-    // TODO Temporary
-    useEffect(() => {
-        const handleLoad = () => {
-            alert('Several images have been corrupted from the server side. Please bear with me as I work to restore them.');
-        };
-
-        // Add event listener for full page load
-        window.addEventListener('load', handleLoad);
-
-        // Cleanup on unmount
-        return () => {
-            window.removeEventListener('load', handleLoad);
-        };
-    }, []);
 
 
     // Get all project cards and filter for featured ones
@@ -151,33 +137,7 @@ const Home = () => {
                 </div>
             </div>}
 
-            <div id="contact-section">
-                <h1 id="contact-heading">{t('contactHeading')}</h1>
-                <ul id="contact-list">
-                    <li className="contact-element">{t('contactEmail')}</li>
-                    <li className="contact-element">
-                        {t('contactGitHub')}
-                        <a className="contact-link" href="https://github.com/PrajwalMReddy" target="_blank"
-                           rel="noopener noreferrer">github.com/PrajwalMReddy</a>
-                    </li>
-                    <li className="contact-element">
-                        {t('contactLinkedIn')}
-                        <a className="contact-link" href="https://www.linkedin.com/in/prajwalmreddy" target="_blank"
-                           rel="noopener noreferrer">linkedin.com/in/prajwalmreddy</a>
-                    </li>
-                    <li className="contact-element">
-                        {t('contactCalendar')}
-                        <a className="contact-link" href="https://calendly.com/pmr93-cornell" target="_blank"
-                           rel="noopener noreferrer">{t('contactCalendarInfo')}</a>
-                    </li>
-                    <li className="contact-element">
-                        {t('contactBlog')}
-                        <Link to="/blog" className="contact-link">{t('contactBlogInfo')}</Link>
-                    </li>
-
-                    <p className="contact-element">{t('contactNotice')}</p>
-                </ul>
-            </div>
+            <ContactSection showOnMainPage={true} />
         </main>
         <Footer/>
     </div>;

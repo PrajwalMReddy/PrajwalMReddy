@@ -662,6 +662,31 @@ footer {
     cursor: pointer;
 }
 
+.contact-notice {
+    font-size: 25px;
+    margin-left: var(--nav-width);
+    padding-left: 6%;
+    margin-bottom: 30px;
+    margin-top: 20px;
+    line-height: 1.4;
+}
+
+.contact-intro {
+    font-size: 25px;
+    margin-left: var(--nav-width);
+    padding-left: 6%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    line-height: 1.4;
+}
+
+.contact-subheading {
+    margin-left: var(--nav-width);
+    font-size: 35px;
+    padding-top: 3%;
+    padding-left: 6%;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     :root {

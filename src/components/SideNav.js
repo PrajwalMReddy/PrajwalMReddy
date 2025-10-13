@@ -59,12 +59,12 @@ const SideNav = () => {
                                                   onClick={() => setIsOpen(false)}>{t('project')}</Link></li>
                 <li className="nav-element"><Link to="/blog" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('blog')}</Link></li>
+                <li className="nav-element"><Link to="/contact" className="nav-link"
+                                                  onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>
                 {/*<li className="nav-element"><Link to="/research" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('research')}</Link></li>
                 <li className="nav-element"><Link to="/photography" className="nav-link"
-                                                  onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>
-                <li className="nav-element"><Link to="/contact" className="nav-link"
-                                                  onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>*/}
+                                                  onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>*/}
 
                 {/* Homepage subsections */}
                 {/*<li className="nav-element">
@@ -91,14 +91,6 @@ const SideNav = () => {
                         {t('experience')}
                     </button>
                 </li>*/}
-                <li className="nav-element">
-                    <button
-                        className="nav-link subsection-link"
-                        onClick={() => navigateToSection('contact-section')}
-                    >
-                        {t('contact')}
-                    </button>
-                </li>
             </ul>
             <Settings/>
         </nav>

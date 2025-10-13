@@ -39,6 +39,21 @@ const Photography = () => {
         fetchMeta();
     }, [language]);
 
+    // TODO Temporary
+    useEffect(() => {
+        const handleLoad = () => {
+            alert('Several images have been corrupted from the server side. Please bear with me as I work to restore them.');
+        };
+
+        // Add event listener for full page load
+        window.addEventListener('load', handleLoad);
+
+        // Cleanup on unmount
+        return () => {
+            window.removeEventListener('load', handleLoad);
+        };
+    }, []);
+
     // Intersection Observer for lazy loading
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
