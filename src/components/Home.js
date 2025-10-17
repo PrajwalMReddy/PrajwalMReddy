@@ -55,8 +55,9 @@ const Home = () => {
     const allProjectCards = [...programmingProjectCards, ...otherProjectCards];
     const featuredProjectCards = allProjectCards.filter(project => project.featured === true);
 
-    // Get experience cards
-    const experienceCards = t('experienceCards') || [];
+    // Get experience cards and show featured subset on home
+    const allExperienceCards = t('experienceCards') || [];
+    const featuredExperienceCards = allExperienceCards.filter(exp => exp.featured === true);
 
     console.log(t('plane'));
     return <div id="app-root">
@@ -114,11 +115,13 @@ const Home = () => {
                 </div>
             </div>}
 
-            {experienceCards.length > 0 && <div id="experience">
-                <h2 id="featured-projects-heading">{t('experienceTitle')}</h2>
-                <p id="featured-projects-subheading">{t('experienceDescription')}</p>
+            {featuredExperienceCards.length > 0 && <div id="experience">
+                <h2 id="featured-projects-heading">{t('featuredExperienceTitle')}</h2>
+                <h2 id="featured-projects-subheading"><Link to="/experience"
+                                                            className="nav-link">{t('featuredExperienceSubTitle')}</Link>
+                </h2>
                 <div className="experience-line">
-                    {chunkArray(experienceCards, 2).map((row, rowIdx) => (<div className="experience-row" key={rowIdx}
+                    {chunkArray(featuredExperienceCards, 2).map((row, rowIdx) => (<div className="experience-row" key={rowIdx}
                                                                                style={{
                                                                                    display: 'flex',
                                                                                    width: '100%',

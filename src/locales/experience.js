@@ -5,7 +5,7 @@ export const experience = {
         technologies: "Technologies",
 
         experienceCards: [
-            // {title: "", company: "", duration: "", description: "", technologies: [],}
+            // {title: "", company: "", duration: "", description: "", technologies: [], featured: true},
         ],
     }, kn: {
         experienceTitle: "ಕಸುಬಿನ ಅನುಬವ",
@@ -13,7 +13,7 @@ export const experience = {
         technologies: "ತಂತ್ರಜ್ಞಾನಗಳು",
 
         experienceCards: [
-            // {title: "", company: "", duration: "", description: "", technologies: [""],}
+            // {title: "", company: "", duration: "", description: "", technologies: [], featured: true},
         ],
     }
 };

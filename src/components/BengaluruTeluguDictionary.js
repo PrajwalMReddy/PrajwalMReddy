@@ -74,7 +74,7 @@ const BengaluruTeluguDictionary = () => {
 
     return (<div id="app-root">
         <SideNav/>
-        <main>
+        <main className="research-page">
             <h1 id="project-heading">{t('researchDictionaryTitle')}</h1>
             <div className="dictionary-search-bar">
                 <h2 className="dictionary-section-heading">{t('researchDictionarySearchTitle')}</h2>

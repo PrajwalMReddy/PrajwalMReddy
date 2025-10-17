@@ -5,13 +5,13 @@ export const sideNav = {
         blog: "Blog",
         skill: "Skills",
         experience: "Experience",
-        contact: "Contact Me",
+    contact: "About Me",
     }, kn: {
         navName: "ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
         project: "ಯೋಜನೆಗಳು",
         blog: "ಮಿಂಬರಹ",
         skill: "ಕಲಿಕೆಗಳು",
         experience: "ಅನುಬವ",
-        contact: "ಸಂಪರ್ಕಿಸಿ",
+    contact: "ನನ್ನ ಬಗ್ಗೆ",
     }
 };

@@ -3,8 +3,9 @@ export const meta = {
         pageTitles: {
             home: "Home | Prajwal Reddy",
             projects: "Projects | Prajwal Reddy",
+            experience: "Experience | Prajwal Reddy",
             blog: "Blog | Prajwal Reddy",
-            contact: "Contact Me | Prajwal Reddy",
+            contact: "About Me | Prajwal Reddy",
 
             research: "Research | Prajwal Reddy",
             dictionary: "Bengaluru Telugu Dictionary | Research | Prajwal Reddy",
@@ -20,8 +21,9 @@ export const meta = {
         pageTitles: {
             home: "ಮನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             projects: "ಯೋಜನೆಗಳು | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            experience: "ಅನುಬವ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             blog: "ಮಿಂಬರಹ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            contact: "ಸಂಪರ್ಕಿಸಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            contact: "ನನ್ನ ಬಗ್ಗೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
 
             research: "ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             dictionary: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ | ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",

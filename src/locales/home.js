@@ -25,6 +25,8 @@ export const home = {
         // Featured Projects Section
         featuredProjectsTitle: "Featured Projects",
         featuredProjectsSubTitle: "See All Projects >",
+        featuredExperienceTitle: "Featured Experiences",
+        featuredExperienceSubTitle: "See All Experiences >",
     }, kn: {
         // Home Page
         plane: "------\n" + "| | # \\                                      |\n" + "| ____ \\_________|----^\"|\"\"\"\"\"|\"\\___________ |\n" + " \\___\\   ಪ್ರರೆ - ೧೭ >>   `\"\"\"\"\"\"\"\"     =====  \"|D\n" + "       ^^-------____--\"\"\"\"\"\"\"\"\"\"+\"\"--_  __--\"|\n" + "                   `\"\"|\"-->####)+---|`\"\"     |\n" + "                                 \\  \\\n" + "                                <- O -)\n" + "                                  `\"' \n",
@@ -51,5 +53,7 @@ export const home = {
         // Featured Projects Section
         featuredProjectsTitle: "ಬೆಳಗಿಸಿದ ಯೋಜನೆಗಳು",
         featuredProjectsSubTitle: "ಯೋಜನೆಗಳೆಲ್ಲ ನೋಡಲು >",
+        featuredExperienceTitle: "ಬೆಳಗಿಸಿದ ಅನುಬವಗಳು",
+        featuredExperienceSubTitle: "ಅನುಬವಗಳೆಲ್ಲ ನೋಡಲು >",
     }
 };

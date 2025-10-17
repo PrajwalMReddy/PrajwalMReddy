@@ -57,9 +57,11 @@ const SideNav = () => {
                                         onClick={() => setIsOpen(false)}>{t('navName')}</Link></li>
                 <li className="nav-element"><Link to="/projects" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('project')}</Link></li>
+                {/*<li className="nav-element"><Link to="/experience" className="nav-link"
+                                                  onClick={() => setIsOpen(false)}>{t('experience')}</Link></li>*/}
                 <li className="nav-element"><Link to="/blog" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('blog')}</Link></li>
-                <li className="nav-element"><Link to="/contact" className="nav-link"
+                <li className="nav-element"><Link to="/about" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>
                 {/*<li className="nav-element"><Link to="/research" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('research')}</Link></li>

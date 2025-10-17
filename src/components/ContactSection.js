@@ -10,7 +10,7 @@ const ContactSection = ({ showOnMainPage = false }) => {
         heading: {
             id: 'heading',
             type: 'heading',
-            content: () => <h1 id="contact-heading">{t('contactHeading')}</h1>,
+            content: () => <h1 id="contact-heading">{t(showOnMainPage ? 'contactHeadingHome' : 'contactHeading')}</h1>,
             showOnMain: true
         },
         intro: {

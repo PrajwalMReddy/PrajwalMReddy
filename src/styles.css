@@ -203,10 +203,7 @@ html {
     color: var(--text);
 }
 
-/* Remove 'all: unset' for dropdown and option */
-#nav-language-text, #nav-language-choice, .nav-language-option {
-    /* all: unset; */
-}
+/* Remove 'all: unset' for dropdown and option (old rule removed to avoid empty ruleset) */
 
 /* Style the language select to look like a dropdown */
 .nav-language-select {
@@ -842,6 +839,7 @@ footer {
     .footer-div,
     #project-heading,
     .project-type-heading,
+    .project-grid,
     .project-line,
     #contact-heading,
     #contact-list,
@@ -1345,8 +1343,9 @@ img {
 .dictionary-search-bar {
     width: 100%;
     max-width: 800px;
-    margin-left: var(--nav-width);
-    padding-left: 10%;
+    /* Align with .dictionary-list */
+    margin: 0 5% 0 calc(var(--nav-width) + 5%);
+    padding: 0 5%;
 }
 
 #project-heading + .dictionary-search-bar {
@@ -1355,7 +1354,6 @@ img {
 
 .dictionary-search-input {
     width: 100%;
-    max-width: 500px;
     margin-bottom: 2.5rem;
     padding: 0.7em 1.2em;
     font-size: 1.1rem;
@@ -1890,7 +1888,7 @@ body:not(.dark-mode) .fullscreen-content img {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2.5rem;
     margin-left: var(--nav-width);
-    padding: 0 5%;
+    padding: 0 6%;
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
     box-sizing: border-box;

@@ -1,20 +1,28 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const ResearchCard = ({title, image, description, link, linkText}) => {
+const ResearchCard = ({title, image, description, link}) => {
     const content = (
-        <>
-            <h1 className="project-title">{title}</h1>
-            {image && <img className="project-image" src={image} alt={title}/>}
-            <p className="project-text">{description}</p>
-        </>
+        <div className="research-card-inner">
+            <h2 className="research-card-title">{title}</h2>
+            {image && <img className="research-card-image" src={image} alt={title} />}
+            {description && <p className="research-card-desc">{description}</p>}
+        </div>
     );
 
+    const isInternal = typeof link === 'string' && link.startsWith('/');
     return (
-        <div className="project-info">
+        <div className="project-info research-card">
             {link ? (
-                <a className="project-link" href={link} target="_blank" rel="noopener noreferrer">
-                    {content}
-                </a>
+                isInternal ? (
+                    <Link className="project-link research-card-link" to={link}>
+                        {content}
+                    </Link>
+                ) : (
+                    <a className="project-link research-card-link" href={link} rel="noopener noreferrer">
+                        {content}
+                    </a>
+                )
             ) : content}
         </div>
     );

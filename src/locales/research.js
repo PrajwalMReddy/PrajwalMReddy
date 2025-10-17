@@ -1,6 +1,7 @@
 export const research = {
     en: {
         researchTitle: "Research",
+        researchArticlesTitle: "Articles",
 
         // Bengaluru Telugu Research
         researchDictionaryTitle: "Bengaluru Telugu Dictionary",
@@ -8,14 +9,22 @@ export const research = {
         researchDictionarySearchPlaceholder: "Search by word, meaning, or pronunciation...",
         researchNoResults: "No results found.",
 
-        researchCards: [{
-            title: "A Complete Dictionary of Modern Spoken Bengaluru Telugu",
-            description: "A complete dictionary of the variety of spoken South Karnataka Telugu native to Bengaluru.",
-            link: "/research/bengaluru-telugu",
-            image: ""
-        }]
+        researchSections: [
+            {
+                title: "Bengaluru Telugu",
+                cards: [
+                    {
+                        title: "A Complete Dictionary of Modern Spoken Bengaluru Telugu",
+                        description: "A complete dictionary of the variety of spoken South Karnataka Telugu native to Bengaluru.",
+                        link: "/research/bengaluru-telugu-dictionary",
+                        image: ""
+                    }
+                ]
+            }
+        ],
     }, kn: {
         researchTitle: "ಸಂಶೋದನೆ",
+        researchArticlesTitle: "ಲೇಖನಗಳು",
 
         // Bengaluru Telugu Research
         researchDictionaryTitle: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ",
@@ -23,11 +32,18 @@ export const research = {
         researchDictionarySearchPlaceholder: "ಪದ, ಅರ್ತ, ಇಲ್ಲವೇ ಉಚ್ಚಾರಣೆಯನ್ನು ಹುಡುಕಿ...",
         researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ.",
 
-        researchCards: [{
-            title: "ಆದುನಿಕ ಆಡುವ ಬೆಂಗಳೂರು ತೆಲುಗಿನ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ",
-            description: "ಬೆಂಗಳೂರು ಮೂಲದ ತೆಂಕಣ ಕರ್ನಾಟಕದ ತೆಲುಗು ಆಡುನುಡಿಯ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ.",
-            link: "/research/bengaluru-telugu",
-            image: ""
-        }]
+        researchSections: [
+            {
+                title: "ಬೆಂಗಳೂರು ತೆಲುಗು",
+                cards: [
+                    {
+                        title: "ಆದುನಿಕ ಆಡುವ ಬೆಂಗಳೂರು ತೆಲುಗಿನ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ",
+                        description: "ಬೆಂಗಳೂರು ಮೂಲದ ತೆಂಕಣ ಕರ್ನಾಟಕದ ತೆಲುಗು ಆಡುನುಡಿಯ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ.",
+                        link: "/research/bengaluru-telugu",
+                        image: ""
+                    }
+                ]
+            }
+        ],
     }
 };
