@@ -1,11 +1,11 @@
-import { marked } from 'marked';
+import {marked} from 'marked';
 
 // Native footnote support for markdown (reuse from blog)
 function processFootnotes(markdown) {
     const footnoteDefRegex = /^\[\^(.+?)\]:\s+(.+)$/gm;
     let footnotes = [];
     let mainText = markdown.replace(footnoteDefRegex, (match, id, text) => {
-        footnotes.push({ id, text });
+        footnotes.push({id, text});
         return '';
     });
 
@@ -30,12 +30,12 @@ function processFootnotes(markdown) {
 // Fetch all research post metadata
 export const getAllResearchPosts = async () => {
     try {
-        const response = await fetch('/research/_metadata.json');
-        if (!response.ok) throw new Error('Failed to fetch research index');
-        const researchIndex = await response.json();
-        return researchIndex.filter((p) => !p.visibility || p.visibility === 'public');
+        const response = await fetch('/research/metadata.json');
+        if (!response.ok) throw new Error('Failed to fetch research metadata');
+        const metadata = await response.json();
+        return metadata || [];
     } catch (error) {
-        console.error('Error fetching research index:', error);
+        console.error('Error fetching research metadata:', error);
         return [];
     }
 };
@@ -45,13 +45,54 @@ export const fetchResearchContent = async (filename) => {
     try {
         const response = await fetch(`/research/${filename}`);
         if (!response.ok) throw new Error('Failed to fetch research content');
-        return await response.text();
+        const content = await response.text();
+        return processFootnotes(content);
     } catch (error) {
         console.error('Error fetching research content:', error);
-        throw error;
+        return '';
     }
 };
 
+// Get translated research items for the current language
+// `metadata` is expected to be a flat array of items. This groups them by sectionTitle
+export const getTranslatedResearch = (metadata, language) => {
+    const visible = (metadata || []).filter(item => !item.visibility || item.visibility === 'public');
+
+    const groups = {};
+    for (const item of visible) {
+        const sectionTitle = (item.sectionTitle && (item.sectionTitle[language] || item.sectionTitle.en)) || '';
+        const key = sectionTitle || '_ungrouped_';
+        if (!groups[key]) groups[key] = [];
+
+        const baseItem = {
+            type: item.type,
+            title: (item.title && (item.title[language] || item.title.en)) || '',
+            description: (item.description && (item.description[language] || item.description.en)) || '',
+            image: item.image || '',
+            slug: item.slug,
+            date: item.date,
+            url: item.url,
+            component: item.component
+        };
+
+        if (item.type === 'custom') {
+            baseItem.link = `/research/${item.slug}`;
+        } else if (item.type === 'article') {
+            baseItem.link = `/research/${item.slug}`;
+        } else if (item.type === 'external') {
+            baseItem.link = item.url;
+        }
+
+        groups[key].push(baseItem);
+    }
+
+    return Object.keys(groups).map(k => ({
+        title: k === '_ungrouped_' ? null : k,
+        items: groups[k]
+    }));
+};
+
+// Parse markdown content with footnotes support
 export const parseResearchContent = (content) => {
     const processed = processFootnotes(content);
     return marked(processed);
@@ -59,16 +100,23 @@ export const parseResearchContent = (content) => {
 
 export const getResearchPostBySlug = async (slug) => {
     try {
-        const response = await fetch('/research/_metadata.json');
-        if (!response.ok) throw new Error('Failed to fetch research index');
-        const researchIndex = await response.json();
-        const post = researchIndex.find((p) => p.slug === slug);
-        if (!post) throw new Error('Research post not found');
-        const content = await fetchResearchContent(`${slug}.md`);
+        const metadata = await getAllResearchPosts();
+
+        const article = (metadata || []).find(item => item.type === 'article' && item.slug === slug && (!item.visibility || item.visibility === 'public'));
+        if (!article) throw new Error('Research article not found');
+
+        // Get the content
+        const content = await fetchResearchContent(`/${slug}.md`);
         const htmlContent = parseResearchContent(content);
-        return { ...post, content: htmlContent };
+
+        return {
+            title: article.title?.en || article.title,
+            description: article.description?.en || article.description,
+            content: htmlContent,
+            date: article.date
+        };
     } catch (error) {
-        console.error('Error fetching research post by slug:', error);
+        console.error('Error fetching research article by slug:', error);
         throw error;
     }
 };

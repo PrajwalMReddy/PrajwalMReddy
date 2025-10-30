@@ -10,9 +10,7 @@ const SideNav = () => {
     const location = useLocation();
 
     // Get all project cards and filter for featured ones
-    const programmingProjectCards = t('programmingProjectCards') || [];
-    const otherProjectCards = t('otherProjectCards') || [];
-    const allProjectCards = [...programmingProjectCards, ...otherProjectCards];
+    const allProjectCards = t('projectCards') || [];
     const featuredProjectCards = allProjectCards.filter(project => project.featured === true);
 
     const toggleMenu = () => {

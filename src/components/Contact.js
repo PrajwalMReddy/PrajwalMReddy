@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useLanguage } from '../utils/LanguageContext';
+import React, {useEffect} from 'react';
+import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ContactSection from './ContactSection';
 
 const Contact = () => {
-    const { t } = useLanguage();
+    const {t} = useLanguage();
 
     useEffect(() => {
         document.title = t('pageTitles.contact');
@@ -13,11 +13,11 @@ const Contact = () => {
 
     return (
         <div id="app-root">
-            <SideNav />
+            <SideNav/>
             <main id="main-content">
-                <ContactSection />
+                <ContactSection/>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };

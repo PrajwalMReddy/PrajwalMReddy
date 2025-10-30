@@ -1,20 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useLanguage } from '../utils/LanguageContext';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import NotFound from './NotFound';
-import { getResearchPostBySlug } from '../utils/researchUtils';
+import {getResearchPostBySlug} from '../utils/researchUtils';
 
 const ResearchPost = () => {
-    const { slug } = useParams();
-    const { t } = useLanguage();
+    const {slug} = useParams();
+    const {t} = useLanguage();
     const [postData, setPostData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const load = async () => {
+            if (!slug) {
+                setError('No article specified');
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
                 const post = await getResearchPostBySlug(slug);
@@ -22,6 +28,7 @@ const ResearchPost = () => {
                 const baseTitle = t('pageTitles.research') || 'Research';
                 document.title = `${post.title} | ${baseTitle}`;
             } catch (e) {
+                console.error('Error loading research article:', e);
                 setError(e.message);
             } finally {
                 setLoading(false);
@@ -33,21 +40,21 @@ const ResearchPost = () => {
     if (loading) {
         return (
             <div id="app-root">
-                <SideNav />
+                <SideNav/>
                 <main>
                     <div className="blog-post-loading">Loading...</div>
                 </main>
-                <Footer />
+                <Footer/>
             </div>
         );
     }
 
-    if (error) return <NotFound />;
+    if (error) return <NotFound/>;
     if (!postData) return null;
 
     return (
         <div id="app-root">
-            <SideNav />
+            <SideNav/>
             <main className="research-page">
                 <article className="blog-post research-article">
                     <header className="blog-post-header research-article-header">
@@ -66,11 +73,11 @@ const ResearchPost = () => {
                     </header>
                     <div
                         className="blog-post-content research-article-content"
-                        dangerouslySetInnerHTML={{ __html: postData.content }}
+                        dangerouslySetInnerHTML={{__html: postData.content}}
                     />
                 </article>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 };

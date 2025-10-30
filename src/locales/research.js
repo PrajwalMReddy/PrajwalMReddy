@@ -7,22 +7,9 @@ export const research = {
         researchDictionaryTitle: "Bengaluru Telugu Dictionary",
         researchDictionarySearchTitle: "Search",
         researchDictionarySearchPlaceholder: "Search by word, meaning, or pronunciation...",
-        researchNoResults: "No results found.",
-
-        researchSections: [
-            {
-                title: "Bengaluru Telugu",
-                cards: [
-                    {
-                        title: "A Complete Dictionary of Modern Spoken Bengaluru Telugu",
-                        description: "A complete dictionary of the variety of spoken South Karnataka Telugu native to Bengaluru.",
-                        link: "/research/bengaluru-telugu-dictionary",
-                        image: ""
-                    }
-                ]
-            }
-        ],
-    }, kn: {
+        researchNoResults: "No results found."
+    },
+    kn: {
         researchTitle: "ಸಂಶೋದನೆ",
         researchArticlesTitle: "ಲೇಖನಗಳು",
 
@@ -30,20 +17,6 @@ export const research = {
         researchDictionaryTitle: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ",
         researchDictionarySearchTitle: "ಹುಡುಕಿ",
         researchDictionarySearchPlaceholder: "ಪದ, ಅರ್ತ, ಇಲ್ಲವೇ ಉಚ್ಚಾರಣೆಯನ್ನು ಹುಡುಕಿ...",
-        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ.",
-
-        researchSections: [
-            {
-                title: "ಬೆಂಗಳೂರು ತೆಲುಗು",
-                cards: [
-                    {
-                        title: "ಆದುನಿಕ ಆಡುವ ಬೆಂಗಳೂರು ತೆಲುಗಿನ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ",
-                        description: "ಬೆಂಗಳೂರು ಮೂಲದ ತೆಂಕಣ ಕರ್ನಾಟಕದ ತೆಲುಗು ಆಡುನುಡಿಯ ಸಂಪೂರ್ಣವಾದ ಶಬ್ದಕೋಶ.",
-                        link: "/research/bengaluru-telugu",
-                        image: ""
-                    }
-                ]
-            }
-        ],
+        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ."
     }
 };

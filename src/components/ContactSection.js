@@ -1,9 +1,9 @@
 import React from 'react';
-import { useLanguage } from '../utils/LanguageContext';
-import { Link } from "react-router-dom";
+import {useLanguage} from '../utils/LanguageContext';
+import {Link} from "react-router-dom";
 
-const ContactSection = ({ showOnMainPage = false }) => {
-    const { t } = useLanguage();
+const ContactSection = ({showOnMainPage = false}) => {
+    const {t} = useLanguage();
 
     // Configuration for every element in the contact section
     const sectionElements = {
@@ -93,7 +93,7 @@ const ContactSection = ({ showOnMainPage = false }) => {
     };
 
     // Filter contact items based on the current page
-    const filteredContactItems = sectionElements.contactItems.filter(item => 
+    const filteredContactItems = sectionElements.contactItems.filter(item =>
         showOnMainPage ? item.showOnMain : true
     );
 
@@ -105,11 +105,11 @@ const ContactSection = ({ showOnMainPage = false }) => {
     return (
         <div id="contact-section">
             {shouldShowElement(sectionElements.heading) && sectionElements.heading.content()}
-            
+
             {shouldShowElement(sectionElements.intro) && sectionElements.intro.content()}
-            
+
             {shouldShowElement(sectionElements.subheading) && sectionElements.subheading.content()}
-            
+
             {filteredContactItems.length > 0 && (
                 <ul id="contact-list">
                     {filteredContactItems.map(item => (
@@ -119,7 +119,7 @@ const ContactSection = ({ showOnMainPage = false }) => {
                     ))}
                 </ul>
             )}
-            
+
             {shouldShowElement(sectionElements.notice) && sectionElements.notice.content()}
         </div>
     );

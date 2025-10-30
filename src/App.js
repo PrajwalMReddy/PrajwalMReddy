@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import {LanguageProvider} from './utils/LanguageContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
@@ -65,11 +65,11 @@ function App() {
                     <Route path="/blog" element={<Blog/>}/>
                     <Route path="/blog/:slug" element={<BlogPost/>}/>
                     <Route path="/about" element={<Contact/>}/>
-                    <Route path="/contact" element={<Navigate to="/about" replace />}/>
+                    <Route path="/contact" element={<Navigate to="/about" replace/>}/>
 
                     <Route path="/research" element={<Research/>}/>
-                    <Route path="/research/:slug" element={<ResearchPost/>}/>
                     <Route path="/research/bengaluru-telugu-dictionary" element={<BengaluruTeluguDictionary/>}/>
+                    <Route path="/research/:slug" element={<ResearchPost/>}/>
                     <Route path="/photography" element={<Photography/>}/>
                     <Route path="/experience" element={<Experience/>}/>
                     <Route path="/konami" element={<Konami/>}/>

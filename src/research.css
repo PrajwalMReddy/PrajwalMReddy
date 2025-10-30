@@ -6,115 +6,136 @@
 
 /* Breadcrumb */
 .research-breadcrumb {
-  margin-left: calc(var(--nav-width) + 6%);
-  margin-right: 6%;
-  margin-top: 0.8rem;
-  margin-bottom: 0.2rem;
-  font-size: 0.95rem;
-  color: var(--accent-color);
+    margin-left: calc(var(--nav-width) + 6%);
+    margin-right: 6%;
+    margin-top: 0.8rem;
+    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+    color: var(--accent-color);
 }
 
 .research-breadcrumb a {
-  color: var(--accent-color);
-  text-decoration: none;
+    color: var(--accent-color);
+    text-decoration: none;
 }
 
 .research-breadcrumb a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .breadcrumb-sep {
-  margin: 0 0.5rem;
-  opacity: 0.7;
+    margin: 0 0.5rem;
+    opacity: 0.7;
 }
 
 .breadcrumb-current {
-  color: var(--text);
-  opacity: 0.9;
+    color: var(--text);
+    opacity: 0.9;
 }
 
 /* Research Cards */
 .research-card {
-  border: 2px solid var(--accent-color);
-  border-radius: 12px;
-  padding: 0.5rem 0.5rem 0.75rem 0.5rem;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 2px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 0.5rem 0.5rem 0.75rem 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.research-card-link { display: block; color: inherit; text-decoration: none; }
+.research-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
 
 .research-card-inner {
-  /* Match blog card padding for consistent spacing */
-  padding: 2rem 2rem 1.5rem 2rem;
+    /* Match blog card padding for consistent spacing */
+    padding: 2rem 2rem 1.5rem 2rem;
 }
 
 .research-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 22px rgba(44, 62, 80, 0.12);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 22px rgba(44, 62, 80, 0.12);
 }
 
 body.dark-mode .research-card:hover {
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 
 .research-card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.6rem;
-  letter-spacing: 0.01em;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
 }
 
 .research-card-desc {
-  font-size: 1rem;
-  line-height: 1.55;
-  color: var(--text);
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--text);
 }
 
 .research-card-link:focus-visible {
-  outline: 3px solid rgba(var(--primary-color-rgb), 0.35);
-  border-radius: 10px;
+    outline: 3px solid rgba(var(--primary-color-rgb), 0.35);
+    border-radius: 10px;
 }
 
 .research-card-image {
-  width: 100%;
-  max-height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin: 0.25rem 0 0.75rem 0;
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 0.25rem 0 0.75rem 0;
 }
 
 /* Article polish */
 /* Use blog-post default width; no override here to match blog */
 /* .research-article { } */
 
-.research-article-header { text-align: center; }
+.research-article-header {
+    text-align: center;
+}
 
-.research-article-title { font-weight: 800; letter-spacing: 0.01em; }
+.research-article-title {
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
 
 
-
-.research-article-meta { gap: 0.75rem; justify-content: center; }
+.research-article-meta {
+    gap: 0.75rem;
+    justify-content: center;
+}
 
 .research-article-content {
-  font-size: 1.1rem;
+    font-size: 1.1rem;
 }
 
 /* Footnotes inside research articles (reuse classes from blog.css but add spacing tweaks) */
-.research-article-content .footnotes { margin-top: 2.5rem; }
+.research-article-content .footnotes {
+    margin-top: 2.5rem;
+}
 
 /* Responsive tweaks */
 @media (max-width: 900px) {
-  .research-breadcrumb { margin-left: 6%; }
+    .research-breadcrumb {
+        margin-left: 6%;
+    }
 }
 
 @media (max-width: 768px) {
-  /* Keep same padding as blog cards for consistency */
-  .research-card-title { font-size: 1.15rem; }
-  .research-article { margin-left: 0; margin-right: 0; }
+    /* Keep same padding as blog cards for consistency */
+    .research-card-title {
+        font-size: 1.15rem;
+    }
+
+    .research-article {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
 /* Make research grid spacing match blog grid */
 .research-page .project-grid {
-  padding: 0 5%;
+    padding: 0 5%;
 }

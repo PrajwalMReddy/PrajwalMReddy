@@ -50,14 +50,13 @@ const Home = () => {
 
 
     // Get all project cards and filter for featured ones
-    const programmingProjectCards = t('programmingProjectCards') || [];
-    const otherProjectCards = t('otherProjectCards') || [];
-    const allProjectCards = [...programmingProjectCards, ...otherProjectCards];
+    const allProjectCards = t('projectCards') || [];
     const featuredProjectCards = allProjectCards.filter(project => project.featured === true);
 
     // Get experience cards and show featured subset on home
     const allExperienceCards = t('experienceCards') || [];
-    const featuredExperienceCards = allExperienceCards.filter(exp => exp.featured === true);
+    const featuredExperienceCards = allExperienceCards
+        .filter(exp => exp.featured === true);
 
     console.log(t('plane'));
     return <div id="app-root">
@@ -82,6 +81,50 @@ const Home = () => {
                 </div>
             </div>
 
+            {featuredProjectCards.length > 0 && <div id="featured-projects">
+                <h2 id="featured-projects-heading">{t('featuredProjectsTitle')}</h2>
+                <h2 id="featured-projects-subheading"><Link to="/projects"
+                                                            className="nav-link">{t('featuredProjectsSubTitle')}</Link>
+                </h2>
+                <div className="project-line">
+                    {featuredProjectCards.map((item, idx) => (<ProjectCard
+                        key={idx}
+                        title={item.title}
+                        subtitle={item.featured ? t('featuredProjectsTitle') : null}
+                        image={getImage(item.image)}
+                        description={item.description}
+                        link={item.link}
+                    />))}
+                </div>
+            </div>}
+
+            {featuredExperienceCards.length > 0 && <div id="experience">
+                <h2 id="featured-projects-heading">{t('featuredExperienceTitle')}</h2>
+                <h2 id="featured-projects-subheading"><Link to="/experience"
+                                                            className="nav-link">{t('featuredExperienceSubTitle')}</Link>
+                </h2>
+                <div className="experience-line">
+                    {chunkArray(featuredExperienceCards, 2).map((row, rowIdx) => (
+                        <div className="experience-row" key={rowIdx}
+                             style={{
+                                 display: 'flex',
+                                 width: '100%',
+                                 gap: '30px'
+                             }}>
+                            {row.map((item, idx) => (<ExperienceCard
+                                key={idx}
+                                title={item.title}
+                                subtitle={item.featured ? t('featuredExperienceTitle') : null}
+                                company={item.company}
+                                duration={item.duration}
+                                description={item.description}
+                                technologies={item.technologies}
+                            />))}
+                            {row.length === 1 && <div className="experience-info" style={{visibility: 'hidden'}}></div>}
+                        </div>))}
+                </div>
+            </div>}
+
             <div id="skill-div">
                 <h2 id="skill-heading">{t('skillsTitle')}</h2>
                 <div className="skill-line">
@@ -99,48 +142,7 @@ const Home = () => {
                 </div>
             </div>
 
-            {featuredProjectCards.length > 0 && <div id="featured-projects">
-                <h2 id="featured-projects-heading">{t('featuredProjectsTitle')}</h2>
-                <h2 id="featured-projects-subheading"><Link to="/projects"
-                                                            className="nav-link">{t('featuredProjectsSubTitle')}</Link>
-                </h2>
-                <div className="project-line">
-                    {featuredProjectCards.map((item, idx) => (<ProjectCard
-                        key={idx}
-                        title={item.title}
-                        image={getImage(item.image)}
-                        description={item.description}
-                        link={item.link}
-                    />))}
-                </div>
-            </div>}
-
-            {featuredExperienceCards.length > 0 && <div id="experience">
-                <h2 id="featured-projects-heading">{t('featuredExperienceTitle')}</h2>
-                <h2 id="featured-projects-subheading"><Link to="/experience"
-                                                            className="nav-link">{t('featuredExperienceSubTitle')}</Link>
-                </h2>
-                <div className="experience-line">
-                    {chunkArray(featuredExperienceCards, 2).map((row, rowIdx) => (<div className="experience-row" key={rowIdx}
-                                                                               style={{
-                                                                                   display: 'flex',
-                                                                                   width: '100%',
-                                                                                   gap: '30px'
-                                                                               }}>
-                        {row.map((item, idx) => (<ExperienceCard
-                            key={idx}
-                            title={item.title}
-                            company={item.company}
-                            duration={item.duration}
-                            description={item.description}
-                            technologies={item.technologies}
-                        />))}
-                        {row.length === 1 && <div className="experience-info" style={{visibility: 'hidden'}}></div>}
-                    </div>))}
-                </div>
-            </div>}
-
-            <ContactSection showOnMainPage={true} />
+            <ContactSection showOnMainPage={true}/>
         </main>
         <Footer/>
     </div>;

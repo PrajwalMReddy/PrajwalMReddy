@@ -434,7 +434,8 @@ footer {
     padding-left: 6%;
 }
 
-.project-type-heading {
+.project-type-heading,
+.experience-type-heading {
     margin-left: var(--nav-width);
     font-size: 35px;
     padding-top: 3%;
@@ -592,6 +593,16 @@ footer {
     color: var(--text);
     margin-bottom: 0.5rem;
     font-weight: 600;
+}
+
+.project-subtitle,
+.experience-subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: var(--text);
+    opacity: 0.8;
+    margin-bottom: 16px;
+    padding: 0 5%;
 }
 
 .experience-meta {
