@@ -34,39 +34,16 @@ const Blog = () => {
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [blogNotice, setBlogNotice] = useState('');
 
-    const getBlogNoticeText = () => {
-        const blogNoticeArray = t('blogNotice');
-        const storageKey = language + 'BlogNotice';
-
-        const defaultNotice = blogNoticeArray[0];
-        let currentNotice = localStorage.getItem(storageKey);
-
-        // If no notice is stored, set and return default
-        if (!currentNotice) {
-            localStorage.setItem(storageKey, defaultNotice);
-            return defaultNotice;
-        }
-
-        if (currentNotice === defaultNotice) {
-            // 20% chance to switch to another notice
-            if (Math.random() < 0.2) {
-                const randomOther = blogNoticeArray[Math.floor(Math.random() * blogNoticeArray.length)];
-                localStorage.setItem(storageKey, randomOther);
-                return randomOther;
-            } else {
-                return defaultNotice;
-            }
-        } else {
-            // 80% chance to stay on current non-default notice
-            if (Math.random() < 0.8) {
-                return currentNotice;
-            } else {
-                // 20% chance to return to default
-                localStorage.setItem(storageKey, defaultNotice);
-                return defaultNotice;
-            }
-        }
+    // Render text with newlines
+    const renderWithNewlines = (text) => {
+        if (!text || typeof text !== 'string') return text;
+        const parts = text.split('\n');
+        return parts.map((part, i) => (<React.Fragment key={i}>
+            {part}
+            {i < parts.length - 1 && <br/>}
+        </React.Fragment>));
     };
 
     useEffect(() => {
@@ -91,10 +68,45 @@ const Blog = () => {
         loadBlogPosts();
     }, [language]);
 
-    // Blog notice setup (avoids double call)
-    const blogNotice = getBlogNoticeText();
-    const defaultNotice = t('blogNotice')[0];
-    const shouldLinkToPhotography = blogPosts.length === 0 || blogNotice === defaultNotice;
+    // compute blog notice once per language and avoid mutating localStorage during render
+    useEffect(() => {
+        const raw = t('blogNotice');
+        const fallback = t('blogNoticeDefault') || '';
+
+        let pool = (Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : raw && typeof raw === 'object' ? Object.values(raw) : [])
+            .filter(Boolean)
+            .map(s => s.replace(/\\n/g, '\n').trim());
+
+        const normalizedFallback = (fallback || '').replace(/\\n/g, '\n').trim();
+        if (normalizedFallback) pool.push(normalizedFallback);
+
+        // dedupe while preserving order
+        pool = Array.from(new Set(pool));
+
+        if (pool.length === 0) pool.push(normalizedFallback || '');
+
+        const key = `BlogNoticeIndex_${language || 'default'}`;
+
+        let i = 0;
+        try {
+            i = Number(localStorage.getItem(key));
+            if (!Number.isInteger(i) || i < 0 || i >= pool.length) i = 0;
+        } catch (e) {
+            i = 0;
+        }
+
+        const notice = pool[i];
+
+        try {
+            localStorage.setItem(key, String((i + 1) % pool.length));
+        } catch (e) {
+            // ignore storage errors
+        }
+
+        setBlogNotice(notice);
+    }, [language, t]);
+
+    const displayedNotice = blogPosts.length === 0 ? (t('blogNoticeEmpty') || blogNotice) : blogNotice;
 
     return (<div id="app-root">
         <SideNav/>
@@ -105,24 +117,20 @@ const Blog = () => {
                 <div id="blog-notice-div">
                     <div className="blog-notice">
                         <h1 className="blog-notice-heading">
-                            {shouldLinkToPhotography ? (<Link to="/photography" className="nav-link">
-                                {blogPosts.length === 0 ? t('blogNoticeEmpty') : defaultNotice}
-                            </Link>) : (blogNotice)}
+                            <Link to="/photography" className="nav-link">
+                                {renderWithNewlines(displayedNotice)}
+                            </Link>
                         </h1>
                     </div>
                 </div>
 
                 {blogPosts.length > 0 && (<div className="blog-grid">
-                    {blogPosts.map((post) => (<Link
-                        to={`/blog/${post.slug}`}
-                        key={post.slug}
-                        className="blog-card"
-                    >
+                    {blogPosts.map((post) => (<Link to={`/blog/${post.slug}`} key={post.slug} className="blog-card">
                         <h2 className="blog-title">{post.title}</h2>
                         <p className="blog-excerpt">{post.description}</p>
                         <div className="blog-meta">
                             <time className="blog-date">{post.date}</time>
-                            {post.author && (<span className="blog-author">by {post.author}</span>)}
+                            {post.author && <span className="blog-author">by {post.author}</span>}
                         </div>
                     </Link>))}
                 </div>)}

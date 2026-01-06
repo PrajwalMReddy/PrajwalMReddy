@@ -54,20 +54,35 @@ export const fetchResearchContent = async (filename) => {
 };
 
 // Get translated research items for the current language
-// `metadata` is expected to be a flat array of items. This groups them by sectionTitle
+// `metadata` is expected to be a flat array of items. This groups them by sectionTitle.
+// Accept two metadata shapes:
+// 1) fields nested under language keys (e.g. item.en.title)
+// 2) fields nested under named keys (e.g. item.title.en)
 export const getTranslatedResearch = (metadata, language) => {
     const visible = (metadata || []).filter(item => !item.visibility || item.visibility === 'public');
 
     const groups = {};
     for (const item of visible) {
-        const sectionTitle = (item.sectionTitle && (item.sectionTitle[language] || item.sectionTitle.en)) || '';
+        // Helper to read a translated field from either shape
+        const readTranslated = (fieldName) => {
+            // shape A: item[fieldName] is an object with language keys
+            if (item[fieldName] && typeof item[fieldName] === 'object') {
+                return item[fieldName][language] || item[fieldName].en || '';
+            }
+            // shape B: translations are top-level language keys containing the field
+            if (item[language] && item[language][fieldName]) return item[language][fieldName];
+            if (item.en && item.en[fieldName]) return item.en[fieldName];
+            return '';
+        };
+
+        const sectionTitle = readTranslated('sectionTitle') || '';
         const key = sectionTitle || '_ungrouped_';
         if (!groups[key]) groups[key] = [];
 
         const baseItem = {
             type: item.type,
-            title: (item.title && (item.title[language] || item.title.en)) || '',
-            description: (item.description && (item.description[language] || item.description.en)) || '',
+            title: readTranslated('title'),
+            description: readTranslated('description'),
             image: item.image || '',
             slug: item.slug,
             date: item.date,

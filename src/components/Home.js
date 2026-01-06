@@ -3,7 +3,7 @@ import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ProjectCard from './ProjectCard';
-import ContactSection from './ContactSection';
+import About from './About';
 import {Link} from "react-router-dom";
 import {colorStopsDark, colorStopsLight, getInterpolatedColorAtPercent, isDarkMode} from '../utils/colorUtils';
 import ExperienceCard from './ExperienceCard';
@@ -142,7 +142,7 @@ const Home = () => {
                 </div>
             </div>
 
-            <ContactSection showOnMainPage={true}/>
+            <About showOnMainPage={true}/>
         </main>
         <Footer/>
     </div>;

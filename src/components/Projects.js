@@ -23,8 +23,9 @@ const Projects = () => {
         <div id="app-root">
             <SideNav/>
             <main>
-                <h1 id="project-heading">{t('projectsTitle')}</h1>
-                {sections.map((section) => {
+                <div id="projects">
+                    <h1 id="project-heading">{t('projectsTitle')}</h1>
+                    {sections.map((section) => {
                     const sectionProjects = allProjectCards.filter(project => project.section === section.id);
                     if (sectionProjects.length === 0) return null;
 
@@ -45,6 +46,7 @@ const Projects = () => {
                         </div>
                     );
                 })}
+                </div>
             </main>
             <Footer/>
         </div>

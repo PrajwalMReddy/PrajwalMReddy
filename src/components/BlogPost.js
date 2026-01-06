@@ -21,6 +21,8 @@ const BlogPost = () => {
                 const post = await getBlogPostBySlug(slug);
                 setBlogData(post);
 
+                // page view tracking removed
+
                 // Set the page title for individual blog posts
                 const postTitle = post.title;
                 const baseTitle = t('pageTitles.blog');

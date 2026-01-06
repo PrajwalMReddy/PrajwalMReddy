@@ -23,42 +23,36 @@ const Experience = () => {
             const sectionExperiences = allExperienceCards.filter(exp => exp.section === section.id);
             if (sectionExperiences.length === 0) return null;
 
-            return (
-                <div key={section.id} id={`experience-type-${section.id}`}>
-                    <h2 className="experience-type-heading">{section.title}</h2>
-                    <div className="experience-grid">
-                        {sectionExperiences.map((item, idx) => (
-                            <ExperienceCard
-                                key={idx}
-                                title={item.title}
-                                company={item.company}
-                                duration={item.duration}
-                                description={item.description}
-                                technologies={item.technologies}
-                            />
-                        ))}
-                    </div>
+            return (<div key={section.id} id={`experience-type-${section.id}`}>
+                <h2 className="experience-type-heading">{section.title}</h2>
+                <div className="experience-grid">
+                    {sectionExperiences.map((item, idx) => (<ExperienceCard
+                        key={idx}
+                        title={item.title}
+                        company={item.company}
+                        duration={item.duration}
+                        description={item.description}
+                        technologies={item.technologies}
+                    />))}
                 </div>
-            );
+            </div>);
         });
     };
 
-    return (
-        <div id="app-root">
-            <SideNav/>
-            <main>
-                <h1 id="project-heading">{t('experienceTitle')}</h1>
-                <p className="home-text-sub"
-                   style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%'}}>
-                    {t('experienceDescription')}
-                </p>
-                <div style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%', marginTop: '2rem'}}>
-                    {renderSections()}
-                </div>
-            </main>
-            <Footer/>
-        </div>
-    );
+    return (<div id="app-root">
+        <SideNav/>
+        <main>
+            <h1 id="project-heading">{t('experienceTitle')}</h1>
+            <p className="home-text-sub"
+               style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%'}}>
+                {t('experienceDescription')}
+            </p>
+            <div style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%', marginTop: '2rem'}}>
+                {renderSections()}
+            </div>
+        </main>
+        <Footer/>
+    </div>);
 };
 
 export default Experience;

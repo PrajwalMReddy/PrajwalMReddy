@@ -436,10 +436,19 @@ footer {
 
 .project-type-heading,
 .experience-type-heading {
-    margin-left: var(--nav-width);
     font-size: 35px;
     padding-top: 3%;
-    padding-left: 6%;
+}
+
+.experience-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    margin-left: var(--nav-width);
+    padding: 0 6%;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
 }
 
 .project-line {
@@ -502,6 +511,78 @@ footer {
     padding: 5% 7% 5% 7%;
 }
 
+/* Page content wrapper to ensure consistent left alignment with the side nav */
+.page-content {
+    margin-left: var(--nav-width);
+    padding: 3.5% 6% 0 6%;
+    box-sizing: border-box;
+}
+
+/* Reset per-element offsets inside the page wrapper to avoid cumulative spacing */
+.page-content #project-heading {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Projects page wrapper: align like other page wrappers (e.g. #home) */
+#projects {
+    margin-left: var(--nav-width);
+    padding-top: 6%;
+    padding-left: 6%;
+    padding-right: 6%;
+    box-sizing: border-box;
+}
+
+/* Reset internal offsets for Projects wrapper so headings/grid align with content */
+#projects #project-heading {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+}
+
+#projects .project-type-heading,
+#projects .experience-type-heading {
+    padding-top: 0 !important;
+}
+
+#projects .project-grid,
+#projects .project-line,
+#projects .experience-grid {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Subheading spacing for project sections — match spacing used elsewhere */
+#projects .project-type-heading {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.page-content .project-type-heading,
+.page-content .experience-type-heading {
+    padding-top: 0 !important;
+}
+
+.page-content .project-grid,
+.page-content .project-line,
+.page-content .experience-grid {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* When content is inside .page-content, reset per-element left offsets so
+   headings, grids and lines align consistently with the inner content */
+.page-content #project-heading,
+.page-content .project-type-heading,
+.page-content .project-grid,
+.page-content .project-line,
+.page-content #featured-projects,
+.page-content #contact-heading {
+    margin-left: 0;
+    padding-left: 0;
+}
+
 /* Featured Projects Section */
 #featured-projects {
     margin-left: var(--nav-width);
@@ -559,24 +640,25 @@ footer {
     opacity: 0.8;
 }
 
-.experience-line {
-    display: flex;
-    justify-content: flex-start;
-    gap: 30px;
-    flex-wrap: wrap;
-    padding: 0;
-    margin-left: 0;
+.experience-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem 4rem;
+    margin-left: var(--nav-width);
+    padding: 0 8%;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+    width: calc(100% - var(--nav-width));
 }
 
 .experience-info {
-    flex: 1;
-    width: 100%;
-    min-width: 350px;
     background-color: var(--gray);
     border: 2px solid var(--accent-color);
     border-radius: 12px;
-    padding: 2rem;
+    padding: 2.5rem;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    width: 100%;
 }
 
 .experience-info:hover {
@@ -691,6 +773,14 @@ footer {
 .contact-subheading {
     margin-left: var(--nav-width);
     font-size: 35px;
+    padding-top: 3%;
+    padding-left: 6%;
+}
+
+/* Generic section heading used when About is embedded on the homepage */
+.section-heading {
+    font-size: 40px;
+    margin-left: var(--nav-width);
     padding-top: 3%;
     padding-left: 6%;
 }
@@ -1071,6 +1161,64 @@ img {
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 768px) {
+    .nav-link,
+    .language-switcher,
+    .skill-info,
+    .project-info,
+    .blog-card {
+        padding: 12px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Experience responsive styles */
+@media (max-width: 768px) {
+    .experience-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0 4%;
+        margin-left: 0;
+    }
+
+    .experience-info {
+        padding: 1.5rem;
+    }
+
+    .experience-title {
+        font-size: 1.2rem;
+    }
+
+    .experience-text {
+        font-size: 0.9rem;
+    }
+
+    .experience-meta {
+        font-size: 0.9rem;
+    }
+
+    .experience-technologies {
+        font-size: 0.8rem;
+    }
+    
+    #project-heading,
+    .project-type-heading,
+    .experience-type-heading {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .home-text-sub {
+        margin-left: 0 !important;
+        text-align: center;
+        padding: 0 4% !important;
     }
 }
 

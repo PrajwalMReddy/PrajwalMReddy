@@ -72,6 +72,7 @@ function App() {
                     <Route path="/research/:slug" element={<ResearchPost/>}/>
                     <Route path="/photography" element={<Photography/>}/>
                     <Route path="/experience" element={<Experience/>}/>
+                    
                     <Route path="/konami" element={<Konami/>}/>
 
                     <Route path="*" element={<NotFound/>}/>

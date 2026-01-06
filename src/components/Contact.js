@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
-import ContactSection from './ContactSection';
+import About from './About';
 
 const Contact = () => {
     const {t} = useLanguage();
@@ -15,7 +15,7 @@ const Contact = () => {
         <div id="app-root">
             <SideNav/>
             <main id="main-content">
-                <ContactSection/>
+                <About/>
             </main>
             <Footer/>
         </div>

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import {useLanguage} from '../utils/LanguageContext';
-import {animate} from "../utils/konami/controller";
-import {TILE_SIZE} from "../utils/konami/model";
+import {animate} from "../platformer/controller";
+import {TILE_SIZE} from "../platformer/model";
 
 const Konami = () => {
     const {t} = useLanguage();
