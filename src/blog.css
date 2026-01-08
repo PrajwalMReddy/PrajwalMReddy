@@ -22,6 +22,15 @@
     box-sizing: border-box;
 }
 
+.blog-rss-notice {
+    font-size: 0.875rem;
+    color: #666;
+    margin-top: 1rem;
+    text-align: left;
+    margin-left: var(--nav-width);
+    padding: 1% 5% 0 5%;
+}
+
 /* Blog Card Styles */
 .blog-card {
     background-color: var(--gray);
@@ -46,6 +55,12 @@
     font-size: 1.5rem;
     margin-bottom: 1rem;
     color: var(--text);
+}
+
+.blog-external-icon {
+    font-size: 90%;
+    margin-left: 0.4rem;
+    color: var(--accent-color);
 }
 
 .blog-excerpt {

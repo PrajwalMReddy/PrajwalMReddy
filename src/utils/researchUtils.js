@@ -1,31 +1,4 @@
-import {marked} from 'marked';
-
-// Native footnote support for markdown (reuse from blog)
-function processFootnotes(markdown) {
-    const footnoteDefRegex = /^\[\^(.+?)\]:\s+(.+)$/gm;
-    let footnotes = [];
-    let mainText = markdown.replace(footnoteDefRegex, (match, id, text) => {
-        footnotes.push({id, text});
-        return '';
-    });
-
-    mainText = mainText.replace(/\[\^(.+?)\]/g, (match, id) => {
-        const idx = footnotes.findIndex((f) => f.id === id);
-        if (idx !== -1) {
-            return `<sup class="footnote-ref"><a href="#footnote-${id}" id="footnote-ref-${id}">[${id}]</a></sup>`;
-        }
-        return match;
-    });
-
-    if (footnotes.length > 0) {
-        mainText += '\n\n---\n\n<section class="footnotes"><ol>';
-        for (const f of footnotes) {
-            mainText += `<li id="footnote-${f.id}">${f.text} <a href="#footnote-ref-${f.id}" class="footnote-backref">↩</a></li>`;
-        }
-        mainText += '</ol></section>';
-    }
-    return mainText;
-}
+import {renderMarkdownWithFootnotes} from './markdownUtils';
 
 // Fetch all research post metadata
 export const getAllResearchPosts = async () => {
@@ -43,10 +16,10 @@ export const getAllResearchPosts = async () => {
 // Fetch markdown content by filename
 export const fetchResearchContent = async (filename) => {
     try {
-        const response = await fetch(`/research/${filename}`);
+        const normalizedFilename = filename.startsWith('/') ? filename.slice(1) : filename;
+        const response = await fetch(`/research/${normalizedFilename}`);
         if (!response.ok) throw new Error('Failed to fetch research content');
-        const content = await response.text();
-        return processFootnotes(content);
+        return response.text();
     } catch (error) {
         console.error('Error fetching research content:', error);
         return '';
@@ -109,8 +82,7 @@ export const getTranslatedResearch = (metadata, language) => {
 
 // Parse markdown content with footnotes support
 export const parseResearchContent = (content) => {
-    const processed = processFootnotes(content);
-    return marked(processed);
+    return renderMarkdownWithFootnotes(content);
 };
 
 export const getResearchPostBySlug = async (slug) => {
@@ -121,7 +93,7 @@ export const getResearchPostBySlug = async (slug) => {
         if (!article) throw new Error('Research article not found');
 
         // Get the content
-        const content = await fetchResearchContent(`/${slug}.md`);
+        const content = await fetchResearchContent(`${slug}.md`);
         const htmlContent = parseResearchContent(content);
 
         return {

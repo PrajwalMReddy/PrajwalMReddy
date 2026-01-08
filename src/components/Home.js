@@ -10,7 +10,7 @@ import ExperienceCard from './ExperienceCard';
 import {chunkArray, getImage} from '../utils/componentUtils';
 
 const Home = () => {
-    const {t, language} = useLanguage();
+    const {t} = useLanguage();
     const [isCycling, setIsCycling] = useState(false);
     const [lastColor, setLastColor] = useState('');
     const [lastPct, setLastPct] = useState(0); // percent (0-1) of animation
@@ -58,7 +58,6 @@ const Home = () => {
     const featuredExperienceCards = allExperienceCards
         .filter(exp => exp.featured === true);
 
-    console.log(t('plane'));
     return <div id="app-root">
         <SideNav/>
 

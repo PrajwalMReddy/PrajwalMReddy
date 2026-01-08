@@ -2,7 +2,7 @@ export const blog = {
     en: {
         // Blog Page
         blogHeading: "Posts",
-        
+
         blogNoticeEmpty: "There are no blog posts yet. In the meantime, please check out my photography page here >",
         blogNoticeDefault: "This is my personal blog where I share my thoughts, opinions, and perspective in the form of poems, essays, and short stories.\n\nAlso check out my photography page here! >",
 
@@ -22,10 +22,12 @@ export const blog = {
             "“It is a universal truth that the loss of liberty at home is to be charged to the provisions against danger, real or pretended, from abroad.” — James Madison",
             "“We are right to take alarm at the first experiment upon our liberties.” — James Madison",
         ],
+
+        blogExternalSourceNotice: "External blog posts link to my Substack, which are pulled via RSS."
     }, kn: {
         // Blog Page
         blogHeading: "ಮಿಂಬರಹಗಳು",
-        
+
         blogNoticeEmpty: "ಈಗ ಮಿಂಬರಹಗಳೇನೂ ಇಲ್ಲ. ಸದ್ಯಕ್ಕೆ ದಯವಿಟ್ಟು ನನ್ನ ಛಾಯಾಗ್ರಹಣ ಪುಟ ಇಲ್ಲಿ ನೋಡಿ >",
         blogNoticeDefault: "ಇದು ಕವಿತೆ, ಬರಹ, ಮತ್ತು ಚಿಕ್ಕಕತೆಗಳ ರೂಪದಲ್ಲಿ ನನ್ನ ಅನಿಸಿಕೆಗಳು, ಅಭಿಪ್ರಾಯಗಳು, ಮತ್ತು ದೃಷ್ಟಿಕೋನ ಹಂಚಿಕೊಳ್ಳುವ ನನ್ನ ಸ್ವಂತ ಮೀಂಬರಹ.\n\nನನ್ನ ಛಾಯಾಗ್ರಹಣ ಪುಟವೂ ಇಲ್ಲಿ ಬೇಟಿ ನೀಡಿ! >",
 
@@ -33,5 +35,7 @@ export const blog = {
             "“ಏನಾದರೂ ಆಗು, ಮೊದಲು ಮಾನವನಾಗು” — ಸಿದ್ದಯ್ಯ ಪುರಾಣಿಕ",
             "ಸರ್ವಜನಾಂಗದ ಶಾಂತಿಯ ತೋಟ, ರಸಿಕರ ಕಂಗಳ ಸೆಳೆಯುವ ನೋಟ! — ಕುವೆಂಪು, ಜಯ ಭಾರತ ಜನನಿಯ ತನುಜಾತೆ"
         ],
+
+        blogExternalSourceNotice: "ಹೊರಗಿನ ಮೀಂಬರಹಗಳು ನನ್ನ ಸಬ್ಸ್ಟಾಕಿಗೆ ಕೂಡಿಸುತ್ತವೆ. ಇವು ಆರ್. ಎಸ್. ಎಸ್. ಮೂಲಕ ಎಳೆಯಲಾಗುತ್ತವೆ."
     }
 };

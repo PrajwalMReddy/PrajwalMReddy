@@ -1,86 +1,141 @@
-import {marked} from 'marked';
+import {renderMarkdownWithFootnotes} from './markdownUtils';
 
-// Native footnote support for markdown
-function processFootnotes(markdown) {
-    // Find all footnote definitions: [^id]: ...
-    const footnoteDefRegex = /^\[\^(.+?)\]:\s+(.+)$/gm;
-    let footnotes = [];
-    let mainText = markdown.replace(footnoteDefRegex, (match, id, text) => {
-        footnotes.push({id, text});
-        return '';
-    });
+const SUBSTACK_LINK = 'https://prajwalmreddy.substack.com/feed';
+const SUBSTACK_FEED_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(SUBSTACK_LINK)}`;
 
-    // Replace all footnote references: [^id]
-    mainText = mainText.replace(/\[\^(.+?)\]/g, (match, id) => {
-        const idx = footnotes.findIndex(f => f.id === id);
-        if (idx !== -1) {
-            // Superscript link to footnote
-            return `<sup class="footnote-ref"><a href="#footnote-${id}" id="footnote-ref-${id}">[${id}]</a></sup>`;
+const EN_TO_KN_DIGITS = ['೦', '೧', '೨', '೩', '೪', '೫', '೬', '೭', '೮', '೯'];
+
+const convertToKannadaNumerals = (str) => str.replace(/\d/g, d => EN_TO_KN_DIGITS[d]);
+
+// ---------- Date formatting (shared everywhere) ----------
+
+export const formatDisplayDate = (dateInput, language) => {
+    if (!dateInput) return '';
+
+    const d = new Date(dateInput);
+    if (Number.isNaN(d.getTime())) return dateInput;
+
+    const locale = language === 'kn' ? 'kn-IN' : 'en-US';
+
+    try {
+        let formatted = d.toLocaleDateString(locale, {
+            year: 'numeric', month: 'long', day: 'numeric',
+        });
+
+        if (language === 'kn') {
+            formatted = convertToKannadaNumerals(formatted);
         }
-        return match;
-    });
 
-    // If there are footnotes, append them at the end
-    if (footnotes.length > 0) {
-        mainText += '\n\n---\n\n<section class="footnotes"><ol>';
-        for (const f of footnotes) {
-            mainText += `<li id="footnote-${f.id}">${f.text} <a href="#footnote-ref-${f.id}" class="footnote-backref">↩</a></li>`;
-        }
-        mainText += '</ol></section>';
+        return formatted;
+    } catch {
+        return dateInput;
     }
-    return mainText;
+};
+
+// ---------- Local posts ----------
+
+const getLocalBlogPosts = async () => {
+    const response = await fetch('/blog/_metadata.json');
+    if (!response.ok) throw new Error('Failed to fetch blog index');
+
+    const blogIndex = await response.json();
+    return blogIndex.filter(p => !p.visibility || p.visibility === 'public');
+};
+
+// ---------- HTML decode ----------
+
+function decodeEntities(input = '') {
+    if (typeof document === 'undefined') return input;
+
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = input;
+    const firstPass = textarea.value;
+    textarea.innerHTML = firstPass;
+    return textarea.value;
 }
 
-// Fetch all blog post metadata from metadata.json
-export const getAllBlogPosts = async () => {
+// ---------- Substack RSS ----------
+
+const getSubstackPosts = async (language) => {
     try {
-        const response = await fetch('/blog/_metadata.json');
-        if (!response.ok) throw new Error('Failed to fetch blog index');
-        const blogIndex = await response.json();
-        // Only return posts that are public or have no visibility set
-        return blogIndex.filter(post => !post.visibility || post.visibility === 'public');
+        const response = await fetch(SUBSTACK_FEED_URL);
+        if (!response.ok) throw new Error('Failed to fetch Substack feed');
+
+        const rssText = await response.text();
+        const doc = new DOMParser().parseFromString(rssText, 'application/xml');
+
+        return Array.from(doc.querySelectorAll('channel > item')).map((item, index) => {
+            const title = decodeEntities(item.querySelector('title')?.textContent || 'Untitled');
+
+            const link = item.querySelector('link')?.textContent || '';
+            const rawDate = item.querySelector('pubDate')?.textContent || '';
+            const author = item.querySelector('dc\\:creator, creator')?.textContent || 'Prajwal Reddy';
+
+            const description = decodeEntities(item.querySelector('description')?.textContent || '')
+                .replace(/<[^>]*>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            let slug = `substack-${index}`;
+            try {
+                slug = new URL(link).pathname.split('/').filter(Boolean).pop() || slug;
+            } catch {
+            }
+
+            return {
+                id: `substack-${slug}`,
+                slug,
+                title,
+                description,
+                date: formatDisplayDate(rawDate, language),
+                author,
+                externalUrl: link,
+                source: 'substack',
+            };
+        });
     } catch (error) {
-        console.error('Error fetching blog index:', error);
+        console.error('Substack RSS error:', error);
         return [];
     }
 };
 
-// Fetch the markdown content for a given slug
+// ---------- Combined list ----------
+
+export const getAllBlogPosts = async (language) => {
+    try {
+        const [local, substack] = await Promise.all([getLocalBlogPosts().catch(() => []), getSubstackPosts(language),]);
+
+        const normalizedLocal = local.map(post => ({
+            ...post, source: post.source || 'local', date: formatDisplayDate(post.date, language),
+        }));
+
+        return [...normalizedLocal, ...substack];
+    } catch {
+        return [];
+    }
+};
+
+// ---------- Single blog post ----------
+
 export const fetchBlogContent = async (filename) => {
-    try {
-        const response = await fetch(`/blog/${filename}`);
-        if (!response.ok) throw new Error('Failed to fetch blog content');
-        const content = await response.text();
-        return content;
-    } catch (error) {
-        console.error('Error fetching blog content:', error);
-        throw error;
-    }
+    const res = await fetch(`/blog/${filename}`);
+    if (!res.ok) throw new Error('Failed to fetch blog content');
+    return res.text();
 };
 
-// Parse markdown content (no metadata/frontmatter)
-export const parseBlogContent = (content) => {
-    // Preprocess for footnotes
-    const processed = processFootnotes(content);
-    // Just convert the markdown body to HTML
-    const htmlContent = marked(processed);
-    return htmlContent;
-};
+export const parseBlogContent = (content) => renderMarkdownWithFootnotes(content);
 
-// Get a single blog post's metadata and content by slug
-export const getBlogPostBySlug = async (slug) => {
-    // Fetch the full index, not filtered by visibility
-    try {
-        const response = await fetch('/blog/_metadata.json');
-        if (!response.ok) throw new Error('Failed to fetch blog index');
-        const blogIndex = await response.json();
-        const post = blogIndex.find((p) => p.slug === slug);
-        if (!post) throw new Error('Blog post not found');
-        const content = await fetchBlogContent(`${slug}.md`);
-        const htmlContent = parseBlogContent(content);
-        return {...post, content: htmlContent};
-    } catch (error) {
-        console.error('Error fetching blog post by slug:', error);
-        throw error;
-    }
+export const getBlogPostBySlug = async (slug, language) => {
+    const response = await fetch('/blog/_metadata.json');
+    if (!response.ok) throw new Error('Failed to fetch blog index');
+
+    const blogIndex = await response.json();
+    const post = blogIndex.find(p => p.slug === slug);
+    if (!post) throw new Error('Blog post not found');
+
+    const content = await fetchBlogContent(`${slug}.md`);
+
+    return {
+        ...post, date: formatDisplayDate(post.date, language), content: parseBlogContent(content),
+    };
 };

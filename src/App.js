@@ -12,7 +12,6 @@ import Photography from './components/Photography';
 import Contact from './components/Contact';
 import './styles.css';
 import NotFound from "./components/NotFound";
-import {translations} from './locales';
 import Konami from './components/Konami';
 import KonamiListener from './components/KonamiListener';
 import './blog.css';
@@ -43,15 +42,6 @@ class ErrorBoundary extends React.Component {
         }
         return this.props.children;
     }
-}
-
-function getCurrentLanguage() {
-    return localStorage.getItem('language') || 'en';
-}
-
-function t(key) {
-    const lang = getCurrentLanguage();
-    return key.split('.').reduce((obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined), translations[lang]) || key;
 }
 
 function App() {
