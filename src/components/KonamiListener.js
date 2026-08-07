@@ -1,9 +1,11 @@
 import {useEffect, useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useKonami} from '../utils/KonamiContext';
 
 const KonamiListener = () => {
     const position = useRef(0);
     const navigate = useNavigate();
+    const {generateNewKonamiCode} = useKonami();
 
     useEffect(() => {
         const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -13,7 +15,8 @@ const KonamiListener = () => {
             if (e.key === konami[position.current]) {
                 position.current++;
                 if (position.current === konami.length) {
-                    navigate('/konami');
+                    const code = generateNewKonamiCode();
+                    navigate(`/konami/${code}`);
                     position.current = 0;
                 }
             } else {
@@ -23,7 +26,7 @@ const KonamiListener = () => {
 
         document.addEventListener('keydown', onKeyDown, true);
         return () => document.removeEventListener('keydown', onKeyDown, true);
-    }, [navigate]);
+    }, [navigate, generateNewKonamiCode]);
 
     return null;
 };

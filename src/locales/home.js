@@ -6,7 +6,7 @@ export const home = {
         homeTitle: "Hello World!",
         homeIntro: "I'm [ˈprɐ.dʒʋəl ˈrɛ.ɖːi]",
         homeSubtitle: "a student, programmer, and builder.",
-        homeDescription: "I am a college student at Cornell University, studying a double major in Linguistics and Computer Science, with a specialization in Economics. I am also passionate Urban Planning, often developing applications that focus on issues in these areas. My other non-academic interests include world building and conlanging.",
+        homeDescription: "I am a college student at Cornell University, studying a double major in Linguistics and Computer Science, with a specialization in Economics. I am also passionate about Urban Planning, often developing applications that focus on issues in these areas. My other non-academic interests include world building and conlanging.",
 
         // Skills Section
         skillsTitle: "My Programming Skills",

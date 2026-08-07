@@ -442,13 +442,14 @@ footer {
 
 .experience-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-    margin-left: var(--nav-width);
-    padding: 0 6%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    margin-left: 0;
+    padding: 0;
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .project-line {
@@ -509,6 +510,7 @@ footer {
     line-height: 22px;
     color: var(--text);
     padding: 5% 7% 5% 7%;
+    white-space: pre-line;
 }
 
 /* Page content wrapper to ensure consistent left alignment with the side nav */
@@ -591,16 +593,51 @@ footer {
     padding-right: 6%;
 }
 
-#featured-projects-heading {
-    font-size: 40px;
-    color: var(--text);
-    margin-bottom: 40px;
+.featured-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.18);
 }
 
-#featured-projects-subheading {
-    font-size: 25px;
+.featured-section-heading {
+    font-size: 34px;
     color: var(--text);
-    margin-bottom: 40px;
+    margin: 0;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.featured-section-subheading {
+    font-size: 21px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.featured-section-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: 1px solid var(--accent-color);
+    border-radius: 999px;
+    padding: 0.32rem 0.78rem;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.featured-section-link:hover {
+    background-color: var(--accent-color);
+    color: var(--background);
+    text-decoration: none;
+}
+
+.featured-section-subheading .featured-section-link {
+    min-height: auto;
 }
 
 #featured-projects .project-line {
@@ -643,13 +680,13 @@ footer {
 .experience-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 3rem 4rem;
-    margin-left: var(--nav-width);
-    padding: 0 8%;
+    gap: 2rem;
+    margin-left: 0;
+    padding: 0;
     margin-top: 3rem;
     margin-bottom: 2rem;
     box-sizing: border-box;
-    width: calc(100% - var(--nav-width));
+    width: 100%;
 }
 
 .experience-info {
@@ -659,6 +696,8 @@ footer {
     padding: 2.5rem;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .experience-info:hover {
@@ -691,6 +730,8 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
     font-size: 1rem;
     color: var(--accent-color);
 }
@@ -701,6 +742,8 @@ footer {
 
 .experience-duration {
     font-style: italic;
+    margin-left: auto;
+    white-space: nowrap;
 }
 
 .experience-text {
@@ -708,6 +751,7 @@ footer {
     line-height: 1.6;
     color: var(--text);
     margin-bottom: 1rem;
+    white-space: pre-line;
 }
 
 .experience-technologies {
@@ -1021,6 +1065,15 @@ footer {
         max-width: 500px;
     }
 
+    .featured-section-header {
+        gap: 0.75rem;
+    }
+
+    .featured-section-subheading .featured-section-link {
+        min-height: auto;
+        padding: 0.3rem 0.65rem;
+    }
+
     .experience-line {
         flex-direction: column;
         align-items: center;
@@ -1108,12 +1161,12 @@ footer {
         font-size: 18px;
     }
 
-    #featured-projects-heading {
-        font-size: 28px;
+    .featured-section-heading {
+        font-size: 24px;
     }
 
-    #featured-projects-subheading {
-        font-size: 17px;
+    .featured-section-subheading {
+        font-size: 15px;
     }
 
     #experience-heading {
@@ -1219,6 +1272,12 @@ img {
         margin-left: 0 !important;
         text-align: center;
         padding: 0 4% !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+    .experience-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -1450,7 +1509,7 @@ img {
     margin-top: 0.3rem;
     color: var(--text);
     font-size: 1.1rem;
-    list-style: disc;
+    list-style: decimal;
 }
 
 .dictionary-two-col {

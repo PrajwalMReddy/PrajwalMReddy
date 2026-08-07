@@ -1,6 +1,7 @@
 import React from 'react';
-import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes, useParams} from 'react-router-dom';
 import {LanguageProvider} from './utils/LanguageContext';
+import {KonamiProvider} from './utils/KonamiContext';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
@@ -17,6 +18,18 @@ import KonamiListener from './components/KonamiListener';
 import './blog.css';
 import './research.css';
 import Experience from './components/Experience';
+import {useKonami} from './utils/KonamiContext';
+
+// Wrapper to validate Konami code
+const KonamiValidator = () => {
+    const {code} = useParams();
+    const {validKonamiCode} = useKonami();
+    
+    if (code === validKonamiCode && validKonamiCode !== null) {
+        return <Konami />;
+    }
+    return <NotFound />;
+};
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -47,29 +60,31 @@ class ErrorBoundary extends React.Component {
 function App() {
     return (<ErrorBoundary>
         <LanguageProvider>
-            <Router>
-                <KonamiListener/>
-                <Routes>
-                    <Route path="/" element={<Home/>}/>
-                    <Route path="/projects" element={<Projects/>}/>
-                    <Route path="/blog" element={<Blog/>}/>
-                    <Route path="/blog/:slug" element={<BlogPost/>}/>
-                    <Route path="/about" element={<Contact/>}/>
-                    <Route path="/contact" element={<Navigate to="/about" replace/>}/>
+            <KonamiProvider>
+                <Router>
+                    <KonamiListener/>
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/projects" element={<Projects/>}/>
+                        <Route path="/blog" element={<Blog/>}/>
+                        <Route path="/blog/:slug" element={<BlogPost/>}/>
+                        <Route path="/about" element={<Contact/>}/>
+                        <Route path="/contact" element={<Navigate to="/about" replace/>}/>
 
-                    <Route path="/research" element={<Research/>}/>
-                    <Route path="/research/bengaluru-telugu-dictionary" element={<BengaluruTeluguDictionary/>}/>
-                    <Route path="/research/:slug" element={<ResearchPost/>}/>
-                    <Route path="/photography" element={<Photography/>}/>
-                    <Route path="/experience" element={<Experience/>}/>
-                    
-                    <Route path="/konami" element={<Konami/>}/>
+                        <Route path="/research" element={<Research/>}/>
+                        <Route path="/research/bengaluru-telugu-dictionary" element={<BengaluruTeluguDictionary/>}/>
+                        <Route path="/research/:slug" element={<ResearchPost/>}/>
+                        <Route path="/photography" element={<Photography/>}/>
+                        <Route path="/experience" element={<Experience/>}/>
 
-                    <Route path="*" element={<NotFound/>}/>
-                </Routes>
-            </Router>
+                        <Route path="/konami/:code" element={<KonamiValidator />}/>
+
+                        <Route path="*" element={<NotFound/>}/>
+                    </Routes>
+                </Router>
+            </KonamiProvider>
         </LanguageProvider>
     </ErrorBoundary>);
 }
 
-export default App; 
+export default App;

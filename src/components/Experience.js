@@ -32,7 +32,7 @@ const Experience = () => {
                         company={item.company}
                         duration={item.duration}
                         description={item.description}
-                        technologies={item.technologies}
+                        notes={item.notes}
                     />))}
                 </div>
             </div>);
@@ -43,10 +43,6 @@ const Experience = () => {
         <SideNav/>
         <main>
             <h1 id="project-heading">{t('experienceTitle')}</h1>
-            <p className="home-text-sub"
-               style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%'}}>
-                {t('experienceDescription')}
-            </p>
             <div style={{marginLeft: 'var(--nav-width)', paddingLeft: '6%', paddingRight: '6%', marginTop: '2rem'}}>
                 {renderSections()}
             </div>

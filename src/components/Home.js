@@ -46,6 +46,7 @@ const Home = () => {
 
     useEffect(() => {
         document.title = t('pageTitles.home');
+        console.log(t('plane'));
     }, [t]);
 
 
@@ -81,10 +82,12 @@ const Home = () => {
             </div>
 
             {featuredProjectCards.length > 0 && <div id="featured-projects">
-                <h2 id="featured-projects-heading">{t('featuredProjectsTitle')}</h2>
-                <h2 id="featured-projects-subheading"><Link to="/projects"
-                                                            className="nav-link">{t('featuredProjectsSubTitle')}</Link>
-                </h2>
+                <div className="featured-section-header">
+                    <h2 className="featured-section-heading">{t('featuredProjectsTitle')}</h2>
+                    <h2 className="featured-section-subheading">
+                        <Link to="/projects" className="nav-link featured-section-link">{t('featuredProjectsSubTitle')}</Link>
+                    </h2>
+                </div>
                 <div className="project-line">
                     {featuredProjectCards.map((item, idx) => (<ProjectCard
                         key={idx}
@@ -98,10 +101,12 @@ const Home = () => {
             </div>}
 
             {featuredExperienceCards.length > 0 && <div id="experience">
-                <h2 id="featured-projects-heading">{t('featuredExperienceTitle')}</h2>
-                <h2 id="featured-projects-subheading"><Link to="/experience"
-                                                            className="nav-link">{t('featuredExperienceSubTitle')}</Link>
-                </h2>
+                <div className="featured-section-header">
+                    <h2 className="featured-section-heading">{t('featuredExperienceTitle')}</h2>
+                    <h2 className="featured-section-subheading">
+                        <Link to="/experience" className="nav-link featured-section-link">{t('featuredExperienceSubTitle')}</Link>
+                    </h2>
+                </div>
                 <div className="experience-line">
                     {chunkArray(featuredExperienceCards, 2).map((row, rowIdx) => (
                         <div className="experience-row" key={rowIdx}
@@ -117,7 +122,7 @@ const Home = () => {
                                 company={item.company}
                                 duration={item.duration}
                                 description={item.description}
-                                technologies={item.technologies}
+                                notes={item.notes}
                             />))}
                             {row.length === 1 && <div className="experience-info" style={{visibility: 'hidden'}}></div>}
                         </div>))}

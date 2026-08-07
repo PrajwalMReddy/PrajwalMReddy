@@ -1,45 +1,52 @@
 export const experience = {
     en: {
         experienceTitle: "Experience",
-        experienceDescription: "Where I have worked, learned, and gained important skills",
-        technologies: "Technologies",
 
         // Experience sections configuration
-        experienceSections: [
-            {id: "professional", title: "Professional Experience"},
-            {id: "extracurricular", title: "Extracurricular Experience"},
-            {id: "volunteer", title: "Volunteer Experience"},
-            {id: "coursework", title: "Relevant Coursework"}
+        experienceSections: [{
+            id: "professional", title: "Professional"},
+            {id: "academic", title: "Academic"}, // Research + Coursework
+            {id: "extracurricular", title: "Extracurricular"},
+            {id: "volunteer", title: "Volunteer"},
         ],
 
         experienceCards: [{
-            title: "",
-            company: "",
-            duration: "",
-            description: "-",
-            technologies: [""],
+            title: "Coursework",
+            company: "Cornell University - Ithaca, NY",
+            duration: "August 2024 - May 2026",
+            description: "OOP & DS Honors, Linear Algebra, Mathematical Foundations for CS, DS & Functional Programming, Intermediate Microeconomics, Intermediate Macroeconomics, Computational Linguistics, Understanding Language Models, Quantum Computing, Syntax & Semantics, Historical Linguistics, Morphology",
             featured: false,
-            section: ""
+            section: "academic"
+        }, {
+            title: "Software Engineering Intern",
+            company: "testAIng - Bengaluru, KA",
+            duration: "May 2025 – Aug 2025",
+            description: "• Developed Python NLP pipeline for email spam detection, writing docs for enhancements and errors fixed\n• Implemented counterfactual generators with Polyjuice and spearheaded SMS spam classification expansion\n• Led 1-on-1 mentoring sessions for other interns, coaching them on Git, Jupyter, NLP, and codebase layout",
+            featured: false,
+            section: "professional"
+        }, {
+            title: "Engineering Possibilities Summit, Insight Series & Emerging Leaders Series",
+            company: "Goldman Sachs",
+            duration: "Jan 2025 - Feb 2026",
+            description: "• One of few dozens chosen to fly to Salt Lake City to take part in selective ELS program\n• Networked with industry professionals and completed job simulations in Risk, Controllers, and Operations",
+            notes: {label: "", text: ""},
+            featured: false,
+            section: "professional"
         }],
     }, kn: {
         experienceTitle: "ಅನುಬವ",
-        experienceDescription: "ನಾನು ಎಲ್ಲಿ ಕೆಲಸ ಮಾಡಿದ್ದೇನೆ, ಕಳಿತೇನೆ, ಮತ್ತು ಪ್ರಮುಕ ಕಳಿಕೆಗಳು ಗಳಿಸಿದ್ದೇನೆ",
-        technologies: "ತಂತ್ರಜ್ಞಾನಗಳು",
 
         // Experience sections configuration
-        experienceSections: [
-            {id: "professional", title: "ಕಸುಬಿನ ಅನುಬವ"},
-            {id: "extracurricular", title: "ಪಠ್ಯೇತರ ಅನುಬವ"},
-            {id: "volunteer", title: "ಸ್ವಯಂಸೇವಕ ಅನುಬವ"},
-            {id: "coursework", title: "ಸಂಬಂಧಿತ ಪಾಠಕೆಲಸ"}
-        ],
+        experienceSections: [{id: "professional", title: "ಕಸುಬಿನ ಅನುಬವ"}, {id: "academic", title: "ಕಲಿಕೆಯ ಪಾಠಕೆಲಸ"}, {
+            id: "extracurricular", title: "ಪಠ್ಯೇತರ ಅನುಬವ"
+        }, {id: "volunteer", title: "ಸ್ವಯಂಸೇವಕ ಅನುಬವ"},],
 
         experienceCards: [{
             title: "",
             company: "",
             duration: "",
             description: "-",
-            technologies: [""],
+            notes: {label: "", text: ""},
             featured: false,
             section: ""
         }]

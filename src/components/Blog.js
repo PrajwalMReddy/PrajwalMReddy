@@ -77,61 +77,50 @@ const Blog = () => {
         loadBlogPosts();
     }, [language]);
 
-    // compute blog notice once per language
+    // rotate through blog notices
     useEffect(() => {
-        const raw = t('blogNotice');
-        const fallback = t('blogNoticeDefault') || '';
+        const noticeArray = t('blogNotice');
+        const notices = Array.isArray(noticeArray) ? noticeArray : [noticeArray].filter(Boolean);
 
-        let pool = (Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : raw && typeof raw === 'object' ? Object.values(raw) : [])
-            .filter(Boolean)
-            .map(s => s.replace(/\\n/g, '\n').trim());
-
-        const normalizedFallback = (fallback || '').replace(/\\n/g, '\n').trim();
-        if (normalizedFallback) pool.push(normalizedFallback);
-
-        pool = Array.from(new Set(pool));
-
-        if (pool.length === 0) pool.push(normalizedFallback || '');
+        if (notices.length === 0) {
+            setBlogNotice('');
+            return;
+        }
 
         const key = `BlogNoticeIndex_${language || 'default'}`;
-
         let i = 0;
         try {
             i = Number(localStorage.getItem(key));
-            if (!Number.isInteger(i) || i < 0 || i >= pool.length) i = 0;
+            if (!Number.isInteger(i) || i < 0 || i >= notices.length) i = 0;
         } catch {
             i = 0;
         }
 
-        const notice = pool[i];
+        setBlogNotice(notices[i]);
 
         try {
-            localStorage.setItem(key, String((i + 1) % pool.length));
+            localStorage.setItem(key, String((i + 1) % notices.length));
         } catch {
             /* ignore */
         }
-
-        setBlogNotice(notice);
     }, [language, t]);
-
-    const displayedNotice = blogPosts.length === 0 ? (t('blogNoticeEmpty') || blogNotice) : blogNotice;
 
     return (<div id="app-root">
         <SideNav/>
         <main>
             <h1 id="blog-heading">{t('blogHeading')}</h1>
+            {blogPosts.length === 0 ? (<p id="blog-subtitle"><Link to="/photography">{t('blogEmpty')}</Link></p>) : (
+                <p id="blog-subtitle"><Link to="/photography">{t('blogSubtitle')}</Link></p>)}
 
-            {loading ? (<div className="blog-loading">Loading...</div>) : error ? (
-                <div className="blog-error">Error: {error}</div>) : (<>
-                <div id="blog-notice-div">
+            {(<>
+
+                {blogNotice && (<div id="blog-notice-div">
                     <div className="blog-notice">
-                        <h1 className="blog-notice-heading">
-                            <Link to="/photography" className="nav-link">
-                                {renderWithNewlines(displayedNotice)}
-                            </Link>
-                        </h1>
+                        <div className="blog-notice-content">
+                            {renderWithNewlines(blogNotice)}
+                        </div>
                     </div>
-                </div>
+                </div>)}
 
                 {blogPosts.length > 0 && (<div className="blog-grid">
                     {blogPosts.map((post) => {
@@ -182,7 +171,7 @@ const Blog = () => {
                     })}
                 </div>)}
 
-                {blogPosts.length > 0 && (<p className="blog-rss-notice">
+                {blogPosts.length > 0 && (<p className="blog-external-notice">
                     {t('blogExternalSourceNotice')}
                 </p>)}
             </>)}

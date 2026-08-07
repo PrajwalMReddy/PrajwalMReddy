@@ -14,6 +14,13 @@ const Photography = () => {
     const [visibleImages, setVisibleImages] = useState(new Set());
     const [fullscreenImage, setFullscreenImage] = useState(null);
     const imageRefs = useRef({});
+    
+    const getPhotoId = useCallback((meta) => {
+        if (!meta) return null;
+        if (meta.id) return String(meta.id);
+        if (!meta.filename) return null;
+        return meta.filename.replace(/\.[^/.]+$/, '');
+    }, []);
 
     useEffect(() => {
         document.title = t('pageTitles.photography');
@@ -71,22 +78,61 @@ const Photography = () => {
         imageRefs.current[idx] = el;
     }, []);
 
-    // Handle fullscreen toggle
-    const toggleFullscreen = (img, meta) => {
-        setFullscreenImage(fullscreenImage ? null : {img, meta});
-    };
+    const setPhotoHash = useCallback((photoId) => {
+        if (!photoId) return;
+        const encodedHash = `#${encodeURIComponent(photoId)}`;
+        if (window.location.hash !== encodedHash) {
+            window.location.hash = encodedHash;
+        }
+    }, []);
+
+    const clearPhotoHash = useCallback(() => {
+        if (!window.location.hash) return;
+        const {pathname, search} = window.location;
+        window.history.pushState(null, '', `${pathname}${search}`);
+    }, []);
+
+    const openFullscreen = useCallback((meta) => {
+        const imgUrl = `/photography/${meta.filename}`;
+        setFullscreenImage({img: {src: imgUrl}, meta});
+        setPhotoHash(getPhotoId(meta));
+    }, [getPhotoId, setPhotoHash]);
+
+    const closeFullscreen = useCallback(() => {
+        setFullscreenImage(null);
+        clearPhotoHash();
+    }, [clearPhotoHash]);
+
+    useEffect(() => {
+        const syncFullscreenFromHash = () => {
+            const hashPhotoId = decodeURIComponent(window.location.hash.replace(/^#/, ''));
+            if (!hashPhotoId) {
+                setFullscreenImage(null);
+                return;
+            }
+
+            const targetMeta = metadata.find((meta) => getPhotoId(meta) === hashPhotoId);
+            if (targetMeta) {
+                setFullscreenImage({img: {src: `/photography/${targetMeta.filename}`}, meta: targetMeta});
+            }
+        };
+
+        syncFullscreenFromHash();
+        window.addEventListener('hashchange', syncFullscreenFromHash);
+        return () => window.removeEventListener('hashchange', syncFullscreenFromHash);
+    }, [getPhotoId, metadata]);
 
     // Close fullscreen on escape key
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape' && fullscreenImage) {
-                setFullscreenImage(null);
+                closeFullscreen();
             }
         };
 
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
-    }, [fullscreenImage]);
+    }, [closeFullscreen, fullscreenImage]);
 
     return (<div id="app-root">
         <SideNav/>
@@ -133,7 +179,7 @@ const Photography = () => {
                                             className="expand-icon"
                                             onClick={e => {
                                                 e.stopPropagation();
-                                                setFullscreenImage({img: {src: imgUrl}, meta});
+                                                openFullscreen(meta);
                                             }}
                                             aria-label="Expand image"
                                             style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}
@@ -155,13 +201,13 @@ const Photography = () => {
 
         {/* Fullscreen overlay */}
         {fullscreenImage && (
-            <div className="fullscreen-overlay" onClick={() => setFullscreenImage(null)}>
+            <div className="fullscreen-overlay" onClick={closeFullscreen}>
                 <div className="fullscreen-content">
                     <button
                         className="close-fullscreen"
                         onClick={(e) => {
                             e.stopPropagation();
-                            setFullscreenImage(null);
+                            closeFullscreen();
                         }}
                         aria-label="Close fullscreen"
                     >

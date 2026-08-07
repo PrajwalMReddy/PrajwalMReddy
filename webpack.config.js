@@ -63,3 +63,4 @@ module.exports = {
     },
     mode: 'production',
 };
+

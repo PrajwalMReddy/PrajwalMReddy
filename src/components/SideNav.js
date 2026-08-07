@@ -9,7 +9,6 @@ const SideNav = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get all project cards and filter for featured ones
     const allProjectCards = t('projectCards') || [];
     const featuredProjectCards = allProjectCards.filter(project => project.featured === true);
 
@@ -20,10 +19,8 @@ const SideNav = () => {
     const navigateToSection = (sectionId) => {
         setIsOpen(false);
 
-        // If we're not on the homepage, navigate there first
         if (location.pathname !== '/') {
             navigate('/');
-            // Wait for navigation to complete, then scroll to section
             setTimeout(() => {
                 const element = document.getElementById(sectionId);
                 if (element) {
@@ -31,7 +28,6 @@ const SideNav = () => {
                 }
             }, 100);
         } else {
-            // If we're already on homepage, just scroll to section
             const element = document.getElementById(sectionId);
             if (element) {
                 element.scrollIntoView({behavior: 'smooth'});
@@ -59,38 +55,10 @@ const SideNav = () => {
                                                   onClick={() => setIsOpen(false)}>{t('experience')}</Link></li>*/}
                 <li className="nav-element"><Link to="/blog" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('blog')}</Link></li>
+                <li className="nav-element"><Link to="/photography" className="nav-link"
+                                                  onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>
                 <li className="nav-element"><Link to="/about" className="nav-link"
                                                   onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>
-                {/*<li className="nav-element"><Link to="/research" className="nav-link"
-                                                  onClick={() => setIsOpen(false)}>{t('research')}</Link></li>
-                <li className="nav-element"><Link to="/photography" className="nav-link"
-                                                  onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>*/}
-
-                {/* Homepage subsections */}
-                {/*<li className="nav-element">
-                    <button
-                        className="nav-link subsection-link"
-                        onClick={() => navigateToSection('skill-div')}
-                    >
-                        {t('skill')}
-                    </button>
-                </li>
-                {featuredProjectCards.length > 0 && <li className="nav-element">
-                    <button
-                        className="nav-link subsection-link"
-                        onClick={() => navigateToSection('featured-projects')}
-                    >
-                        {t('project')}
-                    </button>
-                </li>}
-                <li className="nav-element">
-                    <button
-                        className="nav-link subsection-link"
-                        onClick={() => navigateToSection('experience')}
-                    >
-                        {t('experience')}
-                    </button>
-                </li>*/}
             </ul>
             <Settings/>
         </nav>

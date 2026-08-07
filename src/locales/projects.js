@@ -40,6 +40,12 @@ export const projects = {
             featured: false,
             section: "programming"
         }, {
+            title: "Globesaic - A Mondage",
+            description: "We created the world map out of regular polygons, allowing users to upload multimedia to cultural zones, allowing the user to see our rich global diversity as a collage.",
+            link: "https://github.com/Arya-GITh/TartanHacks2026",
+            featured: false,
+            section: "programming"
+        }, {
             title: "Conscript Generator",
             description: "This turns romanized Old Hūkaen Lejai text into its representation in its neograph.",
             link: "https://github.com/PrajwalMReddy/ConscriptGenerator",
@@ -132,6 +138,12 @@ export const projects = {
             description: "ಇದು ನನ್ನ ಅರಕೆ ಬರಹ. ಈ ಬರಹ ಟ್ವಿಟರ್ ಟ್ವೀಟುಗಳ ಅನಿಸಿಕೆಯರಕೆಯ ಮೂಲಕ ೨೦೨೩ರ ಕರ್ನಾಟಕ ಚುನಾವಣೆಯ ಆಗುಹವನ್ನು ಮುಂದಾಗಿ ಹೇಳುತ್ತದೆ.",
             link: "https://www.internationaljournalssrg.org/IJCSE/paper-details?Id=499",
             image: "research-paper",
+            featured: false,
+            section: "programming"
+        }, {
+            title: "ಗ್ಲೋಬ್ಸೇಕ್ - ಒಂದು ಮೊಂದಾಜ್",
+            description: "ನಮ್ಮ ಜಗತಿನ ಸಾಂಸ್ಕೃತಿಕ ವೈವಿಧ್ಯತೆಯನ್ನು ಅರ್ಥ ಮಾಡಲು, ಇಲ್ಲಿಂದ ಬಹುಮೀಡಿಯವನ್ನು ಮೇಲೇರಿಸಿ, ಅಂಟು ಚಿತ್ರಣ ಕಲೆಯಾಗಿ ನೋಡಬಹುದು.",
+            link: "https://github.com/Arya-GITh/TartanHacks2026",
             featured: false,
             section: "programming"
         }, {

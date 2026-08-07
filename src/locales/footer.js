@@ -1,8 +1,8 @@
 export const footer = {
     en: {
-        copyright: "© 2025 Prajwal Reddy",
+        copyright: "© 2026 ꦥꦿꦗ꧀ꦮꦭ ꦫꦺꦝ꧀ꦝꦶ",
     },
     kn: {
-        copyright: "© ೨೦೨೫ ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+        copyright: "© ೨೦೨೬ ꦥꦿꦗ꧀ꦮꦭ ꦫꦺꦝ꧀ꦝꦶ",
     }
 }; 

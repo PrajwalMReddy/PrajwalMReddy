@@ -1,9 +1,6 @@
 import React from 'react';
-import {useLanguage} from '../utils/LanguageContext';
 
-const ExperienceCard = ({title, company, duration, description, technologies}) => {
-    const {t} = useLanguage();
-
+const ExperienceCard = ({title, company, duration, description, notes}) => {
     return (<div className="experience-info">
         <div className="experience-header">
             <h1 className="experience-title">{title}</h1>
@@ -13,9 +10,9 @@ const ExperienceCard = ({title, company, duration, description, technologies}) =
             </div>
         </div>
         <p className="experience-text">{description}</p>
-        {technologies && technologies.length > 0 && (<div className="experience-technologies">
-            <span className="technologies-label">{t('technologies')}: </span>
-            <span className="technologies-list">{technologies.join(', ')}</span>
+        {notes && notes.label && notes.text && (<div className="experience-technologies">
+            <span className="technologies-label">{notes.label}: </span>
+            <span className="technologies-list">{notes.text}</span>
         </div>)}
     </div>);
 };
