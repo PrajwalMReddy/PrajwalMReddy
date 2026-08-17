@@ -25,9 +25,12 @@ const BudgetStats = ({ stats }) => {
     if (!stats) return null;
 
     const { funds, spending, budget, transactionStats, ayana, categories, chartData } = stats;
-    const maxCategory = categories.length > 0 ? categories[0].spending : 0;
+    const categoryList = Array.isArray(categories) ? categories : [];
+    const monthlyTrend = Array.isArray(chartData?.monthlyTrend) ? chartData.monthlyTrend : [];
+    const incomeVsExpenses = chartData?.incomeVsExpenses || { income: 0, expenses: 0 };
+    const maxCategory = categoryList.length > 0 ? categoryList[0].spending : 0;
     const maxMonthly = Math.max(
-        ...chartData.monthlyTrend.flatMap((m) => [m.expenses, m.income]),
+        ...monthlyTrend.flatMap((m) => [m.expenses, m.income]),
         1
     );
 
@@ -103,7 +106,7 @@ const BudgetStats = ({ stats }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {categories.map((cat) => (
+                            {categoryList.map((cat) => (
                                 <tr key={cat.category}>
                                     <td>{cat.category}</td>
                                     <td>{formatCurrency(cat.spending)}</td>
@@ -113,7 +116,7 @@ const BudgetStats = ({ stats }) => {
                             <tr className="admin-table-total">
                                 <td>Total</td>
                                 <td>{formatCurrency(spending.expenses)}</td>
-                                <td>{formatCurrency(categories.reduce((s, c) => s + c.spendingPerAyana, 0))}</td>
+                                <td>{formatCurrency(categoryList.reduce((s, c) => s + c.spendingPerAyana, 0))}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -122,7 +125,7 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>Category Breakdown</h2>
                     <div className="admin-bar-chart">
-                        {categories.slice(0, 10).map((cat) => (
+                        {categoryList.slice(0, 10).map((cat) => (
                             <CategoryBar
                                 key={cat.category}
                                 name={cat.category}
@@ -137,7 +140,7 @@ const BudgetStats = ({ stats }) => {
             <section className="admin-stats-section">
                 <h2>Monthly Trend</h2>
                 <div className="admin-monthly-chart">
-                    {chartData.monthlyTrend.map((month) => (
+                    {monthlyTrend.map((month) => (
                         <div key={month.month} className="admin-monthly-group">
                             <div className="admin-monthly-bars">
                                 <div
@@ -168,19 +171,19 @@ const BudgetStats = ({ stats }) => {
                         <div
                             className="admin-comparison-fill income"
                             style={{
-                                width: `${(chartData.incomeVsExpenses.income / Math.max(chartData.incomeVsExpenses.income, chartData.incomeVsExpenses.expenses, 1)) * 100}%`,
+                                width: `${(incomeVsExpenses.income / Math.max(incomeVsExpenses.income, incomeVsExpenses.expenses, 1)) * 100}%`,
                             }}
                         />
-                        <span>Income: {formatCurrency(chartData.incomeVsExpenses.income)}</span>
+                        <span>Income: {formatCurrency(incomeVsExpenses.income)}</span>
                     </div>
                     <div className="admin-comparison-bar">
                         <div
                             className="admin-comparison-fill expenses"
                             style={{
-                                width: `${(chartData.incomeVsExpenses.expenses / Math.max(chartData.incomeVsExpenses.income, chartData.incomeVsExpenses.expenses, 1)) * 100}%`,
+                                width: `${(incomeVsExpenses.expenses / Math.max(incomeVsExpenses.income, incomeVsExpenses.expenses, 1)) * 100}%`,
                             }}
                         />
-                        <span>Expenses: {formatCurrency(chartData.incomeVsExpenses.expenses)}</span>
+                        <span>Expenses: {formatCurrency(incomeVsExpenses.expenses)}</span>
                     </div>
                 </div>
             </section>
