@@ -2,6 +2,10 @@ import React from 'react';
 import {BrowserRouter as Router, Navigate, Route, Routes, useParams} from 'react-router-dom';
 import {LanguageProvider} from './utils/LanguageContext';
 import {KonamiProvider} from './utils/KonamiContext';
+import {AuthProvider} from './utils/AuthContext';
+import ProtectedRoute from './components/admin/ProtectedRoute';
+import AdminLogin from './components/admin/AdminLogin';
+import BudgetAdmin from './components/admin/BudgetAdmin';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
@@ -17,6 +21,7 @@ import Konami from './components/Konami';
 import KonamiListener from './components/KonamiListener';
 import './blog.css';
 import './research.css';
+import './admin.css';
 import Experience from './components/Experience';
 import {useKonami} from './utils/KonamiContext';
 
@@ -61,6 +66,7 @@ function App() {
     return (<ErrorBoundary>
         <LanguageProvider>
             <KonamiProvider>
+                <AuthProvider>
                 <Router>
                     <KonamiListener/>
                     <Routes>
@@ -79,9 +85,16 @@ function App() {
 
                         <Route path="/konami/:code" element={<KonamiValidator />}/>
 
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/admin/budget" element={
+                            <ProtectedRoute><BudgetAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin" element={<Navigate to="/admin/budget" replace />} />
+
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
                 </Router>
+                </AuthProvider>
             </KonamiProvider>
         </LanguageProvider>
     </ErrorBoundary>);
