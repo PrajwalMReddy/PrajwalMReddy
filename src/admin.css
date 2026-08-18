@@ -75,6 +75,10 @@
     cursor: not-allowed;
 }
 
+/* ============================================================
+   Admin Header
+   ============================================================ */
+
 .admin-header {
     display: flex;
     align-items: center;
@@ -150,6 +154,10 @@
     font-size: 0.875rem;
 }
 
+/* ============================================================
+   Admin Main
+   ============================================================ */
+
 .admin-main {
     max-width: 1400px;
     margin: 0 auto;
@@ -162,691 +170,166 @@
     margin-bottom: 1.5rem;
 }
 
-.admin-todo-overview {
+/* ============================================================
+   Todo Top Dashboard
+   Add Task on the left + 2x2 summary on the right
+   ============================================================ */
+
+.admin-todo-top-dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: minmax(0, 1fr) 280px;
     gap: 1rem;
+    align-items: stretch;
     margin-bottom: 1.5rem;
-}
-
-.admin-todo-stat {
-    background: var(--gray, #fff);
-    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.admin-todo-stat span {
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.admin-todo-stat strong {
-    font-size: 1.35rem;
-}
-
-.admin-todo-form {
-    margin-bottom: 1.25rem;
-}
-
-.admin-todo-form-row {
-    display: flex;
-    align-items: end;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.admin-todo-title-field,
-.admin-todo-date-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.admin-todo-title-field {
-    flex: 1 1 420px;
-}
-
-.admin-todo-date-field {
-    flex: 0 0 180px;
-}
-
-.admin-todo-form input {
-    min-height: 42px;
-}
-
-.admin-todo-submit {
-    min-height: 42px;
-    padding: 0.6rem 1.1rem;
-    background: var(--secondary-color, #4a6b8a);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.admin-todo-overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.admin-todo-stat {
-    background: var(--gray, #fff);
-    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.admin-todo-stat span {
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.admin-todo-stat strong {
-    font-size: 1.35rem;
-}
-
-.admin-todo-form {
-    margin-bottom: 1.25rem;
-}
-
-.admin-todo-form-row {
-    display: flex;
-    align-items: end;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.admin-todo-title-field,
-.admin-todo-date-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.admin-todo-title-field {
-    flex: 1 1 420px;
-}
-
-.admin-todo-date-field {
-    flex: 0 0 180px;
-}
-
-.admin-todo-form input {
-    min-height: 42px;
-}
-
-.admin-todo-submit {
-    min-height: 42px;
-    padding: 0.6rem 1.1rem;
-    background: var(--secondary-color, #4a6b8a);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
 }
 
 /* ============================================================
-   Todo board
+   Todo Add Form
    ============================================================ */
 
-.admin-todo-board {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 1rem;
-    width: 100%;
-    max-width: 100%;
-    align-items: start;
-    overflow: visible;
-    padding: 0;
+.admin-todo-top-dashboard .admin-todo-form {
+    margin: 0;
+    min-width: 0;
 }
 
-.admin-todo-column {
-    min-width: 0;
+.admin-todo-top-dashboard .admin-todo-form h3 {
+    margin-bottom: 1rem;
+}
+
+.admin-todo-form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+}
+
+.admin-todo-title-field,
+.admin-todo-date-field,
+.admin-todo-priority-field {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-}
+    gap: 0.4rem;
 
-.admin-todo-column-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 30px;
-    padding: 0 0.2rem;
-}
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8rem;
+    font-weight: 500;
 
-.admin-todo-column-title {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--text, #2c3e50);
 }
 
-.admin-todo-column-count {
+.admin-todo-title-field {
+    flex: 1 1 auto;
+}
+
+.admin-todo-date-field {
+    flex: 0 0 150px;
+}
+
+.admin-todo-priority-field {
+    flex: 0 0 125px;
+}
+
+.admin-todo-form input,
+.admin-todo-form select {
+    min-height: 42px;
+    box-sizing: border-box;
+}
+
+.admin-todo-submit {
     flex: 0 0 auto;
 
-    min-width: 22px;
-    height: 20px;
+    min-height: 42px;
+    padding: 0.6rem 1.1rem;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
 
-    padding: 0 0.4rem;
+    border: none;
+    border-radius: 8px;
 
-    background: rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.08
-    );
-
-    color: var(--secondary-color, #4a6b8a);
-
-    font-size: 0.7rem;
-    font-weight: 700;
-
-    border-radius: 999px;
-}
-
-.admin-todo-column-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-
-    min-width: 0;
-    max-height: 65vh;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    padding: 0.1rem;
-}
-
-/* ============================================================
-   Todo cards
-   ============================================================ */
-
-.admin-todo-card {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-
-    padding: 0.75rem 0.8rem;
-
-    border-radius: 12px;
-
-    cursor: grab;
-
-    box-shadow:
-            0 1px 2px rgba(0, 0, 0, 0.035);
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
 
     transition:
-            transform 0.15s ease,
-            box-shadow 0.15s ease,
+            background 0.15s ease,
             opacity 0.15s ease;
 }
 
-.admin-todo-card:hover {
-    transform: translateY(-1px);
-
-    box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.07);
+.admin-todo-submit:hover:not(:disabled) {
+    background: var(--text, #2c3e50);
 }
 
-.admin-todo-card[draggable='true']:active {
-    cursor: grabbing;
-}
-
-.admin-todo-card.dragging {
-    opacity: 0.4;
-}
-
-.admin-todo-card.drag-over {
-    outline: 2px dashed rgba(44, 62, 80, 0.3);
-    outline-offset: 2px;
-}
-
-/* Card colours */
-
-.admin-todo-card.tone-normal {
-    background: #dceeff;
-}
-
-.admin-todo-column-body
-.admin-todo-card.tone-normal:nth-child(3n + 2) {
-    background: #cfe8ff;
-}
-
-.admin-todo-column-body
-.admin-todo-card.tone-normal:nth-child(3n + 3) {
-    background: #e3f2ff;
-}
-
-.admin-todo-card.tone-urgent {
-    background: #ffd9c9;
-}
-
-.admin-todo-card.tone-done {
-    background: #eef2f5;
-    opacity: 0.75;
+.admin-todo-submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 /* ============================================================
-   Card top row
+   Todo Summary
+   2 x 2 grid
    ============================================================ */
 
-.admin-todo-card-top {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
+.admin-todo-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.65rem;
 
     min-width: 0;
 }
 
-.admin-todo-card-avatar {
-    flex: 0 0 26px;
+.admin-todo-stat {
+    min-width: 0;
 
-    width: 26px;
-    height: 26px;
+    background: var(--gray, #fff);
 
-    border-radius: 50%;
-    background: #fff;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+
+    border-radius: 10px;
+
+    padding: 0.65rem 0.8rem;
 
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
 
-    font-size: 0.78rem;
-
-    box-shadow:
-            inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    gap: 0.1rem;
 }
 
-.admin-todo-card-check {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.4rem;
+.admin-todo-stat span {
+    color: var(--secondary-color, #4a6b8a);
 
-    flex: 1 1 auto;
-    min-width: 0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 
-    cursor: pointer;
-}
-
-.admin-todo-card-check input {
-    flex: 0 0 auto;
-
-    width: 15px;
-    height: 15px;
-
-    margin: 0.2rem 0 0;
-
-    accent-color: var(--text, #2c3e50);
-}
-
-.admin-todo-card-title {
-    min-width: 0;
-
-    font-size: 0.84rem;
-    line-height: 1.3;
-    font-weight: 600;
-
-    color: #1f2d3d;
-
-    overflow-wrap: anywhere;
-}
-
-.admin-todo-card.complete
-.admin-todo-card-title {
-    text-decoration: line-through;
-    opacity: 0.65;
-}
-
-/* Delete */
-
-.admin-todo-card-delete {
-    flex: 0 0 auto;
-
-    width: 24px;
-    height: 24px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    background: transparent;
-    border: 0;
-
-    color: rgba(31, 45, 61, 0.4);
-
-    font-size: 0.78rem;
-    line-height: 1;
-
-    cursor: pointer;
-}
-
-.admin-todo-card-delete:hover {
-    color: #b3261e;
-}
-
-/* ============================================================
-   Card bottom row
-   ============================================================ */
-
-.admin-todo-card-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 0.4rem;
-
-    min-width: 0;
-
-    margin-top: 0.55rem;
-    padding-left: calc(26px + 0.5rem);
-}
-
-.admin-todo-card-due {
-    min-width: 0;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
-
-    font-size: 0.7rem;
-    line-height: 1.2;
-    font-weight: 600;
-
-    color: rgba(31, 45, 61, 0.58);
 }
 
-.admin-todo-card.tone-urgent
-.admin-todo-card-due {
+.admin-todo-stat strong {
+    color: var(--text, #2c3e50);
+
+    font-size: 1.25rem;
+    line-height: 1.15;
+    font-weight: 600;
+}
+
+.admin-todo-stat-urgent {
+    background: rgba(255, 217, 201, 0.35);
+}
+
+.admin-todo-stat-urgent span,
+.admin-todo-stat-urgent strong {
     color: #a13f1f;
 }
 
-.admin-todo-card-due-caption {
-    font-weight: 500;
-}
-
-.admin-todo-card-priority {
-    flex: 0 0 auto;
-
-    max-width: 82px;
-
-    border: 0;
-    background: rgba(255, 255, 255, 0.65);
-
-    border-radius: 999px;
-
-    padding: 0.18rem 0.4rem;
-
-    font-size: 0.67rem;
-    font-weight: 600;
-
-    color: #1f2d3d;
-
-    cursor: pointer;
-}
-
-.admin-todo-card-avatar {
-    flex: 0 0 9px;
-
-    width: 9px;
-    height: 9px;
-
-    margin-top: 0.45rem;
-
-    border-radius: 50%;
-
-    box-shadow: none;
-}
-
-.admin-todo-card-avatar.priority-high {
-    background: #e05252;
-}
-
-.admin-todo-card-avatar.priority-medium {
-    background: #e5b83f;
-}
-
-.admin-todo-card-avatar.priority-low {
-    background: #55a878;
-}
-
 /* ============================================================
-   Board responsiveness
+   Generic Admin Form
    ============================================================ */
-
-/* Four columns */
-@media (max-width: 1250px) {
-    .admin-todo-board {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-/* Three columns */
-@media (max-width: 1000px) {
-    .admin-todo-board {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* Two columns */
-@media (max-width: 720px) {
-    .admin-todo-board {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.75rem;
-    }
-
-    .admin-todo-column-body {
-        max-height: none;
-    }
-}
-
-/* One column */
-@media (max-width: 480px) {
-    .admin-todo-board {
-        grid-template-columns: 1fr;
-    }
-
-    .admin-todo-card {
-        padding: 0.8rem;
-    }
-}
-
-.admin-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.1
-    );
-    padding-bottom: 0;
-}
-
-.admin-tabs button {
-    padding: 0.75rem 1.25rem;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    margin-bottom: -1px;
-}
-
-.admin-tabs button.active {
-    color: var(--text, inherit);
-    border-bottom-color: var(--accent-color, #7d9ba6);
-}
-
-.admin-error {
-    color: #c0392b;
-    font-size: 0.875rem;
-    margin: 0.5rem 0;
-}
-
-.admin-success {
-    color: #27ae60;
-    font-size: 0.875rem;
-    margin: 0.5rem 0;
-}
-
-.admin-loading-text {
-    color: var(--secondary-color, #4a6b8a);
-}
-
-.admin-stats-section {
-    margin-bottom: 2rem;
-}
-
-.admin-stats-section h2 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--secondary-color, #4a6b8a);
-}
-
-.admin-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(
-        auto-fill,
-        minmax(180px, 1fr)
-    );
-    gap: 1rem;
-}
-
-.admin-stat-grid-6 {
-    grid-template-columns: repeat(
-        auto-fill,
-        minmax(140px, 1fr)
-    );
-}
-
-.admin-stat-card {
-    background: var(--gray, #fff);
-    border: 1px solid rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.1
-    );
-    border-radius: 8px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.admin-stat-card.negative .admin-stat-value {
-    color: #c0392b;
-}
-
-.admin-stat-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--secondary-color, #4a6b8a);
-}
-
-.admin-stat-value {
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.admin-stats-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-}
-
-.admin-table th,
-.admin-table td {
-    padding: 0.625rem 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.1
-    );
-}
-
-.admin-table th {
-    font-weight: 600;
-    color: var(--secondary-color, #4a6b8a);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.admin-table-total td {
-    font-weight: 600;
-    border-top: 2px solid rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.2
-    );
-}
-
-.admin-table-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.admin-table-actions button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border: 1px solid rgba(
-            var(--primary-color-rgb, 44, 62, 80),
-            0.2
-    );
-    border-radius: 4px;
-    background: transparent;
-    cursor: pointer;
-    color: var(--text, inherit);
-}
-
-.admin-table-actions button.danger {
-    color: #c0392b;
-    border-color: rgba(192, 57, 43, 0.3);
-}
-
-.admin-empty {
-    text-align: center;
-    color: var(--secondary-color, #4a6b8a);
-    padding: 2rem !important;
-}
 
 .admin-form {
     background: var(--gray, #fff);
@@ -925,11 +408,530 @@
     cursor: not-allowed;
 }
 
+/* ============================================================
+   Todo Board
+   ============================================================ */
+
+.admin-todo-board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    align-items: start;
+
+    padding-bottom: 5vh;
+}
+
+.admin-todo-column {
+    height: auto;
+    max-height: none;
+    padding-bottom: 0;
+}
+
+.admin-todo-column-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+
+    min-width: 0;
+    max-height: none;
+
+    overflow: visible;
+    padding: 0.1rem;
+}
+
+.admin-todo-column-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 30px;
+    padding: 0 0.2rem;
+}
+
+.admin-todo-column-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text, #2c3e50);
+}
+
+.admin-todo-column-count {
+    flex: 0 0 auto;
+
+    min-width: 22px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 0.4rem;
+
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.08
+    );
+
+    color: var(--secondary-color, #4a6b8a);
+
+    font-size: 0.7rem;
+    font-weight: 700;
+
+    border-radius: 999px;
+}
+
+/* ============================================================
+   Todo Cards
+   ============================================================ */
+
+.admin-todo-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 0.75rem 0.8rem;
+
+    border-radius: 12px;
+
+    cursor: grab;
+
+    box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.035);
+
+    transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            opacity 0.15s ease;
+}
+
+.admin-todo-card:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.admin-todo-card[draggable='true']:active {
+    cursor: grabbing;
+}
+
+.admin-todo-card.dragging {
+    opacity: 0.4;
+}
+
+.admin-todo-card.drag-over {
+    outline: 2px dashed rgba(44, 62, 80, 0.3);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   Todo Card Colours
+   ============================================================ */
+
+.admin-todo-card.tone-normal {
+    background: #dceeff;
+}
+
+.admin-todo-column-body
+.admin-todo-card.tone-normal:nth-child(3n + 2) {
+    background: #cfe8ff;
+}
+
+.admin-todo-column-body
+.admin-todo-card.tone-normal:nth-child(3n + 3) {
+    background: #e3f2ff;
+}
+
+.admin-todo-card.tone-urgent {
+    background: #ffd9c9;
+}
+
+.admin-todo-card.tone-done {
+    background: #eef2f5;
+    opacity: 0.75;
+}
+
+/* ============================================================
+   Card Top Row
+   ============================================================ */
+
+.admin-todo-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    min-width: 0;
+}
+
+/*
+ * Priority indicator.
+ *
+ * This used to be defined twice in the original CSS.
+ * It is now consistently a small coloured dot.
+ */
+
+.admin-todo-card-avatar {
+    flex: 0 0 9px;
+
+    width: 9px;
+    height: 9px;
+
+    margin-top: 0.45rem;
+
+    border-radius: 50%;
+
+    box-shadow: none;
+}
+
+.admin-todo-card-avatar.priority-high {
+    background: #e05252;
+}
+
+.admin-todo-card-avatar.priority-medium {
+    background: #e5b83f;
+}
+
+.admin-todo-card-avatar.priority-low {
+    background: #55a878;
+}
+
+.admin-todo-card-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
+    cursor: pointer;
+}
+
+.admin-todo-card-check input {
+    flex: 0 0 auto;
+
+    width: 15px;
+    height: 15px;
+
+    margin: 0.2rem 0 0;
+
+    accent-color: var(--text, #2c3e50);
+}
+
+.admin-todo-card-title {
+    min-width: 0;
+
+    font-size: 0.84rem;
+    line-height: 1.3;
+    font-weight: 600;
+
+    color: #1f2d3d;
+
+    overflow-wrap: anywhere;
+}
+
+.admin-todo-card.complete
+.admin-todo-card-title {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
+/* ============================================================
+   Todo Card Delete
+   ============================================================ */
+
+.admin-todo-card-delete {
+    flex: 0 0 auto;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+
+    color: rgba(31, 45, 61, 0.4);
+
+    font-size: 0.78rem;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.admin-todo-card-delete:hover {
+    color: #b3261e;
+}
+
+/* ============================================================
+   Todo Card Bottom Row
+   ============================================================ */
+
+.admin-todo-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.4rem;
+
+    min-width: 0;
+
+    margin-top: 0.55rem;
+
+    /*
+     * Align metadata with the title rather than the
+     * priority dot.
+     */
+    padding-left: calc(9px + 0.5rem);
+}
+
+.admin-todo-card-due {
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 0.7rem;
+    line-height: 1.2;
+    font-weight: 600;
+
+    color: rgba(31, 45, 61, 0.58);
+}
+
+.admin-todo-card.tone-urgent
+.admin-todo-card-due {
+    color: #a13f1f;
+}
+
+.admin-todo-card-due-caption {
+    font-weight: 500;
+}
+
+.admin-todo-card-priority {
+    flex: 0 0 auto;
+
+    max-width: 82px;
+
+    border: 0;
+    background: rgba(255, 255, 255, 0.65);
+
+    border-radius: 999px;
+
+    padding: 0.18rem 0.4rem;
+
+    font-size: 0.67rem;
+    font-weight: 600;
+
+    color: #1f2d3d;
+
+    cursor: pointer;
+}
+
+/* ============================================================
+   Todo Tabs
+   ============================================================ */
+
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    padding-bottom: 0;
+}
+
+.admin-tabs button {
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-bottom: -1px;
+}
+
+.admin-tabs button.active {
+    color: var(--text, inherit);
+    border-bottom-color: var(--accent-color, #7d9ba6);
+}
+
+/* ============================================================
+   General Messages
+   ============================================================ */
+
+.admin-error {
+    color: #c0392b;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+.admin-success {
+    color: #27ae60;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+.admin-loading-text {
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-empty {
+    text-align: center;
+    color: var(--secondary-color, #4a6b8a);
+    padding: 2rem !important;
+}
+
+/* ============================================================
+   Generic Stats
+   ============================================================ */
+
+.admin-stats-section {
+    margin-bottom: 2rem;
+}
+
+.admin-stats-section h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(180px, 1fr)
+    );
+    gap: 1rem;
+}
+
+.admin-stat-grid-6 {
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(140px, 1fr)
+    );
+}
+
+.admin-stat-card {
+    background: var(--gray, #fff);
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-stat-card.negative .admin-stat-value {
+    color: #c0392b;
+}
+
+.admin-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-stats-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+}
+
+.admin-table th {
+    font-weight: 600;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.admin-table-total td {
+    font-weight: 600;
+    border-top: 2px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+}
+
+.admin-table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-table-actions button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text, inherit);
+}
+
+.admin-table-actions button.danger {
+    color: #c0392b;
+    border-color: rgba(192, 57, 43, 0.3);
+}
+
+/* ============================================================
+   Generic Settings
+   ============================================================ */
+
 .admin-settings-note {
     font-size: 0.875rem;
     color: var(--secondary-color, #4a6b8a);
     margin-bottom: 1rem;
 }
+
+/* ============================================================
+   Charts
+   ============================================================ */
 
 .admin-bar-chart {
     display: flex;
@@ -1138,7 +1140,7 @@
 }
 
 /* ============================================================
-   Ayana selector
+   Ayana Selector
    ============================================================ */
 
 .admin-planner-tabs {
@@ -1189,7 +1191,7 @@
 }
 
 /* ============================================================
-   Plan header
+   Plan Header
    ============================================================ */
 
 .admin-planner-header {
@@ -1273,7 +1275,7 @@
 }
 
 /* ============================================================
-   Error
+   Budget Planner Error
    ============================================================ */
 
 .admin-budget-planner > .admin-error {
@@ -1288,7 +1290,7 @@
 }
 
 /* ============================================================
-   Budget overview
+   Budget Overview
    ============================================================ */
 
 .admin-planner-overview {
@@ -1307,8 +1309,6 @@
     border: 1px solid var(--planner-border);
     border-radius: 12px;
 }
-
-/* Total budget */
 
 .admin-planner-budget-input {
     grid-area: budget;
@@ -1516,7 +1516,7 @@
 }
 
 /* ============================================================
-   Monthly section
+   Monthly Section
    ============================================================ */
 
 .admin-planner-section-heading {
@@ -1541,7 +1541,7 @@
 }
 
 /* ============================================================
-   Month cards
+   Month Cards
    ============================================================ */
 
 .admin-planner-month-card {
@@ -1638,7 +1638,7 @@
 }
 
 /* ============================================================
-   Month content
+   Month Content
    ============================================================ */
 
 .admin-planner-month-content {
@@ -1673,7 +1673,7 @@
 }
 
 /* ============================================================
-   Planned expenses
+   Planned Expenses
    ============================================================ */
 
 .admin-planner-subsection-header {
@@ -1696,7 +1696,7 @@
     font-size: 0.75rem;
 }
 
-/* Add form */
+/* Add expense form */
 
 .admin-planner-add-expense {
     display: grid;
@@ -1809,7 +1809,7 @@
 }
 
 /* ============================================================
-   Expense list
+   Expense List
    ============================================================ */
 
 .admin-planner-expense-list {
@@ -1915,7 +1915,7 @@
 }
 
 /* ============================================================
-   Empty planner
+   Empty Planner
    ============================================================ */
 
 .admin-planner-empty {
@@ -1944,35 +1944,84 @@
 }
 
 /* ============================================================
-   Responsive
+   Todo Board Responsiveness
    ============================================================ */
 
-@media (max-width: 900px) {
-    .admin-planner-overview {
-        grid-template-columns: 1fr;
-
-        grid-template-areas:
-            "budget"
-            "stats"
-            "allocation";
-    }
-
-    .admin-planner-add-expense {
-        grid-template-columns:
-            minmax(160px, 1fr)
-            minmax(140px, 0.8fr);
-    }
-
-    .admin-planner-add-expense label:nth-child(3) {
-        grid-column: 1;
-    }
-
-    .admin-planner-add-expense button {
-        grid-column: 2;
+/* Four columns */
+@media (max-width: 1250px) {
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+        );
     }
 }
 
-@media (max-width: 700px) {
+/* Todo top dashboard / board */
+@media (max-width: 1000px) {
+    .admin-todo-top-dashboard {
+        grid-template-columns: minmax(0, 1fr) 240px;
+    }
+
+    .admin-todo-form-row {
+        flex-wrap: wrap;
+    }
+
+    .admin-todo-title-field {
+        flex: 1 1 100%;
+    }
+
+    .admin-todo-date-field {
+        flex: 1 1 140px;
+    }
+
+    .admin-todo-priority-field {
+        flex: 1 1 120px;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            3,
+            minmax(0, 1fr)
+        );
+    }
+}
+
+/* Two columns */
+@media (max-width: 720px) {
+    .admin-todo-top-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    /*
+     * Four summary cards in one row on tablet.
+     * This keeps the summary compact while the Add Task
+     * section gets the full width above it.
+     */
+    .admin-todo-overview {
+        grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+        );
+        grid-template-rows: 1fr;
+    }
+
+    .admin-todo-stat {
+        padding: 0.7rem;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+        gap: 0.75rem;
+    }
+
+    .admin-todo-column-body {
+        max-height: none;
+    }
+
     .admin-header {
         flex-direction: column;
         gap: 1rem;
@@ -1986,6 +2035,8 @@
     .admin-tabs {
         overflow-x: auto;
     }
+
+    /* Planner */
 
     .admin-planner-header {
         align-items: flex-start;
@@ -2018,16 +2069,17 @@
     }
 
     .admin-planner-add-expense {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            minmax(160px, 1fr)
+            minmax(140px, 0.8fr);
     }
 
-    .admin-planner-add-expense label:first-child {
-        grid-column: 1 / -1;
+    .admin-planner-add-expense label:nth-child(3) {
+        grid-column: 1;
     }
 
-    .admin-planner-add-expense label:nth-child(3),
     .admin-planner-add-expense button {
-        grid-column: auto;
+        grid-column: 2;
     }
 
     .admin-planner-expense-list-header {
@@ -2054,7 +2106,45 @@
     }
 }
 
+/* One column / narrow mobile */
 @media (max-width: 520px) {
+    .admin-todo-overview {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+        grid-template-rows: repeat(2, 1fr);
+    }
+
+    .admin-todo-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-todo-title-field {
+        grid-column: 1 / -1;
+    }
+
+    .admin-todo-date-field,
+    .admin-todo-priority-field {
+        min-width: 0;
+    }
+
+    .admin-todo-submit {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-todo-card {
+        padding: 0.8rem;
+    }
+
+    /* Planner */
+
     .admin-planner-ayana-selector {
         width: 100%;
         align-items: stretch;
@@ -2072,6 +2162,15 @@
 
     .admin-planner-budget-input > button {
         width: 100%;
+    }
+
+    .admin-planner-overview {
+        grid-template-columns: 1fr;
+
+        grid-template-areas:
+            "budget"
+            "stats"
+            "allocation";
     }
 
     .admin-planner-overview-stats {
@@ -2107,5 +2206,34 @@
 
     .admin-planner-expense-category {
         display: none;
+    }
+}
+
+/* ============================================================
+   Planner Responsive - 900px
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .admin-planner-overview {
+        grid-template-columns: 1fr;
+
+        grid-template-areas:
+            "budget"
+            "stats"
+            "allocation";
+    }
+
+    .admin-planner-add-expense {
+        grid-template-columns:
+            minmax(160px, 1fr)
+            minmax(140px, 0.8fr);
+    }
+
+    .admin-planner-add-expense label:nth-child(3) {
+        grid-column: 1;
+    }
+
+    .admin-planner-add-expense button {
+        grid-column: 2;
     }
 }

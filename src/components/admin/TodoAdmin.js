@@ -145,6 +145,12 @@ const getThisWeekRange = () => {
     };
 };
 
+const PRIORITY_LABEL = {
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+};
+
 const TodoAdmin = () => {
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState('');
@@ -669,22 +675,15 @@ const TodoAdmin = () => {
                 }
             >
                 <div className="admin-todo-card-top">
-                    <span
-                        className="admin-todo-card-avatar"
-                        title={`Priority: ${todo.priority}`}
-                    >
-                        {todo.priority === 'high'
-                            ? '🔴'
-                            : todo.priority === 'medium'
-                                ? '🟡'
-                                : '🟢'}
-                    </span>
-                    <label className="admin-todo-card-check">
+    <span
+        className={`admin-todo-card-avatar priority-${todo.priority}`}
+        title={`Priority: ${PRIORITY_LABEL[todo.priority] || todo.priority}`}
+    />
+
+                    <div className="admin-todo-card-check">
                         <input
                             type="checkbox"
-                            checked={
-                                todo.completed
-                            }
+                            checked={todo.completed}
                             onChange={() =>
                                 handleToggleTodo(
                                     todo.id,
@@ -694,19 +693,23 @@ const TodoAdmin = () => {
                         />
 
                         <span className="admin-todo-card-title">
-                            {todo.title}
-                        </span>
-                    </label>
+            {todo.title}
+        </span>
+                    </div>
 
                     <button
                         type="button"
                         className="admin-todo-card-delete"
-                        onClick={() =>
-                            handleDeleteTodo(
-                                todo.id
-                            )
-                        }
-                        aria-label="Delete task"
+                        onClick={() => {
+                            const confirmed = window.confirm(
+                                `Are you sure you want to delete "${todo.title}"?`
+                            );
+
+                            if (confirmed) {
+                                handleDeleteTodo(todo.id);
+                            }
+                        }}
+                        aria-label={`Delete task: ${todo.title}`}
                     >
                         ✕
                     </button>
@@ -717,12 +720,13 @@ const TodoAdmin = () => {
                         <span
                             className={`admin-todo-card-due due-${dueState}`}
                         >
-                            📅 {dueDateLabel}
+                            <span className="admin-todo-card-due-date">
+                                📅 {dueDateLabel}
+                            </span>
 
                             {dueCaption && (
                                 <span className="admin-todo-card-due-caption">
-                                    {' '}
-                                    · {dueCaption}
+                                    {dueCaption}
                                 </span>
                             )}
                         </span>
@@ -786,122 +790,100 @@ const TodoAdmin = () => {
 
     return (
         <AdminLayout title="To-do Manager">
-            <div className="admin-todo-overview">
-                <div className="admin-todo-stat">
-                    <span>Total</span>
-                    <strong>
-                        {todos.length}
-                    </strong>
-                </div>
+            <div className="admin-todo-top-dashboard">
+                <form
+                    className="admin-form admin-todo-form"
+                    onSubmit={handleAddTodo}
+                >
+                    <h3>Add a task</h3>
 
-                <div className="admin-todo-stat">
-                    <span>Pending</span>
-                    <strong>
-                        {pendingCount}
-                    </strong>
-                </div>
+                    <div className="admin-todo-form-row">
+                        <label className="admin-todo-title-field">
+                            <span>Task title</span>
 
-                <div className="admin-todo-stat admin-todo-stat-urgent">
-                    <span>
-                        🔴 Urgent
-                    </span>
-                    <strong>
-                        {
-                            highPriorityTodos.length
-                        }
-                    </strong>
-                </div>
+                            <input
+                                type="text"
+                                value={newTodo}
+                                onChange={(event) =>
+                                    setNewTodo(event.target.value)
+                                }
+                                placeholder="Write a new item"
+                            />
+                        </label>
 
-                <div className="admin-todo-stat">
-                    <span>Completed</span>
-                    <strong>
-                        {doneCount}
-                    </strong>
+                        <label className="admin-todo-date-field">
+                            <span>Due date</span>
+
+                            <input
+                                type="date"
+                                value={dueDate}
+                                onChange={(event) =>
+                                    setDueDate(event.target.value)
+                                }
+                            />
+                        </label>
+
+                        <label className="admin-todo-priority-field">
+                            <span>Priority</span>
+
+                            <select
+                                value={priority}
+                                onChange={(event) =>
+                                    setPriority(event.target.value)
+                                }
+                            >
+                                <option value="low">
+                                    🟢 Low
+                                </option>
+
+                                <option value="medium">
+                                    🟡 Medium
+                                </option>
+
+                                <option value="high">
+                                    🔴 High
+                                </option>
+                            </select>
+                        </label>
+
+                        <button
+                            type="submit"
+                            className="admin-todo-submit"
+                            disabled={loading}
+                        >
+                            Add task
+                        </button>
+                    </div>
+
+                    {error && (
+                        <p className="admin-error">
+                            {error}
+                        </p>
+                    )}
+                </form>
+
+                <div className="admin-todo-overview">
+                    <div className="admin-todo-stat">
+                        <span>Pending</span>
+                        <strong>{pendingCount}</strong>
+                    </div>
+
+                    <div className="admin-todo-stat admin-todo-stat-urgent">
+                        <span>🔴 Urgent</span>
+                        <strong>{highPriorityTodos.length}</strong>
+                    </div>
+
+                    <div className="admin-todo-stat">
+                        <span>Completed</span>
+                        <strong>{doneCount}</strong>
+                    </div>
+
+                    <div className="admin-todo-stat">
+                        <span>Total</span>
+                        <strong>{todos.length}</strong>
+                    </div>
                 </div>
             </div>
-
-            <form
-                className="admin-form admin-todo-form"
-                onSubmit={handleAddTodo}
-            >
-                <h3>Add a task</h3>
-
-                <div className="admin-todo-form-row">
-                    <label className="admin-todo-title-field">
-                        <span>
-                            Task title
-                        </span>
-
-                        <input
-                            type="text"
-                            value={newTodo}
-                            onChange={(event) =>
-                                setNewTodo(
-                                    event.target.value
-                                )
-                            }
-                            placeholder="Write a new item"
-                        />
-                    </label>
-
-                    <label className="admin-todo-date-field">
-                        <span>
-                            Due date
-                        </span>
-
-                        <input
-                            type="date"
-                            value={dueDate}
-                            onChange={(event) =>
-                                setDueDate(
-                                    event.target.value
-                                )
-                            }
-                        />
-                    </label>
-
-                    <label className="admin-todo-priority-field">
-                        <span>
-                            Priority
-                        </span>
-
-                        <select
-                            value={priority}
-                            onChange={(event) =>
-                                setPriority(
-                                    event.target.value
-                                )
-                            }
-                        >
-                            <option value="low">
-                                🟢 Low
-                            </option>
-
-                            <option value="medium">
-                                🟡 Medium
-                            </option>
-
-                            <option value="high">
-                                🔴 High
-                            </option>
-                        </select>
-                    </label>
-
-                    <button
-                        type="submit"
-                        className="admin-todo-submit"
-                        disabled={loading}
-                    >
-                        Add task
-                    </button>
-                </div>
-
-                {error && (
-                    <p className="admin-error">
-                        {error}
-                    </p>
-                )}
-            </form>
 
             <div className="admin-tabs">
                 <button
