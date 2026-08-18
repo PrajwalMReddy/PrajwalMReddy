@@ -60,6 +60,13 @@ module.exports = {
     ],
     devServer: {
         historyApiFallback: true,
+        proxy: [
+            {
+                context: ['/api'],
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+        ],
     },
     mode: 'production',
 };

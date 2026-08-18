@@ -2,6 +2,24 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 const AuthContext = createContext();
 
+// Safely parses a fetch Response as JSON. If the body isn't valid JSON
+// (e.g. the server crashed and returned a plain-text/HTML error page),
+// this throws a readable error instead of letting `res.json()` throw a
+// raw "Unexpected token" SyntaxError.
+async function parseJsonResponse(res) {
+    const text = await res.text();
+    if (!text) return {};
+    try {
+        return JSON.parse(text);
+    } catch {
+        throw new Error(
+            res.ok
+                ? 'Server returned an unexpected response.'
+                : `Server error (${res.status}). Please try again.`
+        );
+    }
+}
+
 export const AuthProvider = ({ children }) => {
     const [authenticated, setAuthenticated] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -9,8 +27,8 @@ export const AuthProvider = ({ children }) => {
     const checkSession = useCallback(async () => {
         try {
             const res = await fetch('/api/auth/session', { credentials: 'include' });
-            const data = await res.json();
-            setAuthenticated(data.authenticated);
+            const data = await parseJsonResponse(res);
+            setAuthenticated(Boolean(data.authenticated));
         } catch {
             setAuthenticated(false);
         } finally {
@@ -29,7 +47,7 @@ export const AuthProvider = ({ children }) => {
             credentials: 'include',
             body: JSON.stringify({ password }),
         });
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok) {
             throw new Error(data.error || 'Login failed');
         }

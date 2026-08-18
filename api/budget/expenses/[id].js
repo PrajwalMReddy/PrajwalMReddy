@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
-const { connectToDatabase } = require('../../lib/db');
-const { requireAuth } = require('../../lib/auth');
+const { connectToDatabase } = require('../../../lib/db');
+const { requireAuth } = require('../../../lib/auth');
 
 const COLLECTION = 'expenses';
 

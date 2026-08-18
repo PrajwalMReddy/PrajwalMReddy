@@ -3,38 +3,35 @@ import AdminLayout from './AdminLayout';
 import BudgetStats from './BudgetStats';
 import ExpenseTable from './ExpenseTable';
 import IncomeTable from './IncomeTable';
-import BudgetSettings from './BudgetSettings';
+import BudgetPlanner from './BudgetPlanner';
 import { budgetApi } from '../../utils/budgetApi';
 
 const TABS = [
-    { id: 'statistics', label: 'Statistics' },
     { id: 'expenses', label: 'Expenses' },
     { id: 'income', label: 'Income' },
-    { id: 'settings', label: 'Settings' },
+    { id: 'statistics', label: 'Statistics' },
+    { id: 'planner', label: 'Planner' },
 ];
 
 const BudgetAdmin = () => {
-    const [activeTab, setActiveTab] = useState('statistics');
+    const [activeTab, setActiveTab] = useState('expenses');
     const [expenses, setExpenses] = useState([]);
     const [income, setIncome] = useState([]);
     const [stats, setStats] = useState(null);
-    const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     const loadData = useCallback(async () => {
         setError('');
         try {
-            const [expensesData, incomeData, statsData, settingsData] = await Promise.all([
+            const [expensesData, incomeData, statsData] = await Promise.all([
                 budgetApi.getExpenses(),
                 budgetApi.getIncome(),
                 budgetApi.getStats(),
-                budgetApi.getSettings(),
             ]);
             setExpenses(expensesData);
             setIncome(incomeData);
             setStats(statsData);
-            setSettings(settingsData);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -70,16 +67,14 @@ const BudgetAdmin = () => {
 
             {!loading && !error && (
                 <>
-                    {activeTab === 'statistics' && <BudgetStats stats={stats} />}
                     {activeTab === 'expenses' && (
                         <ExpenseTable expenses={expenses} onRefresh={handleRefresh} />
                     )}
                     {activeTab === 'income' && (
                         <IncomeTable income={income} onRefresh={handleRefresh} />
                     )}
-                    {activeTab === 'settings' && (
-                        <BudgetSettings settings={settings} onRefresh={handleRefresh} />
-                    )}
+                    {activeTab === 'statistics' && <BudgetStats stats={stats} />}
+                    {activeTab === 'planner' && <BudgetPlanner />}
                 </>
             )}
         </AdminLayout>
