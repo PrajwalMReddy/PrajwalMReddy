@@ -65,6 +65,9 @@ const handlers = {
 
     '/api/budget/planner':
         require('../api/budget/planner'),
+
+    '/api/todo':
+        require('../api/todo'),
 };
 
 function getHandler(pathname, query) {
@@ -107,6 +110,20 @@ function getHandler(pathname, query) {
 
         return require(
             '../api/budget/planner/[id]'
+        );
+    }
+
+    const todoMatch = pathname.match(
+        /^\/api\/todo\/([^/]+)$/
+    );
+
+    if (todoMatch) {
+        query.id = decodeURIComponent(
+            todoMatch[1]
+        );
+
+        return require(
+            '../api/todo/[id]'
         );
     }
 
