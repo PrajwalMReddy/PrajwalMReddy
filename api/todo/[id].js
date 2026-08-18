@@ -7,12 +7,14 @@ const COLLECTION = 'todos';
 function normalizeTodo(doc) {
     const serialNumber = Number(doc.serialNumber ?? doc.order ?? 1);
     const order = Number(doc.order ?? serialNumber ?? 1);
+    const priority = ['high', 'medium', 'low'].includes(doc.priority) ? doc.priority : 'medium';
 
     return {
         id: doc._id.toString(),
         title: String(doc.title || '').trim(),
         completed: Boolean(doc.completed),
         dueDate: doc.dueDate ? new Date(doc.dueDate).toISOString().slice(0, 10) : null,
+        priority,
         serialNumber: Number.isFinite(serialNumber) ? serialNumber : 1,
         order: Number.isFinite(order) ? order : 1,
         createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
@@ -34,7 +36,7 @@ module.exports = async (req, res) => {
         const _id = new ObjectId(id);
 
         if (req.method === 'PUT') {
-            const { title, completed, dueDate, order, serialNumber } = req.body || {};
+            const { title, completed, dueDate, order, serialNumber, priority } = req.body || {};
             const update = {
                 updatedAt: new Date(),
             };
@@ -54,6 +56,11 @@ module.exports = async (req, res) => {
             if (dueDate !== undefined) {
                 const normalizedDate = dueDate ? new Date(dueDate) : null;
                 update.dueDate = normalizedDate && !Number.isNaN(normalizedDate.getTime()) ? normalizedDate.toISOString() : null;
+            }
+
+            if (priority !== undefined) {
+                const normalizedPriority = ['high', 'medium', 'low'].includes(priority) ? priority : 'medium';
+                update.priority = normalizedPriority;
             }
 
             if (order !== undefined) {

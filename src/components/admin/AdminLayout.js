@@ -26,7 +26,7 @@ const AdminLayout = ({ children, title }) => {
                             to="/admin/todo"
                             className={location.pathname.startsWith('/admin/todo') ? 'active' : ''}
                         >
-                            To-do
+                            To-Do
                         </Link>
                     </nav>
                 </div>

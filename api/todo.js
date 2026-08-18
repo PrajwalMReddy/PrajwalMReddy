@@ -6,12 +6,14 @@ const COLLECTION = 'todos';
 function normalizeTodo(doc) {
     const serialNumber = Number(doc.serialNumber ?? doc.order ?? 1);
     const order = Number(doc.order ?? serialNumber ?? 1);
+    const priority = ['high', 'medium', 'low'].includes(doc.priority) ? doc.priority : 'medium';
 
     return {
         id: doc._id.toString(),
         title: String(doc.title || '').trim(),
         completed: Boolean(doc.completed),
         dueDate: doc.dueDate ? new Date(doc.dueDate).toISOString().slice(0, 10) : null,
+        priority,
         serialNumber: Number.isFinite(serialNumber) ? serialNumber : 1,
         order: Number.isFinite(order) ? order : 1,
         createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
@@ -36,7 +38,7 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'POST') {
-            const { title, completed, dueDate } = req.body || {};
+            const { title, completed, dueDate, priority } = req.body || {};
             const trimmedTitle = String(title || '').trim();
 
             if (!trimmedTitle) {
@@ -52,11 +54,13 @@ module.exports = async (req, res) => {
             const order = latestTodo ? Number(latestTodo.order ?? latestTodo.serialNumber ?? 0) + 1 : 1;
             const serialNumber = order;
             const normalizedDueDate = dueDate ? new Date(dueDate) : null;
+            const normalizedPriority = ['high', 'medium', 'low'].includes(priority) ? priority : 'medium';
 
             const doc = {
                 title: trimmedTitle,
                 completed: Boolean(completed),
                 dueDate: normalizedDueDate && !Number.isNaN(normalizedDueDate.getTime()) ? normalizedDueDate.toISOString() : null,
+                priority: normalizedPriority,
                 order,
                 serialNumber,
                 createdAt: new Date(),
