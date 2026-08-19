@@ -46,31 +46,31 @@ loadEnvironment();
 
 const handlers = {
     '/api/auth/login':
-        require('../api/auth/login'),
+        require('../lib/api-handlers/auth/login'),
 
     '/api/auth/logout':
-        require('../api/auth/logout'),
+        require('../lib/api-handlers/auth/logout'),
 
     '/api/auth/session':
-        require('../api/auth/session'),
+        require('../lib/api-handlers/auth/session'),
 
     '/api/budget/expenses':
-        require('../api/budget/expenses'),
+        require('../lib/api-handlers/budget/expenses'),
 
     '/api/budget/income':
-        require('../api/budget/income'),
+        require('../lib/api-handlers/budget/income'),
 
     '/api/budget/stats':
-        require('../api/budget/stats'),
+        require('../lib/api-handlers/budget/stats'),
 
     '/api/budget/planner':
-        require('../api/budget/planner'),
+        require('../lib/api-handlers/budget/planner'),
 
     '/api/todo':
-        require('../api/todo'),
+        require('../lib/api-handlers/todo'),
 
     '/api/notes':
-        require('../api/notes'),
+        require('../lib/api-handlers/notes'),
 };
 
 function getHandler(pathname, query) {
@@ -84,7 +84,7 @@ function getHandler(pathname, query) {
         );
 
         return require(
-            '../api/budget/expenses/[id]'
+            '../lib/api-handlers/budget/expenses/[id]'
         );
     }
 
@@ -98,7 +98,7 @@ function getHandler(pathname, query) {
         );
 
         return require(
-            '../api/budget/income/[id]'
+            '../lib/api-handlers/budget/income/[id]'
         );
     }
 
@@ -112,7 +112,7 @@ function getHandler(pathname, query) {
         );
 
         return require(
-            '../api/budget/planner/[id]'
+            '../lib/api-handlers/budget/planner/[id]'
         );
     }
 
@@ -126,7 +126,7 @@ function getHandler(pathname, query) {
         );
 
         return require(
-            '../api/todo/[id]'
+            '../lib/api-handlers/todo/[id]'
         );
     }
 
@@ -140,7 +140,7 @@ function getHandler(pathname, query) {
         );
 
         return require(
-            '../api/notes/[id]'
+            '../lib/api-handlers/notes/[id]'
         );
     }
 
