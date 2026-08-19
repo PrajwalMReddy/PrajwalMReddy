@@ -14,19 +14,25 @@ const AdminLayout = ({ children, title }) => {
         <div className="admin-page">
             <header className="admin-header">
                 <div className="admin-header-left">
-                    <Link to="/admin/budget" className="admin-brand">Admin</Link>
+                    <Link to="/admin/todo" className="admin-brand">Admin</Link>
                     <nav className="admin-nav" aria-label="Admin navigation">
-                        <Link
-                            to="/admin/budget"
-                            className={location.pathname.startsWith('/admin/budget') ? 'active' : ''}
-                        >
-                            Budget
-                        </Link>
                         <Link
                             to="/admin/todo"
                             className={location.pathname.startsWith('/admin/todo') ? 'active' : ''}
                         >
                             To-Do
+                        </Link>
+                        <Link
+                            to="/admin/notes"
+                            className={location.pathname.startsWith('/admin/notes') ? 'active' : ''}
+                        >
+                            Notes
+                        </Link>
+                        <Link
+                            to="/admin/budget"
+                            className={location.pathname.startsWith('/admin/budget') ? 'active' : ''}
+                        >
+                            Budget
                         </Link>
                     </nav>
                 </div>

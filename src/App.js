@@ -7,6 +7,7 @@ import ProtectedRoute from './components/admin/ProtectedRoute';
 import AdminLogin from './components/admin/AdminLogin';
 import BudgetAdmin from './components/admin/BudgetAdmin';
 import TodoAdmin from './components/admin/TodoAdmin';
+import NotesAdmin from './components/admin/NotesAdmin';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
@@ -92,6 +93,9 @@ function App() {
                         } />
                         <Route path="/admin/todo" element={
                             <ProtectedRoute><TodoAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/notes" element={
+                            <ProtectedRoute><NotesAdmin /></ProtectedRoute>
                         } />
                         <Route path="/admin" element={<Navigate to="/admin/budget" replace />} />
 

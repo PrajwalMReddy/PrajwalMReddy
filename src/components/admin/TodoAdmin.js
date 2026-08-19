@@ -104,39 +104,17 @@ const getDueDateLabel = (todo) => {
     });
 };
 
-const getDueCaption = (todo) => {
-    if (todo.completed) return 'Completed';
-
-    const diffDays = getDueDifference(todo);
-
-    if (diffDays === null) return '';
-
-    if (diffDays < 0) {
-        const days = Math.abs(diffDays);
-
-        return `Overdue by ${days} day${days === 1 ? '' : 's'}`;
-    }
-
-    if (diffDays === 0) return 'Due today';
-    if (diffDays === 1) return 'Due tomorrow';
-
-    return `${diffDays} days left`;
-};
-
 /**
- * Returns the current calendar week from TODAY through Sunday.
+ * Returns the next 3 calendar days after TODAY.
  *
- * Since overdue items have their own column, Monday/earlier dates
- * aren't relevant here.
+ * Today has its own column, so this range intentionally starts
+ * tomorrow and ends three days from today.
  */
-const getThisWeekRange = () => {
+const getNextThreeDaysRange = () => {
     const today = getToday();
 
     const end = new Date(today);
-
-    const daysUntilSunday = 7 - end.getDay();
-
-    end.setDate(end.getDate() + daysUntilSunday);
+    end.setDate(end.getDate() + 3);
     end.setHours(0, 0, 0, 0);
 
     return {
@@ -244,8 +222,9 @@ const TodoAdmin = () => {
         [todos]
     );
 
-    const thisWeekTodos = useMemo(() => {
-        const {startKey, endKey} = getThisWeekRange();
+    const nextThreeDaysTodos = useMemo(() => {
+        const {startKey, endKey} =
+            getNextThreeDaysRange();
 
         return todos
             .filter((todo) => {
@@ -268,19 +247,22 @@ const TodoAdmin = () => {
                 );
             })
             .sort((a, b) => {
-                const priorityDiff = sortByPriority(a, b);
+                const priorityDiff =
+                    sortByPriority(a, b);
 
                 if (priorityDiff !== 0) {
                     return priorityDiff;
                 }
 
-                return getDueDayKey(a) - getDueDayKey(b);
+                return (
+                    getDueDayKey(a) -
+                    getDueDayKey(b)
+                );
             });
     }, [todos]);
 
     const upcomingTodos = useMemo(() => {
-        const {endKey} = getThisWeekRange();
-
+        const {endKey} = getNextThreeDaysRange();
         return todos
             .filter((todo) => {
                 if (todo.completed) return false;
@@ -607,7 +589,6 @@ const TodoAdmin = () => {
 
     const renderTodoCard = (todo) => {
         const dueState = getDueState(todo);
-        const dueCaption = getDueCaption(todo);
         const dueDateLabel =
             getDueDateLabel(todo);
 
@@ -723,12 +704,6 @@ const TodoAdmin = () => {
                             <span className="admin-todo-card-due-date">
                                 📅 {dueDateLabel}
                             </span>
-
-                            {dueCaption && (
-                                <span className="admin-todo-card-due-caption">
-                                    {dueCaption}
-                                </span>
-                            )}
                         </span>
                     )}
 
@@ -789,7 +764,7 @@ const TodoAdmin = () => {
     };
 
     return (
-        <AdminLayout title="To-do Manager">
+        <AdminLayout title="To-Do Manager">
             <div className="admin-todo-top-dashboard">
                 <form
                     className="admin-form admin-todo-form"
@@ -948,8 +923,8 @@ const TodoAdmin = () => {
                             )}
 
                             {renderColumn(
-                                'This Week',
-                                thisWeekTodos
+                                'Next 3 Days',
+                                nextThreeDaysTodos
                             )}
 
                             {renderColumn(

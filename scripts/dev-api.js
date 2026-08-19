@@ -68,6 +68,9 @@ const handlers = {
 
     '/api/todo':
         require('../api/todo'),
+
+    '/api/notes':
+        require('../api/notes'),
 };
 
 function getHandler(pathname, query) {
@@ -124,6 +127,20 @@ function getHandler(pathname, query) {
 
         return require(
             '../api/todo/[id]'
+        );
+    }
+
+    const notesMatch = pathname.match(
+        /^\/api\/notes\/([^/]+)$/
+    );
+
+    if (notesMatch) {
+        query.id = decodeURIComponent(
+            notesMatch[1]
+        );
+
+        return require(
+            '../api/notes/[id]'
         );
     }
 
