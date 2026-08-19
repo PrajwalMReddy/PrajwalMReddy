@@ -1,7 +1,10 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import AdminLayout from './AdminLayout';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const NOTES_API = '/api/notes';
+const MAX_GRID_ROWS = 60;
 const BLOCK_TYPES = {
     text: {label: 'Text', icon: 'T', placeholder: 'Write something...', span: 2, height: 3},
     heading: {label: 'Heading', icon: 'H', placeholder: 'Section heading', span: 3, height: 2},
@@ -9,6 +12,18 @@ const BLOCK_TYPES = {
     callout: {label: 'Callout', icon: '!', placeholder: 'A useful thought or reminder', span: 1, height: 4},
     table: {label: 'Table', icon: '#', placeholder: 'Table cell', span: 2, height: 6},
     quote: {label: 'Quote', icon: '"', placeholder: 'A line worth keeping', span: 1, height: 4},
+    progress: {label: 'Progress', icon: '%', placeholder: 'Progress label', span: 2, height: 3},
+    counter: {label: 'Counter', icon: '+1', placeholder: 'Counter label', span: 1, height: 4},
+    picker: {label: 'Random picker', icon: '?', placeholder: 'Picker title', span: 2, height: 7},
+    link: {label: 'Link', icon: '@', placeholder: 'Link label', span: 2, height: 3},
+    date: {label: 'Date', icon: 'D', placeholder: 'Date label', span: 1, height: 3},
+    list: {label: 'List', icon: '•', placeholder: 'One item per line', span: 2, height: 4},
+    status: {label: 'Status', icon: '●', placeholder: 'Status label', span: 2, height: 3},
+    countdown: {label: 'Countdown', icon: '◷', placeholder: 'Countdown label', span: 2, height: 4},
+    rating: {label: 'Rating', icon: '★', placeholder: 'Rating label', span: 2, height: 3},
+    flashcards: {label: 'Flashcards', icon: '▣', placeholder: 'Front of card', span: 2, height: 5},
+    chart: {label: 'Chart', icon: '▥', placeholder: 'Chart title', span: 2, height: 11},
+    equation: {label: 'Equation', icon: 'Σ', placeholder: 'Enter an equation', span: 2, height: 3},
     divider: {label: 'Divider', icon: '-', placeholder: '', span: 3, height: 1},
 };
 
@@ -17,18 +32,47 @@ const createBlock = (type = 'text') => ({
     type,
     text: '',
     checked: false,
+    label: '',
+    url: '',
+    value: 0,
+    counterValue: type === 'counter' ? 0 : undefined,
+    counterStep: type === 'counter' ? 1 : undefined,
+    pickerOptions: type === 'picker' ? 'Option 1\nOption 2\nOption 3' : undefined,
+    pickerChoice: type === 'picker' ? '' : undefined,
+    date: '',
+    dateTime: '',
+    status: type === 'status' ? 'In progress' : undefined,
+    listStyle: type === 'list' ? 'bulleted' : undefined,
+    rating: type === 'rating' ? 0 : undefined,
+    flipped: false,
+    cards: type === 'flashcards' ? [{front: '', back: ''}] : undefined,
+    cardIndex: 0,
+    chartValues: type === 'chart' ? '25, 50, 35, 70' : undefined,
+    chartLabels: type === 'chart' ? 'A, B, C, D' : undefined,
+    chartXAxis: type === 'chart' ? 'Category' : undefined,
+    chartYAxis: type === 'chart' ? 'Value' : undefined,
+    chartStyle: type === 'chart' ? 'bar' : undefined,
     span: BLOCK_TYPES[type].span,
     height: BLOCK_TYPES[type].height,
     rows: type === 'table' ? [['Column 1', 'Column 2'], ['', '']] : undefined,
 });
 
 const blocksFromNote = (note) => Array.isArray(note.blocks) && note.blocks.length
-    ? note.blocks.map((block, index) => ({
-        ...block,
-        span: block.span || BLOCK_TYPES[block.type]?.span || 1,
-        height: block.height || BLOCK_TYPES[block.type]?.height || 3,
-        position: block.position || {col: (index % 3) * 4 + 1, row: Math.floor(index / 3) * 6 + 1},
-    }))
+    ? note.blocks.map((rawBlock, index) => {
+        const block = rawBlock.type === 'toggle'
+            ? {...rawBlock, type: 'text', text: [rawBlock.label, rawBlock.text].filter(Boolean).join('\n\n')}
+            : rawBlock.type === 'numbered'
+                ? {...rawBlock, type: 'list', listStyle: 'numbered'}
+                : rawBlock.type === 'countdown'
+                    ? {...rawBlock, dateTime: rawBlock.dateTime || (rawBlock.date ? `${rawBlock.date}T23:59` : '')}
+                    : rawBlock;
+        return {
+            ...block,
+            span: block.span || BLOCK_TYPES[block.type]?.span || 1,
+            height: block.height || BLOCK_TYPES[block.type]?.height || 3,
+            position: block.position || {col: (index % 3) * 4 + 1, row: Math.floor(index / 3) * 6 + 1},
+        };
+    })
     : [{...createBlock('text'), text: note.content || ''}];
 
 const rectanglesOverlap = (first, second) => first.col < second.col + second.width
@@ -46,14 +90,14 @@ const findFreePosition = (blocks, block) => {
         height: Math.min(item.height || 3, 30),
     }));
 
-    for (let row = 1; row <= 31 - height; row += 1) {
+    for (let row = 1; row <= MAX_GRID_ROWS - height + 1; row += 1) {
         for (let col = 1; col <= 13 - width; col += 1) {
             const candidate = {col, row, width, height};
             if (!occupied.some((item) => rectanglesOverlap(candidate, item))) return {col, row};
         }
     }
 
-    return {col: 1, row: 30 - height};
+    return {col: 1, row: MAX_GRID_ROWS - height + 1};
 };
 
 const formatUpdatedAt = (value) => {
@@ -64,6 +108,8 @@ const formatUpdatedAt = (value) => {
     });
 };
 
+const getLinkHref = (value) => value && /^(https?:\/\/|mailto:|tel:)/i.test(value) ? value : value ? `https://${value}` : '';
+
 const NotesAdmin = () => {
     const [notes, setNotes] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
@@ -73,10 +119,72 @@ const NotesAdmin = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [showMoreWidgets, setShowMoreWidgets] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [editingLinkId, setEditingLinkId] = useState(null);
+    const [editingEquationId, setEditingEquationId] = useState(null);
+    const [editingFlashcardId, setEditingFlashcardId] = useState(null);
+    const [currentTime, setCurrentTime] = useState(() => Date.now());
+    const countdownBeepedRef = useRef(new Set());
+    const countdownAudioRef = useRef(null);
+    const linkClickTimerRef = useRef(null);
     const [draggingBlockId, setDraggingBlockId] = useState(null);
     const [dropPreview, setDropPreview] = useState(null);
     const boardRef = useRef(null);
     const resizeSessionRef = useRef(null);
+    const widgetOrder = ['text', 'heading', 'todo', 'table', 'list', 'callout', 'status', 'counter', 'progress', 'link', 'date', 'countdown', 'rating', 'flashcards', 'picker', 'chart', 'equation', 'divider'];
+    const primaryWidgetTypes = widgetOrder.slice(0, 8);
+    const boardRowCount = Math.max(30, ...draft.blocks.map((block) => (block.position?.row || 1) + (block.height || 3) - 1));
+
+    useEffect(() => {
+        const timer = window.setInterval(() => setCurrentTime(Date.now()), 1000);
+        return () => window.clearInterval(timer);
+    }, []);
+
+    useEffect(() => {
+        if (!isFullScreen) return undefined;
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') setIsFullScreen(false);
+        };
+        document.body.classList.add('admin-notes-full-screen-active');
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.body.classList.remove('admin-notes-full-screen-active');
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isFullScreen]);
+
+    useEffect(() => {
+        draft.blocks.filter((block) => block.type === 'countdown' && block.dateTime).forEach((block) => {
+            const finished = new Date(block.dateTime).getTime() <= currentTime;
+            if (!finished) {
+                countdownBeepedRef.current.delete(block.id);
+                return;
+            }
+            if (countdownBeepedRef.current.has(block.id)) return;
+            countdownBeepedRef.current.add(block.id);
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                const audioContext = countdownAudioRef.current || new AudioContextClass();
+                countdownAudioRef.current = audioContext;
+                audioContext.resume?.();
+                [0, 0.18, 0.36].forEach((offset) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    oscillator.frequency.value = 880;
+                    gain.gain.setValueAtTime(0.0001, audioContext.currentTime + offset);
+                    gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + offset + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + offset + 0.12);
+                    oscillator.connect(gain).connect(audioContext.destination);
+                    oscillator.start(audioContext.currentTime + offset);
+                    oscillator.stop(audioContext.currentTime + offset + 0.13);
+                });
+            } catch (error) {
+                return null;
+            }
+        });
+    }, [currentTime, draft.blocks]);
 
     const request = useCallback(async (url, options = {}) => {
         const hasBody = options.body !== undefined;
@@ -167,10 +275,20 @@ const NotesAdmin = () => {
         blocks: current.blocks.map((block) => block.id === id ? {...block, ...changes} : block),
     }));
 
+    const handleLinkPreviewClick = (event, url) => {
+        event.preventDefault();
+        window.clearTimeout(linkClickTimerRef.current);
+        linkClickTimerRef.current = window.setTimeout(() => {
+            window.open(getLinkHref(url), '_blank', 'noopener,noreferrer');
+        }, 250);
+    };
+
     const addBlock = (type, afterId = null) => setDraft((current) => {
         const next = createBlock(type);
         next.position = findFreePosition(current.blocks, next);
         const index = afterId ? current.blocks.findIndex((block) => block.id === afterId) + 1 : current.blocks.length;
+        if (type === 'link') setEditingLinkId(next.id);
+        if (type === 'flashcards') setEditingFlashcardId(next.id);
         return {...current, blocks: [...current.blocks.slice(0, index), next, ...current.blocks.slice(index)]};
     });
 
@@ -288,7 +406,7 @@ const NotesAdmin = () => {
     };
 
     const startBlockDrag = (event, id) => {
-        if (event.target.closest('input, textarea, select, button')) return;
+        if (event.target.closest('a, input, textarea, select, button, .admin-note-flashcard')) return;
         event.currentTarget.setPointerCapture(event.pointerId);
         setDraggingBlockId(id);
         const block = draft.blocks.find((item) => item.id === id);
@@ -341,24 +459,410 @@ const NotesAdmin = () => {
         const rawCol = Math.floor((event.clientX - bounds.left - paddingX) / (cellWidth + gap)) + 1;
         const rawRow = Math.floor((event.clientY - bounds.top - paddingY) / rowHeight) + 1;
         const col = Math.max(1, Math.min(rawCol, 13 - width));
-        const row = Math.max(1, Math.min(rawRow, 31 - height));
+        const row = Math.max(1, Math.min(rawRow, MAX_GRID_ROWS - height + 1));
         setDropPreview((current) => current && current.col === col && current.row === row ? current : {col, row});
+    };
+
+    const getListItems = (block) => block.text ? block.text.split('\n') : [''];
+
+    const updateListItem = (block, itemIndex, value) => {
+        const items = getListItems(block);
+        items[itemIndex] = value;
+        updateBlock(block.id, {text: items.join('\n')});
+    };
+
+    const addListItem = (block) => updateBlock(block.id, {text: `${block.text}${block.text ? '\n' : ''}`});
+
+    const removeListItem = (block, itemIndex) => {
+        const items = getListItems(block);
+        if (items.length === 1) return updateBlock(block.id, {text: ''});
+        items.splice(itemIndex, 1);
+        updateBlock(block.id, {text: items.join('\n')});
+    };
+
+    const renderListWidget = (block, type) => {
+        const numbered = block.listStyle === 'numbered';
+        return <div className={`admin-note-list-wrap${numbered ? ' is-numbered' : ''}`}>
+            <div className="admin-note-list-controls" aria-label="List controls">
+                <span className="admin-note-table-label">List</span>
+                <select className="admin-note-list-style" value={block.listStyle || 'bulleted'} aria-label="List style"
+                        onChange={(event) => updateBlock(block.id, {listStyle: event.target.value})}>
+                    <option value="bulleted">Bulleted</option>
+                    <option value="numbered">Numbered</option>
+                </select>
+                <button type="button" onClick={() => addListItem(block)} aria-label="Add list item"
+                        title="Add list item">+
+                </button>
+            </div>
+            <div className="admin-note-list-items">
+                {getListItems(block).map((item, itemIndex) => <div className="admin-note-bullet-item"
+                                                                   key={`${block.id}-item-${itemIndex}`}>
+                    <span className="admin-note-list-marker"
+                          aria-hidden="true">{numbered ? `${itemIndex + 1}.` : '•'}</span>
+                    <input value={item} placeholder={itemIndex === 0 ? type.placeholder : 'List item'}
+                           aria-label={`${numbered ? 'Numbered' : 'Bulleted'} list item ${itemIndex + 1}`}
+                           onChange={(event) => updateListItem(block, itemIndex, event.target.value)}/>
+                    <button type="button" onClick={() => removeListItem(block, itemIndex)}
+                            aria-label={`Remove list item ${itemIndex + 1}`} title="Remove list item">-
+                    </button>
+                </div>)}
+            </div>
+        </div>;
+    };
+
+    const getCountdownParts = (dateTime) => {
+        if (!dateTime) return null;
+        const seconds = Math.max(0, Math.floor((new Date(dateTime).getTime() - currentTime) / 1000));
+        return {
+            hours: String(Math.floor(seconds / 3600)).padStart(2, '0'),
+            minutes: String(Math.floor(seconds % 3600 / 60)).padStart(2, '0'),
+            seconds: String(seconds % 60).padStart(2, '0'),
+        };
+    };
+
+    const unlockCountdownAudio = () => {
+        try {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) return;
+            countdownAudioRef.current = countdownAudioRef.current || new AudioContextClass();
+            countdownAudioRef.current.resume?.();
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const renderEquation = (value) => katex.renderToString(value || '\\text{Click to edit}', {
+        displayMode: true,
+        throwOnError: false,
+    });
+
+    const renderStars = (block) => <div className="admin-note-rating-stars"
+                                        aria-label={`${block.rating || 0} out of 5 stars`}>
+        {Array.from({length: 5}, (_, index) => <button type="button" key={index}
+                                                       className={index < (block.rating || 0) ? 'active' : ''}
+                                                       onClick={() => updateBlock(block.id, {rating: index + 1})}
+                                                       aria-label={`Rate ${index + 1} out of 5`}>★</button>)}
+    </div>;
+
+    const getFlashcards = (block) => block.cards?.length ? block.cards : [{
+        front: block.label || '',
+        back: block.text || ''
+    }];
+
+    const updateFlashcard = (block, changes) => {
+        const cards = getFlashcards(block).map((card, index) => index === (block.cardIndex || 0) ? {...card, ...changes} : card);
+        updateBlock(block.id, {cards});
+    };
+
+    const addFlashcard = (block) => updateBlock(block.id, {
+        cards: [...getFlashcards(block), {front: '', back: ''}],
+        cardIndex: getFlashcards(block).length,
+        flipped: false,
+    });
+
+    const renderChart = (block) => {
+        const values = String(block.chartValues || '').split(',').map((value) => Math.max(0, Number(value.trim()) || 0)).slice(0, 8);
+        const labels = String(block.chartLabels || '').split(',').map((label) => label.trim()).slice(0, values.length);
+        const max = Math.max(...values, 1);
+        if (block.chartStyle === 'pie') {
+            const total = Math.max(values.reduce((sum, value) => sum + value, 0), 1);
+            let cursor = 0;
+            const segments = values.map((value, index) => {
+                const start = cursor;
+                cursor += value / total * 360;
+                return `${['#6fa47d', '#6f8eaa', '#c08b36', '#9a789f'][index % 4]} ${start}deg ${cursor}deg`;
+            });
+            return <div className="admin-note-chart-pie" style={{background: `conic-gradient(${segments.join(', ')})`}}
+                        aria-label="Pie chart preview"/>;
+        }
+        if (block.chartStyle === 'line') {
+            const points = values.map((value, index) => `${values.length === 1 ? 50 : 12 + index / (values.length - 1) * 84},${86 - value / max * 70}`).join(' ');
+            return <svg className="admin-note-chart-plot" viewBox="0 0 110 110" role="img"
+                        aria-label={`${block.label || 'Line'} chart`}>
+                <line x1="12" y1="10" x2="12" y2="86"/>
+                <line x1="12" y1="86" x2="98" y2="86"/>
+                {[0, 0.5, 1].map((tick) => <text key={tick} x="9" y={88 - tick * 70}
+                                                 textAnchor="end">{Math.round(max * tick)}</text>)}
+                <polyline points={points} fill="none" stroke="#5d8f70" strokeWidth="3"
+                          vectorEffect="non-scaling-stroke"/>
+                {values.map((value, index) => <text key={index}
+                                                    x={values.length === 1 ? 50 : 12 + index / (values.length - 1) * 84}
+                                                    y="98" textAnchor="middle">{labels[index] || index + 1}</text>)}
+                <text className="admin-note-chart-axis-label" x="55" y="108"
+                      textAnchor="middle">{block.chartXAxis || 'Category'}</text>
+                <text className="admin-note-chart-axis-label" x="2" y="48" textAnchor="middle"
+                      transform="rotate(-90 2 48)">{block.chartYAxis || 'Value'}</text>
+            </svg>;
+        }
+        return <svg className="admin-note-chart-plot" viewBox="0 0 110 110" role="img"
+                    aria-label={`${block.label || 'Bar'} chart`}>
+            <line x1="12" y1="10" x2="12" y2="86"/>
+            <line x1="12" y1="86" x2="98" y2="86"/>
+            {[0, 0.5, 1].map((tick) => <text key={tick} x="9" y={88 - tick * 70}
+                                             textAnchor="end">{Math.round(max * tick)}</text>)}
+            {values.map((value, index) => {
+                const x = 14 + index * (84 / Math.max(values.length, 1));
+                const height = value / max * 70;
+                return <g key={index}>
+                    <rect x={x} y={86 - height} width={Math.max(3, 58 / Math.max(values.length, 1))} height={height}
+                          rx="1"/>
+                    <text x={x + 2} y={82 - height} textAnchor="middle">{value}</text>
+                    <text x={x + 2} y="98" textAnchor="middle">{labels[index] || index + 1}</text>
+                </g>;
+            })}
+            <text className="admin-note-chart-axis-label" x="55" y="108"
+                  textAnchor="middle">{block.chartXAxis || 'Category'}</text>
+            <text className="admin-note-chart-axis-label" x="2" y="48" textAnchor="middle"
+                  transform="rotate(-90 2 48)">{block.chartYAxis || 'Value'}</text>
+        </svg>;
     };
 
     const renderBlock = (block, index) => {
         const type = BLOCK_TYPES[block.type] || BLOCK_TYPES.text;
         const position = block.position || {col: (index % 3) * 4 + 1, row: Math.floor(index / 3) * 6 + 1};
+        const statusKey = block.type === 'status'
+            ? (block.status || 'In progress').toLowerCase().replace(/\s+/g, '-')
+            : '';
         return (
             <div
-                className={`admin-note-block admin-note-block-${block.type} admin-note-block-span-${block.span || 1}${draggingBlockId === block.id ? ' is-dragging' : ''}`}
+                className={`admin-note-block admin-note-block-${block.type} admin-note-block-span-${block.span || 1}${statusKey ? ` admin-note-status-${statusKey}` : ''}${draggingBlockId === block.id ? ' is-dragging' : ''}`}
                 key={block.id} style={{
                 gridColumn: `${position.col} / span ${(block.span || 1) * 4}`,
-                gridRow: `${position.row} / span ${block.height || 3}`
+                gridRow: `${position.row} / span ${block.type === 'chart' ? Math.max(block.height || 3, 11) : block.height || 3}`
             }} onPointerDown={(event) => startBlockDrag(event, block.id)} onPointerMove={(event) => {
                 if (draggingBlockId === block.id) updateDropPreview(event);
             }} onPointerUp={(event) => finishBlockDrag(event, block.id)}>
                 <span className="admin-note-block-grip" title="Drag to reorder" aria-hidden="true">::</span>
-                {block.type === 'divider' ? <hr/> : block.type === 'table' ? (
+                {block.type === 'divider' ? <hr/> : block.type === 'counter' ? (
+                    <div className="admin-note-counter-wrap">
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Counter label"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                        <div className="admin-note-counter-main" aria-label="Counter controls">
+                            <button type="button"
+                                    onClick={() => updateBlock(block.id, {counterValue: (block.counterValue || 0) - (block.counterStep || 1)})}
+                                    aria-label="Decrease counter">-
+                            </button>
+                            <div className="admin-note-counter-value" aria-live="polite">{block.counterValue ?? 0}</div>
+                            <button type="button"
+                                    onClick={() => updateBlock(block.id, {counterValue: (block.counterValue || 0) + (block.counterStep || 1)})}
+                                    aria-label="Increase counter">+
+                            </button>
+                        </div>
+                        <div className="admin-note-counter-controls">
+                            <div className="admin-note-counter-adjust">
+                                <label className="admin-note-counter-step"><span>Step size</span><input type="number"
+                                                                                                        min="1"
+                                                                                                        value={block.counterStep || 1}
+                                                                                                        aria-label="Counter step size"
+                                                                                                        onChange={(event) => updateBlock(block.id, {counterStep: Math.max(1, Number(event.target.value) || 1)})}/></label>
+                            </div>
+                            <button type="button" className="admin-note-counter-reset"
+                                    onClick={() => updateBlock(block.id, {counterValue: 0})}
+                                    aria-label="Reset counter">Reset
+                            </button>
+                        </div>
+                    </div>
+                ) : block.type === 'picker' ? (
+                    <div className="admin-note-picker-wrap">
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Picker title"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                        <label className="admin-note-picker-field"><span>Options</span><textarea
+                            value={block.pickerOptions || ''} placeholder="One option per line"
+                            aria-label="Picker options"
+                            onChange={(event) => updateBlock(block.id, {pickerOptions: event.target.value})}/></label>
+                        <div className="admin-note-picker-result-label">Result</div>
+                        <div className="admin-note-picker-result">
+                            <span aria-live="polite">{block.pickerChoice || 'No choice yet'}</span>
+                            <button type="button" className="admin-note-picker-choice" onClick={() => {
+                                const options = String(block.pickerOptions || '').split('\n').map((option) => option.trim()).filter(Boolean);
+                                if (!options.length) return;
+                                updateBlock(block.id, {pickerChoice: options[Math.floor(Math.random() * options.length)]});
+                            }}>Pick
+                            </button>
+                        </div>
+                    </div>
+                ) : block.type === 'progress' ? (
+                    <div className="admin-note-progress-wrap">
+                        <div className="admin-note-progress-header">
+                            <input value={block.label} placeholder={type.placeholder} aria-label="Progress label"
+                                   onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                            <input className="admin-note-progress-value" type="number" min="0" max="100"
+                                   value={block.value} aria-label="Progress percentage"
+                                   onChange={(event) => updateBlock(block.id, {value: Math.max(0, Math.min(100, Number(event.target.value) || 0))})}/>
+                            <span>%</span>
+                        </div>
+                        <progress max="100" value={block.value}
+                                  aria-label={`${block.label || 'Progress'}: ${block.value}%`}/>
+                    </div>
+                ) : block.type === 'link' ? (
+                    <div className="admin-note-link-wrap" onBlur={(event) => {
+                        if (!event.currentTarget.contains(event.relatedTarget)) setEditingLinkId(null);
+                    }}>
+                        {block.label && block.url && editingLinkId !== block.id ?
+                            <div className="admin-note-link-compact"
+                                 onDoubleClick={() => {
+                                     window.clearTimeout(linkClickTimerRef.current);
+                                     setEditingLinkId(block.id);
+                                 }}>
+                                <a className="admin-note-link-preview" href={getLinkHref(block.url)} target="_blank"
+                                   rel="noopener noreferrer"
+                                   onClick={(event) => handleLinkPreviewClick(event, block.url)}>{block.label}</a>
+                            </div> : <>
+                                <input value={block.label} placeholder={type.placeholder} aria-label="Link label"
+                                       onChange={(event) => {
+                                           setEditingLinkId(block.id);
+                                           updateBlock(block.id, {label: event.target.value});
+                                       }}/>
+                                <input value={block.url} placeholder="https://example.com" aria-label="Link URL"
+                                       onChange={(event) => {
+                                           setEditingLinkId(block.id);
+                                           updateBlock(block.id, {url: event.target.value});
+                                       }}/>
+                            </>}
+                    </div>
+                ) : block.type === 'date' ? (
+                    <div className="admin-note-date-wrap">
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Date label"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                        <input type="date" value={block.date} aria-label="Note date"
+                               onChange={(event) => updateBlock(block.id, {date: event.target.value})}/>
+                    </div>
+                ) : block.type === 'list' ? (
+                    renderListWidget(block, type)
+                ) : block.type === 'status' ? (
+                    <div className={`admin-note-status-wrap admin-note-status-wrap-${statusKey}`}>
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Status label"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                        <select value={block.status || 'In progress'} aria-label="Status"
+                                onChange={(event) => updateBlock(block.id, {status: event.target.value})}>
+                            <option>Not started</option>
+                            <option>In progress</option>
+                            <option>Blocked</option>
+                            <option>Done</option>
+                        </select>
+                    </div>
+                ) : block.type === 'countdown' ? (
+                    <div className="admin-note-countdown-wrap">
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Countdown label"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                        <input type="datetime-local" value={block.dateTime} aria-label="Countdown date and time"
+                               onFocus={unlockCountdownAudio}
+                               onChange={(event) => updateBlock(block.id, {dateTime: event.target.value})}/>
+                        {getCountdownParts(block.dateTime) ? <strong className="admin-note-countdown-value">
+                            {getCountdownParts(block.dateTime).hours}:{getCountdownParts(block.dateTime).minutes}:{getCountdownParts(block.dateTime).seconds}
+                        </strong> : <strong>Choose a date and time</strong>}
+                    </div>
+                ) : block.type === 'rating' ? (
+                    <div className="admin-note-rating-wrap">
+                        <input value={block.label} placeholder={type.placeholder} aria-label="Rating label"
+                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>{renderStars(block)}
+                    </div>
+                ) : block.type === 'flashcards' ? (
+                    <div className="admin-note-flashcard-wrap">
+                        <div className="admin-note-flashcard-controls" aria-label="Flashcard controls">
+                            <input className="admin-note-flashcard-title" value={block.label}
+                                   placeholder="Flashcard title"
+                                   aria-label="Flashcard title"
+                                   onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                            <span
+                                className="admin-note-table-label">Card {(block.cardIndex || 0) + 1} of {getFlashcards(block).length}</span>
+                            <button type="button" onClick={() => updateBlock(block.id, {
+                                cardIndex: Math.max(0, (block.cardIndex || 0) - 1),
+                                flipped: false
+                            })} disabled={!block.cardIndex} aria-label="Previous card" title="Previous card">Previous
+                            </button>
+                            <button type="button" onClick={() => updateBlock(block.id, {
+                                cardIndex: Math.min(getFlashcards(block).length - 1, (block.cardIndex || 0) + 1),
+                                flipped: false
+                            })} disabled={(block.cardIndex || 0) === getFlashcards(block).length - 1}
+                                    aria-label="Next card" title="Next card">Next
+                            </button>
+                            <button type="button" onClick={() => addFlashcard(block)} aria-label="Add flashcard"
+                                    title="Add flashcard">New
+                            </button>
+                        </div>
+                        {editingFlashcardId === block.id ?
+                            <div className="admin-note-flashcard-edit" onBlur={(event) => {
+                                if (!event.currentTarget.contains(event.relatedTarget)) setEditingFlashcardId(null);
+                            }}>
+                                <label className="admin-note-flashcard-edit-field"><span>Front</span><input autoFocus
+                                                                                                            value={getFlashcards(block)[block.cardIndex || 0].front}
+                                                                                                            placeholder="Front of card"
+                                                                                                            aria-label="Flashcard front"
+                                                                                                            onChange={(event) => updateFlashcard(block, {front: event.target.value})}/></label>
+                                <label className="admin-note-flashcard-edit-field"><span>Back</span><input
+                                    value={getFlashcards(block)[block.cardIndex || 0].back} placeholder="Back of card"
+                                    aria-label="Flashcard back"
+                                    onChange={(event) => updateFlashcard(block, {back: event.target.value})}/></label>
+                            </div> : <div className="admin-note-flashcard" role="button" tabIndex="0"
+                                          onClick={() => updateBlock(block.id, {flipped: !block.flipped})}
+                                          onDoubleClick={() => setEditingFlashcardId(block.id)}
+                                          onKeyDown={(event) => {
+                                              if (event.key === 'Enter' || event.key === ' ') {
+                                                  event.preventDefault();
+                                                  updateBlock(block.id, {flipped: !block.flipped});
+                                              }
+                                          }} aria-label="Flip flashcard; double-click to edit">
+                                <span>{block.flipped ? (getFlashcards(block)[block.cardIndex || 0].back || 'Add an answer below') : (getFlashcards(block)[block.cardIndex || 0].front || type.placeholder)}</span>
+                            </div>}
+                    </div>
+                ) : block.type === 'chart' ? (
+                    <div className="admin-note-chart-wrap">
+                        <div className="admin-note-chart-heading">
+                            <label className="admin-note-chart-field"><span>Title</span><input value={block.label}
+                                                                                               placeholder={type.placeholder}
+                                                                                               aria-label="Chart title"
+                                                                                               onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                            </label>
+                            <label className="admin-note-chart-field chart-type"><span>Type</span><select
+                                value={block.chartStyle || 'bar'} aria-label="Chart type"
+                                onChange={(event) => updateBlock(block.id, {chartStyle: event.target.value})}>
+                                <option value="bar">Bar</option>
+                                <option value="line">Line</option>
+                                <option value="pie">Pie</option>
+                            </select>
+                            </label>
+                        </div>
+                        <div className="admin-note-chart-data-inputs">
+                            <label className="admin-note-chart-field"><span>Values</span><input
+                                value={block.chartValues || '25, 50, 35, 70'} placeholder="25, 50, 35, 70"
+                                aria-label="Chart values"
+                                onChange={(event) => updateBlock(block.id, {chartValues: event.target.value})}/>
+                            </label>
+                            <label className="admin-note-chart-field"><span>Categories</span><input
+                                value={block.chartLabels || 'A, B, C, D'} placeholder="A, B, C, D"
+                                aria-label="Chart category labels"
+                                onChange={(event) => updateBlock(block.id, {chartLabels: event.target.value})}/>
+                            </label>
+                        </div>
+                        <div className="admin-note-chart-axis-inputs">
+                            <label className="admin-note-chart-field"><span>X axis</span><input
+                                value={block.chartXAxis || 'Category'} placeholder="Category" aria-label="X-axis label"
+                                onChange={(event) => updateBlock(block.id, {chartXAxis: event.target.value})}/>
+                            </label>
+                            <label className="admin-note-chart-field"><span>Y axis</span><input
+                                value={block.chartYAxis || 'Value'} placeholder="Value" aria-label="Y-axis label"
+                                onChange={(event) => updateBlock(block.id, {chartYAxis: event.target.value})}/>
+                            </label>
+                        </div>
+                        {renderChart(block)}
+                    </div>
+                ) : block.type === 'equation' ? (
+                    <div className="admin-note-equation-wrap">
+                        {editingEquationId === block.id ? <div className="admin-note-equation-edit" onBlur={(event) => {
+                            if (!event.currentTarget.contains(event.relatedTarget)) setEditingEquationId(null);
+                        }}>
+                            <input value={block.label} placeholder="Equation label" aria-label="Equation label"
+                                   onChange={(event) => updateBlock(block.id, {label: event.target.value})}/>
+                            <input autoFocus value={block.text} placeholder="\frac{a}{b}" aria-label="Equation LaTeX"
+                                   onChange={(event) => updateBlock(block.id, {text: event.target.value})}/>
+                        </div> : <button type="button" className="admin-note-equation-display"
+                                         onClick={() => setEditingEquationId(block.id)} aria-label="Edit equation">
+                            {block.label && <small>{block.label}</small>}
+                            <span dangerouslySetInnerHTML={{__html: renderEquation(block.text)}}/>
+                        </button>}
+                    </div>
+                ) : block.type === 'table' ? (
                     <div className="admin-note-table-wrap">
                         <div className="admin-note-table-controls" aria-label="Table controls">
                             <span className="admin-note-table-label">Table</span>
@@ -457,6 +961,7 @@ const NotesAdmin = () => {
 
     return (
         <AdminLayout title="Notes">
+            <div className={`admin-notes-workspace${isFullScreen ? ' is-full-screen' : ''}`}>
             <div className="admin-notes-toolbar">
                 <label className="admin-notes-search">
                     <span>Search notes</span>
@@ -479,6 +984,7 @@ const NotesAdmin = () => {
                 <div className="admin-notes-layout">
                     <aside className="admin-notes-list" aria-label="Notes list">
                         <div className="admin-notes-list-heading">
+                            <h2 className="admin-notes-list-title">Notes</h2>
                             <div className="admin-note-view-toggle" role="tablist" aria-label="Note status">
                                 <button type="button" className={noteView === 'active' ? 'active' : ''}
                                         onClick={() => setNoteView('active')} role="tab"
@@ -523,20 +1029,44 @@ const NotesAdmin = () => {
                                                 disabled={saving}>{noteView === 'archived' ? 'Unarchive' : 'Archive'}</button>}
                                     {selectedId && <button type="button" className="danger" onClick={handleDelete}
                                                            disabled={saving}>Delete</button>}
+
+                                    <button type="button" className="admin-notes-fullscreen" onClick={() => setIsFullScreen((current) => !current)}
+                                            aria-pressed={isFullScreen} aria-label={isFullScreen ? 'Exit full screen' : 'Enter full screen'}>
+                                        {isFullScreen ? 'Exit full screen' : 'Full screen'}
+                                    </button>
                                     <button type="submit" className="primary"
                                             disabled={saving}>{saving ? 'Saving...' : 'Save note'}</button>
                                 </div>
                             </div>
                             <div className="admin-note-board-shell">
                                 <div className="admin-note-widget-palette" aria-label="Widget palette">
-                                    <span>Widgets</span>
-                                    {Object.entries(BLOCK_TYPES).map(([blockType, item]) => <button type="button"
-                                                                                                    key={blockType}
-                                                                                                    onClick={() => addBlock(blockType)}>
-                                        <b>{item.icon}</b>{item.label}</button>)}
+                                    <div className="admin-note-widget-top-row">
+                                        <span>Widgets</span>
+                                        <div className="admin-note-widget-core">
+                                            {primaryWidgetTypes.map((blockType) => <button type="button"
+                                                                                           key={blockType}
+                                                                                           onClick={() => addBlock(blockType)}>
+                                                <b>{BLOCK_TYPES[blockType].icon}</b>{BLOCK_TYPES[blockType].label}
+                                            </button>)}
+                                        </div>
+                                        <button type="button" className="admin-note-widget-more"
+                                                onClick={() => setShowMoreWidgets((current) => !current)}
+                                                aria-expanded={showMoreWidgets}
+                                                aria-label={showMoreWidgets ? 'Hide more widgets' : 'Show more widgets'}
+                                                title={showMoreWidgets ? 'Hide more widgets' : 'Show more widgets'}>
+                                            <span aria-hidden="true">{showMoreWidgets ? '▲' : '▼'}</span>
+                                        </button>
+                                    </div>
+                                    {showMoreWidgets && <div className="admin-note-widget-extra">
+                                        {widgetOrder.slice(8).map((blockType) => <button type="button"
+                                                                                         key={blockType}
+                                                                                         onClick={() => addBlock(blockType)}>
+                                            <b>{BLOCK_TYPES[blockType].icon}</b>{BLOCK_TYPES[blockType].label}
+                                        </button>)}
+                                    </div>}
                                 </div>
                                 <div className="admin-note-blocks" ref={boardRef}>
-                                    {Array.from({length: 360}, (_, cellIndex) => {
+                                    {Array.from({length: boardRowCount * 12}, (_, cellIndex) => {
                                         const col = cellIndex % 12 + 1;
                                         const row = Math.floor(cellIndex / 12) + 1;
                                         return <div
@@ -552,6 +1082,7 @@ const NotesAdmin = () => {
                     </section>
                 </div>
             )}
+            </div>
         </AdminLayout>
     );
 };
