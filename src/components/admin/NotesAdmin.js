@@ -69,12 +69,14 @@ const NotesAdmin = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [draft, setDraft] = useState({title: '', content: '', blocks: [createBlock()]});
     const [search, setSearch] = useState('');
+    const [noteView, setNoteView] = useState('active');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [draggingBlockId, setDraggingBlockId] = useState(null);
     const [dropPreview, setDropPreview] = useState(null);
     const boardRef = useRef(null);
+    const resizeSessionRef = useRef(null);
 
     const request = useCallback(async (url, options = {}) => {
         const hasBody = options.body !== undefined;
@@ -107,13 +109,15 @@ const NotesAdmin = () => {
         loadNotes();
     }, [loadNotes]);
 
+    const visibleNotes = useMemo(() => notes.filter((note) => noteView === 'archived' ? note.archived : !note.archived), [notes, noteView]);
+
     const filteredNotes = useMemo(() => {
         const term = search.trim().toLowerCase();
-        if (!term) return notes;
-        return notes.filter((note) =>
+        if (!term) return visibleNotes;
+        return visibleNotes.filter((note) =>
             `${note.title} ${note.content}`.toLowerCase().includes(term)
         );
-    }, [notes, search]);
+    }, [search, visibleNotes]);
 
     const selectNote = (note) => {
         setSelectedId(note.id);
@@ -185,9 +189,103 @@ const NotesAdmin = () => {
         return {...current, blocks: next};
     });
 
-    const changeBlockSpan = (id, span) => updateBlock(id, {span: Number(span)});
-    const changeBlockHeight = (id, height) => updateBlock(id, {height: Number(height)});
     const placeBlock = (id, col, row) => updateBlock(id, {position: {col, row}});
+
+    const getTableRowCapacity = (block) => Math.max(2, (block.height || 3) - 2);
+    const getTableColumnCount = (block) => Math.max(1, block.rows?.[0]?.length || 1);
+
+    const resizeTableColumns = (block, columnCount) => {
+        const nextColumnCount = Math.max(1, Math.min(8, Number(columnCount)));
+        const rows = block.rows.map((row) => Array.from({length: nextColumnCount}, (_, index) => row[index] || ''));
+        updateBlock(block.id, {rows});
+    };
+
+    const resizeTableRows = (block, rowCount) => {
+        const nextRowCount = Math.max(2, Math.min(getTableRowCapacity(block), Number(rowCount)));
+        const columnCount = getTableColumnCount(block);
+        const rows = Array.from({length: nextRowCount}, (_, index) => block.rows[index] || Array.from({length: columnCount}, () => ''))
+            .map((row) => Array.from({length: columnCount}, (_, index) => row[index] || ''));
+        updateBlock(block.id, {rows});
+    };
+
+    const getBoardMetrics = () => {
+        if (!boardRef.current) return null;
+        const board = boardRef.current;
+        const bounds = board.getBoundingClientRect();
+        const styles = window.getComputedStyle(board);
+        const paddingX = parseFloat(styles.paddingLeft) || 0;
+        const gap = parseFloat(styles.columnGap) || 0;
+        const contentWidth = bounds.width - paddingX - (parseFloat(styles.paddingRight) || 0);
+        return {
+            bounds,
+            paddingX,
+            paddingY: parseFloat(styles.paddingTop) || 0,
+            gap,
+            cellWidth: (contentWidth - gap * 11) / 12,
+            rowHeight: parseFloat(styles.gridTemplateRows.split(' ')[0]) + (parseFloat(styles.rowGap) || 0),
+        };
+    };
+
+    const startBlockResize = (event, block) => {
+        event.stopPropagation();
+        event.currentTarget.setPointerCapture(event.pointerId);
+        const metrics = getBoardMetrics();
+        const blockBounds = event.currentTarget.parentElement.getBoundingClientRect();
+        const startColumn = metrics
+            ? Math.floor((blockBounds.left - metrics.bounds.left - metrics.paddingX) / (metrics.cellWidth + metrics.gap)) + 1
+            : block.position?.col || 1;
+        resizeSessionRef.current = {
+            id: block.id,
+            startX: event.clientX,
+            startY: event.clientY,
+            startSpan: block.span || 1,
+            startHeight: block.height || 3,
+            maxSpan: Math.max(1, Math.min(3, Math.floor((13 - startColumn) / 4))),
+            rowHeight: metrics?.rowHeight || 30,
+            cellWidth: metrics?.cellWidth || 30,
+            gap: metrics?.gap || 0,
+        };
+    };
+
+    const updateBlockResize = (event, block) => {
+        const session = resizeSessionRef.current;
+        if (!session || session.id !== block.id) return;
+        const widthDelta = Math.round((event.clientX - session.startX) / ((session.cellWidth + session.gap) * 4));
+        const heightDelta = Math.round((event.clientY - session.startY) / session.rowHeight);
+        const width = Math.max(1, Math.min(session.maxSpan, session.startSpan + widthDelta));
+        const height = Math.max(1, Math.min(30, session.startHeight + heightDelta));
+        if (width !== block.span || height !== block.height) updateBlock(block.id, {span: width, height});
+    };
+
+    const finishBlockResize = (event) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+        resizeSessionRef.current = null;
+    };
+
+    const fitTextareaValue = (event) => {
+        const textarea = event.currentTarget;
+        const value = textarea.value;
+        let low = 0;
+        let high = value.length;
+        let fitted = value;
+
+        textarea.value = value;
+        if (textarea.scrollHeight <= textarea.clientHeight) return value;
+
+        while (low <= high) {
+            const middle = Math.floor((low + high) / 2);
+            textarea.value = value.slice(0, middle);
+            if (textarea.scrollHeight <= textarea.clientHeight) {
+                fitted = textarea.value;
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        }
+
+        textarea.value = fitted;
+        return fitted;
+    };
 
     const startBlockDrag = (event, id) => {
         if (event.target.closest('input, textarea, select, button')) return;
@@ -226,7 +324,7 @@ const NotesAdmin = () => {
             style={{gridColumn: `${dropPreview.col} / span ${width}`, gridRow: `${dropPreview.row} / span ${height}`}}
             aria-label={`Drop position: column ${dropPreview.col}, row ${dropPreview.row}`}
         >
-            <span aria-hidden="true" />
+            <span aria-hidden="true"/>
         </div>;
     };
 
@@ -235,14 +333,9 @@ const NotesAdmin = () => {
         const block = getDropPreviewBlock();
         if (!block) return;
         const board = boardRef.current;
-        const bounds = board.getBoundingClientRect();
-        const styles = window.getComputedStyle(board);
-        const paddingX = parseFloat(styles.paddingLeft) || 0;
-        const paddingY = parseFloat(styles.paddingTop) || 0;
-        const gap = parseFloat(styles.columnGap) || 0;
-        const contentWidth = bounds.width - paddingX - (parseFloat(styles.paddingRight) || 0);
-        const cellWidth = (contentWidth - gap * 11) / 12;
-        const rowHeight = 36 + (parseFloat(styles.rowGap) || 0);
+        const metrics = getBoardMetrics();
+        if (!metrics) return;
+        const {bounds, paddingX, paddingY, gap, cellWidth, rowHeight} = metrics;
         const width = Math.min((block.span || 1) * 4, 12);
         const height = Math.min(block.height || 3, 30);
         const rawCol = Math.floor((event.clientX - bounds.left - paddingX) / (cellWidth + gap)) + 1;
@@ -256,18 +349,71 @@ const NotesAdmin = () => {
         const type = BLOCK_TYPES[block.type] || BLOCK_TYPES.text;
         const position = block.position || {col: (index % 3) * 4 + 1, row: Math.floor(index / 3) * 6 + 1};
         return (
-            <div className={`admin-note-block admin-note-block-${block.type} admin-note-block-span-${block.span || 1}${draggingBlockId === block.id ? ' is-dragging' : ''}`} key={block.id} style={{gridColumn: `${position.col} / span ${(block.span || 1) * 4}`, gridRow: `${position.row} / span ${block.height || 3}`}} onPointerDown={(event) => startBlockDrag(event, block.id)} onPointerMove={(event) => { if (draggingBlockId === block.id) updateDropPreview(event); }} onPointerUp={(event) => finishBlockDrag(event, block.id)}>
+            <div
+                className={`admin-note-block admin-note-block-${block.type} admin-note-block-span-${block.span || 1}${draggingBlockId === block.id ? ' is-dragging' : ''}`}
+                key={block.id} style={{
+                gridColumn: `${position.col} / span ${(block.span || 1) * 4}`,
+                gridRow: `${position.row} / span ${block.height || 3}`
+            }} onPointerDown={(event) => startBlockDrag(event, block.id)} onPointerMove={(event) => {
+                if (draggingBlockId === block.id) updateDropPreview(event);
+            }} onPointerUp={(event) => finishBlockDrag(event, block.id)}>
                 <span className="admin-note-block-grip" title="Drag to reorder" aria-hidden="true">::</span>
-                {block.type === 'divider' ? <hr /> : block.type === 'table' ? (
+                {block.type === 'divider' ? <hr/> : block.type === 'table' ? (
                     <div className="admin-note-table-wrap">
-                        <table><tbody>{block.rows.map((row, rowIndex) => <tr key={`${block.id}-${rowIndex}`}>{row.map((cell, cellIndex) => <td key={`${block.id}-${rowIndex}-${cellIndex}`}><input value={cell} aria-label={`Row ${rowIndex + 1}, column ${cellIndex + 1}`} placeholder={type.placeholder} onChange={(event) => { const rows = block.rows.map((currentRow) => [...currentRow]); rows[rowIndex][cellIndex] = event.target.value; updateBlock(block.id, {rows}); }} /></td>)}</tr>)}</tbody></table>
-                        <button type="button" className="admin-note-inline-button" onClick={() => updateBlock(block.id, {rows: [...block.rows, block.rows[0].map(() => '')]})}>+ row</button>
+                        <div className="admin-note-table-controls" aria-label="Table controls">
+                            <span className="admin-note-table-label">Table</span>
+                            <span className="admin-note-table-control-label">Columns</span>
+                            <button type="button"
+                                    onClick={() => resizeTableColumns(block, getTableColumnCount(block) - 1)}
+                                    disabled={getTableColumnCount(block) === 1} aria-label="Remove column"
+                                    title="Remove column">-
+                            </button>
+                            <strong>{getTableColumnCount(block)}</strong>
+                            <button type="button"
+                                    onClick={() => resizeTableColumns(block, getTableColumnCount(block) + 1)}
+                                    disabled={getTableColumnCount(block) === 8} aria-label="Add column"
+                                    title="Add column">+
+                            </button>
+                            <span className="admin-note-table-control-label">Rows</span>
+                            <button type="button" onClick={() => resizeTableRows(block, block.rows.length - 1)}
+                                    disabled={block.rows.length === 2} aria-label="Remove row" title="Remove row">-
+                            </button>
+                            <strong>{block.rows.length}</strong>
+                            <button type="button" onClick={() => resizeTableRows(block, block.rows.length + 1)}
+                                    disabled={block.rows.length === getTableRowCapacity(block)} aria-label="Add row"
+                                    title="Add row">+
+                            </button>
+                        </div>
+                        <table>
+                            <tbody>{block.rows.map((row, rowIndex) => <tr
+                                key={`${block.id}-${rowIndex}`}>{row.map((cell, cellIndex) => <td
+                                key={`${block.id}-${rowIndex}-${cellIndex}`}><input value={cell}
+                                                                                    aria-label={`Row ${rowIndex + 1}, column ${cellIndex + 1}`}
+                                                                                    placeholder={type.placeholder}
+                                                                                    onChange={(event) => {
+                                                                                        const rows = block.rows.map((currentRow) => [...currentRow]);
+                                                                                        rows[rowIndex][cellIndex] = event.target.value;
+                                                                                        updateBlock(block.id, {rows});
+                                                                                    }}/></td>)}</tr>)}</tbody>
+                        </table>
                     </div>
                 ) : (
-                    <>{block.type === 'todo' && <input type="checkbox" checked={block.checked} onChange={(event) => updateBlock(block.id, {checked: event.target.checked})} aria-label="Mark task complete" />}<textarea value={block.text} onChange={(event) => updateBlock(block.id, {text: event.target.value})} placeholder={type.placeholder} aria-label={type.label} rows={block.type === 'text' ? 3 : 1} /></>
+                    <>{block.type === 'todo' && <input type="checkbox" checked={block.checked}
+                                                       onChange={(event) => updateBlock(block.id, {checked: event.target.checked})}
+                                                       aria-label="Mark task complete"/>}<textarea value={block.text}
+                                                                                                   onChange={(event) => updateBlock(block.id, {text: fitTextareaValue(event)})}
+                                                                                                   placeholder={type.placeholder}
+                                                                                                   aria-label={type.label}
+                                                                                                   rows={block.type === 'text' ? 3 : 1}/></>
                 )}
-                <button type="button" className="admin-note-block-remove" onClick={() => removeBlock(block.id)} aria-label="Remove block">x</button>
-                {block.type !== 'divider' && <label className="admin-note-block-size">Size <select value={block.span || 1} onChange={(event) => changeBlockSpan(block.id, event.target.value)} aria-label="Widget width"><option value="1">1/3</option><option value="2">1/2</option><option value="3">Full</option></select><select value={block.height || 3} onChange={(event) => changeBlockHeight(block.id, event.target.value)} aria-label="Widget height"><option value="2">Short</option><option value="3">Medium</option><option value="5">Tall</option><option value="7">Large</option></select></label>}
+                <button type="button" className="admin-note-block-remove" onClick={() => removeBlock(block.id)}
+                        aria-label="Remove block">x
+                </button>
+                {block.type !== 'divider' &&
+                    <button type="button" className="admin-note-block-resize" aria-label="Resize widget"
+                            title="Resize widget" onPointerDown={(event) => startBlockResize(event, block)}
+                            onPointerMove={(event) => updateBlockResize(event, block)} onPointerUp={finishBlockResize}
+                            onPointerCancel={finishBlockResize}>⤢</button>}
             </div>
         );
     };
@@ -280,6 +426,27 @@ const NotesAdmin = () => {
         try {
             await request(`${NOTES_API}/${selectedId}`, {method: 'DELETE'});
             setNotes((current) => current.filter((note) => note.id !== selectedId));
+            startNewNote();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleArchiveToggle = async () => {
+        const selectedNote = notes.find((note) => note.id === selectedId);
+        if (!selectedNote) return;
+
+        const archived = !selectedNote.archived;
+        setSaving(true);
+        setError('');
+        try {
+            await request(`${NOTES_API}/${selectedId}`, {
+                method: 'PUT',
+                body: JSON.stringify({archived}),
+            });
+            setNotes((current) => current.map((note) => note.id === selectedId ? {...note, archived} : note));
             startNewNote();
         } catch (err) {
             setError(err.message);
@@ -312,7 +479,18 @@ const NotesAdmin = () => {
                 <div className="admin-notes-layout">
                     <aside className="admin-notes-list" aria-label="Notes list">
                         <div className="admin-notes-list-heading">
-                            <span>{filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}</span>
+                            <div className="admin-note-view-toggle" role="tablist" aria-label="Note status">
+                                <button type="button" className={noteView === 'active' ? 'active' : ''}
+                                        onClick={() => setNoteView('active')} role="tab"
+                                        aria-selected={noteView === 'active'}>
+                                    Active <span>{notes.filter((note) => !note.archived).length}</span>
+                                </button>
+                                <button type="button" className={noteView === 'archived' ? 'active' : ''}
+                                        onClick={() => setNoteView('archived')} role="tab"
+                                        aria-selected={noteView === 'archived'}>
+                                    Archived <span>{notes.filter((note) => note.archived).length}</span>
+                                </button>
+                            </div>
                         </div>
                         {filteredNotes.map((note) => (
                             <button
@@ -340,20 +518,31 @@ const NotesAdmin = () => {
                                     aria-label="Note title"
                                 />
                                 <div className="admin-note-actions">
-                                    {selectedId && <button type="button" className="danger" onClick={handleDelete} disabled={saving}>Delete</button>}
-                                    <button type="submit" className="primary" disabled={saving}>{saving ? 'Saving...' : 'Save note'}</button>
+                                    {selectedId &&
+                                        <button type="button" className="archive" onClick={handleArchiveToggle}
+                                                disabled={saving}>{noteView === 'archived' ? 'Unarchive' : 'Archive'}</button>}
+                                    {selectedId && <button type="button" className="danger" onClick={handleDelete}
+                                                           disabled={saving}>Delete</button>}
+                                    <button type="submit" className="primary"
+                                            disabled={saving}>{saving ? 'Saving...' : 'Save note'}</button>
                                 </div>
                             </div>
                             <div className="admin-note-board-shell">
                                 <div className="admin-note-widget-palette" aria-label="Widget palette">
                                     <span>Widgets</span>
-                                    {Object.entries(BLOCK_TYPES).map(([blockType, item]) => <button type="button" key={blockType} onClick={() => addBlock(blockType)}><b>{item.icon}</b>{item.label}</button>)}
+                                    {Object.entries(BLOCK_TYPES).map(([blockType, item]) => <button type="button"
+                                                                                                    key={blockType}
+                                                                                                    onClick={() => addBlock(blockType)}>
+                                        <b>{item.icon}</b>{item.label}</button>)}
                                 </div>
                                 <div className="admin-note-blocks" ref={boardRef}>
                                     {Array.from({length: 360}, (_, cellIndex) => {
                                         const col = cellIndex % 12 + 1;
                                         const row = Math.floor(cellIndex / 12) + 1;
-                                        return <div className={`admin-note-grid-cell${isPreviewCell(col, row) ? ' is-preview' : ''}`} key={`${col}-${row}`} style={{gridColumn: col, gridRow: row}} aria-label={`Board column ${col}, row ${row}`} />;
+                                        return <div
+                                            className={`admin-note-grid-cell${isPreviewCell(col, row) ? ' is-preview' : ''}`}
+                                            key={`${col}-${row}`} style={{gridColumn: col, gridRow: row}}
+                                            aria-label={`Board column ${col}, row ${row}`}/>;
                                     })}
                                     {draggingBlockId && renderPreviewCells()}
                                     {draft.blocks.map(renderBlock)}
