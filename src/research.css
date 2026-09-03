@@ -1,0 +1,147 @@
+/* Research page scoped styles building on global styles and blog.css */
+
+/* Container adjustments */
+/* Revert to global heading spacing by removing local margin overrides */
+/* (Intentionally no rule here for #project-heading) */
+
+/* Breadcrumb */
+.research-breadcrumb {
+    margin-left: calc(var(--nav-width) + 6%);
+    margin-right: 6%;
+    margin-top: 0.8rem;
+    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+}
+
+.research-breadcrumb a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.research-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-sep {
+    margin: 0 0.5rem;
+    opacity: 0.7;
+}
+
+.breadcrumb-current {
+    color: var(--text);
+    opacity: 0.9;
+}
+
+/* Research Cards */
+.research-card {
+    background-color: var(--gray);
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.research-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.research-card-inner {
+    padding: 5% 7% 5% 7%;
+    box-sizing: border-box;
+}
+
+.research-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 22px rgba(44, 62, 80, 0.12);
+}
+
+body.dark-mode .research-card:hover {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+.research-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 0.75rem 0;
+    line-height: 1.15;
+}
+
+.research-card-desc {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0;
+    white-space: pre-line;
+}
+
+.research-card-link:focus-visible {
+    outline: 3px solid rgba(var(--primary-color-rgb), 0.35);
+    border-radius: 10px;
+}
+
+.research-card-image {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 0 0 0.75rem 0;
+    display: block;
+}
+
+/* Article polish */
+/* Use blog-post default width; no override here to match blog */
+/* .research-article { } */
+
+.research-article-header {
+    text-align: center;
+}
+
+.research-article-title {
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+
+.research-article-meta {
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.research-article-content {
+    font-size: 1.1rem;
+}
+
+/* Footnotes inside research articles (reuse classes from blog.css but add spacing tweaks) */
+.research-article-content .footnotes {
+    margin-top: 2.5rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+    .research-breadcrumb {
+        margin-left: 6%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Keep same padding as blog cards for consistency */
+    .research-card-title {
+        font-size: 1.15rem;
+    }
+
+    .research-article {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* Make research grid spacing match blog grid */
+.research-page .project-grid {
+    padding: 0 5%;
+}

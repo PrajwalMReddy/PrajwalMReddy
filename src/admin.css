@@ -1,0 +1,5769 @@
+.admin-page {
+    min-height: 100vh;
+    background: var(--background, #f5f7fa);
+    color: var(--text, #2c3e50);
+    font-family: var(--font-family);
+    line-height: 1.5;
+}
+
+.admin-loading,
+.admin-login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.admin-login-card {
+    background: var(--gray, #fff);
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.15
+    );
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.admin-login-card h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.admin-login-subtitle {
+    color: var(--secondary-color, #4a6b8a);
+    margin-bottom: 1.5rem;
+}
+
+.admin-login-card label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.admin-login-card input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: var(--background, #fff);
+    color: var(--text, inherit);
+}
+
+.admin-login-card button {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.admin-login-card button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Admin Header
+   ============================================================ */
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    background: var(--gray, #fff);
+    gap: 1rem;
+}
+
+.admin-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.admin-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text, inherit);
+    line-height: 1;
+}
+
+.admin-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-nav a {
+    text-decoration: none;
+    color: var(--secondary-color, #4a6b8a);
+    font-weight: 500;
+    padding: 0.3rem 0.1rem;
+    border-bottom: 2px solid transparent;
+    font-size: 0.95rem;
+}
+
+.admin-nav a.active {
+    color: var(--text, inherit);
+    border-bottom-color: var(--accent-color, #7d9ba6);
+}
+
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.admin-link {
+    color: var(--secondary-color, #4a6b8a);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.admin-logout-btn {
+    padding: 0.45rem 0.8rem;
+    background: transparent;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text, inherit);
+    font-size: 0.875rem;
+}
+
+/* ============================================================
+   Admin Main
+   ============================================================ */
+
+.admin-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================================
+   Todo Top Dashboard
+   Add Task on the left + 2x2 summary on the right
+   ============================================================ */
+
+.admin-todo-top-dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================================
+   Todo Add Form
+   ============================================================ */
+
+.admin-todo-top-dashboard .admin-todo-form {
+    margin: 0;
+    min-width: 0;
+}
+
+.admin-todo-top-dashboard .admin-todo-form h3 {
+    margin-bottom: 1rem;
+}
+
+.admin-todo-form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+}
+
+.admin-todo-title-field,
+.admin-todo-date-field,
+.admin-todo-priority-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    min-width: 0;
+}
+
+.admin-todo-title-field {
+    flex: 1 1 auto;
+}
+
+.admin-todo-date-field {
+    flex: 0 0 150px;
+}
+
+.admin-todo-priority-field {
+    flex: 0 0 125px;
+}
+
+.admin-todo-form input,
+.admin-todo-form select {
+    min-height: 42px;
+    box-sizing: border-box;
+}
+
+.admin-todo-submit {
+    flex: 0 0 auto;
+
+    min-height: 42px;
+    padding: 0.6rem 1.1rem;
+
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+
+    transition: background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.admin-todo-submit:hover:not(:disabled) {
+    background: var(--text, #2c3e50);
+}
+
+.admin-todo-submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Todo Summary
+   2 x 2 grid
+   ============================================================ */
+
+.admin-todo-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.65rem;
+
+    min-width: 0;
+}
+
+.admin-todo-stat {
+    min-width: 0;
+
+    background: var(--gray, #fff);
+
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+
+    border-radius: 10px;
+
+    padding: 0.65rem 0.8rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 0.1rem;
+}
+
+.admin-todo-stat span {
+    color: var(--secondary-color, #4a6b8a);
+
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    white-space: nowrap;
+}
+
+.admin-todo-stat strong {
+    color: var(--text, #2c3e50);
+
+    font-size: 1.25rem;
+    line-height: 1.15;
+    font-weight: 600;
+}
+
+.admin-todo-stat-urgent {
+    background: rgba(255, 217, 201, 0.35);
+}
+
+.admin-todo-stat-urgent span,
+.admin-todo-stat-urgent strong {
+    color: #a13f1f;
+}
+
+/* ============================================================
+   Generic Admin Form
+   ============================================================ */
+
+.admin-form {
+    background: var(--gray, #fff);
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.admin-form h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(180px, 1fr)
+    );
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.admin-form input,
+.admin-form select {
+    padding: 0.5rem 0.625rem;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: var(--background, #fff);
+    color: var(--text, inherit);
+}
+
+.admin-form-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.admin-form-actions button {
+    padding: 0.5rem 1.25rem;
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.admin-form-actions button.secondary {
+    background: transparent;
+    color: var(--text, inherit);
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+}
+
+.admin-form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Notes
+   ============================================================ */
+
+.admin-notes-toolbar {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    min-height: 64px;
+    margin-bottom: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    border-radius: 10px;
+    background: var(--gray, #fff);
+}
+
+.admin-notes-fullscreen {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 6px;
+    background: #eef4fa;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+}
+
+.admin-notes-fullscreen:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: #e4eef7;
+}
+
+body.admin-notes-full-screen-active {
+    overflow: hidden;
+}
+
+.admin-notes-workspace.is-full-screen {
+    position: relative;
+}
+
+.admin-notes-workspace.is-full-screen .admin-note-editor {
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    min-height: 0;
+    overflow: auto;
+    border-radius: 0;
+    background: #f5f8fc;
+}
+
+.admin-notes-workspace.is-full-screen .admin-note-editor form {
+    height: 100%;
+    min-height: 0;
+}
+
+.admin-notes-workspace.is-full-screen .admin-note-board-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.admin-notes-workspace.is-full-screen .admin-note-widget-palette {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.admin-notes-workspace.is-full-screen .admin-note-blocks {
+    min-height: 0;
+    overflow: auto;
+}
+
+.admin-note-block-note_link {
+    border-left: 3px solid #6c86ad;
+    background: #f5f8fd;
+}
+
+.admin-notes-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    flex: 1;
+    max-width: 420px;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.admin-notes-search input,
+.admin-note-title {
+    box-sizing: border-box;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 6px;
+    padding: 0.5rem 0.625rem;
+    background: var(--background, #fff);
+    color: var(--text, inherit);
+    font: inherit;
+    font-size: 0.875rem;
+}
+
+.admin-notes-search input {
+    background: var(--background, #fff);
+}
+
+.admin-notes-new,
+.admin-note-actions button {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+}
+
+.admin-notes-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: auto;
+}
+
+.admin-notes-new-folder-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    border-radius: 6px;
+    background: var(--gray, #fff);
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.admin-notes-new-folder-btn:hover {
+    background: var(--background, #f5f7fa);
+    color: var(--text, #2c3e50);
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.38);
+}
+
+.admin-notes-toolbar-folder-form {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    padding: 0.25rem 0.5rem !important;
+    border: 1.5px solid var(--secondary-color, #4a6b8a);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(38, 74, 110, 0.12);
+}
+
+.admin-notes-toolbar-folder-form input {
+    width: 140px;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--text, #2c3e50);
+    padding: 0.2rem 0.3rem;
+    background: transparent;
+}
+
+.admin-note-btn-create {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.6rem;
+    border: none;
+    border-radius: 4px;
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background 0.12s;
+}
+
+.admin-note-btn-create:hover {
+    background: #2b567e;
+}
+
+.admin-note-btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font-size: 0.75rem;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: all 0.12s;
+}
+
+.admin-note-btn-cancel:hover {
+    background: rgba(231, 76, 60, 0.15);
+    color: #c0392b;
+}
+
+.admin-notes-new {
+    background: var(--secondary-color, #4a6b8a);
+    border-color: transparent;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.admin-notes-new:hover,
+.admin-note-actions button:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-notes-new:hover {
+    background: var(--text, #2c3e50);
+}
+
+.admin-notes-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+    min-width: 0;
+}
+
+.admin-notes-list,
+.admin-note-editor {
+    min-width: 0;
+    background: var(--gray, #fff);
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.admin-note-editor {
+    border-color: #d7e1ec;
+    background: #f5f8fc;
+    box-shadow: 0 8px 24px rgba(38, 74, 110, 0.08);
+}
+
+.admin-notes-list {
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.admin-notes-list-heading {
+    padding: 0.75rem 0.75rem 0;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+}
+
+.admin-notes-list-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+}
+
+.admin-notes-list-header-top .admin-notes-list-title {
+    margin: 0;
+}
+
+.admin-notes-list-title {
+    margin: 0 0 0.45rem;
+    color: var(--text, #2c3e50);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.admin-notes-explorer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.admin-note-header-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.22rem 0.5rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: all 0.15s ease;
+}
+
+.admin-note-header-btn:hover {
+    background: var(--background, #f5f7fa);
+    color: var(--text, #2c3e50);
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.3);
+}
+
+.admin-note-view-toggle {
+    display: flex;
+    gap: 0.2rem;
+    padding: 0.35rem 0;
+}
+
+.admin-note-view-toggle button {
+    flex: 1;
+    min-width: 0;
+    padding: 0.4rem 0.35rem;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.admin-note-view-toggle button.active {
+    background: var(--background, #f5f7fa);
+    color: var(--text, #2c3e50);
+    box-shadow: 0 1px 3px rgba(var(--primary-color-rgb, 44, 62, 80), 0.12);
+}
+
+.admin-note-view-toggle span {
+    margin-left: 0.15rem;
+    color: inherit;
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+.admin-notes-tree {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 210px);
+    min-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    padding-bottom: 0.5rem;
+}
+
+.admin-note-new-folder-form,
+.admin-note-rename-folder-form {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.45rem 0.6rem;
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.04);
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    box-sizing: border-box;
+}
+
+.admin-note-new-folder-form input,
+.admin-note-rename-folder-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.78rem;
+    border: 1px solid #c7d8e8;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--text, #2c3e50);
+}
+
+.admin-note-new-folder-form button,
+.admin-note-rename-folder-form button {
+    padding: 0.2rem 0.35rem;
+    border: 1px solid #c7d8e8;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.75rem;
+    cursor: pointer;
+    line-height: 1;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-new-folder-form button:hover,
+.admin-note-rename-folder-form button:hover {
+    background: var(--background, #f5f7fa);
+    color: var(--text, #2c3e50);
+}
+
+.admin-note-folder-group {
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.admin-note-folder-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.65rem;
+    background: transparent;
+    border: none;
+    color: var(--text, #2c3e50);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    user-select: none;
+    transition: background 0.15s ease;
+    text-align: left;
+    position: relative;
+}
+
+.admin-note-folder-header:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-folder-header.is-current-folder {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.07);
+}
+
+.admin-note-folder-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.8rem;
+    font-size: 0.65rem;
+    color: var(--secondary-color, #6885a3);
+    flex-shrink: 0;
+}
+
+.admin-note-folder-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.admin-note-folder-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    color: var(--text, #2c3e50);
+}
+
+.admin-note-folder-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.65rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.admin-note-folder-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-shrink: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.admin-note-folder-header:hover .admin-note-folder-actions,
+.admin-note-folder-header:focus-within .admin-note-folder-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.admin-note-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font-size: 0.72rem;
+    line-height: 1;
+    transition: all 0.12s ease;
+}
+
+.admin-note-action-icon:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.12);
+    color: var(--text, #2c3e50);
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.15);
+}
+
+.admin-note-action-icon.danger:hover {
+    background: rgba(231, 76, 60, 0.15);
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.admin-note-folder-children {
+    margin-left: 0.65rem;
+    padding-left: 0.35rem;
+    border-left: 1.5px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.14);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.015);
+    box-sizing: border-box;
+}
+
+.admin-note-folder-children .admin-note-list-item.is-nested {
+    padding: 0.55rem 0.65rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-empty-folder-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.65rem;
+    border: 1px dashed rgba(var(--primary-color-rgb, 44, 62, 80), 0.18);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--secondary-color, #5b7997);
+    font-size: 0.73rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0.25rem 0;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.admin-note-empty-folder-btn:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.04);
+    border-color: var(--accent-color, #4a6b8a);
+    color: var(--text, #2c3e50);
+}
+
+.admin-note-list-item {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 0.85rem;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    background: transparent;
+    color: var(--text, inherit);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.admin-note-list-item:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.03);
+}
+
+.admin-note-list-item:last-child {
+    border-bottom: 0;
+}
+
+.admin-note-list-item.active {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.07);
+    box-shadow: inset 3px 0 var(--accent-color, #7d9ba6);
+}
+
+.admin-note-list-item strong,
+.admin-note-list-item span,
+.admin-note-list-item p {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-list-item strong {
+    margin-bottom: 0.2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text, #2c3e50);
+}
+
+.admin-note-list-item span {
+    color: var(--secondary-color, #6885a3);
+    font-size: 0.7rem;
+    line-height: 1.3;
+}
+
+.admin-note-list-item p {
+    margin: 0.25rem 0 0;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+
+.admin-notes-empty {
+    margin: 0;
+    padding: 1.5rem 0.85rem 1.75rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.admin-note-editor form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.admin-note-editor-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid #dce5ef;
+    background: #edf3f9;
+}
+
+.admin-note-title-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-note-folder-dropdown-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.admin-note-folder-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #c8d8e8;
+    box-shadow: 0 1px 3px rgba(38, 74, 110, 0.08);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text, #2c3e50);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    line-height: 1.2;
+}
+
+.admin-note-folder-chip:hover,
+.admin-note-folder-chip.is-open {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: #fdfefe;
+    box-shadow: 0 2px 6px rgba(38, 74, 110, 0.14);
+}
+
+.admin-note-folder-chip-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.admin-note-folder-chip-label {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-folder-chip-arrow {
+    font-size: 0.65rem;
+    color: var(--secondary-color, #6885a3);
+    margin-left: 0.15rem;
+    transition: transform 0.15s ease;
+}
+
+.admin-note-folder-chip.is-open .admin-note-folder-chip-arrow {
+    transform: rotate(180deg);
+}
+
+.admin-note-folder-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 120;
+    min-width: 230px;
+    max-width: 300px;
+    background: #ffffff;
+    border: 1px solid #d5e2ef;
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(38, 74, 110, 0.16), 0 2px 6px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: folderMenuFade 0.12s ease-out;
+}
+
+@keyframes folderMenuFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-note-folder-menu-header {
+    padding: 0.45rem 0.65rem 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--secondary-color, #708ea8);
+    border-bottom: 1px solid #edf3f8;
+}
+
+.admin-note-folder-menu-items {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 0.3rem 0;
+}
+
+.admin-note-folder-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text, #2c3e50);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.admin-note-folder-menu-item:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.06);
+}
+
+.admin-note-folder-menu-item.is-selected {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+    font-weight: 600;
+    color: var(--accent-color, #2b567e);
+}
+
+.admin-note-folder-item-icon {
+    font-size: 0.85rem;
+    color: var(--secondary-color, #6885a3);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.admin-note-folder-item-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-folder-item-check {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary-color, #3498db);
+    margin-left: 0.4rem;
+    flex-shrink: 0;
+}
+
+.admin-note-folder-menu-footer {
+    padding: 0.35rem 0.45rem;
+    border-top: 1px solid #edf3f8;
+    background: #f9fbfe;
+}
+
+.admin-note-folder-menu-add {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.35rem 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--accent-color, #386794);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s ease;
+    text-align: left;
+}
+
+.admin-note-folder-menu-add:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+}
+
+.admin-note-dropdown-folder-form {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    padding: 0.3rem 0.45rem !important;
+    background: #fff;
+    border: 1px solid #c7d8e8;
+    border-radius: 6px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.admin-note-dropdown-folder-form input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: 0.78rem;
+    color: var(--text, #2c3e50);
+    padding: 0.2rem 0.3rem;
+    background: transparent;
+}
+
+.admin-note-dropdown-folder-form .admin-note-btn-create {
+    margin-left: auto;
+}
+
+.admin-note-title {
+    flex: 1;
+    min-width: 160px;
+    border-color: transparent;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.admin-note-title:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    outline: none;
+}
+
+.admin-note-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.admin-note-actions button {
+    min-height: 34px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+}
+
+.admin-note-actions button.active {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+}
+
+.admin-note-actions button.primary {
+    background: var(--secondary-color, #4a6b8a);
+    border-color: var(--secondary-color, #4a6b8a);
+    color: #fff;
+}
+
+.admin-note-actions button.danger {
+    color: #a13f1f;
+}
+
+.admin-note-actions button.archive {
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.admin-note-content,
+.admin-note-preview {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 420px;
+    padding: 1.25rem;
+}
+
+.admin-note-blocks {
+    flex: 1;
+    min-height: 420px;
+    padding: 0.85rem;
+    background: var(--gray, #fff);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: repeat(30, 30px);
+    grid-auto-rows: 30px;
+    align-items: start;
+    gap: 0.45rem;
+    background-color: #f5f8fc;
+    background-image: radial-gradient(circle, rgba(64, 104, 145, 0.38) 1.25px, transparent 1.9px);
+    background-size: 28px 30px;
+}
+
+.admin-note-grid-cell {
+    min-width: 0;
+    min-height: 0;
+    z-index: 0;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background: radial-gradient(circle at center, rgba(64, 104, 145, 0.48) 1.25px, transparent 1.8px);
+}
+
+.admin-note-grid-cell:hover {
+    background: radial-gradient(circle at center, rgba(47, 105, 170, 0.65) 1.4px, transparent 1.9px);
+}
+
+.admin-note-grid-cell.is-preview {
+    background: radial-gradient(circle at center, rgba(35, 112, 194, 1) 3px, transparent 3.8px);
+    box-shadow: inset 0 0 0 1px rgba(54, 126, 196, 0.08);
+}
+
+.admin-note-drop-preview {
+    z-index: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 2px dashed rgba(35, 112, 194, 0.82);
+    border-radius: 9px;
+    background: rgba(91, 164, 224, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(91, 164, 224, 0.1);
+}
+
+.admin-note-drop-preview span {
+    display: block;
+    width: 7px;
+    height: 7px;
+    margin: 0.45rem;
+    border-radius: 50%;
+    background: #2370c2;
+    box-shadow: 0 0 0 4px rgba(35, 112, 194, 0.16);
+}
+
+.admin-note-board-empty {
+    grid-column: 1 / -1;
+    grid-row: 2 / span 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+}
+
+.admin-note-board-empty p {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-board-empty span {
+    font-size: 0.8rem;
+    color: var(--secondary-color, #6f8fae);
+}
+
+.admin-note-board-shell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 420px;
+    overflow: hidden;
+    border: 1px solid #d7e1ec;
+    border-radius: 10px;
+    background: #f5f8fc;
+    box-shadow: 0 5px 16px rgba(38, 74, 110, 0.07);
+}
+
+.admin-note-widget-palette {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #dce5ef;
+    background: rgba(237, 243, 249, 0.92);
+}
+
+.admin-note-widget-top-row {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.65rem;
+}
+
+.admin-note-widget-core {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+    gap: 0.3rem;
+    overflow: hidden;
+}
+
+.admin-note-widget-palette span {
+    flex: 0 0 auto;
+    margin-right: 0.1rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.admin-note-widget-top-row > span {
+    width: 4.6rem;
+    margin-right: 0;
+}
+
+.admin-note-widget-palette button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 28px;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.14);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.44);
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.admin-note-widget-palette button:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-widget-palette button:hover {
+    transform: translateY(-1px);
+}
+
+.admin-note-widget-palette button:focus-visible {
+    outline: 2px solid var(--secondary-color, #4a6b8a);
+    outline-offset: 1px;
+}
+
+.admin-note-widget-core button,
+.admin-note-secondary-widgets button {
+    min-width: 0;
+    justify-content: center;
+}
+
+.admin-note-widget-palette b {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.7rem;
+}
+
+.admin-note-widget-more {
+    flex: 0 0 auto !important;
+    width: 2rem;
+    min-height: 30px;
+    justify-content: center;
+    padding: 0.2rem !important;
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.25) !important;
+    color: var(--secondary-color, #4a6b8a) !important;
+}
+
+.admin-note-widget-group,
+.admin-note-text-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 0.5rem;
+    border: 1px solid #dce5ef;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.36);
+}
+
+.admin-note-widget-group {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.admin-note-secondary-widgets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    padding-top: 0.1rem;
+    padding-left: 5.25rem;
+}
+
+.admin-note-text-tools > span {
+    flex: 0 0 auto;
+    min-width: 0;
+    margin-right: 0.15rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.admin-note-text-tools button {
+    min-width: 0;
+    justify-content: center;
+}
+
+.admin-note-text-tools button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.admin-note-font-size-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+.admin-note-font-size-control button {
+    min-width: 1.8rem !important;
+    width: 1.8rem;
+    justify-content: center;
+    padding: 0.25rem !important;
+}
+
+.admin-note-font-size-control .admin-note-font-size-icon {
+    min-width: 2.25rem !important;
+    width: 2.25rem;
+    font-weight: 700;
+}
+
+.admin-note-habit-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.3rem;
+}
+
+.admin-note-habit-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.45rem;
+    align-items: center;
+}
+
+.admin-note-habit-header input {
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-habit-header input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-habit-weekdays,
+.admin-note-habit-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.2rem;
+}
+
+.admin-note-habit-weekdays span {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.admin-note-habit-calendar button,
+.admin-note-habit-blank {
+    min-width: 0;
+    height: 0.8rem;
+}
+
+.admin-note-habit-calendar button {
+    padding: 0;
+    border: 1px solid #cbd8e5;
+    border-radius: 0.3rem;
+    background: #e8eef3;
+    color: transparent;
+    font: inherit;
+    font-size: 0;
+    cursor: pointer;
+}
+
+.admin-note-habit-calendar button.active {
+    border-color: #5d8f70;
+    background: #dcefe1;
+    color: #33724b;
+    font-weight: 700;
+}
+
+.admin-note-habit-calendar button:hover {
+    border-color: #5d8f70;
+}
+
+.admin-note-habit-progress {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.72rem;
+    text-align: right;
+}
+
+.admin-note-block {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+    gap: 0.4rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0.4rem 1.7rem 0.4rem 1.35rem;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d8e2ed;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 3px 9px rgba(38, 74, 110, 0.1);
+    z-index: 2;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: none;
+    cursor: grab;
+}
+
+.admin-note-block.is-dragging {
+    z-index: 4;
+    cursor: grabbing;
+    border-color: rgba(35, 112, 194, 0.72);
+    box-shadow: 0 10px 22px rgba(38, 74, 110, 0.2);
+}
+
+.admin-note-block textarea,
+.admin-note-block input,
+.admin-note-block select,
+.admin-note-block button {
+    cursor: auto;
+}
+
+.admin-note-block-span-1 {
+    grid-column: span 1;
+}
+
+.admin-note-block-span-2 {
+    grid-column: span 2;
+}
+
+.admin-note-block-span-3 {
+    grid-column: 1 / -1;
+}
+
+.admin-note-block:hover,
+.admin-note-block:focus-within {
+    border-color: rgba(49, 105, 170, 0.38);
+    box-shadow: 0 5px 14px rgba(38, 58, 78, 0.13);
+}
+
+.admin-note-block-grip {
+    position: absolute;
+    left: 0.25rem;
+    top: 0.8rem;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: grab;
+    font-size: 0.8rem;
+    letter-spacing: -0.2em;
+}
+
+.admin-note-block textarea,
+.admin-note-block input:not([type='checkbox']) {
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+    line-height: 1.6;
+    resize: none;
+    overflow: hidden;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.admin-note-block textarea {
+    flex: 1 1 auto;
+    height: 100%;
+}
+
+.admin-note-block-heading textarea {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-note-block-heading {
+    border-top: 3px solid #477eaf;
+    background: #f7fbff;
+}
+
+.admin-note-block-code {
+    border-top: 3px solid #566b7f;
+    background: #f3f6f8;
+}
+
+.admin-note-block-todo {
+    border-left: 3px solid #6798bf;
+    background: #f1f7fc;
+}
+
+.admin-note-block-table {
+    border-top: 3px solid #6e9fc7;
+    background: #f7fbff;
+}
+
+.admin-note-block-quote {
+    background: #f4f8fc;
+}
+
+.admin-note-block-image {
+    border-top: 3px solid #8b7a5d;
+    background: #faf8f3;
+}
+
+.admin-note-block-callout {
+    border-left: 3px solid #477eaf;
+    background: #eaf3fb;
+}
+
+.admin-note-block-callout textarea {
+    font-weight: 700;
+}
+
+.admin-note-text-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+}
+
+.admin-note-text-editor {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 2.5rem;
+    overflow: auto;
+    padding: 0.2rem 0.25rem;
+    outline: none;
+    color: var(--text, inherit);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    cursor: text;
+}
+
+.admin-note-text-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #8aa0b4;
+    pointer-events: none;
+}
+
+.admin-note-text-editor p {
+    margin: 0 0 0.35rem;
+}
+
+.admin-note-text-editor p:last-child {
+    margin-bottom: 0;
+}
+
+.admin-note-text-editor strong,
+.admin-note-text-editor b {
+    font-weight: 700;
+}
+
+.admin-note-text-editor em,
+.admin-note-text-editor i {
+    font-style: italic;
+}
+
+.admin-note-text-editor h1,
+.admin-note-text-editor h2,
+.admin-note-text-editor h3,
+.admin-note-text-editor h4,
+.admin-note-text-editor h5,
+.admin-note-text-editor h6 {
+    margin: 0 0 0.35rem;
+    color: var(--text, inherit);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.admin-note-text-editor h1 {
+    font-size: 2rem;
+}
+
+.admin-note-text-editor h2 {
+    font-size: 1.7rem;
+}
+
+.admin-note-text-editor h3 {
+    font-size: 1.45rem;
+}
+
+.admin-note-text-editor h4 {
+    font-size: 1.25rem;
+}
+
+.admin-note-text-editor h5 {
+    font-size: 1.1rem;
+}
+
+.admin-note-text-editor h6 {
+    font-size: 1rem;
+}
+
+.admin-note-text-editor font[size='1'] {
+    font-size: 12px;
+}
+
+.admin-note-text-editor font[size='2'] {
+    font-size: 14px;
+}
+
+.admin-note-text-editor font[size='3'] {
+    font-size: 16px;
+}
+
+.admin-note-text-editor font[size='4'] {
+    font-size: 18px;
+}
+
+.admin-note-text-editor font[size='5'] {
+    font-size: 22px;
+}
+
+.admin-note-text-editor font[size='6'] {
+    font-size: 28px;
+}
+
+.admin-note-text-editor code {
+    padding: 0.08rem 0.25rem;
+    border-radius: 3px;
+    background: #e7eef5;
+    color: #31516d;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 0.88em;
+}
+
+.admin-note-text-editor ul,
+.admin-note-text-editor ol {
+    margin: 0.25rem 0 0.35rem 1.2rem;
+    padding-left: 1rem;
+}
+
+.admin-note-text-editor ul {
+    list-style: disc;
+}
+
+.admin-note-text-editor ol {
+    list-style: decimal;
+}
+
+.admin-note-code-wrap,
+.admin-note-image-wrap,
+.admin-note-quote-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    gap: 0.35rem;
+}
+
+.admin-note-code-wrap,
+.admin-note-image-wrap {
+    justify-content: flex-start;
+}
+
+.admin-note-quote-wrap {
+    justify-content: flex-start;
+}
+
+.admin-note-code-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    min-height: 1.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.7rem;
+}
+
+.admin-note-code-controls select {
+    padding: 0.2rem 0.3rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+    font-size: 0.7rem;
+}
+
+.admin-note-code-editor {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid #cbd6df;
+    border-radius: 5px;
+    background: #282c34;
+}
+
+.admin-note-code-highlight,
+.admin-note-code-editor textarea {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0.55rem;
+    border: 0;
+    font: 0.8rem/1.5 ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+    word-wrap: normal;
+}
+
+.admin-note-code-highlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: #abb2bf;
+}
+
+.admin-note-code-highlight code {
+    font: inherit;
+    background: transparent;
+}
+
+.admin-note-code-editor textarea {
+    position: relative;
+    z-index: 1;
+    resize: none;
+    color: transparent;
+    caret-color: #eef4f7;
+    background: transparent;
+}
+
+.admin-note-quote-wrap textarea {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    padding: 0.25rem;
+    border: 0;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+    font-style: italic;
+    line-height: 1.6;
+    resize: none;
+    overflow: auto;
+}
+
+.admin-note-quote-author {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 1.4rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.78rem;
+    font-style: normal;
+}
+
+.admin-note-quote-dash {
+    flex: 0 0 auto;
+    margin-right: 0.25rem;
+    visibility: hidden;
+}
+
+.admin-note-quote-author.has-author .admin-note-quote-dash {
+    visibility: visible;
+}
+
+.admin-note-quote-author input {
+    min-width: 0;
+    flex: 1 1 auto;
+    min-height: 1.4rem;
+    padding: 0.15rem 0.25rem;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    font: inherit;
+    font-size: 0.78rem;
+    font-style: normal;
+}
+
+.admin-note-quote-author input::placeholder {
+    color: transparent;
+}
+
+.admin-note-quote-wrap:focus-within .admin-note-quote-author input::placeholder {
+    color: #8aa0b4;
+}
+
+.admin-note-quote-author input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+}
+
+.admin-note-image-edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 0.55rem;
+    padding: 0.1rem 0;
+}
+
+.admin-note-image-edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+    min-width: 0;
+    color: #8a795f;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.admin-note-image-edit-field input {
+    min-height: 2.1rem;
+    padding: 0.42rem 0.55rem;
+    border: 1px solid rgba(139, 122, 93, 0.28);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text, inherit);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-note-image-edit-field input::placeholder {
+    color: #a89880;
+}
+
+.admin-note-image-edit-field input:focus {
+    border-color: rgba(139, 122, 93, 0.55);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 122, 93, 0.12);
+}
+
+.admin-note-image-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 0.35rem;
+}
+
+.admin-note-image-display {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-note-image-label {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0 0.15rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.78rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.admin-note-image-display:focus {
+    outline: 2px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline-offset: 2px;
+}
+
+.admin-note-image-display img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+}
+
+.admin-note-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 4rem;
+    padding: 1rem 0.5rem;
+    border: 1px dashed #c5b99f;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #8a795f;
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+.admin-note-block-counter {
+    border-top: 3px solid #477eaf;
+    background: #f4f8fc;
+}
+
+.admin-note-counter-wrap,
+.admin-note-picker-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.45rem;
+}
+
+.admin-note-counter-wrap > input,
+.admin-note-picker-wrap > input {
+    min-width: 0;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-counter-wrap > input:focus,
+.admin-note-picker-wrap > input:focus,
+.admin-note-counter-controls input:focus,
+.admin-note-picker-wrap textarea:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-counter-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.admin-note-counter-main button {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid rgba(53, 107, 154, 0.25);
+    border-radius: 50%;
+    background: #fff;
+    color: #356b9a;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.admin-note-counter-main button:hover {
+    border-color: #356b9a;
+    background: #edf5fb;
+}
+
+.admin-note-counter-value {
+    min-width: 3rem;
+    color: #356b9a;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+}
+
+.admin-note-counter-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+}
+
+.admin-note-counter-adjust {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid rgba(53, 107, 154, 0.14);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.admin-note-counter-controls button,
+.admin-note-picker-choice {
+    min-height: 1.7rem;
+    padding: 0.25rem 0.45rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.18);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75rem;
+}
+
+.admin-note-counter-controls button:hover,
+.admin-note-picker-choice:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-counter-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #58728b;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.admin-note-counter-step span {
+    white-space: nowrap;
+}
+
+.admin-note-counter-controls input {
+    width: 2.5rem;
+    min-height: 1.7rem;
+    box-sizing: border-box;
+    padding: 0.2rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.12);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.admin-note-counter-reset {
+    border-color: rgba(53, 107, 154, 0.12) !important;
+    color: #58728b !important;
+}
+
+.admin-note-block-picker {
+    border-top: 3px solid #c08b36;
+    background: #fffaf0;
+}
+
+.admin-note-picker-wrap {
+    gap: 0.35rem;
+}
+
+.admin-note-picker-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    color: #8b641f;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.admin-note-picker-wrap textarea {
+    width: 100%;
+    height: 4.5rem;
+    min-height: 4.5rem;
+    box-sizing: border-box;
+    padding: 0.4rem;
+    border: 1px solid rgba(192, 139, 54, 0.2);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--text, inherit);
+    font: inherit;
+    line-height: 1.45;
+    resize: none;
+    overflow-y: auto;
+}
+
+.admin-note-picker-result-label {
+    color: #8b641f;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.admin-note-picker-result {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.45rem;
+    padding: 0.3rem 0.4rem 0.3rem 0.65rem;
+    border: 1px solid rgba(192, 139, 54, 0.24);
+    border-radius: 5px;
+    background: #fff;
+    color: #6f511c;
+}
+
+.admin-note-picker-result > span {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-picker-choice {
+    min-height: 1.8rem;
+    padding: 0.25rem 0.65rem;
+    border-color: rgba(192, 139, 54, 0.35);
+    background: #fffaf0;
+    color: #8b641f;
+    font-weight: 600;
+}
+
+.admin-note-block-progress {
+    border-top: 3px solid #5d8f70;
+    background: #f4faf5;
+}
+
+.admin-note-progress-wrap,
+.admin-note-link-wrap,
+.admin-note-date-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.45rem;
+}
+
+.admin-note-progress-header {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.2rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8rem;
+}
+
+.admin-note-progress-header input:first-child,
+.admin-note-link-wrap input,
+.admin-note-date-wrap input:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.admin-note-progress-value {
+    flex: 0 0 3rem;
+    text-align: right;
+}
+
+.admin-note-progress-header input,
+.admin-note-link-wrap input,
+.admin-note-date-wrap input {
+    min-height: 1.8rem;
+    padding: 0.25rem 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-progress-header input:focus,
+.admin-note-link-wrap input:focus,
+.admin-note-date-wrap input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-progress-wrap progress {
+    width: 100%;
+    height: 0.55rem;
+    accent-color: #5d8f70;
+}
+
+.admin-note-block-link {
+    border-left: 3px solid #6c86ad;
+    background: #f5f8fd;
+}
+
+.admin-note-link-wrap input:last-of-type {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+}
+
+.admin-note-link-preview {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    color: #285f92;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-link-preview:hover {
+    color: #1e4b76;
+    text-decoration: underline;
+}
+
+.admin-note-link-compact {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.55rem;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid rgba(53, 107, 154, 0.2);
+    border-radius: 7px;
+    background: #fafdff;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.admin-note-link-compact:hover {
+    border-color: rgba(53, 107, 154, 0.5);
+    box-shadow: 0 4px 10px rgba(53, 107, 154, 0.12);
+    transform: translateY(-1px);
+}
+
+.admin-note-link-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 5px;
+    background: #dcecf8;
+    color: #285f92;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.admin-note-link-details {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.admin-note-link-domain {
+    overflow: hidden;
+    color: #6b8499;
+    font-size: 0.68rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-note-block-date {
+    border-left: 3px solid #b98554;
+    background: #fff9f1;
+}
+
+.admin-note-date-wrap input[type='date'] {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.8rem;
+}
+
+/* Linked Notes Widget */
+.admin-note-linked-notes-wrap select {
+    width: 100%;
+    min-height: 2.5rem;
+    box-sizing: border-box;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgba(108, 134, 173, 0.3);
+    border-radius: 7px;
+    background: #fafdff;
+    color: var(--secondary-color, #4a6b8a);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-note-linked-notes-wrap select option {
+    background: var(--background, #fff);
+    color: var(--text, #333);
+}
+
+.admin-note-linked-notes-wrap select option:first-child {
+    color: #999;
+}
+
+.admin-note-linked-notes-wrap select:hover {
+    border-color: rgba(53, 107, 154, 0.5);
+}
+
+.admin-note-linked-notes-wrap select:focus {
+    outline: none;
+    border-color: var(--secondary-color, #4a6b8a);
+    box-shadow: 0 0 0 2px rgba(74, 107, 138, 0.12);
+}
+
+.admin-note-linked-note-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.55rem;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid rgba(108, 134, 173, 0.28);
+    border-radius: 7px;
+    background: #fafdff;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.admin-note-linked-note-item:hover {
+    border-color: rgba(53, 107, 154, 0.5);
+    box-shadow: 0 4px 10px rgba(53, 107, 154, 0.12);
+    transform: translateY(-1px);
+}
+
+.admin-note-linked-note-item .admin-note-link-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.admin-note-linked-note-link {
+    flex: 1;
+    color: #285f92;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+
+.admin-note-linked-note-link:hover {
+    color: #1e4b76;
+    text-decoration: underline;
+}
+
+.admin-note-block-list {
+    border-left: 3px solid #7b8c68;
+    background: #f8fbf5;
+}
+
+.admin-note-list-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.admin-note-list-controls,
+.admin-note-flashcard-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    min-height: 1.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.7rem;
+}
+
+.admin-note-list-label {
+    flex: 1 1 auto;
+    min-width: 3rem;
+    margin-right: auto;
+    padding: 0.2rem 0.25rem !important;
+    color: var(--text, #2c3e50) !important;
+    font-size: 0.85rem !important;
+    font-weight: 700;
+}
+
+.admin-note-flashcard-title {
+    flex: 1 1 auto;
+    min-width: 3rem;
+    padding: 0.2rem 0.25rem !important;
+    color: var(--text, #2c3e50) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600;
+}
+
+.admin-note-list-controls .admin-note-table-label,
+.admin-note-flashcard-controls .admin-note-table-label {
+    flex: 0 0 auto;
+    margin-right: auto;
+    white-space: nowrap;
+}
+
+.admin-note-list-controls button,
+.admin-note-flashcard-controls button {
+    min-height: 1.5rem;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+.admin-note-list-controls button:hover:not(:disabled),
+.admin-note-flashcard-controls button:hover:not(:disabled) {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-list-controls button:disabled,
+.admin-note-flashcard-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+.admin-note-list-style,
+.admin-note-chart-wrap select {
+    padding: 0.2rem 0.3rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+    font-size: 0.7rem;
+}
+
+.admin-note-list-items {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.2rem;
+}
+
+.admin-note-bullet-item {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.admin-note-list-marker {
+    flex: 0 0 auto;
+    color: #5f794c;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.admin-note-bullet-item input {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-bullet-item input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-bullet-item button {
+    flex: 0 0 auto;
+    padding: 0 0.2rem;
+    border: 0;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    opacity: 0.55;
+}
+
+.admin-note-bullet-item:hover button,
+.admin-note-bullet-item:focus-within button {
+    opacity: 1;
+}
+
+.admin-note-block-countdown {
+    border-top: 3px solid #6f8eaa;
+    background: #f4f8fc;
+}
+
+.admin-note-countdown-wrap,
+.admin-note-rating-wrap,
+.admin-note-chart-wrap,
+.admin-note-equation-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.admin-note-countdown-wrap input,
+.admin-note-rating-wrap input,
+.admin-note-chart-wrap input,
+.admin-note-equation-wrap input,
+.admin-note-flashcard-wrap input {
+    min-width: 0;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-countdown-wrap input:focus,
+.admin-note-rating-wrap input:focus,
+.admin-note-chart-wrap input:focus,
+.admin-note-equation-wrap input:focus,
+.admin-note-flashcard-wrap input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-countdown-wrap {
+    gap: 0.2rem;
+}
+
+.admin-note-countdown-wrap strong {
+    color: #426b92;
+    font-size: 0.78rem;
+}
+
+.admin-note-countdown-value {
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+    font-size: 1.35rem !important;
+    letter-spacing: 0.04em;
+}
+
+.admin-note-block-rating {
+    border-left: 3px solid #c08b36;
+    background: #fffaf0;
+}
+
+.admin-note-rating-stars {
+    display: flex;
+    gap: 0.1rem;
+}
+
+.admin-note-rating-wrap > input {
+    max-width: 14rem;
+}
+
+.admin-note-rating-stars button {
+    padding: 0 0.1rem;
+    border: 0;
+    background: transparent;
+    color: #cbd2d8;
+    cursor: pointer;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.admin-note-rating-stars button.active,
+.admin-note-rating-stars button:hover {
+    color: #d39a2e;
+}
+
+.admin-note-block-flashcards {
+    border-top: 3px solid #9a789f;
+    background: #fbf7fc;
+}
+
+.admin-note-flashcard-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    gap: 0.3rem;
+}
+
+.admin-note-flashcard {
+    display: flex;
+    align-items: flex-start;
+    min-height: 6rem;
+    padding: 0.75rem;
+    border: 1px dashed #bba9c2;
+    border-radius: 6px;
+    background: #fff;
+    color: #765d7d;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.admin-note-flashcard:hover {
+    border-color: #8c6994;
+    background: #faf5fc;
+}
+
+.admin-note-flashcard:focus {
+    border-color: #8c6994;
+    outline: 2px solid rgba(140, 105, 148, 0.25);
+    outline-offset: 2px;
+}
+
+.admin-note-flashcard-edit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.35rem;
+}
+
+.admin-note-flashcard-edit-field {
+    display: flex;
+    align-items: center;
+    flex: 1 1 100%;
+    gap: 0.5rem;
+    color: #765d7d;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-note-flashcard-edit-field span {
+    flex: 0 0 3rem;
+}
+
+.admin-note-flashcard-edit-field input {
+    width: 100%;
+    min-height: 2.2rem;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+}
+
+.admin-note-block-chart {
+    border-top: 3px solid #5d8f70;
+    background: #f4faf5;
+}
+
+.admin-note-chart-wrap {
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0.15rem;
+}
+
+.admin-note-chart-heading,
+.admin-note-chart-data-inputs {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.3rem;
+}
+
+.admin-note-chart-field {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1 1 50%;
+    gap: 0.3rem;
+    color: #587060;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-note-chart-field span {
+    flex: 0 0 auto;
+}
+
+.admin-note-chart-field input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.88rem;
+}
+
+.admin-note-chart-field.chart-type {
+    flex: 0 0 5.5rem;
+}
+
+.admin-note-chart-wrap select {
+    min-height: 1.45rem;
+}
+
+.admin-note-chart-axis-inputs {
+    display: flex;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.admin-note-chart-axis-inputs input {
+    min-width: 0;
+    flex: 1 1 50%;
+}
+
+.admin-note-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 3.1rem;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    border-bottom: 1px solid #c9ddce;
+}
+
+.admin-note-chart-bars span {
+    width: 100%;
+    max-width: 1.2rem;
+    min-height: 5%;
+    border-radius: 3px 3px 0 0;
+    background: #6fa47d;
+}
+
+.admin-note-chart-plot {
+    display: block;
+    align-self: stretch;
+    width: 100% !important;
+    min-width: 100%;
+    height: 12rem;
+    margin-top: 0.35rem;
+    overflow: visible;
+}
+
+.admin-note-chart-plot line {
+    stroke: #9eb8a5;
+    stroke-width: 1;
+}
+
+.admin-note-chart-plot text {
+    fill: #4f6f58;
+    font-size: 6px;
+}
+
+.admin-note-chart-plot rect {
+    fill: #6fa47d;
+}
+
+.admin-note-chart-plot .admin-note-chart-axis-label {
+    font-size: 7px;
+    font-weight: 600;
+}
+
+.admin-note-chart-pie {
+    width: 4.2rem;
+    height: 4.2rem;
+    margin: 0.2rem auto;
+    border-radius: 50%;
+}
+
+.admin-note-block-equation {
+    border-top: 3px solid #6c86ad;
+    background: #f5f8fd;
+}
+
+.admin-note-equation-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    padding: 0.35rem;
+    border: 0;
+    background: transparent;
+    color: #425a73;
+    cursor: pointer;
+    overflow: hidden;
+    text-align: center;
+}
+
+.admin-note-equation-display:hover {
+    background: rgba(108, 134, 173, 0.08);
+}
+
+.admin-note-equation-edit {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.admin-note-equation-display small {
+    align-self: flex-start;
+    color: #6c86ad;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.admin-note-equation-edit {
+    flex-wrap: wrap;
+}
+
+.admin-note-equation-edit input {
+    flex: 1 1 100%;
+    min-width: 0;
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+}
+
+.admin-note-block-status {
+    border-left: 3px solid #6689a6;
+    background: #f4f8fb;
+}
+
+.admin-note-status-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 0.45rem;
+}
+
+.admin-note-status-wrap input {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding: 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font: inherit;
+}
+
+.admin-note-status-wrap input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-status-wrap select {
+    max-width: 8rem;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid #cbd8e5;
+    border-radius: 999px;
+    background: #eaf2f8;
+    color: #45627c;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-note-status-not-started {
+    border-left-color: #8b98a5;
+    background: #f5f7f9;
+}
+
+.admin-note-status-in-progress {
+    border-left-color: #d29a3a;
+    background: #fffaf0;
+}
+
+.admin-note-status-blocked {
+    border-left-color: #c65d5d;
+    background: #fff5f5;
+}
+
+.admin-note-status-done {
+    border-left-color: #5c9a73;
+    background: #f3faf5;
+}
+
+.admin-note-status-wrap-not-started select {
+    border-color: #c7d0d9;
+    background: #e9eef2;
+    color: #5b6873;
+}
+
+.admin-note-status-wrap-in-progress select {
+    border-color: #e7c985;
+    background: #fff0c9;
+    color: #8b5a13;
+}
+
+.admin-note-status-wrap-blocked select {
+    border-color: #e0a2a2;
+    background: #fbdede;
+    color: #9c3e3e;
+}
+
+.admin-note-status-wrap-done select {
+    border-color: #a7d1b3;
+    background: #dcf2e2;
+    color: #33724b;
+}
+
+.admin-note-block-todo textarea {
+    padding-top: 0.05rem;
+}
+
+.admin-note-block-todo input[type='checkbox'] {
+    margin-top: 0.35rem;
+    accent-color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-block-todo input[type='checkbox']:checked + textarea {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.admin-note-block-remove {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.2rem;
+    border: 0;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    opacity: 0;
+}
+
+.admin-note-block-resize {
+    position: absolute;
+    right: 0.2rem;
+    bottom: 0.2rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: nwse-resize !important;
+    font-size: 0.85rem;
+    line-height: 1;
+    opacity: 0;
+}
+
+.admin-note-block:hover .admin-note-block-resize,
+.admin-note-block:focus-within .admin-note-block-resize,
+.admin-note-block-resize:focus {
+    opacity: 1;
+}
+
+.admin-note-block-resize:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.08);
+}
+
+.admin-note-block-divider {
+    min-height: 24px;
+    align-items: center;
+}
+
+.admin-note-block-divider hr,
+.admin-note-preview-board > hr {
+    width: 100%;
+    border: 0;
+    border-top: 2px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+}
+
+.admin-note-block-quote {
+    border-left: 3px solid var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-block:hover .admin-note-block-remove,
+.admin-note-block:focus-within .admin-note-block-remove {
+    opacity: 1;
+}
+
+.admin-note-table-wrap {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.admin-note-table-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 1.5rem;
+    margin: -0.05rem 0 0.4rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.7rem;
+}
+
+.admin-note-table-label {
+    margin-right: auto;
+    color: var(--text, #2c3e50);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-note-table-control-label {
+    margin-left: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.admin-note-table-controls strong {
+    min-width: 1rem;
+    color: var(--text, #2c3e50);
+    text-align: center;
+    font-size: 0.75rem;
+}
+
+.admin-note-block table,
+.admin-note-preview table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-note-block table {
+    table-layout: fixed;
+}
+
+.admin-note-block td,
+.admin-note-preview td {
+    max-width: 0;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    padding: 0.15rem 0.5rem;
+}
+
+.admin-note-table-controls button {
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    line-height: 1;
+}
+
+.admin-note-table-controls button:hover:not(:disabled) {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-table-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+.admin-note-block table input {
+    min-height: 2rem;
+    padding: 0.35rem 0.45rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    font-size: 0.8rem;
+}
+
+.admin-note-block table input:hover {
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.035);
+}
+
+.admin-note-block table input:focus {
+    border-color: rgba(var(--primary-color-rgb, 44, 62, 80), 0.22);
+    outline: none;
+    background: var(--gray, #fff);
+}
+
+.admin-note-inline-button {
+    margin: 0 0 0 0.35rem;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+
+.admin-note-add-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    margin: 0.7rem 0 0.1rem;
+    padding-top: 0.7rem;
+    border-top: 1px dashed rgba(var(--primary-color-rgb, 44, 62, 80), 0.16);
+}
+
+.admin-note-add-menu span {
+    margin-right: 0.25rem;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.72rem;
+}
+
+.admin-note-add-menu button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.15);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text, inherit);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.admin-note-add-menu button:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-note-add-menu b {
+    font-size: 0.7rem;
+}
+
+.admin-note-preview-block {
+    margin-bottom: 1rem;
+}
+
+.admin-note-preview-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-note-preview-callout {
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--accent-color, #7d9ba6);
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.05);
+}
+
+.admin-note-content {
+    resize: vertical;
+    border: 0;
+    outline: 0;
+    background: var(--gray, #fff);
+    color: var(--text, inherit);
+    font: inherit;
+    line-height: 1.7;
+}
+
+.admin-note-preview {
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+}
+
+.admin-note-preview-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.admin-note-preview-board > table {
+    grid-column: 1 / -1;
+}
+
+.admin-note-preview-board > hr {
+    grid-column: 1 / -1;
+}
+
+.admin-note-preview-quote {
+    border-left: 3px solid var(--secondary-color, #4a6b8a);
+    padding-left: 0.8rem;
+    font-style: italic;
+}
+
+.admin-note-preview h1,
+.admin-note-preview h2,
+.admin-note-preview h3 {
+    margin-top: 0;
+}
+
+.admin-note-preview p:first-child {
+    margin-top: 0;
+}
+
+@media (max-width: 720px) {
+    .admin-notes-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-notes-list {
+        max-height: 280px;
+        overflow-y: auto;
+    }
+
+    .admin-notes-tree {
+        max-height: 200px;
+    }
+
+    .admin-note-editor-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-note-title-wrap {
+        width: 100%;
+    }
+
+    .admin-note-title {
+        width: 100%;
+    }
+
+    .admin-note-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .admin-note-blocks {
+        min-height: 400px;
+        padding: 0.8rem 0.5rem;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(30, 52px);
+    }
+
+    .admin-note-block {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-note-block-span-1,
+    .admin-note-block-span-2,
+    .admin-note-block-span-3 {
+        grid-column: 1;
+    }
+
+    .admin-note-preview-board {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 721px) and (max-width: 960px) {
+    .admin-notes-layout {
+        grid-template-columns: 210px minmax(0, 1fr);
+    }
+
+    .admin-note-widget-core {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .admin-note-secondary-widgets,
+    .admin-note-text-tools {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .admin-note-widget-palette {
+        max-height: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .admin-note-widget-core,
+    .admin-note-secondary-widgets,
+    .admin-note-text-tools {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* ============================================================
+   Todo Board
+   ============================================================ */
+
+.admin-todo-board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    align-items: start;
+
+    padding-bottom: 5vh;
+}
+
+.admin-todo-column {
+    height: auto;
+    max-height: none;
+    padding-bottom: 0;
+}
+
+.admin-todo-column-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+
+    min-width: 0;
+    max-height: none;
+
+    overflow: visible;
+    padding: 0.1rem;
+}
+
+.admin-todo-column-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 30px;
+    padding: 0 0.2rem;
+}
+
+.admin-todo-column-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text, #2c3e50);
+}
+
+.admin-todo-column-count {
+    flex: 0 0 auto;
+
+    min-width: 22px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 0.4rem;
+
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.08
+    );
+
+    color: var(--secondary-color, #4a6b8a);
+
+    font-size: 0.7rem;
+    font-weight: 700;
+
+    border-radius: 999px;
+}
+
+/* ============================================================
+   Todo Cards
+   ============================================================ */
+
+.admin-todo-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 0.75rem 0.8rem;
+
+    border-radius: 12px;
+
+    cursor: grab;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.035);
+
+    transition: transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.admin-todo-card:hover {
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.admin-todo-card[draggable='true']:active {
+    cursor: grabbing;
+}
+
+.admin-todo-card.dragging {
+    opacity: 0.4;
+}
+
+.admin-todo-card.drag-over {
+    outline: 2px dashed rgba(44, 62, 80, 0.3);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   Todo Card Colours
+   ============================================================ */
+
+.admin-todo-card.tone-normal {
+    background: #dceeff;
+}
+
+.admin-todo-column-body
+.admin-todo-card.tone-normal:nth-child(3n + 2) {
+    background: #cfe8ff;
+}
+
+.admin-todo-column-body
+.admin-todo-card.tone-normal:nth-child(3n + 3) {
+    background: #e3f2ff;
+}
+
+.admin-todo-card.tone-urgent {
+    background: #ffd9c9;
+}
+
+.admin-todo-card.tone-done {
+    background: #eef2f5;
+    opacity: 0.75;
+}
+
+/* ============================================================
+   Card Top Row
+   ============================================================ */
+
+.admin-todo-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    min-width: 0;
+}
+
+/*
+ * Priority indicator.
+ *
+ * This used to be defined twice in the original CSS.
+ * It is now consistently a small coloured dot.
+ */
+
+.admin-todo-card-avatar {
+    flex: 0 0 9px;
+
+    width: 9px;
+    height: 9px;
+
+    margin-top: 0.45rem;
+
+    border-radius: 50%;
+
+    box-shadow: none;
+}
+
+.admin-todo-card-avatar.priority-high {
+    background: #e05252;
+}
+
+.admin-todo-card-avatar.priority-medium {
+    background: #e5b83f;
+}
+
+.admin-todo-card-avatar.priority-low {
+    background: #55a878;
+}
+
+.admin-todo-card-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
+    cursor: pointer;
+}
+
+.admin-todo-card-check input {
+    flex: 0 0 auto;
+
+    width: 15px;
+    height: 15px;
+
+    margin: 0.2rem 0 0;
+
+    accent-color: var(--text, #2c3e50);
+}
+
+.admin-todo-card-title {
+    min-width: 0;
+
+    font-size: 0.84rem;
+    line-height: 1.3;
+    font-weight: 600;
+
+    color: #1f2d3d;
+
+    overflow-wrap: anywhere;
+}
+
+.admin-todo-card.complete
+.admin-todo-card-title {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
+/* ============================================================
+   Todo Card Delete
+   ============================================================ */
+
+.admin-todo-card-delete {
+    flex: 0 0 auto;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+
+    color: rgba(31, 45, 61, 0.4);
+
+    font-size: 0.78rem;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.admin-todo-card-delete:hover {
+    color: #b3261e;
+}
+
+/* ============================================================
+   Todo Card Bottom Row
+   ============================================================ */
+
+.admin-todo-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.4rem;
+
+    min-width: 0;
+
+    margin-top: 0.55rem;
+
+    /*
+     * Align metadata with the title rather than the
+     * priority dot.
+     */
+    padding-left: calc(9px + 0.5rem);
+}
+
+.admin-todo-card-due {
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 0.7rem;
+    line-height: 1.2;
+    font-weight: 600;
+
+    color: rgba(31, 45, 61, 0.58);
+}
+
+.admin-todo-card.tone-urgent
+.admin-todo-card-due {
+    color: #a13f1f;
+}
+
+.admin-todo-card-due-caption {
+    font-weight: 500;
+}
+
+.admin-todo-card-priority {
+    flex: 0 0 auto;
+
+    max-width: 82px;
+
+    border: 0;
+    background: rgba(255, 255, 255, 0.65);
+
+    border-radius: 999px;
+
+    padding: 0.18rem 0.4rem;
+
+    font-size: 0.67rem;
+    font-weight: 600;
+
+    color: #1f2d3d;
+
+    cursor: pointer;
+}
+
+/* ============================================================
+   Todo Tabs
+   ============================================================ */
+
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    padding-bottom: 0;
+}
+
+.admin-tabs button {
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-bottom: -1px;
+}
+
+.admin-tabs button.active {
+    color: var(--text, inherit);
+    border-bottom-color: var(--accent-color, #7d9ba6);
+}
+
+/* ============================================================
+   General Messages
+   ============================================================ */
+
+.admin-error {
+    color: #c0392b;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+.admin-success {
+    color: #27ae60;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+.admin-loading-text {
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-empty {
+    text-align: center;
+    color: var(--secondary-color, #4a6b8a);
+    padding: 2rem !important;
+}
+
+/* ============================================================
+   Generic Stats
+   ============================================================ */
+
+.admin-stats-section {
+    margin-bottom: 2rem;
+}
+
+.admin-stats-section h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(180px, 1fr)
+    );
+    gap: 1rem;
+}
+
+.admin-stat-grid-6 {
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(140px, 1fr)
+    );
+}
+
+.admin-stat-card {
+    background: var(--gray, #fff);
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-stat-card.negative .admin-stat-value {
+    color: #c0392b;
+}
+
+.admin-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-stats-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.1
+    );
+}
+
+.admin-table th {
+    font-weight: 600;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.admin-table-total td {
+    font-weight: 600;
+    border-top: 2px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+}
+
+.admin-table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-table-actions button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border: 1px solid rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.2
+    );
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text, inherit);
+}
+
+.admin-table-actions button.danger {
+    color: #c0392b;
+    border-color: rgba(192, 57, 43, 0.3);
+}
+
+/* ============================================================
+   Generic Settings
+   ============================================================ */
+
+.admin-settings-note {
+    font-size: 0.875rem;
+    color: var(--secondary-color, #4a6b8a);
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   Charts
+   ============================================================ */
+
+.admin-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.admin-bar-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 80px;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.admin-bar-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-bar-track {
+    height: 20px;
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.08
+    );
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.admin-bar-fill {
+    height: 100%;
+    background: var(--accent-color, #7d9ba6);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.admin-bar-value {
+    text-align: right;
+    font-weight: 500;
+}
+
+.admin-monthly-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: 200px;
+    padding: 1rem 0;
+    overflow-x: auto;
+}
+
+.admin-monthly-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 40px;
+}
+
+.admin-monthly-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 160px;
+}
+
+.admin-monthly-bar {
+    width: 14px;
+    min-height: 2px;
+    border-radius: 3px 3px 0 0;
+    transition: height 0.3s ease;
+}
+
+.admin-monthly-bar.income {
+    background: #27ae60;
+}
+
+.admin-monthly-bar.expenses {
+    background: #c0392b;
+}
+
+.admin-monthly-label {
+    font-size: 0.6875rem;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-chart-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.admin-chart-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.admin-chart-legend span::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.legend-income::before {
+    background: #27ae60;
+}
+
+.legend-expenses::before {
+    background: #c0392b;
+}
+
+.admin-comparison-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-comparison-bar {
+    position: relative;
+    height: 36px;
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.08
+    );
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.admin-comparison-bar span {
+    position: relative;
+    z-index: 1;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.admin-comparison-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 6px;
+    opacity: 0.35;
+}
+
+.admin-comparison-fill.income {
+    background: #27ae60;
+}
+
+.admin-comparison-fill.expenses {
+    background: #c0392b;
+}
+
+/* ============================================================
+   Budget Planner
+   ============================================================ */
+
+.admin-budget-planner {
+    --planner-border: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.11
+    );
+    --planner-border-strong: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.18
+    );
+    --planner-muted: var(--secondary-color, #607d8b);
+    --planner-surface: var(--gray, #fff);
+    --planner-subtle: #f7f9fb;
+    --planner-green: #278b5a;
+    --planner-red: #b33a2f;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.admin-budget-planner button,
+.admin-budget-planner input,
+.admin-budget-planner select {
+    font: inherit;
+}
+
+.admin-budget-planner button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.admin-budget-planner input:focus,
+.admin-budget-planner select:focus,
+.admin-budget-planner button:focus-visible {
+    outline: 3px solid rgba(74, 107, 138, 0.14);
+    outline-offset: 1px;
+}
+
+.admin-budget-planner input::placeholder {
+    color: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.42
+    );
+}
+
+/* ============================================================
+   Ayana Selector
+   ============================================================ */
+
+.admin-planner-tabs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.admin-planner-plan-controls {
+    min-width: 0;
+}
+
+.admin-planner-ayana-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    color: var(--planner-muted);
+    font-size: 0.75rem;
+    font-weight: 650;
+}
+
+.admin-planner-ayana-selector select {
+    min-width: 210px;
+    height: 38px;
+
+    padding: 0 2rem 0 0.75rem;
+
+    appearance: auto;
+
+    background: var(--planner-surface);
+    color: var(--text, #2c3e50);
+
+    border: 1px solid var(--planner-border-strong);
+    border-radius: 8px;
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.admin-planner-ayana-selector select:hover {
+    border-color: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.28
+    );
+}
+
+/* ============================================================
+   Plan Header
+   ============================================================ */
+
+.admin-planner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    margin-bottom: 1rem;
+}
+
+.admin-planner-eyebrow {
+    display: block;
+    margin-bottom: 0.25rem;
+
+    color: var(--planner-muted);
+
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.admin-planner-header h3 {
+    margin: 0;
+
+    color: var(--text, #2c3e50);
+
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.admin-planner-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-planner-header-actions button {
+    min-height: 38px;
+    padding: 0.5rem 0.9rem;
+
+    border-radius: 8px;
+    border: 1px solid transparent;
+
+    font-size: 0.8125rem;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.admin-planner-header-actions button:not(.danger) {
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+}
+
+.admin-planner-header-actions button:not(.danger):hover:not(:disabled) {
+    background: var(--text, #2c3e50);
+}
+
+.admin-planner-header-actions button.danger {
+    background: transparent;
+    color: var(--planner-red);
+    border-color: rgba(192, 57, 43, 0.18);
+}
+
+.admin-planner-header-actions button.danger:hover {
+    background: rgba(192, 57, 43, 0.05);
+}
+
+.admin-planner-header-actions button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Budget Planner Error
+   ============================================================ */
+
+.admin-budget-planner > .admin-error {
+    margin: 0 0 1rem;
+    padding: 0.7rem 0.85rem;
+
+    background: #fff5f4;
+    border: 1px solid rgba(192, 57, 43, 0.16);
+    border-radius: 8px;
+
+    color: var(--planner-red);
+}
+
+/* ============================================================
+   Budget Overview
+   ============================================================ */
+
+.admin-planner-overview {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.85fr) 1.5fr;
+    grid-template-areas:
+        "budget stats"
+        "allocation allocation";
+
+    gap: 1rem;
+
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+
+    background: var(--planner-surface);
+    border: 1px solid var(--planner-border);
+    border-radius: 12px;
+}
+
+.admin-planner-budget-input {
+    grid-area: budget;
+
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+}
+
+.admin-planner-budget-input label {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    min-width: 0;
+
+    color: var(--planner-muted);
+
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.admin-planner-money-input {
+    display: flex;
+    align-items: center;
+
+    height: 46px;
+
+    overflow: hidden;
+
+    background: var(--planner-subtle);
+    border: 1px solid var(--planner-border-strong);
+    border-radius: 8px;
+
+    transition: border-color 0.15s ease;
+}
+
+.admin-planner-money-input:focus-within {
+    border-color: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.35
+    );
+}
+
+.admin-planner-money-input > span {
+    padding-left: 0.8rem;
+
+    color: var(--planner-muted);
+
+    font-size: 1rem;
+    font-weight: 650;
+}
+
+.admin-planner-money-input input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0.35rem 0.7rem;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: var(--text, #2c3e50);
+
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.admin-planner-budget-input > button {
+    flex: 0 0 auto;
+
+    height: 46px;
+    padding: 0 0.85rem;
+
+    border: 1px solid var(--planner-border-strong);
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--text, #2c3e50);
+
+    font-size: 0.75rem;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.admin-planner-budget-input > button:hover:not(:disabled) {
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.04
+    );
+}
+
+.admin-planner-budget-input > button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Summary */
+
+.admin-planner-overview-stats {
+    grid-area: stats;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+
+.admin-planner-overview-stats > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+    padding: 0.7rem 0.85rem;
+
+    background: var(--planner-subtle);
+    border-radius: 8px;
+}
+
+.admin-planner-overview-stats span {
+    color: var(--planner-muted);
+
+    font-size: 0.65rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.admin-planner-overview-stats strong {
+    margin-top: 0.25rem;
+
+    color: var(--text, #2c3e50);
+
+    font-size: 1.05rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.admin-planner-overview-stats .negative span,
+.admin-planner-overview-stats .negative strong {
+    color: var(--planner-red);
+}
+
+/* Allocation */
+
+.admin-planner-allocation {
+    grid-area: allocation;
+}
+
+.admin-planner-allocation-bar {
+    width: 100%;
+    height: 5px;
+
+    overflow: hidden;
+
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.08
+    );
+
+    border-radius: 999px;
+}
+
+.admin-planner-allocation-fill {
+    height: 100%;
+
+    background: var(--accent-color, #7d9ba6);
+    border-radius: inherit;
+
+    transition: width 0.25s ease,
+    background 0.15s ease;
+}
+
+.admin-planner-allocation-fill.balanced {
+    background: var(--planner-green);
+}
+
+.admin-planner-allocation-fill.over {
+    background: var(--planner-red);
+}
+
+.admin-planner-allocation > span {
+    display: block;
+    margin-top: 0.4rem;
+
+    color: var(--planner-muted);
+
+    font-size: 0.72rem;
+    font-weight: 550;
+}
+
+.admin-planner-allocation > span.balanced {
+    color: var(--planner-green);
+}
+
+.admin-planner-allocation > span.negative {
+    color: var(--planner-red);
+}
+
+/* ============================================================
+   Monthly Section
+   ============================================================ */
+
+.admin-planner-section-heading {
+    margin-bottom: 0.7rem;
+}
+
+.admin-planner-section-heading h2 {
+    margin: 0;
+
+    color: var(--text, #2c3e50);
+
+    font-size: 1rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.admin-planner-section-heading p {
+    margin: 0.25rem 0 0;
+
+    color: var(--planner-muted);
+    font-size: 0.78rem;
+}
+
+/* ============================================================
+   Month Cards
+   ============================================================ */
+
+.admin-planner-month-card {
+    margin-bottom: 0.5rem;
+
+    overflow: hidden;
+
+    background: var(--planner-surface);
+
+    border: 1px solid var(--planner-border);
+    border-radius: 9px;
+
+    transition: border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.admin-planner-month-card:hover {
+    border-color: var(--planner-border-strong);
+}
+
+.admin-planner-month-card.open {
+    border-color: var(--planner-border-strong);
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.045);
+}
+
+/* Month header */
+
+.admin-planner-month-header {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) auto 26px;
+    align-items: center;
+    gap: 1rem;
+
+    width: 100%;
+    min-height: 52px;
+    padding: 0.6rem 0.9rem;
+
+    border: 0;
+    background: transparent;
+
+    color: var(--text, #2c3e50);
+
+    cursor: pointer;
+    text-align: left;
+}
+
+.admin-planner-month-header:hover {
+    background: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.025
+    );
+}
+
+.admin-planner-month-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.admin-planner-month-metrics {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+
+    color: var(--planner-muted);
+
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.admin-planner-month-metrics strong {
+    color: var(--text, #2c3e50);
+    font-weight: 700;
+}
+
+.admin-planner-month-metrics .negative,
+.admin-planner-month-metrics .negative strong {
+    color: var(--planner-red);
+}
+
+.admin-planner-month-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+
+    color: var(--planner-muted);
+
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* ============================================================
+   Month Content
+   ============================================================ */
+
+.admin-planner-month-content {
+    padding: 0.9rem;
+
+    border-top: 1px solid var(--planner-border);
+}
+
+.admin-planner-month-budget {
+    padding-bottom: 0.9rem;
+}
+
+.admin-planner-month-budget label {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    color: var(--planner-muted);
+
+    font-size: 0.75rem;
+    font-weight: 650;
+}
+
+.admin-planner-month-budget .admin-planner-money-input {
+    width: 150px;
+    height: 36px;
+}
+
+.admin-planner-month-budget .admin-planner-money-input input {
+    font-size: 0.8125rem;
+    font-weight: 650;
+}
+
+/* ============================================================
+   Planned Expenses
+   ============================================================ */
+
+.admin-planner-subsection-header {
+    margin-bottom: 0.65rem;
+}
+
+.admin-planner-subsection-header h3 {
+    margin: 0;
+
+    color: var(--text, #2c3e50);
+
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.admin-planner-subsection-header p {
+    margin: 0.2rem 0 0;
+
+    color: var(--planner-muted);
+    font-size: 0.75rem;
+}
+
+/* Add expense form */
+
+.admin-planner-add-expense {
+    display: grid;
+    grid-template-columns:
+        minmax(180px, 1fr)
+        180px
+        130px
+        auto;
+
+    align-items: end;
+    gap: 0.65rem;
+
+    margin-bottom: 0.75rem;
+    padding: 0.8rem;
+
+    background: var(--planner-subtle);
+
+    border: 1px solid var(--planner-border);
+    border-radius: 9px;
+}
+
+.admin-planner-add-expense label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    min-width: 0;
+
+    color: var(--planner-muted);
+
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.admin-planner-add-expense input,
+.admin-planner-add-expense select {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+
+    box-sizing: border-box;
+    padding: 0 0.7rem;
+
+    background: #fff;
+    color: var(--text, #2c3e50);
+
+    border: 1px solid var(--planner-border-strong);
+    border-radius: 7px;
+
+    font-size: 0.8125rem;
+}
+
+.admin-planner-add-expense input::placeholder {
+    color: rgba(
+            var(--primary-color-rgb, 44, 62, 80),
+            0.4
+    );
+}
+
+.admin-planner-add-expense input:focus,
+.admin-planner-add-expense select:focus {
+    outline: none;
+
+    border-color: #8fa9b5;
+
+    box-shadow: 0 0 0 3px rgba(143, 169, 181, 0.12);
+}
+
+.admin-planner-add-expense .admin-planner-money-input {
+    height: 40px;
+
+    background: #fff;
+}
+
+.admin-planner-add-expense .admin-planner-money-input input {
+    border: 0;
+    background: transparent;
+}
+
+.admin-planner-add-expense button {
+    height: 40px;
+
+    padding: 0 1rem;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+
+    font-size: 0.78rem;
+    font-weight: 650;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition: background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.admin-planner-add-expense button:hover:not(:disabled) {
+    background: var(--text, #2c3e50);
+}
+
+.admin-planner-add-expense button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Expense List
+   ============================================================ */
+
+.admin-planner-expense-list {
+    overflow: hidden;
+
+    border: 1px solid var(--planner-border);
+    border-radius: 8px;
+}
+
+.admin-planner-expense-list-header,
+.admin-planner-expense-row {
+    display: grid;
+    grid-template-columns:
+        minmax(180px, 1fr)
+        180px
+        100px
+        34px;
+
+    align-items: center;
+    gap: 0.75rem;
+
+    padding: 0.65rem 0.8rem;
+}
+
+.admin-planner-expense-list-header {
+    background: var(--planner-subtle);
+
+    color: var(--planner-muted);
+
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.admin-planner-expense-row {
+    min-height: 42px;
+
+    border-top: 1px solid var(--planner-border);
+
+    font-size: 0.78rem;
+}
+
+.admin-planner-expense-name strong {
+    font-weight: 650;
+}
+
+.admin-planner-expense-category {
+    color: var(--planner-muted);
+}
+
+.admin-planner-expense-amount {
+    text-align: right;
+    font-weight: 700;
+}
+
+.admin-planner-delete-expense {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    border: 0;
+    border-radius: 6px;
+
+    background: transparent;
+    color: var(--planner-muted);
+
+    font-size: 1.1rem;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.admin-planner-delete-expense:hover {
+    background: #fff1ef;
+    color: var(--planner-red);
+}
+
+/* Empty expense state */
+
+.admin-planner-no-expenses {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+
+    padding: 0.8rem;
+
+    color: var(--planner-muted);
+
+    font-size: 0.75rem;
+}
+
+.admin-planner-no-expenses strong {
+    color: var(--text, #2c3e50);
+    font-weight: 650;
+}
+
+.admin-planner-no-expenses span {
+    color: var(--planner-muted);
+}
+
+/* ============================================================
+   Empty Planner
+   ============================================================ */
+
+.admin-planner-empty {
+    padding: 3rem 1.5rem;
+
+    text-align: center;
+
+    background: var(--planner-surface);
+    border: 1px solid var(--planner-border);
+    border-radius: 12px;
+}
+
+.admin-planner-empty h3 {
+    margin: 0 0 0.35rem;
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.admin-planner-empty p {
+    max-width: 420px;
+    margin: 0 auto;
+
+    color: var(--planner-muted);
+    font-size: 0.875rem;
+}
+
+/* ============================================================
+   Todo Board Responsiveness
+   ============================================================ */
+
+/* Four columns */
+@media (max-width: 1250px) {
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+        );
+    }
+}
+
+/* Todo top dashboard / board */
+@media (max-width: 1000px) {
+    .admin-todo-top-dashboard {
+        grid-template-columns: minmax(0, 1fr) 240px;
+    }
+
+    .admin-todo-form-row {
+        flex-wrap: wrap;
+    }
+
+    .admin-todo-title-field {
+        flex: 1 1 100%;
+    }
+
+    .admin-todo-date-field {
+        flex: 1 1 140px;
+    }
+
+    .admin-todo-priority-field {
+        flex: 1 1 120px;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            3,
+            minmax(0, 1fr)
+        );
+    }
+}
+
+/* Two columns */
+@media (max-width: 720px) {
+    .admin-notes-toolbar {
+        align-items: flex-end;
+        flex-direction: row;
+        gap: 0.6rem;
+        padding: 0.6rem;
+    }
+
+    .admin-notes-search {
+        max-width: none;
+    }
+
+    .admin-notes-new {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .admin-notes-list {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .admin-note-editor-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-note-actions {
+        justify-content: flex-start;
+    }
+
+    .admin-note-blocks {
+        min-height: 360px;
+        padding: 0.65rem 0.5rem;
+        grid-template-rows: repeat(30, 44px);
+        background-size: 28px 44px;
+    }
+
+    .admin-todo-top-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    /*
+     * Four summary cards in one row on tablet.
+     * This keeps the summary compact while the Add Task
+     * section gets the full width above it.
+     */
+    .admin-todo-overview {
+        grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+        );
+        grid-template-rows: 1fr;
+    }
+
+    .admin-todo-stat {
+        padding: 0.7rem;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+        gap: 0.75rem;
+    }
+
+    .admin-todo-column-body {
+        max-height: none;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .admin-main {
+        padding: 1rem;
+    }
+
+    .admin-tabs {
+        overflow-x: auto;
+    }
+
+    /* Planner */
+    .admin-planner-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-planner-header-actions {
+        width: 100%;
+    }
+
+    .admin-planner-header-actions button {
+        flex: 1;
+    }
+
+    .admin-planner-month-header {
+        grid-template-columns: 1fr 26px;
+        gap: 0.35rem;
+    }
+
+    .admin-planner-month-metrics {
+        grid-column: 1 / -1;
+
+        gap: 0.7rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-planner-month-chevron {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .admin-planner-expense-list-header {
+        display: none;
+    }
+
+    .admin-planner-expense-row {
+        grid-template-columns: 1fr auto 30px;
+        gap: 0.5rem;
+    }
+
+    .admin-planner-expense-category {
+        font-size: 0.7rem;
+    }
+
+    .admin-planner-expense-amount {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .admin-planner-delete-expense {
+        grid-column: 3;
+        grid-row: 1;
+    }
+}
+
+/* One column / narrow mobile */
+@media (max-width: 520px) {
+    .admin-todo-overview {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+        grid-template-rows: repeat(2, 1fr);
+    }
+
+    .admin-todo-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-todo-title-field {
+        grid-column: 1 / -1;
+    }
+
+    .admin-todo-date-field,
+    .admin-todo-priority-field {
+        min-width: 0;
+    }
+
+    .admin-todo-submit {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .admin-todo-board {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-todo-card {
+        padding: 0.8rem;
+    }
+
+    /* Planner */
+    .admin-planner-ayana-selector {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-planner-ayana-selector select {
+        width: 100%;
+    }
+
+    .admin-planner-budget-input {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-planner-budget-input > button {
+        width: 100%;
+    }
+
+    .admin-planner-overview-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-planner-month-budget label {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .admin-planner-month-budget .admin-planner-money-input {
+        width: 150px;
+    }
+
+    .admin-planner-add-expense {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-planner-add-expense label:first-child,
+    .admin-planner-add-expense label:nth-child(3),
+    .admin-planner-add-expense button {
+        grid-column: auto;
+    }
+
+    .admin-planner-add-expense button {
+        width: 100%;
+    }
+
+    .admin-planner-expense-row {
+        grid-template-columns: 1fr auto 30px;
+    }
+}
+
+/* ============================================================
+   Todo Modal
+   ============================================================ */
+
+.admin-todo-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.admin-todo-modal-card {
+    background: var(--gray, #fff);
+    color: var(--text, #2c3e50);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.admin-todo-modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-todo-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text, inherit);
+}
+
+.admin-todo-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--secondary-color, #4a6b8a);
+    padding: 0;
+    line-height: 1;
+}
+
+.admin-todo-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.admin-todo-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.admin-todo-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-todo-modal-field label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-todo-modal-field input,
+.admin-todo-modal-field textarea,
+.admin-todo-modal-field select {
+    padding: 0.625rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--background, #fff);
+    color: var(--text, inherit);
+}
+
+.admin-todo-modal-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.admin-todo-field-help {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+}
+
+.admin-todo-modal-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.admin-todo-modal-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.admin-todo-modal-btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+}
+
+.admin-todo-modal-btn-cancel {
+    background: transparent;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    color: var(--text, inherit);
+}
+
+.admin-todo-modal-btn-save {
+    background: var(--secondary-color, #4a6b8a);
+    border: none;
+    color: #fff;
+}
+
+.admin-todo-modal-btn-save:hover {
+    background: var(--text, #2c3e50);
+}
+
+/* Subtasks in Modal */
+.admin-todo-subtasks-section {
+    border-top: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.1);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.admin-todo-subtasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.admin-todo-subtasks-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.admin-todo-subtasks-header span {
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.75rem;
+}
+
+.admin-todo-subtask-add {
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--secondary-color, #4a6b8a);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--secondary-color, #4a6b8a);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.admin-todo-subtasks-empty {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px dashed rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 6px;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.admin-todo-subtask-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-todo-subtask-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.12);
+    border-radius: 6px;
+    background: var(--background, #fff);
+}
+
+.admin-todo-subtask-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 0.45rem 0.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text, inherit);
+}
+
+.admin-todo-subtask-row input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 1px 0 var(--secondary-color, #4a6b8a);
+}
+
+.admin-todo-subtask-remove {
+    background: transparent;
+    border: none;
+    color: #c0392b;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* Recurrence options */
+.admin-todo-recurrence-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.12);
+    border-radius: 8px;
+    background: rgba(var(--primary-color-rgb, 44, 62, 80), 0.03);
+}
+
+.admin-todo-day-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.admin-todo-add-recurrence-days {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    grid-column: 1 / -1;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.85rem;
+}
+
+.admin-todo-add-recurrence-days .admin-todo-day-picker {
+    flex: 1;
+}
+
+.admin-todo-day-option {
+    cursor: pointer;
+}
+
+.admin-todo-day-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.admin-todo-day-option span {
+    display: block;
+    min-width: 2.65rem;
+    padding: 0.45rem 0.35rem;
+    border: 1px solid rgba(var(--primary-color-rgb, 44, 62, 80), 0.2);
+    border-radius: 5px;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+.admin-todo-day-option.selected span,
+.admin-todo-day-option span:hover {
+    border-color: var(--secondary-color, #4a6b8a);
+    background: var(--secondary-color, #4a6b8a);
+    color: #fff;
+}
+
+.admin-todo-optional {
+    font-weight: 400;
+    opacity: 0.75;
+}
+
+/* Subtasks in Card */
+.admin-todo-card-edit {
+    flex: 0 0 auto;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+
+    color: rgba(31, 45, 61, 0.4);
+
+    font-size: 0.78rem;
+    line-height: 1;
+
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.admin-todo-card-edit:hover {
+    color: var(--secondary-color, #4a6b8a);
+}
+
+.admin-todo-card-subtasks-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--secondary-color, #4a6b8a);
+    font-size: 0.7rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    transition: color 0.2s ease;
+}
+
+.admin-todo-card-subtasks-toggle:hover {
+    color: var(--primary-color, #2c3e50);
+}
+
+.admin-todo-card-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.admin-todo-card-time {
+    font-size: 0.7rem;
+    color: rgba(31, 45, 61, 0.58);
+    white-space: nowrap;
+}
+
+.admin-todo-card-recurrence {
+    font-size: 0.7rem;
+    color: rgba(31, 45, 61, 0.58);
+    white-space: nowrap;
+}
+
+.admin-todo-card-subtasks {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.admin-todo-card-subtask {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text, #2c3e50);
+    padding-left: calc(9px + 0.5rem);
+}
+
+.admin-todo-card-subtask input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.admin-todo-card-subtask span.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.admin-todo-card-subtasks-list {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-todo-card-subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    color: var(--text, #2c3e50);
+}
+
+.admin-todo-card-subtask-item input {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+}
+
+.admin-todo-card-subtask-item.complete {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+/* Scheduling in Add Form */
+.admin-todo-schedule-field {
+    flex: 0 0 180px !important;
+}
+
+
+/* ============================================================
+   Planner Responsive - 900px
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .admin-planner-overview {
+        grid-template-columns: 1fr;
+
+        grid-template-areas:
+            "budget"
+            "stats"
+            "allocation";
+    }
+
+    .admin-planner-add-expense {
+        grid-template-columns:
+            minmax(160px, 1fr)
+            minmax(140px, 0.8fr);
+    }
+
+    .admin-planner-add-expense label:nth-child(3) {
+        grid-column: 1;
+    }
+
+    .admin-planner-add-expense button {
+        grid-column: 2;
+    }
+}

@@ -1,0 +1,73 @@
+// ============================================
+// BULK ADD TEMPLATE — Budget Admin Console Script
+// ============================================
+// 1. Set TYPE to 'income' or 'expense'
+// 2. Fill in the `entries` array below
+// 3. Paste this whole script into the browser console
+//    while logged into /admin/budget
+// 4. Refresh the relevant tab afterward to see results
+// ============================================
+
+const TYPE = 'income'; // 'income' or 'expense'
+
+// --- INCOME entries ---
+// no: optional row number (omit/undefined to auto-assign)
+// date: 'YYYY-MM-DD'
+// item: description string
+// type: 'injection' | 'other'
+// value: number
+const incomeEntries = [
+  // { no: 9, date: '2025-01-05', item: 'Example Item', type: 'other', value: 12.50 },
+];
+
+// --- EXPENSE entries ---
+// serialNumber: optional row number (omit/undefined to auto-assign)
+// date: 'YYYY-MM-DD'
+// item: description string
+// category: one of DEFAULT_CATEGORIES (or any string — it's free text)
+// cost: number
+const expenseEntries = [
+  // { serialNumber: 9, date: '2025-01-05', item: 'Example Item', category: 'Food', cost: 12.50 },
+];
+
+// ============================================
+// Don't edit below this line
+// ============================================
+
+const CONFIG = {
+  income: { path: '/api/budget/income', entries: incomeEntries, label: (e) => e.item },
+  expense: { path: '/api/budget/expenses', entries: expenseEntries, label: (e) => e.item },
+};
+
+async function bulkAdd() {
+  const { path, entries, label } = CONFIG[TYPE];
+  if (!entries.length) {
+    console.warn(`No entries defined for TYPE='${TYPE}'. Fill in the ${TYPE}Entries array first.`);
+    return;
+  }
+
+  let success = 0;
+  let failed = 0;
+
+  for (const entry of entries) {
+    try {
+      const res = await fetch(path, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      console.log(`✅ Added: ${label(entry)}`);
+      success++;
+    } catch (err) {
+      console.error(`❌ Failed: ${label(entry)} —`, err.message);
+      failed++;
+    }
+  }
+
+  console.log(`Done. ${success} added, ${failed} failed. Refresh the page to see changes.`);
+}
+
+bulkAdd();
