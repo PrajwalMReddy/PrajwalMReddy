@@ -8,6 +8,8 @@ import {
     CheckCircleIcon,
     AlertTriangleIcon,
     ClockIcon,
+    CalendarIcon,
+    PlusIcon,
     TasksIcon,
     NotesIcon,
     SpendingIcon,
@@ -332,8 +334,8 @@ const AIAssistant = ({ isOpen = true, onClose, onTaskCreated, embedded = false }
                             {Array.isArray(msg.proposedActions) && msg.proposedActions.length > 0 && (
                                 <div className="ai-proposals">
                                     <div className="ai-proposals-header">
-                                        <TasksIcon width={13} height={13} />
-                                        <span>Suggested Action:</span>
+                                        <SparklesIcon width={12} height={12} />
+                                        <span>Suggested Action</span>
                                     </div>
                                     {msg.proposedActions.map((act, actIdx) => {
                                         const actionKey = `${msg.id}-${actIdx}`;
@@ -341,28 +343,32 @@ const AIAssistant = ({ isOpen = true, onClose, onTaskCreated, embedded = false }
                                         if (status === 'dismissed') return null;
 
                                         return (
-                                            <div key={actIdx} className="ai-proposal-card">
-                                                <div className="ai-proposal-details">
-                                                    <span className="ai-proposal-tag">Create Task</span>
-                                                    <h5 className="ai-proposal-title">{act.payload.title}</h5>
+                                            <div key={actIdx} className={`ai-proposal-card ${status === 'saved' ? 'is-saved' : ''}`}>
+                                                <div className="ai-proposal-top">
+                                                    <span className="ai-proposal-tag">
+                                                        <TasksIcon width={12} height={12} />
+                                                        <span>Create Task</span>
+                                                    </span>
                                                     <div className="ai-proposal-meta">
-                                                        <span className={`badge-pill badge-${act.payload.priority || 'medium'}`}>
+                                                        <span className={`ai-priority-badge priority-${act.payload.priority || 'medium'}`}>
                                                             {(act.payload.priority || 'medium').toUpperCase()}
                                                         </span>
                                                         {act.payload.dueDate && (
                                                             <span className="ai-due-badge">
-                                                                <ClockIcon width={11} height={11} />
-                                                                {act.payload.dueDate}
+                                                                <CalendarIcon width={11} height={11} />
+                                                                <span>{act.payload.dueDate}</span>
                                                             </span>
                                                         )}
                                                     </div>
                                                 </div>
 
+                                                <h5 className="ai-proposal-title">{act.payload.title}</h5>
+
                                                 <div className="ai-proposal-actions">
                                                     {status === 'saved' ? (
                                                         <div className="ai-proposal-success">
                                                             <CheckCircleIcon width={14} height={14} />
-                                                            <span>Task Added</span>
+                                                            <span>Task Added to List</span>
                                                         </div>
                                                     ) : (
                                                         <>
@@ -372,14 +378,17 @@ const AIAssistant = ({ isOpen = true, onClose, onTaskCreated, embedded = false }
                                                                 onClick={() => handleConfirmTaskAction(act, actionKey)}
                                                                 disabled={status === 'saving'}
                                                             >
-                                                                {status === 'saving' ? 'Adding...' : 'Confirm & Add'}
+                                                                <PlusIcon width={13} height={13} />
+                                                                <span>{status === 'saving' ? 'Adding...' : 'Confirm & Add'}</span>
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 className="ai-btn-dismiss"
                                                                 onClick={() => setActionStatus((p) => ({ ...p, [actionKey]: 'dismissed' }))}
+                                                                title="Dismiss suggestion"
                                                             >
-                                                                Dismiss
+                                                                <XIcon width={12} height={12} />
+                                                                <span>Dismiss</span>
                                                             </button>
                                                         </>
                                                     )}

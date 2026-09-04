@@ -7023,89 +7023,293 @@ body.admin-notes-full-screen-active {
 
 /* AI Task Proposals */
 .ai-proposals {
-    margin-top: 0.65rem;
-    padding-top: 0.55rem;
-    border-top: 1px solid rgba(44, 62, 80, 0.08);
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed rgba(44, 62, 80, 0.12);
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.65rem;
+}
+
+.ai-proposals-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.725rem;
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5e748d;
+}
+
+.ai-proposals-header svg {
+    color: #4a6b8a;
 }
 
 .ai-proposal-card {
-    margin-top: 0.65rem;
-    padding: 0.65rem 0.85rem;
     background: #ffffff;
-    border: 1px solid rgba(44, 62, 80, 0.1);
-    border-radius: 8px;
+    border: 1px solid #dce4ed;
+    border-left: 3.5px solid #2c3e50;
+    border-radius: 9px;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    transition: all 0.2s ease;
 }
 
-.ai-proposal-type {
+.ai-proposal-card:hover {
+    border-color: #cbd5e1;
+    border-left-color: #1e293b;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.ai-proposal-card.is-saved {
+    border-left-color: #10b981;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.ai-proposal-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ai-proposal-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-size: 0.675rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #64748b;
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.04em;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #dbeafe;
 }
 
-.ai-proposal-title {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #1e293b;
-    margin-bottom: 0.35rem;
+.ai-proposal-tag svg {
+    stroke-width: 2.2;
 }
 
 .ai-proposal-meta {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    font-size: 0.725rem;
+    gap: 0.45rem;
+}
+
+.ai-priority-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    line-height: 1.2;
+}
+
+.ai-priority-badge.priority-high {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.ai-priority-badge.priority-medium {
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+}
+
+.ai-priority-badge.priority-low {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.ai-due-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 500;
     color: #64748b;
-    margin-bottom: 0.55rem;
-    flex-wrap: wrap;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    line-height: 1.2;
+}
+
+.ai-due-badge svg {
+    color: #94a3b8;
+}
+
+.ai-proposal-title {
+    font-size: 0.885rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.45;
+    margin: 0;
 }
 
 .ai-proposal-actions {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+    margin-top: 0.2rem;
 }
 
-.ai-proposal-btn {
-    padding: 0.3rem 0.65rem;
+.ai-btn-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.85rem;
+    background: #2c3e50;
+    color: #ffffff;
+    border: 1px solid transparent;
     border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 550;
+    font-size: 0.775rem;
+    font-weight: 600;
     cursor: pointer;
-    border: none;
-    transition: all 0.15s ease;
     font-family: inherit;
+    transition: all 0.18s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.ai-proposal-btn.primary {
-    background: #859ba8;
+.ai-btn-confirm:hover:not(:disabled) {
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ai-btn-confirm:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ai-btn-dismiss {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.38rem 0.75rem;
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #dce4ed;
+    border-radius: 6px;
+    font-size: 0.775rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.18s ease;
+}
+
+.ai-btn-dismiss:hover {
+    background: #ffffff;
+    color: #ef4444;
+    border-color: #fca5a5;
+}
+
+.ai-proposal-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    border-radius: 6px;
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+
+/* Dark Mode Overrides for AI Task Proposals */
+body.dark-mode .ai-proposals,
+.admin-page.dark-mode .ai-proposals {
+    border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .ai-proposals-header,
+.admin-page.dark-mode .ai-proposals-header {
+    color: #94a3b8;
+}
+
+body.dark-mode .ai-proposal-card,
+.admin-page.dark-mode .ai-proposal-card {
+    background: #23272a;
+    border-color: #333a42;
+    border-left-color: #60a5fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .ai-proposal-card:hover,
+.admin-page.dark-mode .ai-proposal-card:hover {
+    border-color: #4b5563;
+    border-left-color: #93c5fd;
+}
+
+body.dark-mode .ai-proposal-card.is-saved,
+.admin-page.dark-mode .ai-proposal-card.is-saved {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+    border-left-color: #10b981;
+}
+
+body.dark-mode .ai-proposal-tag,
+.admin-page.dark-mode .ai-proposal-tag {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.dark-mode .ai-due-badge,
+.admin-page.dark-mode .ai-due-badge {
+    background: #181a1b;
+    border-color: #374151;
+    color: #94a3b8;
+}
+
+body.dark-mode .ai-proposal-title,
+.admin-page.dark-mode .ai-proposal-title {
+    color: #f1f5f9;
+}
+
+body.dark-mode .ai-btn-confirm,
+.admin-page.dark-mode .ai-btn-confirm {
+    background: #3b82f6;
     color: #ffffff;
 }
 
-.ai-proposal-btn.primary:hover {
-    background: #6d8492;
+body.dark-mode .ai-btn-confirm:hover:not(:disabled),
+.admin-page.dark-mode .ai-btn-confirm:hover:not(:disabled) {
+    background: #2563eb;
 }
 
-.ai-proposal-btn.secondary {
-    background: #eaeff4;
-    color: #1e293b;
+body.dark-mode .ai-btn-dismiss,
+.admin-page.dark-mode .ai-btn-dismiss {
+    background: #181a1b;
+    border-color: #374151;
+    color: #94a3b8;
 }
 
-.ai-proposal-btn.secondary:hover {
-    background: #dbe4ec;
+body.dark-mode .ai-btn-dismiss:hover,
+.admin-page.dark-mode .ai-btn-dismiss:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
 }
 
-.ai-proposal-created {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: #16a34a;
-    font-size: 0.75rem;
-    font-weight: 550;
+body.dark-mode .ai-proposal-success,
+.admin-page.dark-mode .ai-proposal-success {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #34d399;
 }
 
 /* Quick Action Chips */
