@@ -8,6 +8,7 @@ const handlers = {
     '/api/budget/planner': require('../lib/api-handlers/budget/planner'),
     '/api/todo': require('../lib/api-handlers/todo'),
     '/api/notes': require('../lib/api-handlers/notes'),
+    '/api/ai/chat': require('../lib/api-handlers/ai/chat'),
 };
 
 const itemHandlers = {
@@ -48,3 +49,4 @@ module.exports = async (req, res) => {
     req.query = { ...query, ...req.query };
     return handler(req, res);
 };
+

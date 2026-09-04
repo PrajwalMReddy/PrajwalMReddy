@@ -14,7 +14,9 @@ const AdminLayout = ({ children, title }) => {
         <div className="admin-page">
             <header className="admin-header">
                 <div className="admin-header-left">
-                    <Link to="/admin/todo" className="admin-brand">Admin</Link>
+                    <Link to="/admin/home" className={`admin-brand ${location.pathname === '/admin/home' || location.pathname === '/admin' ? 'active' : ''}`}>
+                        Admin
+                    </Link>
                     <nav className="admin-nav" aria-label="Admin navigation">
                         <Link
                             to="/admin/todo"
@@ -37,7 +39,9 @@ const AdminLayout = ({ children, title }) => {
                     </nav>
                 </div>
                 <div className="admin-header-right">
-                    <Link to="/" className="admin-link">Site</Link>
+                    <Link to="/" className="admin-link">
+                        Site
+                    </Link>
                     <button type="button" className="admin-logout-btn" onClick={handleLogout}>
                         Log out
                     </button>

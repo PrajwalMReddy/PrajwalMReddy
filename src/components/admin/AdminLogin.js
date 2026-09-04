@@ -9,10 +9,8 @@ const AdminLogin = () => {
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const from = location.state?.from || '/admin/budget';
-
     if (authenticated) {
-        return <Navigate to={from} replace />;
+        return <Navigate to="/admin/home" replace />;
     }
 
     const handleSubmit = async (e) => {

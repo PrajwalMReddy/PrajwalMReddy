@@ -71,6 +71,9 @@ const handlers = {
 
     '/api/notes':
         require('../lib/api-handlers/notes'),
+
+    '/api/ai/chat':
+        require('../lib/api-handlers/ai/chat'),
 };
 
 function getHandler(pathname, query) {

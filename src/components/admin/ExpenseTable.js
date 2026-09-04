@@ -130,18 +130,18 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                             required
                         />
                     </label>
+                    <div className="admin-form-actions">
+                        <button type="submit" disabled={submitting}>
+                            {submitting ? 'Saving...' : editingId ? 'Update' : 'Add'}
+                        </button>
+                        {editingId && (
+                            <button type="button" className="secondary" onClick={resetForm}>
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </div>
                 {error && <p className="admin-error">{error}</p>}
-                <div className="admin-form-actions">
-                    <button type="submit" disabled={submitting}>
-                        {submitting ? 'Saving...' : editingId ? 'Update' : 'Add'}
-                    </button>
-                    {editingId && (
-                        <button type="button" className="secondary" onClick={resetForm}>
-                            Cancel
-                        </button>
-                    )}
-                </div>
             </form>
 
             <table className="admin-table">
