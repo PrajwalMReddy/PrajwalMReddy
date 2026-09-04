@@ -64,7 +64,7 @@ export const checkAIHealth = async () => {
         const res = await fetch('/api/ai/chat', {
             method: 'GET',
             credentials: 'include',
-            signal: AbortSignal.timeout(4000),
+            signal: AbortSignal.timeout(3000),
         });
         if (res.ok) {
             const data = await res.json();
@@ -76,6 +76,7 @@ export const checkAIHealth = async () => {
                     models: data.availableModels || [],
                 };
             }
+            // If server reports cloud_fallback or offline, proceed to direct local Ollama check
         }
     } catch (e) {
         console.warn('Server proxy health check failed:', e);
@@ -83,31 +84,38 @@ export const checkAIHealth = async () => {
 
     // Direct local Ollama check fallback (e.g. for prajwalmreddy.com on Vercel)
     const { ollamaUrl, model } = getStoredOllamaSettings();
-    try {
-        const localRes = await fetch(`${ollamaUrl}/api/tags`, {
-            method: 'GET',
-            signal: AbortSignal.timeout(3500),
-        });
-        if (localRes.ok) {
-            const data = await localRes.json();
-            const models = (data.models || []).map((m) => m.name || m.model);
-            return {
-                status: 'connected',
-                mode: 'local_direct',
-                model,
-                models,
-            };
+    const candidateUrls = [ollamaUrl];
+    if (ollamaUrl.includes('localhost')) {
+        candidateUrls.push(ollamaUrl.replace('localhost', '127.0.0.1'));
+    } else if (ollamaUrl.includes('127.0.0.1')) {
+        candidateUrls.push(ollamaUrl.replace('127.0.0.1', 'localhost'));
+    }
+
+    for (const testUrl of candidateUrls) {
+        try {
+            const localRes = await fetch(`${testUrl}/api/tags`, {
+                method: 'GET',
+                signal: AbortSignal.timeout(3000),
+            });
+            if (localRes.ok) {
+                const data = await localRes.json();
+                const models = (data.models || []).map((m) => m.name || m.model);
+                return {
+                    status: 'connected',
+                    mode: 'local_direct',
+                    model,
+                    models,
+                    url: testUrl,
+                };
+            }
+        } catch {
+            // try next candidate URL
         }
-    } catch (e) {
-        return {
-            status: 'offline',
-            error: 'Local Ollama is unreachable. Ensure Ollama is running (`ollama serve`).',
-        };
     }
 
     return {
         status: 'offline',
-        error: 'Unable to connect to Ollama.',
+        error: 'Local Ollama is unreachable. Ensure Ollama is running and CORS is configured (set OLLAMA_ORIGINS=*).',
     };
 };
 
@@ -220,7 +228,7 @@ export const requestAI = async (messagesOrPayload, options = {}) => {
     }
 
     // Case 1: Server successfully proxied the request to Ollama (non-streaming)
-    if (serverOk && serverData?.success) {
+    if (serverOk && serverData?.success && serverData.content) {
         const content = serverData.content || '';
         return {
             content,
@@ -231,111 +239,126 @@ export const requestAI = async (messagesOrPayload, options = {}) => {
         };
     }
 
-    // Case 2: Server received the request and prepared context, but server cannot reach Ollama
-    // (e.g. running on Vercel cloud and trying to reach the user's laptop at localhost)
-    if (serverData?.systemPrompt || serverData?.context) {
+    // Case 2: Server indicated fallback or server proxy failed (e.g. running on Vercel cloud and connecting to laptop)
+    if (serverData?.fallbackAvailable || serverData?.systemPrompt || serverData?.context || !serverOk) {
         const { ollamaUrl, model: storedModel } = getStoredOllamaSettings();
-        const activeModel = model || serverData.model || storedModel;
-        try {
-            const localMessages = [];
-            if (serverData.systemPrompt) {
-                localMessages.push({ role: 'system', content: serverData.systemPrompt });
-            }
-            if (Array.isArray(messages) && messages.length > 0) {
-                localMessages.push(...messages);
-            } else if (action) {
-                const actionPrompts = {
-                    focus_today: 'What should I focus on today? Summarize my top priorities.',
-                    summarize_overdue: 'Summarize all my overdue tasks and suggest what to tackle first.',
-                    summarize_notes: 'Summarize my recent notes and highlight key action items.',
-                    analyze_spending: 'Analyze my spending this month, top categories, and cash flow.',
-                    unusual_spending: 'Identify any unusual or high spending this month.',
-                    note_to_tasks: 'Turn the selected note into actionable tasks.',
-                };
-                localMessages.push({
-                    role: 'user',
-                    content: actionPrompts[action] || 'Summarize my dashboard status.',
-                });
-            }
+        const activeModel = model || serverData?.model || storedModel;
 
-            const directRes = await fetch(`${ollamaUrl}/api/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: activeModel,
-                    messages: localMessages,
-                    stream: Boolean(onToken),
-                    keep_alive: '60m',
-                    options: {
-                        temperature: 0.7,
-                        num_predict: 250,
-                        num_ctx: 2048,
-                    },
-                }),
-                signal: AbortSignal.timeout(90000),
+        const candidateUrls = [ollamaUrl];
+        if (ollamaUrl.includes('localhost')) {
+            candidateUrls.push(ollamaUrl.replace('localhost', '127.0.0.1'));
+        } else if (ollamaUrl.includes('127.0.0.1')) {
+            candidateUrls.push(ollamaUrl.replace('127.0.0.1', 'localhost'));
+        }
+
+        const localMessages = [];
+        const systemPrompt =
+            serverData?.systemPrompt ||
+            'You are a helpful executive assistant embedded in Prajwal\'s personal admin dashboard. Help organize tasks, analyze spending and income, and extract action items from notes. Keep answers concise and direct.';
+        localMessages.push({ role: 'system', content: systemPrompt });
+
+        if (Array.isArray(messages) && messages.length > 0) {
+            localMessages.push(...messages);
+        } else if (action) {
+            const actionPrompts = {
+                focus_today: 'What should I focus on today? Summarize my top priorities.',
+                summarize_overdue: 'Summarize all my overdue tasks and suggest what to tackle first.',
+                summarize_notes: 'Summarize my recent notes and highlight key action items.',
+                analyze_spending: 'Analyze my spending this month, top categories, and cash flow.',
+                unusual_spending: 'Identify any unusual or high spending this month.',
+                note_to_tasks: 'Turn the selected note into actionable tasks.',
+            };
+            localMessages.push({
+                role: 'user',
+                content: actionPrompts[action] || 'Summarize my dashboard status.',
             });
+        }
 
-            if (!directRes.ok) {
-                const directErrData = await directRes.json().catch(() => ({}));
-                throw new Error(directErrData.error || `Local Ollama error: HTTP ${directRes.status}`);
-            }
+        let lastDirectErr = null;
+        for (const targetUrl of candidateUrls) {
+            try {
+                const directRes = await fetch(`${targetUrl}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: activeModel,
+                        messages: localMessages,
+                        stream: Boolean(onToken),
+                        keep_alive: '60m',
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 250,
+                            num_ctx: 2048,
+                        },
+                    }),
+                    signal: AbortSignal.timeout(90000),
+                });
 
-            if (onToken && directRes.body) {
-                const reader = directRes.body.getReader();
-                const decoder = new TextDecoder();
-                let buffer = '';
-                let fullContent = '';
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    buffer += decoder.decode(value, { stream: true });
-                    const lines = buffer.split('\n');
-                    buffer = lines.pop();
-
-                    for (const line of lines) {
-                        const trimmed = line.trim();
-                        if (!trimmed) continue;
-                        try {
-                            const parsed = JSON.parse(trimmed);
-                            const token = parsed.message?.content || '';
-                            if (token) {
-                                fullContent += token;
-                                onToken(token, fullContent);
-                            }
-                        } catch {}
-                    }
+                if (!directRes.ok) {
+                    const directErrData = await directRes.json().catch(() => ({}));
+                    throw new Error(directErrData.error || `Local Ollama error: HTTP ${directRes.status}`);
                 }
 
+                if (onToken && directRes.body) {
+                    const reader = directRes.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let fullContent = '';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop();
+
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (!trimmed) continue;
+                            try {
+                                const parsed = JSON.parse(trimmed);
+                                const token = parsed.message?.content || '';
+                                if (token) {
+                                    fullContent += token;
+                                    onToken(token, fullContent);
+                                }
+                            } catch {}
+                        }
+                    }
+
+                    return {
+                        content: fullContent,
+                        reply: fullContent,
+                        proposedActions: extractClientActionProposals(fullContent),
+                        model: activeModel,
+                        mode: 'local_direct_stream',
+                    };
+                }
+
+                const directData = await directRes.json();
+                const content = directData.message?.content || '';
+                const proposedActions = extractClientActionProposals(content);
+
                 return {
-                    content: fullContent,
-                    reply: fullContent,
-                    proposedActions: extractClientActionProposals(fullContent),
-                    model: activeModel,
-                    mode: 'local_direct_stream',
+                    content,
+                    reply: content, // alias for backwards compatibility
+                    proposedActions,
+                    model: directData.model || activeModel,
+                    mode: 'local_direct',
                 };
+            } catch (directErr) {
+                lastDirectErr = directErr;
+                console.warn(`Direct fetch to ${targetUrl}/api/chat failed:`, directErr.message);
             }
-
-            const directData = await directRes.json();
-            const content = directData.message?.content || '';
-            const proposedActions = extractClientActionProposals(content);
-
-            return {
-                content,
-                reply: content, // alias for backwards compatibility
-                proposedActions,
-                model: directData.model || activeModel,
-                mode: 'local_direct',
-            };
-        } catch (directErr) {
-            console.error('Direct local Ollama request failed:', directErr);
-            if (directErr.message?.includes('Failed to fetch') || directErr.name === 'TypeError') {
-                throw new Error(
-                    'Cannot connect to local Ollama from browser. If on prajwalmreddy.com, ensure Ollama has OLLAMA_ORIGINS configured (e.g. setx OLLAMA_ORIGINS "https://prajwalmreddy.com,*") and Ollama is restarted.'
-                );
-            }
-            throw new Error(directErr.message || 'Failed to generate AI response.');
         }
+
+        console.error('All direct local Ollama requests failed:', lastDirectErr);
+        if (lastDirectErr?.message?.includes('Failed to fetch') || lastDirectErr?.name === 'TypeError') {
+            throw new Error(
+                'Cannot connect to local Ollama from browser. Ensure Ollama is running and CORS is configured (setx OLLAMA_ORIGINS "*" and restart Ollama).'
+            );
+        }
+        throw new Error(lastDirectErr?.message || 'Failed to generate AI response from local Ollama.');
     }
 
     // Case 3: Error from server
