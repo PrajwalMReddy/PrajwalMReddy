@@ -22,6 +22,7 @@ export const chunkArray = (arr, size) => {
 };
 
 export const getImage = (imageName) => {
+    if (!imageName) return null;
     const imageMap = {
         'pulsar': pulsarImg,
         'midilang': midilangImg,
@@ -36,5 +37,14 @@ export const getImage = (imageName) => {
         'promptly': promptlyImg,
         'niranjanux': niranjanuxImg
     };
-    return imageMap[imageName] || null;
+    if (imageMap[imageName]) {
+        return imageMap[imageName];
+    }
+    if (typeof imageName === 'string') {
+        if (imageName.startsWith('/') || imageName.startsWith('http') || imageName.startsWith('data:')) {
+            return imageName;
+        }
+        return `/img/${imageName}`;
+    }
+    return null;
 };

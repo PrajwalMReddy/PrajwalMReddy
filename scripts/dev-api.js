@@ -63,6 +63,9 @@ const routeMap = {
     '/api/ai/briefing': '../lib/api-handlers/ai/briefing',
     '/api/ai/news': '../lib/api-handlers/ai/news',
     '/api/ai/tools': '../lib/api-handlers/ai/tools',
+    '/api/cms/content': '../lib/api-handlers/cms/content',
+    '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
+    '/api/cms/upload': '../lib/api-handlers/cms/upload',
 };
 
 function getHandler(pathname, query) {

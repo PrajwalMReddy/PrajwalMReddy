@@ -6,6 +6,7 @@ import {AuthProvider} from './utils/AuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminHome from './components/admin/AdminHome';
+import CmsAdmin from './components/admin/CmsAdmin';
 import BudgetAdmin from './components/admin/BudgetAdmin';
 import TodoAdmin from './components/admin/TodoAdmin';
 import NotesAdmin from './components/admin/NotesAdmin';
@@ -89,6 +90,10 @@ function App() {
                         <Route path="/konami/:code" element={<KonamiValidator />}/>
 
                         <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/admin/cms" element={
+                            <ProtectedRoute><CmsAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/content" element={<Navigate to="/admin/cms" replace />} />
                         <Route path="/admin/budget" element={
                             <ProtectedRoute><BudgetAdmin /></ProtectedRoute>
                         } />

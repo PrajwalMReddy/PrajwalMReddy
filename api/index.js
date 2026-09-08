@@ -17,6 +17,9 @@ const handlers = {
     '/api/ai/briefing': require('../lib/api-handlers/ai/briefing'),
     '/api/ai/news': require('../lib/api-handlers/ai/news'),
     '/api/ai/tools': require('../lib/api-handlers/ai/tools'),
+    '/api/cms/content': require('../lib/api-handlers/cms/content'),
+    '/api/cms/markdown': require('../lib/api-handlers/cms/markdown'),
+    '/api/cms/upload': require('../lib/api-handlers/cms/upload'),
 };
 
 const itemHandlers = {

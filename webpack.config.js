@@ -46,14 +46,32 @@ module.exports = {
                 {
                     from: path.resolve(__dirname, 'public/blog'),
                     to: 'blog',
+                    noErrorOnMissing: true,
                 },
                 {
                     from: path.resolve(__dirname, 'public/research'),
                     to: 'research',
+                    noErrorOnMissing: true,
                 },
                 {
                     from: path.resolve(__dirname, 'public/photography'),
                     to: 'photography',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/projects'),
+                    to: 'projects',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/experience'),
+                    to: 'experience',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/img'),
+                    to: 'img',
+                    noErrorOnMissing: true,
                 },
             ],
         }),

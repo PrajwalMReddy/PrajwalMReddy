@@ -24,6 +24,12 @@ const AdminLayout = ({ children, title }) => {
                             Admin
                         </Link>
                         <Link
+                            to="/admin/cms"
+                            className={`admin-nav-item ${location.pathname.startsWith('/admin/cms') ? 'active' : ''}`}
+                        >
+                            CMS
+                        </Link>
+                        <Link
                             to="/admin/todo"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/todo') ? 'active' : ''}`}
                         >
