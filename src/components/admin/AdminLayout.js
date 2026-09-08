@@ -10,43 +10,55 @@ const AdminLayout = ({ children, title }) => {
         await logout();
     };
 
+    const isDashboardActive = location.pathname === '/admin/home' || location.pathname === '/admin';
+
     return (
         <div className="admin-page">
-            <header className="admin-header">
-                <div className="admin-header-left">
-                    <Link to="/admin/home" className={`admin-brand ${location.pathname === '/admin/home' || location.pathname === '/admin' ? 'active' : ''}`}>
-                        Admin
-                    </Link>
+            <header className="admin-header-bar">
+                <div className="admin-header">
                     <nav className="admin-nav" aria-label="Admin navigation">
                         <Link
+                            to="/admin/home"
+                            className={`admin-nav-item ${isDashboardActive ? 'active' : ''}`}
+                        >
+                            Admin
+                        </Link>
+                        <Link
                             to="/admin/todo"
-                            className={location.pathname.startsWith('/admin/todo') ? 'active' : ''}
+                            className={`admin-nav-item ${location.pathname.startsWith('/admin/todo') ? 'active' : ''}`}
                         >
                             To-Do
                         </Link>
                         <Link
                             to="/admin/notes"
-                            className={location.pathname.startsWith('/admin/notes') ? 'active' : ''}
+                            className={`admin-nav-item ${location.pathname.startsWith('/admin/notes') ? 'active' : ''}`}
                         >
                             Notes
                         </Link>
                         <Link
                             to="/admin/budget"
-                            className={location.pathname.startsWith('/admin/budget') ? 'active' : ''}
+                            className={`admin-nav-item ${location.pathname.startsWith('/admin/budget') ? 'active' : ''}`}
                         >
                             Budget
                         </Link>
                     </nav>
-                </div>
-                <div className="admin-header-right">
-                    <Link to="/" className="admin-link">
-                        Site
-                    </Link>
-                    <button type="button" className="admin-logout-btn" onClick={handleLogout}>
-                        Log out
-                    </button>
+
+                    <div className="admin-header-right">
+                        <Link to="/" className="admin-header-link" title="View public portfolio">
+                            Site
+                        </Link>
+                        <button
+                            type="button"
+                            className="admin-header-logout"
+                            onClick={handleLogout}
+                            title="Sign out of admin"
+                        >
+                            Log out
+                        </button>
+                    </div>
                 </div>
             </header>
+
             <main className="admin-main">
                 {title && <h1 className="admin-page-title">{title}</h1>}
                 {children}

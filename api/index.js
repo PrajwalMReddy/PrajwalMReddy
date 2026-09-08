@@ -9,6 +9,14 @@ const handlers = {
     '/api/todo': require('../lib/api-handlers/todo'),
     '/api/notes': require('../lib/api-handlers/notes'),
     '/api/ai/chat': require('../lib/api-handlers/ai/chat'),
+    '/api/ai/memory': require('../lib/api-handlers/ai/memory'),
+    '/api/ai/goals': require('../lib/api-handlers/ai/goals'),
+    '/api/ai/projects': require('../lib/api-handlers/ai/projects'),
+    '/api/ai/conversations': require('../lib/api-handlers/ai/conversations'),
+    '/api/ai/preferences': require('../lib/api-handlers/ai/preferences'),
+    '/api/ai/briefing': require('../lib/api-handlers/ai/briefing'),
+    '/api/ai/news': require('../lib/api-handlers/ai/news'),
+    '/api/ai/tools': require('../lib/api-handlers/ai/tools'),
 };
 
 const itemHandlers = {
@@ -17,6 +25,10 @@ const itemHandlers = {
     planner: require('../lib/api-handlers/budget/planner/[id]'),
     todo: require('../lib/api-handlers/todo/[id]'),
     notes: require('../lib/api-handlers/notes/[id]'),
+    memory: require('../lib/api-handlers/ai/memory'),
+    goals: require('../lib/api-handlers/ai/goals'),
+    projects: require('../lib/api-handlers/ai/projects'),
+    conversations: require('../lib/api-handlers/ai/conversations'),
 };
 
 function getHandler(pathname, query) {
@@ -30,6 +42,12 @@ function getHandler(pathname, query) {
     if (simpleItemMatch) {
         query.id = decodeURIComponent(simpleItemMatch[2]);
         return itemHandlers[simpleItemMatch[1]];
+    }
+
+    const aiItemMatch = pathname.match(/^\/api\/ai\/(memory|goals|projects|conversations)\/([^/]+)$/);
+    if (aiItemMatch) {
+        query.id = decodeURIComponent(aiItemMatch[2]);
+        return itemHandlers[aiItemMatch[1]];
     }
 
     return handlers[pathname];
@@ -49,4 +67,3 @@ module.exports = async (req, res) => {
     req.query = { ...query, ...req.query };
     return handler(req, res);
 };
-

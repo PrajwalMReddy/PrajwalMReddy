@@ -44,39 +44,36 @@ function loadEnvironment() {
 
 loadEnvironment();
 
-const handlers = {
-    '/api/auth/login':
-        require('../lib/api-handlers/auth/login'),
-
-    '/api/auth/logout':
-        require('../lib/api-handlers/auth/logout'),
-
-    '/api/auth/session':
-        require('../lib/api-handlers/auth/session'),
-
-    '/api/budget/expenses':
-        require('../lib/api-handlers/budget/expenses'),
-
-    '/api/budget/income':
-        require('../lib/api-handlers/budget/income'),
-
-    '/api/budget/stats':
-        require('../lib/api-handlers/budget/stats'),
-
-    '/api/budget/planner':
-        require('../lib/api-handlers/budget/planner'),
-
-    '/api/todo':
-        require('../lib/api-handlers/todo'),
-
-    '/api/notes':
-        require('../lib/api-handlers/notes'),
-
-    '/api/ai/chat':
-        require('../lib/api-handlers/ai/chat'),
+const routeMap = {
+    '/api/auth/login': '../lib/api-handlers/auth/login',
+    '/api/auth/logout': '../lib/api-handlers/auth/logout',
+    '/api/auth/session': '../lib/api-handlers/auth/session',
+    '/api/budget/expenses': '../lib/api-handlers/budget/expenses',
+    '/api/budget/income': '../lib/api-handlers/budget/income',
+    '/api/budget/stats': '../lib/api-handlers/budget/stats',
+    '/api/budget/planner': '../lib/api-handlers/budget/planner',
+    '/api/todo': '../lib/api-handlers/todo',
+    '/api/notes': '../lib/api-handlers/notes',
+    '/api/ai/chat': '../lib/api-handlers/ai/chat',
+    '/api/ai/memory': '../lib/api-handlers/ai/memory',
+    '/api/ai/goals': '../lib/api-handlers/ai/goals',
+    '/api/ai/projects': '../lib/api-handlers/ai/projects',
+    '/api/ai/conversations': '../lib/api-handlers/ai/conversations',
+    '/api/ai/preferences': '../lib/api-handlers/ai/preferences',
+    '/api/ai/briefing': '../lib/api-handlers/ai/briefing',
+    '/api/ai/news': '../lib/api-handlers/ai/news',
+    '/api/ai/tools': '../lib/api-handlers/ai/tools',
 };
 
 function getHandler(pathname, query) {
+    // Invalidate require cache for lib/ in development so changes take effect immediately
+    const libDir = path.resolve(__dirname, '..', 'lib');
+    Object.keys(require.cache).forEach((key) => {
+        if (key.startsWith(libDir)) {
+            delete require.cache[key];
+        }
+    });
+
     const expenseMatch = pathname.match(
         /^\/api\/budget\/expenses\/([^/]+)$/
     );
@@ -147,16 +144,42 @@ function getHandler(pathname, query) {
         );
     }
 
-    return handlers[pathname];
+    const aiMatch = pathname.match(
+        /^\/api\/ai\/(memory|goals|projects|conversations)\/([^/]+)$/
+    );
+
+    if (aiMatch) {
+        query.id = decodeURIComponent(
+            aiMatch[2]
+        );
+
+        return require(
+            `../lib/api-handlers/ai/${aiMatch[1]}`
+        );
+    }
+
+    if (routeMap[pathname]) {
+        return require(routeMap[pathname]);
+    }
+
+    return null;
 }
 
 function addVercelResponseHelpers(res) {
     res.status = (code) => {
-        res.statusCode = code;
+        if (!res.headersSent) {
+            res.statusCode = code;
+        }
         return res;
     };
 
     res.json = (data) => {
+        if (res.headersSent) {
+            if (!res.writableEnded) {
+                res.end(JSON.stringify(data));
+            }
+            return res;
+        }
         if (!res.getHeader('Content-Type')) {
             res.setHeader(
                 'Content-Type',
@@ -230,11 +253,13 @@ const server = http.createServer(
                 error
             );
 
-            if (!res.writableEnded) {
+            if (!res.headersSent && !res.writableEnded) {
                 res.status(500).json({
                     error:
                         'Internal server error',
                 });
+            } else if (!res.writableEnded) {
+                res.end();
             }
         }
     }

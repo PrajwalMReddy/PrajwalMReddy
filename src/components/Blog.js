@@ -109,8 +109,9 @@ const Blog = () => {
         <SideNav/>
         <main>
             <h1 id="blog-heading">{t('blogHeading')}</h1>
-            {blogPosts.length === 0 ? (<p id="blog-subtitle"><Link to="/photography">{t('blogEmpty')}</Link></p>) : (
-                <p id="blog-subtitle"><Link to="/photography">{t('blogSubtitle')}</Link></p>)}
+            {blogPosts.length === 0
+                ? (<p id="blog-subtitle">{t('blogEmpty')}</p>)
+                : (<p id="blog-subtitle">{t('blogSubtitle')}</p>)}
 
             {(<>
 

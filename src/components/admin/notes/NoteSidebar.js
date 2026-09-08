@@ -58,207 +58,232 @@ const NoteSidebar = ({
             </div>
 
             <div className="admin-notes-tree">
-                {isCreatingFolder && (
-                    <form
-                        className="admin-note-new-folder-form"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleCreateFolder(newFolderName);
-                        }}
-                    >
-                        <span className="admin-note-folder-icon" aria-hidden="true">
-                            📁
-                        </span>
-                        <input
-                            autoFocus
-                            type="text"
-                            value={newFolderName}
-                            onChange={(e) => setNewFolderName(e.target.value)}
-                            placeholder="folder name"
-                            aria-label="New folder name"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape') {
-                                    setIsCreatingFolder(false);
-                                    setNewFolderName('');
-                                }
-                            }}
-                        />
-                        <button type="submit" title="Create folder" aria-label="Confirm new folder">
-                            ✓
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setIsCreatingFolder(false);
-                                setNewFolderName('');
-                            }}
-                            title="Cancel"
-                            aria-label="Cancel new folder"
-                        >
-                            ✕
-                        </button>
-                    </form>
-                )}
+                {noteView === 'archived' ? (
+                    <>
+                        {filteredNotes.map((note) => (
+                            <button
+                                type="button"
+                                key={note.id}
+                                className={`admin-note-list-item${
+                                    selectedId === note.id ? ' active' : ''
+                                }`}
+                                onClick={() => selectNote(note)}
+                            >
+                                <strong>{note.title || 'Untitled note'}</strong>
+                                <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                <p>{getNotePreview(note)}</p>
+                            </button>
+                        ))}
 
-                {/* Folders */}
-                {allFolders.map((folderName) => {
-                    const folderNotes = folderNotesMap[folderName] || [];
-                    const totalInFolder = visibleNotes.filter((n) => n.folder === folderName).length;
-                    const isExpanded = expandedFolders.has(folderName);
-                    const isRenaming = renamingFolder === folderName;
-
-                    return (
-                        <div
-                            className={`admin-note-folder-group${isExpanded ? ' is-expanded' : ''}`}
-                            key={folderName}
-                        >
-                            {isRenaming ? (
-                                <form
-                                    className="admin-note-rename-folder-form"
-                                    onSubmit={(e) => {
-                                        e.preventDefault();
-                                        handleRenameFolder(folderName, renameValue);
-                                    }}
-                                >
-                                    <span className="admin-note-folder-icon" aria-hidden="true">
-                                        📁
-                                    </span>
-                                    <input
-                                        autoFocus
-                                        type="text"
-                                        value={renameValue}
-                                        onChange={(e) => setRenameValue(e.target.value)}
-                                        aria-label="Rename folder"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Escape') setRenamingFolder(null);
-                                        }}
-                                    />
-                                    <button
-                                        type="submit"
-                                        title="Save folder name"
-                                        aria-label="Save folder name"
-                                    >
-                                        ✓
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setRenamingFolder(null)}
-                                        title="Cancel"
-                                        aria-label="Cancel rename"
-                                    >
-                                        ✕
-                                    </button>
-                                </form>
-                            ) : (
-                                <div
-                                    className={`admin-note-folder-header${
-                                        currentFolder === folderName ? ' is-current-folder' : ''
-                                    }`}
-                                    onClick={() => toggleFolder(folderName)}
-                                    role="button"
-                                    tabIndex="0"
+                        {filteredNotes.length === 0 && (
+                            <p className="admin-notes-empty">No archived notes found.</p>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {isCreatingFolder && (
+                            <form
+                                className="admin-note-new-folder-form"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleCreateFolder(newFolderName);
+                                }}
+                            >
+                                <span className="admin-note-folder-icon" aria-hidden="true">
+                                    📁
+                                </span>
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    placeholder="folder name"
+                                    aria-label="New folder name"
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            toggleFolder(folderName);
+                                        if (e.key === 'Escape') {
+                                            setIsCreatingFolder(false);
+                                            setNewFolderName('');
                                         }
                                     }}
-                                    aria-expanded={isExpanded}
+                                />
+                                <button type="submit" title="Create folder" aria-label="Confirm new folder">
+                                    ✓
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsCreatingFolder(false);
+                                        setNewFolderName('');
+                                    }}
+                                    title="Cancel"
+                                    aria-label="Cancel new folder"
                                 >
-                                    <span className="admin-note-folder-chevron" aria-hidden="true">
-                                        {isExpanded ? '▾' : '▸'}
-                                    </span>
-                                    <span className="admin-note-folder-icon" aria-hidden="true">
-                                        {isExpanded ? '📂' : '📁'}
-                                    </span>
-                                    <span className="admin-note-folder-title" title={folderName}>
-                                        {folderName}
-                                    </span>
-                                    <span className="admin-note-folder-count">{totalInFolder}</span>
-                                    <div
-                                        className="admin-note-folder-actions"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <button
-                                            type="button"
-                                            className="admin-note-action-icon"
-                                            onClick={() => startNewNote(folderName)}
-                                            title={`New note in /${folderName}`}
-                                            aria-label={`New note in /${folderName}`}
-                                        >
-                                            +
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="admin-note-action-icon"
-                                            onClick={() => startRenamingFolder(folderName)}
-                                            title="Rename folder"
-                                            aria-label="Rename folder"
-                                        >
-                                            ✎
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="admin-note-action-icon danger"
-                                            onClick={() => handleDeleteFolder(folderName)}
-                                            title="Delete folder"
-                                            aria-label="Delete folder"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                    ✕
+                                </button>
+                            </form>
+                        )}
 
-                            {isExpanded && (
-                                <div className="admin-note-folder-children">
-                                    {folderNotes.map((note) => (
-                                        <button
-                                            type="button"
-                                            key={note.id}
-                                            className={`admin-note-list-item is-nested${
-                                                selectedId === note.id ? ' active' : ''
+                        {/* Folders */}
+                        {allFolders.map((folderName) => {
+                            const folderNotes = folderNotesMap[folderName] || [];
+                            const totalInFolder = visibleNotes.filter((n) => n.folder === folderName).length;
+                            const isExpanded = expandedFolders.has(folderName);
+                            const isRenaming = renamingFolder === folderName;
+
+                            return (
+                                <div
+                                    className={`admin-note-folder-group${isExpanded ? ' is-expanded' : ''}`}
+                                    key={folderName}
+                                >
+                                    {isRenaming ? (
+                                        <form
+                                            className="admin-note-rename-folder-form"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                handleRenameFolder(folderName, renameValue);
+                                            }}
+                                        >
+                                            <span className="admin-note-folder-icon" aria-hidden="true">
+                                                📁
+                                            </span>
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                value={renameValue}
+                                                onChange={(e) => setRenameValue(e.target.value)}
+                                                aria-label="Rename folder"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Escape') setRenamingFolder(null);
+                                                }}
+                                            />
+                                            <button
+                                                type="submit"
+                                                title="Save folder name"
+                                                aria-label="Save folder name"
+                                            >
+                                                ✓
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setRenamingFolder(null)}
+                                                title="Cancel"
+                                                aria-label="Cancel rename"
+                                            >
+                                                ✕
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <div
+                                            className={`admin-note-folder-header${
+                                                currentFolder === folderName ? ' is-current-folder' : ''
                                             }`}
-                                            onClick={() => selectNote(note)}
+                                            onClick={() => toggleFolder(folderName)}
+                                            role="button"
+                                            tabIndex="0"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    toggleFolder(folderName);
+                                                }
+                                            }}
+                                            aria-expanded={isExpanded}
                                         >
-                                            <strong>{note.title || 'Untitled note'}</strong>
-                                            <span>{formatUpdatedAt(note.updatedAt)}</span>
-                                            <p>{getNotePreview(note)}</p>
-                                        </button>
-                                    ))}
-                                    {folderNotes.length === 0 && (
-                                        <button
-                                            type="button"
-                                            className="admin-note-empty-folder-btn"
-                                            onClick={() => startNewNote(folderName)}
-                                        >
-                                            <span aria-hidden="true">+</span> New note in /{folderName}
-                                        </button>
+                                            <span className="admin-note-folder-chevron" aria-hidden="true">
+                                                {isExpanded ? '▾' : '▸'}
+                                            </span>
+                                            <span className="admin-note-folder-icon" aria-hidden="true">
+                                                {isExpanded ? '📂' : '📁'}
+                                            </span>
+                                            <span className="admin-note-folder-title" title={folderName}>
+                                                {folderName}
+                                            </span>
+                                            <span className="admin-note-folder-count">{totalInFolder}</span>
+                                            <div
+                                                className="admin-note-folder-actions"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-action-icon"
+                                                    onClick={() => startNewNote(folderName)}
+                                                    title={`New note in /${folderName}`}
+                                                    aria-label={`New note in /${folderName}`}
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-action-icon"
+                                                    onClick={() => startRenamingFolder(folderName)}
+                                                    title="Rename folder"
+                                                    aria-label="Rename folder"
+                                                >
+                                                    ✎
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-action-icon danger"
+                                                    onClick={() => handleDeleteFolder(folderName)}
+                                                    title="Delete folder"
+                                                    aria-label="Delete folder"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {isExpanded && (
+                                        <div className="admin-note-folder-children">
+                                            {folderNotes.map((note) => (
+                                                <button
+                                                    type="button"
+                                                    key={note.id}
+                                                    className={`admin-note-list-item is-nested${
+                                                        selectedId === note.id ? ' active' : ''
+                                                    }`}
+                                                    onClick={() => selectNote(note)}
+                                                >
+                                                    <strong>{note.title || 'Untitled note'}</strong>
+                                                    <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                                    <p>{getNotePreview(note)}</p>
+                                                </button>
+                                            ))}
+                                            {folderNotes.length === 0 && (
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-empty-folder-btn"
+                                                    onClick={() => startNewNote(folderName)}
+                                                >
+                                                    <span aria-hidden="true">+</span> New note in /{folderName}
+                                                </button>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
-                            )}
-                        </div>
-                    );
-                })}
+                            );
+                        })}
 
-                {/* Top-level Linux-style Root Notes directly under / */}
-                {rootNotes.map((note) => (
-                    <button
-                        type="button"
-                        key={note.id}
-                        className={`admin-note-list-item is-root${
-                            selectedId === note.id ? ' active' : ''
-                        }`}
-                        onClick={() => selectNote(note)}
-                    >
-                        <strong>{note.title || 'Untitled note'}</strong>
-                        <span>{formatUpdatedAt(note.updatedAt)}</span>
-                        <p>{getNotePreview(note)}</p>
-                    </button>
-                ))}
+                        {/* Top-level Linux-style Root Notes directly under / */}
+                        {rootNotes.map((note) => (
+                            <button
+                                type="button"
+                                key={note.id}
+                                className={`admin-note-list-item is-root${
+                                    selectedId === note.id ? ' active' : ''
+                                }`}
+                                onClick={() => selectNote(note)}
+                            >
+                                <strong>{note.title || 'Untitled note'}</strong>
+                                <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                <p>{getNotePreview(note)}</p>
+                            </button>
+                        ))}
 
-                {!filteredNotes.length && !allFolders.length && (
-                    <p className="admin-notes-empty">No notes found.</p>
+                        {!filteredNotes.length && !allFolders.length && (
+                            <p className="admin-notes-empty">No notes found.</p>
+                        )}
+                    </>
                 )}
             </div>
         </aside>

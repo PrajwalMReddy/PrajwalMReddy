@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { requestAI } from '../utils/aiApi';
+import { fetchDailyBriefing } from '../utils/aiApi';
 
 const AISummary = () => {
     const [summary, setSummary] = useState(null);
@@ -15,17 +15,8 @@ const AISummary = () => {
             setLoading(true);
             setError('');
 
-            const data = await requestAI([{
-                role: 'user',
-                content: `Generate a brief executive summary for my admin dashboard. Include:
-1. How many tasks I have today (including overdue)
-2. Any important action items from recent notes
-3. My spending this month and top spending categories
-4. Recommended priorities for the day
-
-Keep it concise and actionable. Use bullet points.`,
-            }]);
-            setSummary(data.content);
+            const briefing = await fetchDailyBriefing(false);
+            setSummary(briefing.summary?.body || briefing.executiveSummary || '');
         } catch (err) {
             setError(err.message);
             console.error('Summary error:', err);

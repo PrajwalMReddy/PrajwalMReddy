@@ -3,7 +3,7 @@ export const blog = {
         // Blog Page
         blogHeading: "Posts",
         blogEmpty: "Blog posts are loading...",
-        blogSubtitle: "This is my personal blog where I share my thoughts, opinions, and perspective in the form of poems, essays, and short stories. Also check out my photography page here! >",
+        blogSubtitle: "This is my personal blog where I share my thoughts, opinions, and perspective in the form of poems, essays, and short stories.",
 
         blogNotice: [
             "“If Tyranny and Oppression come to this land, it will be in the guise of fighting a foreign enemy.”\n— James Madison",
@@ -17,7 +17,7 @@ export const blog = {
         // Blog Page
         blogHeading: "ಮಿಂಬರಹಗಳು",
         blogEmpty: "ಮಿಂಬರಹಗಳು ತುಂಬಿಸುತ್ತವೆ...",
-        blogSubtitle: "ಇದು ಕವಿತೆ, ಬರಹ, ಮತ್ತು ಚಿಕ್ಕಕತೆಗಳ ರೂಪದಲ್ಲಿ ನನ್ನ ಅನಿಸಿಕೆಗಳು, ಅಭಿಪ್ರಾಯಗಳು, ಮತ್ತು ದೃಷ್ಟಿಕೋನ ಹಂಚಿಕೊಳ್ಳುವ ನನ್ನ ಸ್ವಂತ ಮೀಂಬರಹ. ನನ್ನ ಛಾಯಾಗ್ರಹಣ ಪುಟವೂ ಇಲ್ಲಿ ಬೇಟಿ ನೀಡಿ!",
+        blogSubtitle: "ಇದು ಕವಿತೆ, ಬರಹ, ಮತ್ತು ಚಿಕ್ಕಕತೆಗಳ ರೂಪದಲ್ಲಿ ನನ್ನ ಅನಿಸಿಕೆಗಳು, ಅಭಿಪ್ರಾಯಗಳು, ಮತ್ತು ದೃಷ್ಟಿಕೋನ ಹಂಚಿಕೊಳ್ಳುವ ನನ್ನ ಸ್ವಂತ ಮೀಂಬರಹ.",
 
         blogNotice: [
             "\"ಏನಾದರೂ ಆಗು, ಮೊದಲು ಮಾನವನಾಗು\"\n— ಸಿದ್ದಯ್ಯ ಪುರಾಣಿಕ",

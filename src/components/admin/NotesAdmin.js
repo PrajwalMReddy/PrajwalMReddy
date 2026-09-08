@@ -245,7 +245,10 @@ const NotesAdmin = () => {
     );
 
     const allFolders = useMemo(() => {
-        const fromNotes = notes.map((n) => n.folder).filter(Boolean);
+        const fromNotes = notes
+            .filter((n) => !n.archived)
+            .map((n) => n.folder)
+            .filter(Boolean);
         const combined = Array.from(new Set([...customFolders, ...fromNotes]));
         return combined.sort((a, b) => a.localeCompare(b));
     }, [customFolders, notes]);
@@ -836,7 +839,7 @@ const NotesAdmin = () => {
     );
 
     return (
-        <AdminLayout title="Notes">
+        <AdminLayout title="Notes Manager">
             <div
                 className={`admin-notes-workspace${isFullScreen ? ' is-full-screen' : ''}`}
             >
@@ -851,21 +854,40 @@ const NotesAdmin = () => {
                         />
                     </label>
                     <div className="admin-notes-toolbar-actions">
-                        {isCreatingToolbarFolder ? (
-                            <div className="admin-notes-toolbar-folder-form">
-                                <span className="admin-note-folder-icon" aria-hidden="true">
-                                    📁
-                                </span>
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    value={toolbarFolderName}
-                                    onChange={(e) => setToolbarFolderName(e.target.value)}
-                                    placeholder="New folder..."
-                                    aria-label="New folder name"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
+                        {noteView === 'active' && (
+                            isCreatingToolbarFolder ? (
+                                <div className="admin-notes-toolbar-folder-form">
+                                    <span className="admin-note-folder-icon" aria-hidden="true">
+                                        📁
+                                    </span>
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        value={toolbarFolderName}
+                                        onChange={(e) => setToolbarFolderName(e.target.value)}
+                                        placeholder="New folder..."
+                                        aria-label="New folder name"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (toolbarFolderName.trim()) {
+                                                    const trimmed = toolbarFolderName
+                                                        .trim()
+                                                        .replace(/^\/+|\/+$/g, '');
+                                                    handleCreateFolder(trimmed);
+                                                    setToolbarFolderName('');
+                                                    setIsCreatingToolbarFolder(false);
+                                                }
+                                            } else if (e.key === 'Escape') {
+                                                setIsCreatingToolbarFolder(false);
+                                                setToolbarFolderName('');
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="admin-note-btn-create"
+                                        onClick={() => {
                                             if (toolbarFolderName.trim()) {
                                                 const trimmed = toolbarFolderName
                                                     .trim()
@@ -874,58 +896,44 @@ const NotesAdmin = () => {
                                                 setToolbarFolderName('');
                                                 setIsCreatingToolbarFolder(false);
                                             }
-                                        } else if (e.key === 'Escape') {
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="admin-note-btn-cancel"
+                                        onClick={() => {
                                             setIsCreatingToolbarFolder(false);
                                             setToolbarFolderName('');
-                                        }
-                                    }}
-                                />
+                                        }}
+                                        title="Cancel"
+                                        aria-label="Cancel"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : (
                                 <button
                                     type="button"
-                                    className="admin-note-btn-create"
+                                    className="admin-notes-new-folder-btn"
                                     onClick={() => {
-                                        if (toolbarFolderName.trim()) {
-                                            const trimmed = toolbarFolderName
-                                                .trim()
-                                                .replace(/^\/+|\/+$/g, '');
-                                            handleCreateFolder(trimmed);
-                                            setToolbarFolderName('');
-                                            setIsCreatingToolbarFolder(false);
-                                        }
-                                    }}
-                                >
-                                    Create
-                                </button>
-                                <button
-                                    type="button"
-                                    className="admin-note-btn-cancel"
-                                    onClick={() => {
-                                        setIsCreatingToolbarFolder(false);
+                                        setIsCreatingToolbarFolder(true);
                                         setToolbarFolderName('');
                                     }}
-                                    title="Cancel"
-                                    aria-label="Cancel"
+                                    title="Create new folder"
                                 >
-                                    ✕
+                                    + New folder
                                 </button>
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                className="admin-notes-new-folder-btn"
-                                onClick={() => {
-                                    setIsCreatingToolbarFolder(true);
-                                    setToolbarFolderName('');
-                                }}
-                                title="Create new folder"
-                            >
-                                + New folder
-                            </button>
+                            )
                         )}
                         <button
                             type="button"
                             className="admin-notes-new"
-                            onClick={() => startNewNote('')}
+                            onClick={() => {
+                                setNoteView('active');
+                                startNewNote('');
+                            }}
                         >
                             + New note
                         </button>
@@ -979,144 +987,193 @@ const NotesAdmin = () => {
                                             placeholder="Untitled note"
                                             aria-label="Note title"
                                         />
-                                        <div
-                                            className="admin-note-folder-dropdown-wrap"
-                                            ref={folderDropdownRef}
-                                        >
-                                            <button
-                                                type="button"
-                                                className={`admin-note-folder-chip${
-                                                    isFolderDropdownOpen ? ' is-open' : ''
-                                                }`}
-                                                onClick={() =>
-                                                    setIsFolderDropdownOpen((prev) => !prev)
-                                                }
-                                                aria-expanded={isFolderDropdownOpen}
-                                                aria-haspopup="listbox"
-                                                title="Change note folder location"
+                                        {noteView !== 'archived' && (
+                                            <div
+                                                className="admin-note-folder-dropdown-wrap"
+                                                ref={folderDropdownRef}
                                             >
-                                                <span
-                                                    className="admin-note-folder-chip-icon"
-                                                    aria-hidden="true"
+                                                <button
+                                                    type="button"
+                                                    className={`admin-note-folder-chip${
+                                                        isFolderDropdownOpen ? ' is-open' : ''
+                                                    }`}
+                                                    onClick={() =>
+                                                        setIsFolderDropdownOpen((prev) => !prev)
+                                                    }
+                                                    aria-expanded={isFolderDropdownOpen}
+                                                    aria-haspopup="listbox"
+                                                    title="Change note folder location"
                                                 >
-                                                    📁
-                                                </span>
-                                                <span className="admin-note-folder-chip-label">
-                                                    {draft.folder
-                                                        ? `/${draft.folder}`
-                                                        : '/ (Root)'}
-                                                </span>
-                                                <span
-                                                    className="admin-note-folder-chip-arrow"
-                                                    aria-hidden="true"
-                                                >
-                                                    ▾
-                                                </span>
-                                            </button>
+                                                    <span
+                                                        className="admin-note-folder-chip-icon"
+                                                        aria-hidden="true"
+                                                    >
+                                                        📁
+                                                    </span>
+                                                    <span className="admin-note-folder-chip-label">
+                                                        {draft.folder
+                                                            ? `/${draft.folder}`
+                                                            : '/ (Root)'}
+                                                    </span>
+                                                    <span
+                                                        className="admin-note-folder-chip-arrow"
+                                                        aria-hidden="true"
+                                                    >
+                                                        ▾
+                                                    </span>
+                                                </button>
 
-                                            {isFolderDropdownOpen && (
-                                                <div
-                                                    className="admin-note-folder-menu"
-                                                    role="listbox"
-                                                >
-                                                    <div className="admin-note-folder-menu-header">
-                                                        <span>Note Location</span>
-                                                    </div>
-                                                    <div className="admin-note-folder-menu-items">
-                                                        <button
-                                                            type="button"
-                                                            className={`admin-note-folder-menu-item${
-                                                                !draft.folder ? ' is-selected' : ''
-                                                            }`}
-                                                            onClick={() => {
-                                                                handleFolderChange('');
-                                                                setIsFolderDropdownOpen(false);
-                                                            }}
-                                                            role="option"
-                                                            aria-selected={!draft.folder}
-                                                        >
-                                                            <span className="admin-note-folder-item-icon">
-                                                                📁
-                                                            </span>
-                                                            <span className="admin-note-folder-item-text">
-                                                                / (Root)
-                                                            </span>
-                                                            {!draft.folder && (
-                                                                <span
-                                                                    className="admin-note-folder-item-check"
-                                                                    aria-hidden="true"
-                                                                >
-                                                                    ✓
-                                                                </span>
-                                                            )}
-                                                        </button>
-
-                                                        {allFolders.map((folder) => {
-                                                            const isSelected =
-                                                                draft.folder === folder;
-                                                            return (
-                                                                <button
-                                                                    type="button"
-                                                                    key={folder}
-                                                                    className={`admin-note-folder-menu-item${
-                                                                        isSelected
-                                                                            ? ' is-selected'
-                                                                            : ''
-                                                                    }`}
-                                                                    onClick={() => {
-                                                                        handleFolderChange(
-                                                                            folder
-                                                                        );
-                                                                        setIsFolderDropdownOpen(
-                                                                            false
-                                                                        );
-                                                                    }}
-                                                                    role="option"
-                                                                    aria-selected={isSelected}
-                                                                >
-                                                                    <span className="admin-note-folder-item-icon">
-                                                                        📁
-                                                                    </span>
-                                                                    <span className="admin-note-folder-item-text">
-                                                                        /{folder}
-                                                                    </span>
-                                                                    {isSelected && (
-                                                                        <span
-                                                                            className="admin-note-folder-item-check"
-                                                                            aria-hidden="true"
-                                                                        >
-                                                                            ✓
-                                                                        </span>
-                                                                    )}
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-
-                                                    <div className="admin-note-folder-menu-footer">
-                                                        {isCreatingDropdownFolder ? (
-                                                            <div className="admin-note-dropdown-folder-form">
-                                                                <span
-                                                                    className="admin-note-folder-item-icon"
-                                                                    aria-hidden="true"
-                                                                >
+                                                {isFolderDropdownOpen && (
+                                                    <div
+                                                        className="admin-note-folder-menu"
+                                                        role="listbox"
+                                                    >
+                                                        <div className="admin-note-folder-menu-header">
+                                                            <span>Note Location</span>
+                                                        </div>
+                                                        <div className="admin-note-folder-menu-items">
+                                                            <button
+                                                                type="button"
+                                                                className={`admin-note-folder-menu-item${
+                                                                    !draft.folder ? ' is-selected' : ''
+                                                                }`}
+                                                                onClick={() => {
+                                                                    handleFolderChange('');
+                                                                    setIsFolderDropdownOpen(false);
+                                                                }}
+                                                                role="option"
+                                                                aria-selected={!draft.folder}
+                                                            >
+                                                                <span className="admin-note-folder-item-icon">
                                                                     📁
                                                                 </span>
-                                                                <input
-                                                                    autoFocus
-                                                                    type="text"
-                                                                    value={
-                                                                        dropdownFolderName
-                                                                    }
-                                                                    onChange={(e) =>
-                                                                        setDropdownFolderName(
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    placeholder="New folder..."
-                                                                    aria-label="New folder name"
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === 'Enter') {
+                                                                <span className="admin-note-folder-item-text">
+                                                                    / (Root)
+                                                                </span>
+                                                                {!draft.folder && (
+                                                                    <span
+                                                                        className="admin-note-folder-item-check"
+                                                                        aria-hidden="true"
+                                                                    >
+                                                                        ✓
+                                                                    </span>
+                                                                )}
+                                                            </button>
+
+                                                            {allFolders.map((folder) => {
+                                                                const isSelected =
+                                                                    draft.folder === folder;
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        key={folder}
+                                                                        className={`admin-note-folder-menu-item${
+                                                                            isSelected
+                                                                                ? ' is-selected'
+                                                                                : ''
+                                                                        }`}
+                                                                        onClick={() => {
+                                                                            handleFolderChange(
+                                                                                folder
+                                                                            );
+                                                                            setIsFolderDropdownOpen(
+                                                                                false
+                                                                            );
+                                                                        }}
+                                                                        role="option"
+                                                                        aria-selected={isSelected}
+                                                                    >
+                                                                        <span className="admin-note-folder-item-icon">
+                                                                            📁
+                                                                        </span>
+                                                                        <span className="admin-note-folder-item-text">
+                                                                            /{folder}
+                                                                        </span>
+                                                                        {isSelected && (
+                                                                            <span
+                                                                                className="admin-note-folder-item-check"
+                                                                                aria-hidden="true"
+                                                                            >
+                                                                                ✓
+                                                                            </span>
+                                                                        )}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+
+                                                        <div className="admin-note-folder-menu-footer">
+                                                            {isCreatingDropdownFolder ? (
+                                                                <div className="admin-note-dropdown-folder-form">
+                                                                    <span
+                                                                        className="admin-note-folder-item-icon"
+                                                                        aria-hidden="true"
+                                                                    >
+                                                                        📁
+                                                                    </span>
+                                                                    <input
+                                                                        autoFocus
+                                                                        type="text"
+                                                                        value={
+                                                                            dropdownFolderName
+                                                                        }
+                                                                        onChange={(e) =>
+                                                                            setDropdownFolderName(
+                                                                                e.target.value
+                                                                            )
+                                                                        }
+                                                                        placeholder="New folder name..."
+                                                                        aria-label="New folder name"
+                                                                        onKeyDown={(e) => {
+                                                                            if (
+                                                                                e.key === 'Enter'
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                if (
+                                                                                    dropdownFolderName.trim()
+                                                                                ) {
+                                                                                    const trimmed =
+                                                                                        dropdownFolderName
+                                                                                            .trim()
+                                                                                            .replace(
+                                                                                                /^\/+|\/+$/g,
+                                                                                                ''
+                                                                                            );
+                                                                                    handleCreateFolder(
+                                                                                        trimmed
+                                                                                    );
+                                                                                    handleFolderChange(
+                                                                                        trimmed
+                                                                                    );
+                                                                                    setDropdownFolderName(
+                                                                                        ''
+                                                                                    );
+                                                                                    setIsCreatingDropdownFolder(
+                                                                                        false
+                                                                                    );
+                                                                                    setIsFolderDropdownOpen(
+                                                                                        false
+                                                                                    );
+                                                                                }
+                                                                            } else if (
+                                                                                e.key === 'Escape'
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                setIsCreatingDropdownFolder(
+                                                                                    false
+                                                                                );
+                                                                                setDropdownFolderName(
+                                                                                    ''
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <button
+                                                                        type="button"
+                                                                        className="admin-note-btn-create"
+                                                                        onClick={(e) => {
                                                                             e.preventDefault();
                                                                             e.stopPropagation();
                                                                             if (
@@ -1145,9 +1202,14 @@ const NotesAdmin = () => {
                                                                                     false
                                                                                 );
                                                                             }
-                                                                        } else if (
-                                                                            e.key === 'Escape'
-                                                                        ) {
+                                                                        }}
+                                                                    >
+                                                                        Create
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="admin-note-btn-cancel"
+                                                                        onClick={(e) => {
                                                                             e.preventDefault();
                                                                             e.stopPropagation();
                                                                             setIsCreatingDropdownFolder(
@@ -1156,83 +1218,33 @@ const NotesAdmin = () => {
                                                                             setDropdownFolderName(
                                                                                 ''
                                                                             );
-                                                                        }
-                                                                    }}
-                                                                />
+                                                                        }}
+                                                                        title="Cancel"
+                                                                        aria-label="Cancel"
+                                                                    >
+                                                                        ✕
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
                                                                 <button
                                                                     type="button"
-                                                                    className="admin-note-btn-create"
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        e.stopPropagation();
-                                                                        if (
-                                                                            dropdownFolderName.trim()
-                                                                        ) {
-                                                                            const trimmed =
-                                                                                dropdownFolderName
-                                                                                    .trim()
-                                                                                    .replace(
-                                                                                        /^\/+|\/+$/g,
-                                                                                        ''
-                                                                                    );
-                                                                            handleCreateFolder(
-                                                                                trimmed
-                                                                            );
-                                                                            handleFolderChange(
-                                                                                trimmed
-                                                                            );
-                                                                            setDropdownFolderName(
-                                                                                ''
-                                                                            );
-                                                                            setIsCreatingDropdownFolder(
-                                                                                false
-                                                                            );
-                                                                            setIsFolderDropdownOpen(
-                                                                                false
-                                                                            );
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    Create
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    className="admin-note-btn-cancel"
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        e.stopPropagation();
+                                                                    className="admin-note-folder-menu-add"
+                                                                    onClick={() => {
                                                                         setIsCreatingDropdownFolder(
-                                                                            false
+                                                                            true
                                                                         );
-                                                                        setDropdownFolderName(
-                                                                            ''
-                                                                        );
+                                                                        setDropdownFolderName('');
                                                                     }}
-                                                                    title="Cancel"
-                                                                    aria-label="Cancel"
                                                                 >
-                                                                    ✕
+                                                                    <span aria-hidden="true">+</span>{' '}
+                                                                    New folder...
                                                                 </button>
-                                                            </div>
-                                                        ) : (
-                                                            <button
-                                                                type="button"
-                                                                className="admin-note-folder-menu-add"
-                                                                onClick={() => {
-                                                                    setIsCreatingDropdownFolder(
-                                                                        true
-                                                                    );
-                                                                    setDropdownFolderName('');
-                                                                }}
-                                                            >
-                                                                <span aria-hidden="true">+</span>{' '}
-                                                                New folder...
-                                                            </button>
-                                                        )}
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="admin-note-actions">
                                         {selectedId && (
