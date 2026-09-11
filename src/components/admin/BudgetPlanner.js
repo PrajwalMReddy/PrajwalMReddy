@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
+import { useContent } from '../../utils/ContentContext';
 import {
     AYANA_START_DATE,
     budgetApi,
@@ -22,6 +23,7 @@ const emptyItemForm = {
 const isCloseToZero = (n) => Math.abs(n) < 0.005;
 
 const BudgetPlanner = () => {
+    const { t, formatNumber, language } = useContent();
     const [plans, setPlans] = useState([]);
     const [selectedPlanId, setSelectedPlanId] = useState(null);
     const [draftPlan, setDraftPlan] = useState(null);
@@ -468,7 +470,7 @@ const BudgetPlanner = () => {
 
         if (
             !window.confirm(
-                'Delete this budget plan?'
+                t('admin.budgetSection.planner.deleteConfirmPlan', 'Delete this budget plan?')
             )
         ) {
             return;
@@ -496,7 +498,7 @@ const BudgetPlanner = () => {
     if (loading) {
         return (
             <p className="admin-loading-text">
-                Loading budget plans...
+                {t('admin.budgetSection.planner.loading', 'Loading budget plans...')}
             </p>
         );
     }
@@ -516,7 +518,7 @@ const BudgetPlanner = () => {
             <div className="admin-planner-tabs">
                 <div className="admin-planner-plan-controls">
                     <label className="admin-planner-ayana-selector">
-                        <span>Plan for</span>
+                        <span>{t('admin.budgetSection.planner.planFor', 'Plan for')}</span>
 
                         <select
                             value={
@@ -529,7 +531,7 @@ const BudgetPlanner = () => {
                             onChange={handleAyanaSelection}
                         >
                             <option value="" disabled>
-                                Select Ayana
+                                {t('admin.budgetSection.planner.selectAyana', 'Select Ayana')}
                             </option>
 
                             {availableAyanaNumbers.map((ayanaNumber) => {
@@ -543,15 +545,15 @@ const BudgetPlanner = () => {
                                         key={ayanaNumber}
                                         value={ayanaNumber}
                                     >
-                                        {`Ayana ${ayanaNumber}${
+                                        {`${t('admin.budgetSection.planner.ayana', 'Ayana')} ${formatNumber(ayanaNumber)}${
                                             ayanaNumber === currentAyanaNumber
-                                                ? ' · Current'
+                                                ? ` · ${t('admin.budgetSection.planner.current', 'Current')}`
                                                 : ayanaNumber < currentAyanaNumber
-                                                    ? ' · Past'
-                                                    : ' · Future'
+                                                    ? ` · ${t('admin.budgetSection.planner.past', 'Past')}`
+                                                    : ` · ${t('admin.budgetSection.planner.future', 'Future')}`
                                         }${
                                             hasPlan
-                                                ? ' · Saved'
+                                                ? ` · ${t('admin.budgetSection.planner.saved', 'Saved')}`
                                                 : ''
                                         }`}
                                     </option>
@@ -564,11 +566,10 @@ const BudgetPlanner = () => {
 
             {!draftPlan && !error && (
                 <div className="admin-planner-empty">
-                    <h3>No budget plan selected</h3>
+                    <h3>{t('admin.budgetSection.planner.noPlanSelected', 'No budget plan selected')}</h3>
 
                     <p>
-                        Select an Ayana above to create or edit
-                        its budget plan.
+                        {t('admin.budgetSection.planner.selectAyanaPrompt', 'Select an Ayana above to create or edit its budget plan.')}
                     </p>
                 </div>
             )}
@@ -582,13 +583,15 @@ const BudgetPlanner = () => {
                     <div className="admin-planner-header">
                         <div>
                             <span className="admin-planner-eyebrow">
-                                Budget Planner
+                                {t('admin.budgetSection.planner.budgetPlanner', 'Budget Planner')}
                             </span>
 
                             <h3>
                                 {formatAyanaLabel(
                                     AYANA_START_DATE,
-                                    draftPlan.ayanaNumber
+                                    draftPlan.ayanaNumber,
+                                    language,
+                                    formatNumber
                                 )}
                             </h3>
                         </div>
@@ -599,7 +602,7 @@ const BudgetPlanner = () => {
                                 className="danger"
                                 onClick={handleDeletePlan}
                             >
-                                Delete
+                                {t('admin.budgetSection.planner.deletePlan', 'Delete')}
                             </button>
 
                             <button
@@ -611,8 +614,8 @@ const BudgetPlanner = () => {
                                 }
                             >
                                 {saving
-                                    ? 'Saving...'
-                                    : 'Save Plan'}
+                                    ? t('admin.actions.saving', 'Saving...')
+                                    : t('admin.budgetSection.planner.savePlan', 'Save Plan')}
                             </button>
                         </div>
                     </div>
@@ -624,7 +627,7 @@ const BudgetPlanner = () => {
                     <section className="admin-planner-overview">
                         <div className="admin-planner-budget-input">
                             <label>
-                                <span>Total Ayana Budget</span>
+                                <span>{t('admin.budgetSection.planner.totalAyanaBudget', 'Total Ayana Budget')}</span>
 
                                 <div className="admin-planner-money-input">
                                     <span>$</span>
@@ -649,28 +652,28 @@ const BudgetPlanner = () => {
                                 onClick={handleDistributeEvenly}
                                 disabled={totalBudget <= 0}
                             >
-                                Split Evenly
+                                {t('admin.budgetSection.planner.distributeEvenly', 'Split Evenly')}
                             </button>
                         </div>
 
                         <div className="admin-planner-overview-stats">
                             <div>
-                                <span>Monthly Budget</span>
+                                <span>{t('admin.budgetSection.planner.monthlyBudget', 'Monthly Budget')}</span>
 
                                 <strong>
-                                    {formatCurrency(
+                                    {formatNumber(formatCurrency(
                                         totalMonthlyBudget
-                                    )}
+                                    ))}
                                 </strong>
                             </div>
 
                             <div>
-                                <span>Planned</span>
+                                <span>{t('admin.budgetSection.planner.planned', 'Planned')}</span>
 
                                 <strong>
-                                    {formatCurrency(
+                                    {formatNumber(formatCurrency(
                                         totalPlanned
-                                    )}
+                                    ))}
                                 </strong>
                             </div>
 
@@ -683,16 +686,16 @@ const BudgetPlanner = () => {
                             >
                                 <span>
                                     {remainingToSpend < 0
-                                        ? 'Over Budget'
-                                        : 'Remaining'}
+                                        ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
+                                        : t('admin.budgetSection.planner.remaining', 'Remaining')}
                                 </span>
 
                                 <strong>
-                                    {formatCurrency(
+                                    {formatNumber(formatCurrency(
                                         Math.abs(
                                             remainingToSpend
                                         )
-                                    )}
+                                    ))}
                                 </strong>
                             </div>
                         </div>
@@ -732,16 +735,16 @@ const BudgetPlanner = () => {
                                 }
                             >
                                 {allocationValid
-                                    ? 'Budget fully allocated'
+                                    ? t('admin.budgetSection.planner.allocatedFully', 'Budget fully allocated')
                                     : allocationDifference < 0
-                                        ? `${formatCurrency(
+                                        ? `${formatNumber(formatCurrency(
                                             Math.abs(
                                                 allocationDifference
                                             )
-                                        )} over-allocated`
-                                        : `${formatCurrency(
+                                        ))} ${t('admin.budgetSection.planner.overAllocated', 'over-allocated')}`
+                                        : `${formatNumber(formatCurrency(
                                             allocationDifference
-                                        )} left to allocate`}
+                                        ))} ${t('admin.budgetSection.planner.leftToAllocate', 'left to allocate')}`}
                             </span>
                         </div>
                     </section>
@@ -752,11 +755,10 @@ const BudgetPlanner = () => {
 
                     <section className="admin-planner-months">
                         <div className="admin-planner-section-heading">
-                            <h2>Monthly Plan</h2>
+                            <h2>{t('admin.budgetSection.planner.monthlyPlan', 'Monthly Plan')}</h2>
 
                             <p>
-                                Set each month's budget and add the
-                                expenses you expect during that month.
+                                {t('admin.budgetSection.planner.monthlyPlanDesc', "Set each month's budget and add the expenses you expect during that month.")}
                             </p>
                         </div>
 
@@ -799,25 +801,25 @@ const BudgetPlanner = () => {
                                             aria-expanded={isOpen}
                                         >
                                             <span className="admin-planner-month-name">
-                                                {formatMonthLabel(month)}
+                                                {formatMonthLabel(month, language, formatNumber)}
                                             </span>
 
                                             <span className="admin-planner-month-metrics">
                                                 <span>
-                                                    Budget{' '}
+                                                    {t('admin.budgetSection.planner.budget', 'Budget')}{' '}
                                                     <strong>
-                                                        {formatCurrency(
+                                                        {formatNumber(formatCurrency(
                                                             budgeted
-                                                        )}
+                                                        ))}
                                                     </strong>
                                                 </span>
 
                                                 <span>
-                                                    Planned{' '}
+                                                    {t('admin.budgetSection.planner.planned', 'Planned')}{' '}
                                                     <strong>
-                                                        {formatCurrency(
+                                                        {formatNumber(formatCurrency(
                                                             planned
-                                                        )}
+                                                        ))}
                                                     </strong>
                                                 </span>
 
@@ -829,15 +831,15 @@ const BudgetPlanner = () => {
                                                     }
                                                 >
                                                     {remaining < 0
-                                                        ? 'Over '
-                                                        : 'Left '}
+                                                        ? t('admin.budgetSection.planner.over', 'Over ')
+                                                        : t('admin.budgetSection.planner.left', 'Left ')}
 
                                                     <strong>
-                                                        {formatCurrency(
+                                                        {formatNumber(formatCurrency(
                                                             Math.abs(
                                                                 remaining
                                                             )
-                                                        )}
+                                                        ))}
                                                     </strong>
                                                 </span>
                                             </span>
@@ -857,7 +859,7 @@ const BudgetPlanner = () => {
                                                 <div className="admin-planner-month-budget">
                                                     <label>
                                                         <span>
-                                                            Monthly Budget
+                                                            {t('admin.budgetSection.planner.monthlyBudget', 'Monthly Budget')}
                                                         </span>
 
                                                         <div className="admin-planner-money-input">
@@ -889,13 +891,11 @@ const BudgetPlanner = () => {
                                                 <div className="admin-planner-planned-expenses">
                                                     <div className="admin-planner-subsection-header">
                                                         <h3>
-                                                            Planned Expenses
+                                                            {t('admin.budgetSection.planner.plannedExpenses', 'Planned Expenses')}
                                                         </h3>
 
                                                         <p>
-                                                            Add expenses you
-                                                            expect to make
-                                                            this month.
+                                                            {t('admin.budgetSection.planner.plannedExpensesDesc', 'Add expenses you expect to make this month.')}
                                                         </p>
                                                     </div>
 
@@ -910,12 +910,12 @@ const BudgetPlanner = () => {
                                                     >
                                                         <label>
                                                             <span>
-                                                                Expense
+                                                                {t('admin.budgetSection.planner.headers.item', 'Expense')}
                                                             </span>
 
                                                             <input
                                                                 type="text"
-                                                                placeholder="e.g. Groceries"
+                                                                placeholder={t('admin.budgetSection.planner.expenseItemPlaceholder', 'e.g. Groceries')}
                                                                 value={form.item}
                                                                 onChange={(event) =>
                                                                     handleItemFormChange(
@@ -929,7 +929,7 @@ const BudgetPlanner = () => {
 
                                                         <label>
                                                             <span>
-                                                                Category
+                                                                {t('admin.budgetSection.planner.headers.category', 'Category')}
                                                             </span>
 
                                                             <select
@@ -967,7 +967,7 @@ const BudgetPlanner = () => {
 
                                                         <label>
                                                             <span>
-                                                                Amount
+                                                                {t('admin.budgetSection.planner.headers.amount', 'Amount')}
                                                             </span>
 
                                                             <div className="admin-planner-money-input">
@@ -1003,7 +1003,7 @@ const BudgetPlanner = () => {
                                                                 form.amount === ''
                                                             }
                                                         >
-                                                            Add expense
+                                                            {t('admin.budgetSection.planner.addExpenseBtn', 'Add expense')}
                                                         </button>
                                                     </form>
 
@@ -1013,15 +1013,15 @@ const BudgetPlanner = () => {
                                                         <div className="admin-planner-expense-list">
                                                             <div className="admin-planner-expense-list-header">
                                                                 <span>
-                                                                    Expense
+                                                                    {t('admin.budgetSection.planner.headers.item', 'Expense')}
                                                                 </span>
 
                                                                 <span>
-                                                                    Category
+                                                                    {t('admin.budgetSection.planner.headers.category', 'Category')}
                                                                 </span>
 
                                                                 <span>
-                                                                    Amount
+                                                                    {t('admin.budgetSection.planner.headers.amount', 'Amount')}
                                                                 </span>
 
                                                                 <span/>
@@ -1051,12 +1051,12 @@ const BudgetPlanner = () => {
 
                                                                         <strong
                                                                             className="admin-planner-expense-amount">
-                                                                            {formatCurrency(
+                                                                            {formatNumber(formatCurrency(
                                                                                 Number(
                                                                                     item.amount
                                                                                 ) ||
                                                                                 0
-                                                                            )}
+                                                                            ))}
                                                                         </strong>
 
                                                                         <button
@@ -1067,8 +1067,8 @@ const BudgetPlanner = () => {
                                                                                     item.id
                                                                                 )
                                                                             }
-                                                                            aria-label={`Delete ${item.item}`}
-                                                                            title="Delete expense"
+                                                                            aria-label={`${t('admin.actions.delete', 'Delete')} ${item.item}`}
+                                                                            title={t('admin.budgetSection.planner.deleteExpenseTitle', 'Delete expense')}
                                                                         >
                                                                             ×
                                                                         </button>
@@ -1079,14 +1079,11 @@ const BudgetPlanner = () => {
                                                     ) : (
                                                         <div className="admin-planner-no-expenses">
                                                             <strong>
-                                                                No expenses yet
+                                                                {t('admin.budgetSection.planner.noExpensesYet', 'No expenses yet')}
                                                             </strong>
 
                                                             <span>
-                                                                Add your
-                                                                expected
-                                                                expenses
-                                                                above.
+                                                                {t('admin.budgetSection.planner.addExpectedAbove', 'Add your expected expenses above.')}
                                                             </span>
                                                         </div>
                                                     )}

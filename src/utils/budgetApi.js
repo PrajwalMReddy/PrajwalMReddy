@@ -58,17 +58,50 @@ export const budgetApi = {
         request(`${API_BASE}/planner/${id}`, { method: 'DELETE' }),
 };
 
+// IMPORTANT: Parsing date-only strings (e.g. 'YYYY-MM-DD') with `new Date(...)` parses them
+// as UTC midnight, which renders as the previous day in any timezone behind UTC (e.g. all of the US).
+// Parsing the y/m/d parts manually and building the Date in local time avoids that entirely,
+// ensuring budget items consistently reflect the user's computer timezone.
+export const parseLocalDate = (dateVal) => {
+    if (!dateVal) return new Date();
+    if (dateVal instanceof Date) {
+        return new Date(dateVal.getFullYear(), dateVal.getMonth(), dateVal.getDate());
+    }
+    const str = String(dateVal);
+    const datePart = str.split('T')[0];
+    const parts = datePart.split('-').map(Number);
+    if (parts.length === 3 && !parts.some(isNaN)) {
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    const d = new Date(dateVal);
+    return isNaN(d.getTime()) ? new Date() : d;
+};
+
+export const getTodayInputDate = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 export const formatCurrency = (value) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value ?? 0);
 
-export const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+export const formatDate = (dateStr, lang = 'en') => {
+    if (!dateStr) return '';
+    const date = parseLocalDate(dateStr);
+    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
+    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
 };
 
 export const toInputDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toISOString().split('T')[0];
+    if (!dateStr) return '';
+    const date = parseLocalDate(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 export const DEFAULT_CATEGORIES = [
@@ -89,17 +122,6 @@ export const DEFAULT_CATEGORIES = [
 
 // --- Ayana (6-month period) helpers, used by the budget planner ---
 // All take a startDateStr — pass AYANA_START_DATE for the app's fixed start.
-
-// IMPORTANT: `new Date('2024-07-01')` parses a date-only string as UTC
-// midnight, which then renders as the *previous* day in any timezone behind
-// UTC (e.g. all of the US) — shifting every ayana boundary back by a day.
-// Parsing the y/m/d parts manually and building the Date in local time
-// avoids that entirely.
-const parseLocalDate = (dateStr) => {
-    if (typeof dateStr !== 'string') return new Date(dateStr);
-    const [year, month, day] = dateStr.split('T')[0].split('-').map(Number);
-    return new Date(year, month - 1, day);
-};
 
 export const getAyanaRange = (startDateStr, ayanaNumber) => {
     const rangeStart = parseLocalDate(startDateStr);
@@ -130,15 +152,20 @@ export const getCurrentAyanaNumber = (startDateStr) => {
     return Math.max(1, Math.floor(monthsDiff / 6) + 1);
 };
 
-export const formatAyanaLabel = (startDateStr, ayanaNumber) => {
-    if (!startDateStr) return `Ayana ${ayanaNumber}`;
+export const formatAyanaLabel = (startDateStr, ayanaNumber, lang = 'en', formatNum = (v) => v) => {
+    const prefix = lang === 'kn' ? 'ಆಯನ' : 'Ayana';
+    if (!startDateStr) return `${prefix} ${formatNum(ayanaNumber)}`;
     const { start, end } = getAyanaRange(startDateStr, ayanaNumber);
+    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
     const opts = { year: 'numeric', month: 'short' };
-    return `Ayana ${ayanaNumber} (${start.toLocaleDateString('en-US', opts)} \u2013 ${end.toLocaleDateString('en-US', opts)})`;
+    const startStr = formatNum(start.toLocaleDateString(locale, opts));
+    const endStr = formatNum(end.toLocaleDateString(locale, opts));
+    return `${prefix} ${formatNum(ayanaNumber)} (${startStr} \u2013 ${endStr})`;
 };
 
-export const formatMonthLabel = (monthStr) => {
+export const formatMonthLabel = (monthStr, lang = 'en', formatNum = (v) => v) => {
     const [year, month] = monthStr.split('-').map(Number);
     const date = new Date(year, month - 1, 1);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
+    return formatNum(date.toLocaleDateString(locale, { year: 'numeric', month: 'long' }));
 };

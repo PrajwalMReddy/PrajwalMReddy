@@ -1,16 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { budgetApi, formatCurrency, formatDate, toInputDate } from '../../utils/budgetApi';
+import { useContent } from '../../utils/ContentContext';
+import { budgetApi, formatCurrency, formatDate, getTodayInputDate, toInputDate } from '../../utils/budgetApi';
 
-const emptyIncome = {
+const createEmptyIncome = () => ({
     no: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayInputDate(),
     item: '',
     value: '',
     type: 'injection',
-};
+});
 
 const IncomeTable = ({ income, onRefresh }) => {
-    const [form, setForm] = useState(emptyIncome);
+    const { t, formatNumber, language } = useContent();
+    const [form, setForm] = useState(createEmptyIncome);
     const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -22,7 +24,7 @@ const IncomeTable = ({ income, onRefresh }) => {
 
         return income.filter((entry) => {
             const rawDate = String(entry.date || '').toLowerCase();
-            const formattedDateStr = formatDate(entry.date).toLowerCase();
+            const formattedDateStr = formatDate(entry.date, language).toLowerCase();
             const inputDateStr = toInputDate(entry.date).toLowerCase();
             const dateMatch =
                 rawDate.includes(q) || formattedDateStr.includes(q) || inputDateStr.includes(q);
@@ -47,7 +49,7 @@ const IncomeTable = ({ income, onRefresh }) => {
     }, [income, searchQuery]);
 
     const resetForm = () => {
-        setForm(emptyIncome);
+        setForm(createEmptyIncome());
         setEditingId(null);
     };
 
@@ -87,7 +89,7 @@ const IncomeTable = ({ income, onRefresh }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Delete this income entry?')) return;
+        if (!window.confirm(t('admin.budgetSection.deleteConfirmIncome', 'Delete this income entry?'))) return;
         try {
             await budgetApi.deleteIncome(id);
             if (editingId === id) resetForm();
@@ -111,12 +113,14 @@ const IncomeTable = ({ income, onRefresh }) => {
                         </span>
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {editingId ? 'Edit Income' : 'Add Income'}
+                                {editingId
+                                    ? t('admin.budgetSection.editIncome', 'Edit Income')
+                                    : t('admin.budgetSection.addIncome', 'Add Income')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
                                 {editingId
-                                    ? `Updating entry #${form.no || editingId}`
-                                    : 'Record incoming funds or capital injections'}
+                                    ? `${t('admin.budgetSection.updatingEntry', 'Updating entry')} #${formatNumber(form.no || editingId)}`
+                                    : t('admin.budgetSection.recordNewIncome', 'Record incoming funds or capital injections')}
                             </p>
                         </div>
                     </div>
@@ -126,23 +130,23 @@ const IncomeTable = ({ income, onRefresh }) => {
                             className="admin-budget-cancel-btn"
                             onClick={resetForm}
                         >
-                            Cancel Edit
+                            {t('admin.budgetSection.cancelEdit', 'Cancel Edit')}
                         </button>
                     )}
                 </div>
 
                 <div className="admin-budget-form-grid">
                     <label className="admin-field-group admin-field-serial">
-                        <span className="admin-field-label">No</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.no', 'No')}</span>
                         <input
                             type="number"
                             value={form.no}
                             onChange={(e) => setForm({ ...form, no: e.target.value })}
-                            placeholder="Auto"
+                            placeholder={t('admin.budgetSection.auto', 'Auto')}
                         />
                     </label>
                     <label className="admin-field-group admin-field-date">
-                        <span className="admin-field-label">Date</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
                         <input
                             type="date"
                             value={form.date}
@@ -151,27 +155,27 @@ const IncomeTable = ({ income, onRefresh }) => {
                         />
                     </label>
                     <label className="admin-field-group admin-field-item">
-                        <span className="admin-field-label">Item Description</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription', 'Item Description')}</span>
                         <input
                             type="text"
                             value={form.item}
                             onChange={(e) => setForm({ ...form, item: e.target.value })}
-                            placeholder="e.g. Salary, Consulting, Investment..."
+                            placeholder={t('admin.budgetSection.incomeItemPlaceholder', 'e.g. Salary, Consulting, Investment...')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-category">
-                        <span className="admin-field-label">Income Type</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.incomeType', 'Income Type')}</span>
                         <select
                             value={form.type}
                             onChange={(e) => setForm({ ...form, type: e.target.value })}
                         >
-                            <option value="injection">Injection</option>
-                            <option value="other">Other Income</option>
+                            <option value="injection">{t('admin.budgetSection.injection', 'Injection')}</option>
+                            <option value="other">{t('admin.budgetSection.otherIncome', 'Other Income')}</option>
                         </select>
                     </label>
                     <label className="admin-field-group admin-field-cost">
-                        <span className="admin-field-label">Value</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.value', 'Value')}</span>
                         <div className="admin-currency-input-wrap">
                             <span className="admin-currency-symbol" aria-hidden="true">$</span>
                             <input
@@ -192,10 +196,10 @@ const IncomeTable = ({ income, onRefresh }) => {
                             disabled={submitting}
                         >
                             {submitting
-                                ? 'Saving...'
+                                ? t('admin.actions.saving', 'Saving...')
                                 : editingId
-                                ? 'Update Income'
-                                : '+ Add Income'}
+                                ? t('admin.budgetSection.updateIncomeBtn', 'Update Income')
+                                : t('admin.budgetSection.addIncomeBtn', '+ Add Income')}
                         </button>
                     </div>
                 </div>
@@ -205,13 +209,13 @@ const IncomeTable = ({ income, onRefresh }) => {
             <div className="admin-budget-table-card">
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
-                        <h3 className="admin-budget-table-title">Income History</h3>
+                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.incomeHistory', 'Income History')}</h3>
                         <span className="admin-budget-count-badge">
-                            {income.length} {income.length === 1 ? 'entry' : 'entries'}
+                            {formatNumber(income.length)} {income.length === 1 ? t('admin.budgetSection.entry', 'entry') : t('admin.budgetSection.entries', 'entries')}
                         </span>
                         {searchQuery && filteredIncome.length !== income.length && (
                             <span className="admin-budget-filter-badge">
-                                {filteredIncome.length} matching
+                                {formatNumber(filteredIncome.length)} {t('admin.budgetSection.matching', 'matching')}
                             </span>
                         )}
                     </div>
@@ -221,20 +225,21 @@ const IncomeTable = ({ income, onRefresh }) => {
                                 🔍
                             </span>
                             <input
-                                type="search"
+                                type="text"
+                                inputMode="search"
                                 className="admin-table-search-input"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search income by date, #, item, type, value..."
-                                aria-label="Search income"
+                                placeholder={t('admin.budgetSection.searchIncomePlaceholder', 'Search income by date, #, item, type, value...')}
+                                aria-label={t('admin.budgetSection.searchIncomePlaceholder', 'Search income')}
                             />
                             {searchQuery && (
                                 <button
                                     type="button"
                                     className="admin-table-search-clear"
                                     onClick={() => setSearchQuery('')}
-                                    title="Clear search"
-                                    aria-label="Clear search"
+                                    title={t('admin.budgetSection.clearSearch', 'Clear search')}
+                                    aria-label={t('admin.budgetSection.clearSearch', 'Clear search')}
                                 >
                                     ✕
                                 </button>
@@ -247,12 +252,12 @@ const IncomeTable = ({ income, onRefresh }) => {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Date</th>
-                                <th>Item</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                                <th>Actions</th>
+                                <th>{t('admin.budgetSection.headers.no', 'No')}</th>
+                                <th>{t('admin.budgetSection.headers.date', 'Date')}</th>
+                                <th>{t('admin.budgetSection.headers.item', 'Item')}</th>
+                                <th>{t('admin.budgetSection.headers.type', 'Type')}</th>
+                                <th>{t('admin.budgetSection.headers.value', 'Value')}</th>
+                                <th>{t('admin.budgetSection.headers.actions', 'Actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -260,36 +265,38 @@ const IncomeTable = ({ income, onRefresh }) => {
                                 <tr key={entry.id}>
                                     <td>
                                         <span className="admin-serial-tag">
-                                            #{entry.no}
+                                            #{formatNumber(entry.no)}
                                         </span>
                                     </td>
-                                    <td>{formatDate(entry.date)}</td>
+                                    <td>{formatNumber(formatDate(entry.date, language))}</td>
                                     <td className="admin-item-cell">{entry.item}</td>
                                     <td>
                                         <span
                                             className={`admin-type-tag ${entry.type || 'other'}`}
                                         >
-                                            {entry.type === 'injection' ? 'Injection' : 'Other Income'}
+                                            {entry.type === 'injection'
+                                                ? t('admin.budgetSection.injection', 'Injection')
+                                                : t('admin.budgetSection.otherIncome', 'Other Income')}
                                         </span>
                                     </td>
                                     <td className="admin-cost-cell">
-                                        {formatCurrency(entry.value)}
+                                        {formatNumber(formatCurrency(entry.value))}
                                     </td>
                                     <td className="admin-table-actions">
                                         <button
                                             type="button"
                                             onClick={() => handleEdit(entry)}
-                                            title="Edit this income entry"
+                                            title={t('admin.actions.edit', 'Edit')}
                                         >
-                                            Edit
+                                            {t('admin.actions.edit', 'Edit')}
                                         </button>
                                         <button
                                             type="button"
                                             className="danger"
                                             onClick={() => handleDelete(entry.id)}
-                                            title="Delete this income entry"
+                                            title={t('admin.actions.delete', 'Delete')}
                                         >
-                                            Delete
+                                            {t('admin.actions.delete', 'Delete')}
                                         </button>
                                     </td>
                                 </tr>
@@ -297,10 +304,10 @@ const IncomeTable = ({ income, onRefresh }) => {
                             {filteredIncome.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">
-                                        Total {searchQuery ? '(Filtered)' : ''}
+                                        {t('admin.budgetSection.totalFiltered', 'Total (Filtered):')}
                                     </td>
                                     <td className="admin-cost-cell">
-                                        {formatCurrency(filteredTotal)}
+                                        {formatNumber(formatCurrency(filteredTotal))}
                                     </td>
                                     <td />
                                 </tr>
@@ -308,20 +315,20 @@ const IncomeTable = ({ income, onRefresh }) => {
                             {income.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        No income entries recorded yet. Use the form above to add one.
+                                        {t('admin.budgetSection.noIncome', 'No income entries recorded yet.')}
                                     </td>
                                 </tr>
                             )}
                             {income.length > 0 && filteredIncome.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        No income entries matching &ldquo;{searchQuery}&rdquo;.
+                                        {t('admin.budgetSection.noIncomeMatch', 'No income entries match your search.')}
                                         <button
                                             type="button"
                                             className="admin-table-clear-btn"
                                             onClick={() => setSearchQuery('')}
                                         >
-                                            Clear search
+                                            {t('admin.budgetSection.clearSearch', 'Clear search')}
                                         </button>
                                     </td>
                                 </tr>

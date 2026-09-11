@@ -1,21 +1,24 @@
 import React, { useMemo, useState } from 'react';
+import { useContent } from '../../utils/ContentContext';
 import {
     budgetApi,
     formatCurrency,
     formatDate,
+    getTodayInputDate,
     toInputDate,
 } from '../../utils/budgetApi';
 
-const emptyExpense = {
+const createEmptyExpense = () => ({
     serialNumber: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayInputDate(),
     item: '',
     category: '',
     cost: '',
-};
+});
 
 const ExpenseTable = ({ expenses, onRefresh }) => {
-    const [form, setForm] = useState(emptyExpense);
+    const { t, formatNumber, language } = useContent();
+    const [form, setForm] = useState(createEmptyExpense);
     const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -27,7 +30,7 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
 
         return expenses.filter((expense) => {
             const rawDate = String(expense.date || '').toLowerCase();
-            const formattedDateStr = formatDate(expense.date).toLowerCase();
+            const formattedDateStr = formatDate(expense.date, language).toLowerCase();
             const inputDateStr = toInputDate(expense.date).toLowerCase();
             const dateMatch =
                 rawDate.includes(q) || formattedDateStr.includes(q) || inputDateStr.includes(q);
@@ -51,7 +54,7 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
     }, [expenses, searchQuery]);
 
     const resetForm = () => {
-        setForm(emptyExpense);
+        setForm(createEmptyExpense());
         setEditingId(null);
     };
 
@@ -91,7 +94,7 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Delete this expense?')) return;
+        if (!window.confirm(t('admin.budgetSection.deleteConfirmExpense', 'Delete this expense?'))) return;
         try {
             await budgetApi.deleteExpense(id);
             if (editingId === id) resetForm();
@@ -115,12 +118,14 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                         </span>
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {editingId ? 'Edit Expense' : 'Add Expense'}
+                                {editingId
+                                    ? t('admin.budgetSection.editExpense', 'Edit Expense')
+                                    : t('admin.budgetSection.addExpense', 'Add Expense')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
                                 {editingId
-                                    ? `Updating record #${form.serialNumber || editingId}`
-                                    : 'Record a new transaction to track spending'}
+                                    ? `${t('admin.budgetSection.updatingRecord', 'Updating record')} #${formatNumber(form.serialNumber || editingId)}`
+                                    : t('admin.budgetSection.recordNewExpense', 'Record a new transaction to track spending')}
                             </p>
                         </div>
                     </div>
@@ -130,23 +135,23 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                             className="admin-budget-cancel-btn"
                             onClick={resetForm}
                         >
-                            Cancel Edit
+                            {t('admin.budgetSection.cancelEdit', 'Cancel Edit')}
                         </button>
                     )}
                 </div>
 
                 <div className="admin-budget-form-grid">
                     <label className="admin-field-group admin-field-serial">
-                        <span className="admin-field-label">Serial #</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.serialNumber', 'Serial #')}</span>
                         <input
                             type="number"
                             value={form.serialNumber}
                             onChange={(e) => setForm({ ...form, serialNumber: e.target.value })}
-                            placeholder="Auto"
+                            placeholder={t('admin.budgetSection.auto', 'Auto')}
                         />
                     </label>
                     <label className="admin-field-group admin-field-date">
-                        <span className="admin-field-label">Date</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
                         <input
                             type="date"
                             value={form.date}
@@ -155,27 +160,27 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                         />
                     </label>
                     <label className="admin-field-group admin-field-item">
-                        <span className="admin-field-label">Item Description</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription', 'Item Description')}</span>
                         <input
                             type="text"
                             value={form.item}
                             onChange={(e) => setForm({ ...form, item: e.target.value })}
-                            placeholder="e.g. Groceries, Dinner, Transit..."
+                            placeholder={t('admin.budgetSection.expenseItemPlaceholder', 'e.g. Groceries, Dinner, Transit...')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-category">
-                        <span className="admin-field-label">Category</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.category', 'Category')}</span>
                         <input
                             type="text"
                             value={form.category}
                             onChange={(e) => setForm({ ...form, category: e.target.value })}
-                            placeholder="Category"
+                            placeholder={t('admin.budgetSection.category', 'Category')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-cost">
-                        <span className="admin-field-label">Cost</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.cost', 'Cost')}</span>
                         <div className="admin-currency-input-wrap">
                             <span className="admin-currency-symbol" aria-hidden="true">$</span>
                             <input
@@ -196,10 +201,10 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                             disabled={submitting}
                         >
                             {submitting
-                                ? 'Saving...'
+                                ? t('admin.actions.saving', 'Saving...')
                                 : editingId
-                                ? 'Update Expense'
-                                : '+ Add Expense'}
+                                ? t('admin.budgetSection.updateExpenseBtn', 'Update Expense')
+                                : t('admin.budgetSection.addExpenseBtn', '+ Add Expense')}
                         </button>
                     </div>
                 </div>
@@ -209,13 +214,13 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
             <div className="admin-budget-table-card">
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
-                        <h3 className="admin-budget-table-title">Expense History</h3>
+                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.expenseHistory', 'Expense History')}</h3>
                         <span className="admin-budget-count-badge">
-                            {expenses.length} {expenses.length === 1 ? 'record' : 'records'}
+                            {formatNumber(expenses.length)} {expenses.length === 1 ? t('admin.budgetSection.record', 'record') : t('admin.budgetSection.records', 'records')}
                         </span>
                         {searchQuery && filteredExpenses.length !== expenses.length && (
                             <span className="admin-budget-filter-badge">
-                                {filteredExpenses.length} matching
+                                {formatNumber(filteredExpenses.length)} {t('admin.budgetSection.matching', 'matching')}
                             </span>
                         )}
                     </div>
@@ -225,20 +230,21 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                                 🔍
                             </span>
                             <input
-                                type="search"
+                                type="text"
+                                inputMode="search"
                                 className="admin-table-search-input"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search expenses by date, #, item, category, or cost..."
-                                aria-label="Search expenses"
+                                placeholder={t('admin.budgetSection.searchExpensesPlaceholder', 'Search expenses by date, #, item, category, or cost...')}
+                                aria-label={t('admin.budgetSection.searchExpensesPlaceholder', 'Search expenses')}
                             />
                             {searchQuery && (
                                 <button
                                     type="button"
                                     className="admin-table-search-clear"
                                     onClick={() => setSearchQuery('')}
-                                    title="Clear search"
-                                    aria-label="Clear search"
+                                    title={t('admin.budgetSection.clearSearch', 'Clear search')}
+                                    aria-label={t('admin.budgetSection.clearSearch', 'Clear search')}
                                 >
                                     ✕
                                 </button>
@@ -251,12 +257,12 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>Serial #</th>
-                                <th>Date</th>
-                                <th>Item</th>
-                                <th>Category</th>
-                                <th>Cost</th>
-                                <th>Actions</th>
+                                <th>{t('admin.budgetSection.headers.serial', 'Serial #')}</th>
+                                <th>{t('admin.budgetSection.headers.date', 'Date')}</th>
+                                <th>{t('admin.budgetSection.headers.item', 'Item')}</th>
+                                <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
+                                <th>{t('admin.budgetSection.headers.cost', 'Cost')}</th>
+                                <th>{t('admin.budgetSection.headers.actions', 'Actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -264,10 +270,10 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                                 <tr key={expense.id}>
                                     <td>
                                         <span className="admin-serial-tag">
-                                            #{expense.serialNumber}
+                                            #{formatNumber(expense.serialNumber)}
                                         </span>
                                     </td>
-                                    <td>{formatDate(expense.date)}</td>
+                                    <td>{formatNumber(formatDate(expense.date, language))}</td>
                                     <td className="admin-item-cell">{expense.item}</td>
                                     <td>
                                         <span className="admin-category-tag">
@@ -275,23 +281,23 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                                         </span>
                                     </td>
                                     <td className="admin-cost-cell">
-                                        {formatCurrency(expense.cost)}
+                                        {formatNumber(formatCurrency(expense.cost))}
                                     </td>
                                     <td className="admin-table-actions">
                                         <button
                                             type="button"
                                             onClick={() => handleEdit(expense)}
-                                            title="Edit this expense"
+                                            title={t('admin.actions.edit', 'Edit')}
                                         >
-                                            Edit
+                                            {t('admin.actions.edit', 'Edit')}
                                         </button>
                                         <button
                                             type="button"
                                             className="danger"
                                             onClick={() => handleDelete(expense.id)}
-                                            title="Delete this expense"
+                                            title={t('admin.actions.delete', 'Delete')}
                                         >
-                                            Delete
+                                            {t('admin.actions.delete', 'Delete')}
                                         </button>
                                     </td>
                                 </tr>
@@ -299,10 +305,10 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                             {filteredExpenses.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">
-                                        Total {searchQuery ? '(Filtered)' : ''}
+                                        {t('admin.budgetSection.totalFiltered', 'Total (Filtered):')}
                                     </td>
                                     <td className="admin-cost-cell">
-                                        {formatCurrency(filteredTotal)}
+                                        {formatNumber(formatCurrency(filteredTotal))}
                                     </td>
                                     <td />
                                 </tr>
@@ -310,20 +316,20 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                             {expenses.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        No expenses recorded yet. Use the form above to add one.
+                                        {t('admin.budgetSection.noExpenses', 'No expenses recorded yet.')}
                                     </td>
                                 </tr>
                             )}
                             {expenses.length > 0 && filteredExpenses.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        No expenses matching &ldquo;{searchQuery}&rdquo;.
+                                        {t('admin.budgetSection.noExpensesMatch', 'No expenses match your search.')}
                                         <button
                                             type="button"
                                             className="admin-table-clear-btn"
                                             onClick={() => setSearchQuery('')}
                                         >
-                                            Clear search
+                                            {t('admin.budgetSection.clearSearch', 'Clear search')}
                                         </button>
                                     </td>
                                 </tr>

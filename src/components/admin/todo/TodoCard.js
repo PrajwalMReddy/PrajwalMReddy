@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContent } from '../../../utils/ContentContext';
 import {
     formatRecurrence,
     getDueDateLabel,
@@ -23,8 +24,9 @@ const TodoCard = ({
     isExpanded,
     onToggleSubtasksExpanded,
 }) => {
+    const { t, formatNumber, language } = useContent();
     const dueState = getDueState(todo);
-    const dueDateLabel = getDueDateLabel(todo);
+    const dueDateLabel = getDueDateLabel(todo, language, formatNumber);
 
     const tone = todo.completed
         ? 'done'
@@ -51,7 +53,7 @@ const TodoCard = ({
             <div className="admin-todo-card-top">
                 <span
                     className={`admin-todo-card-avatar priority-${todo.priority}`}
-                    title={`Priority: ${PRIORITY_LABEL[todo.priority] || todo.priority}`}
+                    title={`${t('admin.todoSection.priority', 'Priority')}: ${t(`admin.todoSection.priorities.${todo.priority}`, PRIORITY_LABEL[todo.priority] || todo.priority)}`}
                 />
 
                 <div className="admin-todo-card-check">
@@ -68,11 +70,11 @@ const TodoCard = ({
                         type="button"
                         className="admin-todo-card-subtasks-toggle"
                         onClick={() => onToggleSubtasksExpanded(todo.id)}
-                        title={isExpanded ? 'Hide subtasks' : 'Show subtasks'}
+                        title={isExpanded ? t('admin.todoSection.hideSubtasks', 'Hide subtasks') : t('admin.todoSection.showSubtasks', 'Show subtasks')}
                     >
                         {isExpanded ? '▼' : '▶'} (
-                        {todo.subtasks.filter((st) => st.completed).length}/
-                        {todo.subtasks.length})
+                        {formatNumber(todo.subtasks.filter((st) => st.completed).length)}/
+                        {formatNumber(todo.subtasks.length)})
                     </button>
                 )}
 
@@ -80,8 +82,8 @@ const TodoCard = ({
                     type="button"
                     className="admin-todo-card-edit"
                     onClick={() => onEdit(todo)}
-                    aria-label={`Edit task: ${todo.title}`}
-                    title="Edit task"
+                    aria-label={`${t('admin.actions.edit', 'Edit')}: ${todo.title}`}
+                    title={t('admin.actions.edit', 'Edit')}
                 >
                     ✎
                 </button>
@@ -90,7 +92,8 @@ const TodoCard = ({
                     type="button"
                     className="admin-todo-card-delete"
                     onClick={() => onDelete(todo)}
-                    aria-label={`Delete task: ${todo.title}`}
+                    aria-label={`${t('admin.actions.delete', 'Delete')}: ${todo.title}`}
+                    title={t('admin.actions.delete', 'Delete')}
                 >
                     ✕
                 </button>
@@ -98,24 +101,38 @@ const TodoCard = ({
 
             <div className="admin-todo-card-bottom">
                 <div className="admin-todo-card-info">
-                    {dueDateLabel && (
-                        <span className={`admin-todo-card-due due-${dueState}`}>
-                            <span className="admin-todo-card-due-date">
-                                📅 {dueDateLabel}
-                            </span>
-                        </span>
+                    {(dueDateLabel || todo.estimatedTime) && (
+                        <div className="admin-todo-card-primary-info">
+                            {dueDateLabel && (
+                                <span className={`admin-todo-card-due due-${dueState}`}>
+                                    <span className="admin-todo-card-due-date">
+                                        📅 {dueDateLabel}
+                                    </span>
+                                </span>
+                            )}
+
+                            {todo.estimatedTime && (
+                                <span className="admin-todo-card-time" title={t('admin.todoSection.estimatedTime', 'Estimated time')}>
+                                    ⏱️ {formatNumber(todo.estimatedTime)}{t('admin.todoSection.min', 'min')}
+                                </span>
+                            )}
+                        </div>
                     )}
 
-                    {todo.estimatedTime && (
-                        <span className="admin-todo-card-time" title="Estimated time">
-                            ⏱️ {todo.estimatedTime}min
-                        </span>
-                    )}
+                    {((todo.recurrence && todo.recurrence !== 'none') || (Array.isArray(todo.tags) && todo.tags.length > 0)) && (
+                        <div className="admin-todo-card-secondary-info">
+                            {todo.recurrence && todo.recurrence !== 'none' && (
+                                <span className="admin-todo-card-recurrence" title={t('admin.todoSection.recurrence', 'Recurrence')}>
+                                    🔄 {formatRecurrence(todo, t)}
+                                </span>
+                            )}
 
-                    {todo.recurrence && todo.recurrence !== 'none' && (
-                        <span className="admin-todo-card-recurrence" title="Recurrence">
-                            🔄 {formatRecurrence(todo)}
-                        </span>
+                            {Array.isArray(todo.tags) && todo.tags.map((tag, idx) => (
+                                <span key={idx} className="admin-todo-card-recurrence admin-todo-card-tag" title={tag}>
+                                    🏷️ {tag}
+                                </span>
+                            ))}
+                        </div>
                     )}
                 </div>
 
@@ -124,11 +141,11 @@ const TodoCard = ({
                         className="admin-todo-card-priority"
                         value={todo.priority}
                         onChange={(e) => onChangePriority(todo.id, e.target.value)}
-                        title="Change priority"
+                        title={t('admin.todoSection.changePriority', 'Change priority')}
                     >
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
+                        <option value="low">{t('admin.todoSection.priorities.low', 'Low')}</option>
+                        <option value="medium">{t('admin.todoSection.priorities.medium', 'Medium')}</option>
+                        <option value="high">{t('admin.todoSection.priorities.high', 'High')}</option>
                     </select>
                 )}
             </div>

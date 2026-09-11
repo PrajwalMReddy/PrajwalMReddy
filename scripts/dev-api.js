@@ -54,16 +54,8 @@ const routeMap = {
     '/api/budget/planner': '../lib/api-handlers/budget/planner',
     '/api/todo': '../lib/api-handlers/todo',
     '/api/notes': '../lib/api-handlers/notes',
-    '/api/ai/chat': '../lib/api-handlers/ai/chat',
-    '/api/ai/memory': '../lib/api-handlers/ai/memory',
-    '/api/ai/goals': '../lib/api-handlers/ai/goals',
-    '/api/ai/projects': '../lib/api-handlers/ai/projects',
-    '/api/ai/conversations': '../lib/api-handlers/ai/conversations',
-    '/api/ai/preferences': '../lib/api-handlers/ai/preferences',
-    '/api/ai/briefing': '../lib/api-handlers/ai/briefing',
-    '/api/ai/news': '../lib/api-handlers/ai/news',
-    '/api/ai/tools': '../lib/api-handlers/ai/tools',
     '/api/cms/content': '../lib/api-handlers/cms/content',
+    '/api/content': '../lib/api-handlers/cms/content',
     '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
     '/api/cms/upload': '../lib/api-handlers/cms/upload',
 };
@@ -147,17 +139,20 @@ function getHandler(pathname, query) {
         );
     }
 
-    const aiMatch = pathname.match(
-        /^\/api\/ai\/(memory|goals|projects|conversations)\/([^/]+)$/
+
+
+    const mediaMatch = pathname.match(
+        /^\/(photography|img)\/([^/]+)$/
     );
 
-    if (aiMatch) {
-        query.id = decodeURIComponent(
-            aiMatch[2]
+    if (mediaMatch) {
+        query.folder = mediaMatch[1];
+        query.file = decodeURIComponent(
+            mediaMatch[2]
         );
 
         return require(
-            `../lib/api-handlers/ai/${aiMatch[1]}`
+            '../lib/api-handlers/cms/upload'
         );
     }
 
@@ -172,6 +167,13 @@ function addVercelResponseHelpers(res) {
     res.status = (code) => {
         if (!res.headersSent) {
             res.statusCode = code;
+        }
+        return res;
+    };
+
+    res.send = (data) => {
+        if (!res.headersSent) {
+            res.end(data);
         }
         return res;
     };
@@ -216,6 +218,13 @@ const server = http.createServer(
         );
 
         addVercelResponseHelpers(res);
+
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
         if (!handler) {
             return res.status(404).json({

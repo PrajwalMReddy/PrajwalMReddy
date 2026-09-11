@@ -1,12 +1,15 @@
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import java from 'highlight.js/lib/languages/java';
 import cpp from 'highlight.js/lib/languages/cpp';
 import 'highlight.js/styles/atom-one-dark.min.css';
 import { renderMarkdownWithFootnotes } from '../../../utils/markdownUtils';
 
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('js', javascript);
 hljs.registerLanguage('python', python);
 hljs.registerLanguage('java', java);
 hljs.registerLanguage('cpp', cpp);
@@ -15,6 +18,7 @@ export { katex, hljs };
 
 export const CODE_LANGUAGES = [
     { value: 'plain', label: 'Plain code' },
+    { value: 'javascript', label: 'JavaScript' },
     { value: 'python', label: 'Python' },
     { value: 'java', label: 'Java' },
     { value: 'cpp', label: 'C/C++' },
@@ -46,12 +50,12 @@ export const BLOCK_TYPES = {
     todo: { label: 'Checklist', icon: '[]', placeholder: 'A task to remember', span: 1, height: 4 },
     callout: { label: 'Callout', icon: '!', placeholder: 'A useful thought or reminder', span: 1, height: 4 },
     table: { label: 'Table', icon: '#', placeholder: 'Table cell', span: 2, height: 6 },
+    link: { label: 'Link', icon: '@', placeholder: 'Link label', span: 1, height: 3 },
     quote: { label: 'Quote', icon: '"', placeholder: 'A line worth keeping', span: 1, height: 4 },
     image: { label: 'Image', icon: '▧', placeholder: 'Image URL', span: 2, height: 7 },
     progress: { label: 'Progress', icon: '%', placeholder: 'Progress label', span: 2, height: 3 },
     counter: { label: 'Counter', icon: '+1', placeholder: 'Counter label', span: 1, height: 4 },
     picker: { label: 'Random picker', icon: '?', placeholder: 'Picker title', span: 2, height: 7 },
-    link: { label: 'Link', icon: '@', placeholder: 'Link label', span: 1, height: 3 },
     date: { label: 'Date', icon: 'D', placeholder: 'Date label', span: 1, height: 3 },
     list: { label: 'List', icon: '•', placeholder: 'One item per line', span: 2, height: 4 },
     status: { label: 'Status', icon: '●', placeholder: 'Status label', span: 2, height: 3 },
@@ -62,7 +66,8 @@ export const BLOCK_TYPES = {
     equation: { label: 'Equation', icon: 'Σ', placeholder: 'Enter an equation', span: 2, height: 3 },
     divider: { label: 'Divider', icon: '-', placeholder: '', span: 3, height: 1 },
     habit: { label: 'Habit', icon: '✓', placeholder: 'Habit name', span: 2, height: 6 },
-    note_link: { label: 'Linked Notes', icon: '📎', placeholder: '', span: 2, height: 4 },
+    note_link: { label: 'Linked Notes', icon: '📎', placeholder: '', span: 1, height: 3 },
+    timeline: { label: 'Timeline', icon: '🏁', placeholder: 'Timeline title', span: 3, height: 6 },
 };
 
 export const TEXT_STYLES = [
@@ -123,6 +128,10 @@ export const createBlock = (type = 'text') => ({
     habitMonth: type === 'habit' ? getCurrentMonthValue() : undefined,
     habitCompletions: type === 'habit' ? {} : undefined,
     linkedNote: type === 'note_link' ? '' : undefined,
+    timelineEvents: type === 'timeline' ? [
+        { id: `m-1-${Date.now()}`, date: '', title: '', desc: '', status: 'pending' },
+        { id: `m-2-${Date.now() + 1}`, date: '', title: '', desc: '', status: 'pending' },
+    ] : undefined,
     span: BLOCK_TYPES[type].span,
     height: BLOCK_TYPES[type].height,
     rows: type === 'table' ? [['Column 1', 'Column 2'], ['', '']] : undefined,
@@ -164,6 +173,9 @@ export const getNotePreview = (note) => {
                 if (block.type === 'status') {
                     return [block.label, block.status].filter(Boolean).join(' ');
                 }
+                if (block.type === 'timeline' && Array.isArray(block.timelineEvents)) {
+                    return block.timelineEvents.map((ev) => [ev.date, ev.title, ev.desc].filter(Boolean).join(' ')).join(' ');
+                }
                 return [block.label, block.text, block.pickerChoice, block.author, block.alt].filter(Boolean).join(' ');
             })
             .filter(Boolean);
@@ -201,6 +213,16 @@ export const generateNoteContent = (blocks) => {
                     .filter(Boolean)
                     .join('\n');
             }
+            if (block.type === 'timeline' && Array.isArray(block.timelineEvents)) {
+                return [
+                    block.label,
+                    block.timelineEvents
+                        .map((ev) => `- [${ev.status || 'pending'}] ${ev.date ? `${ev.date}: ` : ''}${ev.title || ''}${ev.desc ? ` - ${ev.desc}` : ''}`)
+                        .join('\n'),
+                ]
+                    .filter(Boolean)
+                    .join('\n');
+            }
             return [block.label, block.text, block.author].filter(Boolean).join('\n');
         })
         .filter(Boolean)
@@ -213,22 +235,22 @@ export const blocksFromNote = (note) => {
             const block =
                 rawBlock.type === 'toggle'
                     ? {
-                          ...rawBlock,
-                          type: 'text',
-                          text: [rawBlock.label, rawBlock.text].filter(Boolean).join('\n\n'),
-                      }
+                        ...rawBlock,
+                        type: 'text',
+                        text: [rawBlock.label, rawBlock.text].filter(Boolean).join('\n\n'),
+                    }
                     : rawBlock.type === 'numbered'
-                    ? {
-                          ...rawBlock,
-                          type: 'list',
-                          listStyle: 'numbered',
-                      }
-                    : rawBlock.type === 'countdown'
-                    ? {
-                          ...rawBlock,
-                          dateTime: rawBlock.dateTime || (rawBlock.date ? `${rawBlock.date}T23:59` : ''),
-                      }
-                    : rawBlock;
+                        ? {
+                            ...rawBlock,
+                            type: 'list',
+                            listStyle: 'numbered',
+                        }
+                        : rawBlock.type === 'countdown'
+                            ? {
+                                ...rawBlock,
+                                dateTime: rawBlock.dateTime || (rawBlock.date ? `${rawBlock.date}T23:59` : ''),
+                            }
+                            : rawBlock;
             return {
                 ...block,
                 span: block.span || BLOCK_TYPES[block.type]?.span || 1,
@@ -269,12 +291,15 @@ export const findFreePosition = (blocks, block) => {
     return { col: 1, row: MAX_GRID_ROWS - height + 1 };
 };
 
-export const formatUpdatedAt = (value) => {
-    if (!value) return 'Not saved yet';
-    return new Date(value).toLocaleString(undefined, {
+export const formatUpdatedAt = (value, language = 'en', formatNumber = (x) => x) => {
+    if (!value) return language === 'kn' ? 'ಇನ್ನೂ ಉಳಿಸಿಲ್ಲ' : 'Not saved yet';
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+    const formatted = date.toLocaleString(language === 'kn' ? 'kn-IN' : undefined, {
         dateStyle: 'medium',
         timeStyle: 'short',
     });
+    return language === 'kn' ? formatNumber(formatted) : formatted;
 };
 
 export const getLinkHref = (value) =>
@@ -300,3 +325,61 @@ export const getHabitCalendarDays = (monthValue) => {
 
 export const FOLDERS_STORAGE_KEY = 'admin_notes_custom_folders';
 export const EXPANDED_FOLDERS_KEY = 'admin_notes_expanded_folders';
+
+export const getBacklinks = (targetNoteId, allNotes = []) => {
+    if (!targetNoteId || !Array.isArray(allNotes)) return [];
+    const targetIdStr = String(targetNoteId);
+    const targetNote = allNotes.find(
+        (n) => String(n.id || n._id) === targetIdStr
+    );
+    const targetTitle = targetNote?.title?.trim();
+
+    return allNotes
+        .filter((note) => {
+            if (!note) return false;
+            const currentId = String(note.id || note._id);
+            if (currentId === targetIdStr) return false;
+
+            // Check blocks
+            if (Array.isArray(note.blocks)) {
+                const hasBlockLink = note.blocks.some((block) => {
+                    if (!block) return false;
+                    if (block.type === 'note_link' && String(block.linkedNote) === targetIdStr) {
+                        return true;
+                    }
+                    if (block.linkedNote && String(block.linkedNote) === targetIdStr) {
+                        return true;
+                    }
+                    if (targetTitle && targetTitle.length >= 2) {
+                        const escaped = targetTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const titleRegex = new RegExp(`\\[\\[${escaped}\\]\\]`, 'i');
+                        if (block.text && titleRegex.test(block.text)) return true;
+                        if (block.label && titleRegex.test(block.label)) return true;
+                    }
+                    return false;
+                });
+                if (hasBlockLink) return true;
+            }
+
+            // Check raw content
+            if (note.content) {
+                if (targetTitle && targetTitle.length >= 2) {
+                    const escaped = targetTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const titleRegex = new RegExp(`\\[\\[${escaped}\\]\\]`, 'i');
+                    if (titleRegex.test(note.content)) return true;
+                }
+                if (note.content.includes(`[note:${targetIdStr}]`)) {
+                    return true;
+                }
+            }
+
+            return false;
+        })
+        .map((note) => ({
+            id: note.id || note._id,
+            title: note.title || 'Untitled note',
+            folder: note.folder || '',
+            preview: getNotePreview(note),
+            note,
+        }));
+};

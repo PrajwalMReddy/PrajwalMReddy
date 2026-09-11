@@ -75,15 +75,17 @@ export const getDueState = (todo) => {
     return 'upcoming';
 };
 
-export const getDueDateLabel = (todo) => {
+export const getDueDateLabel = (todo, lang = 'en', formatNum = (v) => v) => {
     const date = parseDateOnly(todo?.dueDate);
     if (!date) return '';
 
-    return date.toLocaleDateString(undefined, {
+    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
+    const formatted = date.toLocaleDateString(locale, {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
     });
+    return formatNum(formatted);
 };
 
 /**
@@ -117,13 +119,50 @@ export const RECURRENCE_DAYS = [
     ['sat', 'Sat'],
 ];
 
-export const formatRecurrence = (todo) => {
+export const formatRecurrence = (todo, t = (k, f) => f) => {
     if (!todo.recurrence || todo.recurrence === 'none') return '';
     if (todo.recurrence === 'weekly') {
         const days = RECURRENCE_DAYS
             .filter(([value]) => (todo.recurrenceDays || []).includes(value))
-            .map(([, label]) => label);
-        return days.length > 0 ? `Weekly: ${days.join(', ')}` : 'Weekly';
+            .map(([value, label]) => (t ? t(`admin.todoSection.modal.weekdays.${value}`, label) : label));
+        const weeklyLabel = t ? t('admin.todoSection.modal.recurrenceOptions.weekly', 'Weekly') : 'Weekly';
+        return days.length > 0 ? `${weeklyLabel}: ${days.join(', ')}` : weeklyLabel;
     }
-    return todo.recurrence === 'daily' ? 'Every day' : 'Every month';
+    if (todo.recurrence === 'daily') {
+        return t ? t('admin.todoSection.modal.recurrenceOptions.daily', 'Every day') : 'Every day';
+    }
+    return t ? t('admin.todoSection.modal.recurrenceOptions.monthly', 'Every month') : 'Every month';
 };
+
+/**
+ * Determines whether a recurring child instance should be displayed on the board.
+ * A recurring instance is only shown when all earlier instances in the same series
+ * have had their deadlines pass (are overdue) or have been marked completed.
+ */
+export const isRecurringChildVisible = (todo, allTodos = []) => {
+    if (!todo?.recurrenceSeriesId) return true;
+
+    const seriesId = todo.recurrenceSeriesId;
+    const currentDueKey = getDueDayKey(todo);
+
+    const precedingTasks = allTodos.filter((other) => {
+        if (other.id === todo.id) return false;
+        const belongsToSeries = other.id === seriesId || other.recurrenceSeriesId === seriesId;
+        if (!belongsToSeries) return false;
+
+        const otherDueKey = getDueDayKey(other);
+        if (currentDueKey !== null && otherDueKey !== null) {
+            return otherDueKey < currentDueKey;
+        }
+        return (other.order ?? 0) < (todo.order ?? 0);
+    });
+
+    for (const prev of precedingTasks) {
+        if (!prev.completed && getDueState(prev) !== 'overdue') {
+            return false;
+        }
+    }
+
+    return true;
+};
+

@@ -5,7 +5,6 @@ import {KonamiProvider} from './utils/KonamiContext';
 import {AuthProvider} from './utils/AuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import AdminLogin from './components/admin/AdminLogin';
-import AdminHome from './components/admin/AdminHome';
 import CmsAdmin from './components/admin/CmsAdmin';
 import BudgetAdmin from './components/admin/BudgetAdmin';
 import TodoAdmin from './components/admin/TodoAdmin';
@@ -103,10 +102,8 @@ function App() {
                         <Route path="/admin/notes" element={
                             <ProtectedRoute><NotesAdmin /></ProtectedRoute>
                         } />
-                        <Route path="/admin/home" element={
-                            <ProtectedRoute><AdminHome /></ProtectedRoute>
-                        } />
-                        <Route path="/admin" element={<Navigate to="/admin/home" replace />} />
+                        <Route path="/admin/home" element={<Navigate to="/admin/todo" replace />} />
+                        <Route path="/admin" element={<Navigate to="/admin/todo" replace />} />
 
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>

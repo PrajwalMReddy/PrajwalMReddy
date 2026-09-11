@@ -37,7 +37,7 @@ function parseBlogDate(dateStr) {
 }
 
 const Blog = () => {
-    const {t, language} = useLanguage();
+    const {t, language, quotes, formatNumber} = useLanguage();
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -77,10 +77,9 @@ const Blog = () => {
         loadBlogPosts();
     }, [language]);
 
-    // rotate through blog notices
+    // rotate through blog notices (quotes from CMS / ContentContext)
     useEffect(() => {
-        const noticeArray = t('blogNotice');
-        const notices = Array.isArray(noticeArray) ? noticeArray : [noticeArray].filter(Boolean);
+        const notices = Array.isArray(quotes) ? quotes : [];
 
         if (notices.length === 0) {
             setBlogNotice('');
@@ -103,7 +102,7 @@ const Blog = () => {
         } catch {
             /* ignore */
         }
-    }, [language, t]);
+    }, [language, quotes]);
 
     return (<div id="app-root">
         <SideNav/>
@@ -139,8 +138,8 @@ const Blog = () => {
                                     {post.title}
                                     <span
                                         className="blog-external-icon"
-                                        aria-label="Opens external Substack post"
-                                        title="Opens external Substack post"
+                                        aria-label="Opens external post"
+                                        title="Opens external post"
                                     >
                                                         ↗
                                                     </span>
@@ -149,21 +148,34 @@ const Blog = () => {
                                 <p className="blog-excerpt">{post.description}</p>
 
                                 <div className="blog-meta">
-                                    <time className="blog-date">{post.date}</time>
+                                    <time className="blog-date">{formatNumber(post.date)}</time>
                                 </div>
                             </a>);
                         }
+
+                        const isCustom = post.type === 'custom' || Boolean(post.component);
 
                         return (<Link
                             to={`/blog/${post.slug}`}
                             key={key}
                             className="blog-card"
                         >
-                            <h2 className="blog-title">{post.title}</h2>
+                            <h2 className="blog-title">
+                                {post.title}
+                                {isCustom && (
+                                    <span
+                                        className="blog-external-icon"
+                                        aria-label="Interactive React Component"
+                                        title="Interactive React Component"
+                                    >
+                                        ⚛
+                                    </span>
+                                )}
+                            </h2>
                             <p className="blog-excerpt">{post.description}</p>
 
                             <div className="blog-meta">
-                                <time className="blog-date">{post.date}</time>
+                                <time className="blog-date">{formatNumber(post.date)}</time>
                                 {post.author && (<span className="blog-author">
                                                         by {post.author}
                                                     </span>)}

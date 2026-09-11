@@ -1,20 +1,20 @@
-import {home} from './home';
-import {projects} from './projects';
-import {blog} from './blog';
-import {contact} from './about';
-import {footer} from './footer';
-import {sideNav} from './sideNav';
-import {meta} from './meta';
-import {research} from './research';
-import {photography} from "./photography";
-import {settings} from './settings';
-import {experience} from './experience';
-import {konami} from './konami';
+import {home} from './home.js';
+import {projects} from './projects.js';
+import {blog} from './blog.js';
+import {contact} from './about.js';
+import {footer} from './footer.js';
+import {sideNav} from './sideNav.js';
+import {meta} from './meta.js';
+import {research} from './research.js';
+import {photography} from './photography.js';
+import {settings} from './settings.js';
+import {experience} from './experience.js';
+import {konami} from './konami.js';
+import {admin} from './admin.js';
 
-// Deep merge function to combine objects
 const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
+
 const deepMerge = (target, source) => {
-    // If both are arrays, prefer the source array (do not merge array elements as objects)
     if (Array.isArray(target) && Array.isArray(source)) {
         return source.slice();
     }
@@ -30,8 +30,24 @@ const deepMerge = (target, source) => {
     return result;
 };
 
+const modules = [
+    home,
+    projects,
+    blog,
+    contact,
+    footer,
+    settings,
+    sideNav,
+    meta,
+    research,
+    photography,
+    experience,
+    konami,
+    admin,
+];
+
 // Combine all translations
 export const translations = {
-    en: deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(home.en, projects.en), blog.en), contact.en), footer.en), settings.en), sideNav.en), meta.en), research.en), photography.en), experience.en), konami.en),
-    kn: deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(deepMerge(home.kn, projects.kn), blog.kn), contact.kn), footer.kn), settings.kn), sideNav.kn), meta.kn), research.kn), photography.kn), experience.kn), konami.kn),
+    en: modules.reduce((acc, mod) => deepMerge(acc, mod?.en || {}), {}),
+    kn: modules.reduce((acc, mod) => deepMerge(acc, mod?.kn || {}), {}),
 };

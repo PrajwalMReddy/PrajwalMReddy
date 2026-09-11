@@ -28,6 +28,18 @@ export const formatDisplayDate = (dateInput, language) => {
 };
 
 const getLocalMarkdownIndex = async (basePath) => {
+    try {
+        const apiRes = await fetch(`/api/cms/content?type=${basePath}`);
+        if (apiRes.ok) {
+            const index = await apiRes.json();
+            if (Array.isArray(index) && index.length > 0) {
+                return index.filter(item => !item.visibility || item.visibility === 'public');
+            }
+        }
+    } catch {
+        // Fall back to static JSON
+    }
+
     const response = await fetch(`/${basePath}/_metadata.json`);
     if (!response.ok) throw new Error(`Failed to fetch ${basePath} index`);
 
@@ -36,10 +48,7 @@ const getLocalMarkdownIndex = async (basePath) => {
 };
 
 const getMarkdownEntryBySlug = async (basePath, slug) => {
-    const response = await fetch(`/${basePath}/_metadata.json`);
-    if (!response.ok) throw new Error(`Failed to fetch ${basePath} index`);
-
-    const index = await response.json();
+    const index = await getLocalMarkdownIndex(basePath);
     const entry = index.find(item => item.slug === slug);
     if (!entry) throw new Error(`${basePath} entry not found`);
 
@@ -47,6 +56,19 @@ const getMarkdownEntryBySlug = async (basePath, slug) => {
 };
 
 const fetchMarkdownContent = async (basePath, filename) => {
+    const slug = filename.replace(/\.md$/, '');
+    try {
+        const apiRes = await fetch(`/api/cms/markdown?type=${basePath}&slug=${encodeURIComponent(slug)}`);
+        if (apiRes.ok) {
+            const data = await apiRes.json();
+            if (data.exists && data.content) {
+                return data.content;
+            }
+        }
+    } catch {
+        // Fall back to static markdown file
+    }
+
     const res = await fetch(`/${basePath}/${filename}`);
     if (!res.ok) throw new Error(`Failed to fetch ${basePath} content`);
     return res.text();
@@ -56,6 +78,8 @@ const parseMarkdownContent = (content) => renderMarkdownWithFootnotes(content);
 
 const normalizeLocalIndexDates = (items, language, defaultSource = 'local') => items.map(item => ({
     ...item,
+    type: item.type || (item.component ? 'custom' : (item.externalUrl ? 'external' : 'article')),
+    component: item.component || '',
     source: item.source || defaultSource,
     sortDate: Date.parse(item.date) || 0,
     date: formatDisplayDate(item.date, language),
@@ -78,11 +102,15 @@ export const parseBlogContent = (content) => parseMarkdownContent(content);
 
 export const getBlogPostBySlug = async (slug, language) => {
     const post = await getMarkdownEntryBySlug('blog', slug);
-    const content = await fetchBlogContent(`${slug}.md`);
+    const isCustom = post.type === 'custom' || Boolean(post.component);
+    const rawContent = post.content || (!isCustom ? await fetchBlogContent(`${slug}.md`).catch(() => '') : '');
 
     return {
         ...post,
+        type: isCustom ? 'custom' : (post.externalUrl ? 'external' : 'article'),
+        component: post.component || '',
         date: formatDisplayDate(post.date, language),
-        content: parseBlogContent(content),
+        content: isCustom ? '' : parseBlogContent(rawContent || ''),
     };
 };
+

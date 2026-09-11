@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContent } from '../../../utils/ContentContext';
 import { formatUpdatedAt, getNotePreview } from './noteUtils';
 
 const NoteSidebar = ({
@@ -29,11 +30,12 @@ const NoteSidebar = ({
     handleDeleteFolder,
     startNewNote,
 }) => {
+    const { t, formatNumber, language } = useContent();
     return (
         <aside className="admin-notes-list" aria-label="Notes file explorer">
             <div className="admin-notes-list-heading">
                 <div className="admin-notes-list-header-top">
-                    <h2 className="admin-notes-list-title">Notes</h2>
+                    <h2 className="admin-notes-list-title">{t('admin.nav.notes', 'Notes')}</h2>
                 </div>
                 <div className="admin-note-view-toggle" role="tablist" aria-label="Note status">
                     <button
@@ -43,7 +45,7 @@ const NoteSidebar = ({
                         role="tab"
                         aria-selected={noteView === 'active'}
                     >
-                        Active <span>{notes.filter((note) => !note.archived).length}</span>
+                        {t('admin.notesSection.active', 'Active')} <span>{formatNumber(notes.filter((note) => !note.archived).length)}</span>
                     </button>
                     <button
                         type="button"
@@ -52,7 +54,7 @@ const NoteSidebar = ({
                         role="tab"
                         aria-selected={noteView === 'archived'}
                     >
-                        Archived <span>{notes.filter((note) => note.archived).length}</span>
+                        {t('admin.notesSection.archived', 'Archived')} <span>{formatNumber(notes.filter((note) => note.archived).length)}</span>
                     </button>
                 </div>
             </div>
@@ -69,14 +71,14 @@ const NoteSidebar = ({
                                 }`}
                                 onClick={() => selectNote(note)}
                             >
-                                <strong>{note.title || 'Untitled note'}</strong>
-                                <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                 <p>{getNotePreview(note)}</p>
                             </button>
                         ))}
 
                         {filteredNotes.length === 0 && (
-                            <p className="admin-notes-empty">No archived notes found.</p>
+                            <p className="admin-notes-empty">{t('admin.notesSection.noArchived', 'No archived notes found.')}</p>
                         )}
                     </>
                 ) : (
@@ -97,8 +99,8 @@ const NoteSidebar = ({
                                     type="text"
                                     value={newFolderName}
                                     onChange={(e) => setNewFolderName(e.target.value)}
-                                    placeholder="folder name"
-                                    aria-label="New folder name"
+                                    placeholder={t('admin.notesSection.folderNamePlaceholder', 'folder name')}
+                                    aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Escape') {
                                             setIsCreatingFolder(false);
@@ -106,7 +108,7 @@ const NoteSidebar = ({
                                         }
                                     }}
                                 />
-                                <button type="submit" title="Create folder" aria-label="Confirm new folder">
+                                <button type="submit" title={t('admin.notesSection.create', 'Create')} aria-label={t('admin.notesSection.create', 'Confirm new folder')}>
                                     ✓
                                 </button>
                                 <button
@@ -115,8 +117,8 @@ const NoteSidebar = ({
                                         setIsCreatingFolder(false);
                                         setNewFolderName('');
                                     }}
-                                    title="Cancel"
-                                    aria-label="Cancel new folder"
+                                    title={t('admin.notesSection.cancel', 'Cancel')}
+                                    aria-label={t('admin.notesSection.cancel', 'Cancel new folder')}
                                 >
                                     ✕
                                 </button>
@@ -197,7 +199,7 @@ const NoteSidebar = ({
                                             <span className="admin-note-folder-title" title={folderName}>
                                                 {folderName}
                                             </span>
-                                            <span className="admin-note-folder-count">{totalInFolder}</span>
+                                            <span className="admin-note-folder-count">{formatNumber(totalInFolder)}</span>
                                             <div
                                                 className="admin-note-folder-actions"
                                                 onClick={(e) => e.stopPropagation()}
@@ -206,8 +208,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon"
                                                     onClick={() => startNewNote(folderName)}
-                                                    title={`New note in /${folderName}`}
-                                                    aria-label={`New note in /${folderName}`}
+                                                    title={`${t('admin.notesSection.newNoteIn', 'New note in')} /${folderName}`}
+                                                    aria-label={`${t('admin.notesSection.newNoteIn', 'New note in')} /${folderName}`}
                                                 >
                                                     +
                                                 </button>
@@ -215,8 +217,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon"
                                                     onClick={() => startRenamingFolder(folderName)}
-                                                    title="Rename folder"
-                                                    aria-label="Rename folder"
+                                                    title={t('admin.actions.edit', 'Rename folder')}
+                                                    aria-label={t('admin.actions.edit', 'Rename folder')}
                                                 >
                                                     ✎
                                                 </button>
@@ -224,8 +226,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon danger"
                                                     onClick={() => handleDeleteFolder(folderName)}
-                                                    title="Delete folder"
-                                                    aria-label="Delete folder"
+                                                    title={t('admin.actions.delete', 'Delete folder')}
+                                                    aria-label={t('admin.actions.delete', 'Delete folder')}
                                                 >
                                                     ✕
                                                 </button>
@@ -244,8 +246,8 @@ const NoteSidebar = ({
                                                     }`}
                                                     onClick={() => selectNote(note)}
                                                 >
-                                                    <strong>{note.title || 'Untitled note'}</strong>
-                                                    <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                                    <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                                    <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                                     <p>{getNotePreview(note)}</p>
                                                 </button>
                                             ))}
@@ -255,7 +257,7 @@ const NoteSidebar = ({
                                                     className="admin-note-empty-folder-btn"
                                                     onClick={() => startNewNote(folderName)}
                                                 >
-                                                    <span aria-hidden="true">+</span> New note in /{folderName}
+                                                    <span aria-hidden="true">+</span> {t('admin.notesSection.newNoteIn', 'New note in')} /{folderName}
                                                 </button>
                                             )}
                                         </div>
@@ -274,14 +276,14 @@ const NoteSidebar = ({
                                 }`}
                                 onClick={() => selectNote(note)}
                             >
-                                <strong>{note.title || 'Untitled note'}</strong>
-                                <span>{formatUpdatedAt(note.updatedAt)}</span>
+                                <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                 <p>{getNotePreview(note)}</p>
                             </button>
                         ))}
 
                         {!filteredNotes.length && !allFolders.length && (
-                            <p className="admin-notes-empty">No notes found.</p>
+                            <p className="admin-notes-empty">{t('admin.notesSection.noNotes', 'No notes found.')}</p>
                         )}
                     </>
                 )}

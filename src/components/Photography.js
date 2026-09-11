@@ -1,82 +1,16 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {useLanguage} from "../utils/LanguageContext";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useContent } from "../utils/ContentContext";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
 
-// Remove importAll and require.context usage
-// Dynamically import all images from the photography folder
-
 const Photography = () => {
-    const {t, language} = useLanguage();
-    const [metadata, setMetadata] = useState([]);
+    const { t, photos, formatNumber } = useContent();
     const [hoveredIdx, setHoveredIdx] = useState(null);
-    const [loadedImages, setLoadedImages] = useState(new Set());
-    const [visibleImages, setVisibleImages] = useState(new Set());
-    const [fullscreenImage, setFullscreenImage] = useState(null);
-    const imageRefs = useRef({});
-    
-    const getPhotoId = useCallback((meta) => {
-        if (!meta) return null;
-        if (meta.id) return String(meta.id);
-        if (!meta.filename) return null;
-        return meta.filename.replace(/\.[^/.]+$/, '');
-    }, []);
+    const [fullscreenPhotoId, setFullscreenPhotoId] = useState(null);
 
     useEffect(() => {
         document.title = t('pageTitles.photography');
     }, [t]);
-
-    useEffect(() => {
-        // Fetch the language-specific metadata file, fallback to English
-        const fetchMeta = async () => {
-            const langFile = `/photography/_metadata.${language}.json?v=${Date.now()}`;
-            try {
-                const res = await fetch(langFile);
-                if (res.ok) {
-                    setMetadata(await res.json());
-                } else {
-                    const fallback = await fetch('/photography/_metadata.en.json');
-                    setMetadata(fallback.ok ? await fallback.json() : []);
-                }
-            } catch {
-                const fallback = await fetch('/photography/_metadata.en.json');
-                setMetadata(fallback.ok ? await fallback.json() : []);
-            }
-        };
-        fetchMeta();
-    }, [language]);
-
-    // Intersection Observer for lazy loading
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                const idx = parseInt(entry.target.dataset.index);
-                if (entry.isIntersecting) {
-                    setVisibleImages(prev => new Set([...prev, idx]));
-                    // Load the image when it becomes visible
-                    setLoadedImages(prev => new Set([...prev, idx]));
-                }
-            });
-        }, {
-            rootMargin: '100px', // Start loading 100px before the image comes into view
-            threshold: 0.1
-        });
-
-        // Observe all image containers
-        Object.values(imageRefs.current).forEach(ref => {
-            if (ref) observer.observe(ref);
-        });
-
-        return () => observer.disconnect();
-    }, []);
-
-    // Helper to get metadata for a given filename
-    const getMeta = (filename) => metadata.find(m => m.filename === filename);
-
-    // Set ref for each image container
-    const setImageRef = useCallback((el, idx) => {
-        imageRefs.current[idx] = el;
-    }, []);
 
     const setPhotoHash = useCallback((photoId) => {
         if (!photoId) return;
@@ -88,170 +22,240 @@ const Photography = () => {
 
     const clearPhotoHash = useCallback(() => {
         if (!window.location.hash) return;
-        const {pathname, search} = window.location;
+        const { pathname, search } = window.location;
         window.history.pushState(null, '', `${pathname}${search}`);
     }, []);
 
-    const openFullscreen = useCallback((meta) => {
-        const imgUrl = `/photography/${meta.filename}`;
-        setFullscreenImage({img: {src: imgUrl}, meta});
-        setPhotoHash(getPhotoId(meta));
-    }, [getPhotoId, setPhotoHash]);
+    const openFullscreen = useCallback((photo) => {
+        setFullscreenPhotoId(photo.id);
+        setPhotoHash(photo.id);
+    }, [setPhotoHash]);
 
     const closeFullscreen = useCallback(() => {
-        setFullscreenImage(null);
+        setFullscreenPhotoId(null);
         clearPhotoHash();
     }, [clearPhotoHash]);
 
+    // Sync fullscreen state with URL hash
     useEffect(() => {
         const syncFullscreenFromHash = () => {
             const hashPhotoId = decodeURIComponent(window.location.hash.replace(/^#/, ''));
             if (!hashPhotoId) {
-                setFullscreenImage(null);
+                setFullscreenPhotoId(null);
                 return;
             }
 
-            const targetMeta = metadata.find((meta) => getPhotoId(meta) === hashPhotoId);
-            if (targetMeta) {
-                setFullscreenImage({img: {src: `/photography/${targetMeta.filename}`}, meta: targetMeta});
+            const targetPhoto = photos.find((p) => p.id === hashPhotoId);
+            if (targetPhoto) {
+                setFullscreenPhotoId(targetPhoto.id);
             }
         };
 
         syncFullscreenFromHash();
         window.addEventListener('hashchange', syncFullscreenFromHash);
         return () => window.removeEventListener('hashchange', syncFullscreenFromHash);
-    }, [getPhotoId, metadata]);
+    }, [photos]);
 
     // Close fullscreen on escape key
     useEffect(() => {
         const handleEscape = (e) => {
-            if (e.key === 'Escape' && fullscreenImage) {
+            if (e.key === 'Escape' && fullscreenPhotoId) {
                 closeFullscreen();
             }
         };
 
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
-    }, [closeFullscreen, fullscreenImage]);
+    }, [closeFullscreen, fullscreenPhotoId]);
 
-    return (<div id="app-root">
-        <SideNav/>
-        <main>
-            <h1 id="blog-heading">{t("pageTitle")}</h1>
-            <div id="gallery-div">
-                {metadata.length === 0 ? null : (<div className="gallery-grid">
-                    {metadata.map((meta, idx) => {
-                        const imgUrl = `/photography/${meta.filename}`;
-                        return (
-                            <div
-                                className="gallery-item"
-                                key={idx}
-                                style={{position: "relative"}}
-                                onMouseEnter={() => setHoveredIdx(idx)}
-                                onMouseLeave={() => setHoveredIdx(null)}
-                            >
-                                <img
-                                    src={imgUrl}
-                                    alt={meta?.title || `Photography ${idx + 1}`}
-                                    loading="lazy"
-                                    style={{opacity: 1, transition: 'opacity 0.3s ease'}}
-                                />
-                                {hoveredIdx === idx && (
-                                    <>
-                                        <div className="photo-meta-overlay">
-                                            <div className="photo-meta-title">{meta.title}</div>
-                                            {meta.location && meta.location.place && (
-                                                meta.location.lat && meta.location.lng ? (
-                                                    <a className="photo-meta-location"
-                                                       href={`https://www.google.com/maps?q=${meta.location.lat},${meta.location.lng}`}
-                                                       target="_blank" rel="noopener noreferrer">
-                                                        {meta.location.place}
-                                                    </a>
-                                                ) : (
-                                                    <span className="photo-meta-location">{meta.location.place}</span>
-                                                )
-                                            )}
-                                            {meta.date && (
-                                                <span className="photo-meta-date">{meta.date}</span>
-                                            )}
-                                        </div>
-                                        <button
-                                            className="expand-icon"
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                openFullscreen(meta);
-                                            }}
-                                            aria-label="Expand image"
-                                            style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}
-                                        >
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                                 stroke="currentColor" strokeWidth="2">
-                                                <path
-                                                    d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                                            </svg>
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>)}
-            </div>
-        </main>
+    const fullscreenPhoto = photos.find((p) => p.id === fullscreenPhotoId) || null;
 
-        {/* Fullscreen overlay */}
-        {fullscreenImage && (
-            <div className="fullscreen-overlay" onClick={closeFullscreen}>
-                <div className="fullscreen-content">
-                    <button
-                        className="close-fullscreen"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            closeFullscreen();
-                        }}
-                        aria-label="Close fullscreen"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             strokeWidth="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
-                    <img
-                        src={fullscreenImage.img.src}
-                        alt={fullscreenImage.meta?.title || "Fullscreen image"}
-                        onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="image-protector" onClick={e => e.stopPropagation()}/>
-                    {fullscreenImage.meta && (
-                        <div className="fullscreen-meta">
-                            <div className="fullscreen-title">{fullscreenImage.meta.title}</div>
-                            {(fullscreenImage.meta.date || (fullscreenImage.meta.location && fullscreenImage.meta.location.place)) && (
-                                <div className="fullscreen-date-location">
-                                    {fullscreenImage.meta.location && fullscreenImage.meta.location.place && (
-                                        fullscreenImage.meta.location.lat && fullscreenImage.meta.location.lng ? (
-                                            <a className="fullscreen-location"
-                                               href={`https://www.google.com/maps?q=${fullscreenImage.meta.location.lat},${fullscreenImage.meta.location.lng}`}
-                                               target="_blank" rel="noopener noreferrer">
-                                                {fullscreenImage.meta.location.place}
-                                            </a>
-                                        ) : (
-                                            <span
-                                                className="fullscreen-location">{fullscreenImage.meta.location.place}</span>
-                                        )
-                                    )}
-                                    {fullscreenImage.meta.location && fullscreenImage.meta.location.place && fullscreenImage.meta.date &&
-                                        <span> &nbsp;&ndash;&nbsp; </span>}
-                                    {fullscreenImage.meta.date &&
-                                        <span className="fullscreen-date">{fullscreenImage.meta.date}</span>}
+    const [numColumns, setNumColumns] = useState(() => {
+        if (typeof window === 'undefined') return 3;
+        if (window.innerWidth <= 600) return 1;
+        if (window.innerWidth <= 900) return 2;
+        return 3;
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width <= 600) {
+                setNumColumns(1);
+            } else if (width <= 900) {
+                setNumColumns(2);
+            } else {
+                setNumColumns(3);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Automatically distribute photos into columns based on sizing and aspect ratio
+    // so columns are balanced in height and pictures fit neatly together without manual shuffling
+    const columns = useMemo(() => {
+        if (!photos || photos.length === 0) return [];
+        const count = Math.max(1, numColumns);
+        const cols = Array.from({ length: count }, () => []);
+        const colHeights = Array(count).fill(0);
+
+        photos.forEach((photo) => {
+            const w = photo.width || 1600;
+            const h = photo.height || 1200;
+            const aspect = w > 0 && h > 0 ? w / h : 1.33;
+            const heightFactor = 1 / aspect;
+
+            // Pick the column that currently has the lowest total height
+            let minCol = 0;
+            for (let i = 1; i < count; i++) {
+                if (colHeights[i] < colHeights[minCol]) {
+                    minCol = i;
+                }
+            }
+            cols[minCol].push(photo);
+            colHeights[minCol] += heightFactor;
+        });
+
+        return cols;
+    }, [photos, numColumns]);
+
+    return (
+        <div id="app-root">
+            <SideNav />
+            <main>
+                <h1 id="blog-heading">{t("pageTitle")}</h1>
+                <div id="gallery-div">
+                    {photos.length === 0 ? null : (
+                        <div className="gallery-columns">
+                            {columns.map((columnPhotos, colIdx) => (
+                                <div key={colIdx} className="gallery-column">
+                                    {columnPhotos.map((photo) => {
+                                        const originalIdx = photos.indexOf(photo);
+                                        const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
+                                            ? photo.filename
+                                            : `/photography/${photo.filename}`;
+                                        return (
+                                            <div
+                                                className="gallery-item"
+                                                key={photo.id || photo.filename || originalIdx}
+                                                style={{ position: "relative" }}
+                                                onMouseEnter={() => setHoveredIdx(originalIdx)}
+                                                onMouseLeave={() => setHoveredIdx(null)}
+                                            >
+                                                <img
+                                                    src={imgUrl}
+                                                    alt={photo.title || `Photography ${originalIdx + 1}`}
+                                                    loading="lazy"
+                                                    style={{ opacity: 1, transition: 'opacity 0.3s ease' }}
+                                                />
+                                                {hoveredIdx === originalIdx && (
+                                                    <>
+                                                        <div className="photo-meta-overlay">
+                                                            <div className="photo-meta-title">{photo.title}</div>
+                                                            {photo.location?.place && (
+                                                                photo.location.lat && photo.location.lng ? (
+                                                                    <a
+                                                                        className="photo-meta-location"
+                                                                        href={`https://www.google.com/maps?q=${photo.location.lat},${photo.location.lng}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        {photo.location.place}
+                                                                    </a>
+                                                                ) : (
+                                                                    <span className="photo-meta-location">{photo.location.place}</span>
+                                                                )
+                                                            )}
+                                                            {photo.date && (
+                                                                <span className="photo-meta-date">{formatNumber(photo.date)}</span>
+                                                            )}
+                                                        </div>
+                                                        <button
+                                                            className="expand-icon"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openFullscreen(photo);
+                                                            }}
+                                                            aria-label="Expand image"
+                                                            title="Expand image"
+                                                            style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}
+                                                        >
+                                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                                 stroke="currentColor" strokeWidth="2">
+                                                                <path
+                                                                    d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                                                            </svg>
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                            )}
+                            ))}
                         </div>
                     )}
                 </div>
-            </div>
-        )}
-        <Footer/>
-    </div>);
+            </main>
+
+            {/* Fullscreen overlay */}
+            {fullscreenPhoto && (
+                <div className="fullscreen-overlay" onClick={closeFullscreen}>
+                    <div className="fullscreen-content">
+                        <button
+                            className="close-fullscreen"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                closeFullscreen();
+                            }}
+                            aria-label="Close fullscreen"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <img
+                            src={fullscreenPhoto.filename && (fullscreenPhoto.filename.startsWith('http://') || fullscreenPhoto.filename.startsWith('https://') || fullscreenPhoto.filename.startsWith('/'))
+                                ? fullscreenPhoto.filename
+                                : `/photography/${fullscreenPhoto.filename}`}
+                            alt={fullscreenPhoto.title || "Fullscreen image"}
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                        <div className="image-protector" onClick={(e) => e.stopPropagation()} />
+                        <div className="fullscreen-meta">
+                            <div className="fullscreen-title">{fullscreenPhoto.title}</div>
+                            {(fullscreenPhoto.date || fullscreenPhoto.location?.place) && (
+                                <div className="fullscreen-date-location">
+                                    {fullscreenPhoto.location?.place && (
+                                        fullscreenPhoto.location.lat && fullscreenPhoto.location.lng ? (
+                                            <a
+                                                className="fullscreen-location"
+                                                href={`https://www.google.com/maps?q=${fullscreenPhoto.location.lat},${fullscreenPhoto.location.lng}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {fullscreenPhoto.location.place}
+                                            </a>
+                                        ) : (
+                                            <span className="fullscreen-location">{fullscreenPhoto.location.place}</span>
+                                        )
+                                    )}
+                                    {fullscreenPhoto.location?.place && fullscreenPhoto.date &&
+                                        <span> &nbsp;&ndash;&nbsp; </span>}
+                                    {fullscreenPhoto.date &&
+                                        <span className="fullscreen-date">{formatNumber(fullscreenPhoto.date)}</span>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            <Footer />
+        </div>
+    );
 };
 
 export default Photography;

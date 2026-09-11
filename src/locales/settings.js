@@ -10,11 +10,11 @@ export const settings = {
     },
     kn: {
         changeLanguage: "ನುಡಿಯನ್ನು ಮಾರ್ಪಾಡಿಸಿ",
-        english: "English",
+        english: "ಆಂಗ್ಲ",
         kannada: "ಕನ್ನಡ",
 
         darkMode: "ಕತ್ತಲಿನ ಬಣ್ಣ",
         lightMode: "ಬೆಳಕಿನ ಬಣ್ಣ",
         toggleDarkMode: "ಕತ್ತಲಿನ ಬಣ್ಣವನ್ನು ಮಾರ್ಪಾಡಿಸಿ"
     }
-}; 
+};

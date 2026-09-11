@@ -46,7 +46,8 @@ const BengaluruTeluguDictionary = () => {
                 const response = await fetch('/research/bengaluru-telugu-lexicon.json');
                 if (!response.ok) throw new Error('Failed to fetch dictionary');
                 const data = await response.json();
-                setEntries(data);
+
+                setEntries(Array.isArray(data) ? data : []);
 
                 // Set the page title for the dictionary subpage
                 document.title = t('pageTitles.dictionary');

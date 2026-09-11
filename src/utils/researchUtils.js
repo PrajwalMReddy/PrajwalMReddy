@@ -3,6 +3,18 @@ import {renderMarkdownWithFootnotes} from './markdownUtils';
 // Fetch all research post metadata
 export const getAllResearchPosts = async () => {
     try {
+        const apiRes = await fetch('/api/cms/content?type=research');
+        if (apiRes.ok) {
+            const data = await apiRes.json();
+            if (Array.isArray(data) && data.length > 0) {
+                return data;
+            }
+        }
+    } catch {
+        // Fall back to static JSON
+    }
+
+    try {
         const response = await fetch('/research/metadata.json');
         if (!response.ok) throw new Error('Failed to fetch research metadata');
         const metadata = await response.json();
@@ -15,8 +27,22 @@ export const getAllResearchPosts = async () => {
 
 // Fetch markdown content by filename
 export const fetchResearchContent = async (filename) => {
+    const normalizedFilename = filename.startsWith('/') ? filename.slice(1) : filename;
+    const slug = normalizedFilename.replace(/\.md$/, '');
+
     try {
-        const normalizedFilename = filename.startsWith('/') ? filename.slice(1) : filename;
+        const apiRes = await fetch(`/api/cms/markdown?type=research&slug=${encodeURIComponent(slug)}`);
+        if (apiRes.ok) {
+            const data = await apiRes.json();
+            if (data.exists && data.content) {
+                return data.content;
+            }
+        }
+    } catch {
+        // Fall back to static markdown file
+    }
+
+    try {
         const response = await fetch(`/research/${normalizedFilename}`);
         if (!response.ok) throw new Error('Failed to fetch research content');
         return response.text();
@@ -92,9 +118,9 @@ export const getResearchPostBySlug = async (slug) => {
         const article = (metadata || []).find(item => item.type === 'article' && item.slug === slug && (!item.visibility || item.visibility === 'public'));
         if (!article) throw new Error('Research article not found');
 
-        // Get the content
-        const content = await fetchResearchContent(`${slug}.md`);
-        const htmlContent = parseResearchContent(content);
+        // Get the content: prefer embedded content from database, fallback to fetchResearchContent
+        const content = article.content || await fetchResearchContent(`${slug}.md`);
+        const htmlContent = parseResearchContent(content || '');
 
         return {
             title: article.title?.en || article.title,

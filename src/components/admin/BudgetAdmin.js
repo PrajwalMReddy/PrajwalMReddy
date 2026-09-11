@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
+import { useContent } from '../../utils/ContentContext';
 import BudgetStats from './BudgetStats';
 import ExpenseTable from './ExpenseTable';
 import IncomeTable from './IncomeTable';
 import BudgetPlanner from './BudgetPlanner';
 import { budgetApi } from '../../utils/budgetApi';
 
-const TABS = [
-    { id: 'expenses', label: 'Expenses' },
-    { id: 'income', label: 'Income' },
-    { id: 'statistics', label: 'Statistics' },
-    { id: 'planner', label: 'Planner' },
-];
-
 const BudgetAdmin = () => {
+    const { t } = useContent();
     const [activeTab, setActiveTab] = useState('expenses');
+
+    const tabs = [
+        { id: 'expenses', label: t('admin.budgetSection.tabs.expenses', 'Expenses') },
+        { id: 'income', label: t('admin.budgetSection.tabs.income', 'Income') },
+        { id: 'statistics', label: t('admin.budgetSection.tabs.statistics', 'Statistics') },
+        { id: 'planner', label: t('admin.budgetSection.tabs.planner', 'Planner') },
+    ];
     const [expenses, setExpenses] = useState([]);
     const [income, setIncome] = useState([]);
     const [stats, setStats] = useState(null);
@@ -48,9 +50,9 @@ const BudgetAdmin = () => {
     };
 
     return (
-        <AdminLayout title="Budget Manager">
+        <AdminLayout title={t('admin.budgetSection.title', 'Budget Manager')}>
             <div className="admin-tabs">
-                {TABS.map((tab) => (
+                {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         type="button"
@@ -62,7 +64,7 @@ const BudgetAdmin = () => {
                 ))}
             </div>
 
-            {loading && <p className="admin-loading-text">Loading budget data...</p>}
+            {loading && <p className="admin-loading-text">{t('admin.budgetSection.loading', 'Loading budget data...')}</p>}
             {error && <p className="admin-error">{error}</p>}
 
             {!loading && !error && (

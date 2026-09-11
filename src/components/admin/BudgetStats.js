@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContent } from '../../utils/ContentContext';
 import { formatCurrency } from '../../utils/budgetApi';
 
 const StatCard = ({ label, value, negative }) => (
@@ -8,26 +9,32 @@ const StatCard = ({ label, value, negative }) => (
     </div>
 );
 
-const CategoryBar = ({ name, value, maxValue }) => {
-    const width = maxValue > 0 ? (value / maxValue) * 100 : 0;
+const CategoryBar = ({ name, value, totalValue, maxValue, formatVal }) => {
+    const width = maxValue > 0 ? Math.max((value / maxValue) * 100, 3) : 0;
+    const pct = totalValue > 0 ? ((value / totalValue) * 100).toFixed(1) : '0.0';
 
     return (
         <div className="admin-bar-row">
-            <span className="admin-bar-label">{name}</span>
+            <div className="admin-bar-header">
+                <span className="admin-bar-label" title={name}>{name}</span>
+                <span className="admin-bar-value">
+                    <span className="admin-bar-pct">{pct}%</span>
+                    <strong>{formatVal(value)}</strong>
+                </span>
+            </div>
             <div className="admin-bar-track">
                 <div
                     className="admin-bar-fill"
                     style={{ width: `${width}%` }}
                 />
             </div>
-            <span className="admin-bar-value">
-                {formatCurrency(value)}
-            </span>
         </div>
     );
 };
 
 const BudgetStats = ({ stats }) => {
+    const { t, formatNumber } = useContent();
+
     if (!stats) return null;
 
     const {
@@ -40,6 +47,9 @@ const BudgetStats = ({ stats }) => {
         chartData,
     } = stats;
 
+    const formatVal = (val) => formatNumber(formatCurrency(val));
+    const formatNum = (num, digits = 2) => formatNumber(Number(num || 0).toFixed(digits));
+
     const categoryList = Array.isArray(categories) ? categories : [];
 
     const monthlyTrend = Array.isArray(chartData?.monthlyTrend)
@@ -51,25 +61,6 @@ const BudgetStats = ({ stats }) => {
         expenses: 0,
     };
 
-    /*
-     * ME Budgeted and AE Budgeted are cumulative plan totals.
-     *
-     * They must come from the stats/API layer:
-     *
-     *   budget.meBudgeted
-     *     = total monthly budgeted amount from the beginning
-     *       through the current month, across all Ayanas
-     *
-     *   ayana.aeBudgeted
-     *     = total Ayana budgeted amount from the beginning
-     *       through the current Ayana, across all Ayanas
-     *
-     * They should NOT be calculated from transactions, spending,
-     * averages, or the current Ayana alone.
-     *
-     * Keep the fallbacks at 0 so the UI remains safe if an older
-     * stats response does not contain the new fields yet.
-     */
     const meBudgeted = Number.isFinite(Number(budget?.meBudgeted))
         ? Number(budget.meBudgeted)
         : 0;
@@ -77,6 +68,11 @@ const BudgetStats = ({ stats }) => {
     const aeBudgeted = Number.isFinite(Number(ayana?.aeBudgeted))
         ? Number(ayana.aeBudgeted)
         : 0;
+
+    const totalCategorySpending = categoryList.reduce(
+        (sum, cat) => sum + (Number(cat.spending) || 0),
+        0
+    );
 
     const maxCategory =
         categoryList.length > 0
@@ -100,132 +96,132 @@ const BudgetStats = ({ stats }) => {
     return (
         <div className="admin-stats">
             <section className="admin-stats-section">
-                <h2>Funds</h2>
+                <h2>💰 {t('admin.budgetSection.stats.funds', 'Funds')}</h2>
 
-                <div className="admin-stat-grid">
+                <div className="admin-stat-grid admin-stat-grid-3">
                     <StatCard
-                        label="Injections"
-                        value={formatCurrency(funds.injections)}
+                        label={t('admin.budgetSection.stats.injections', 'Injections')}
+                        value={formatVal(funds.injections)}
                     />
 
                     <StatCard
-                        label="Other Income"
-                        value={formatCurrency(funds.otherIncome)}
+                        label={t('admin.budgetSection.stats.otherIncome', 'Other Income')}
+                        value={formatVal(funds.otherIncome)}
                     />
 
                     <StatCard
-                        label="Total Funds"
-                        value={formatCurrency(funds.totalFunds)}
-                    />
-                </div>
-            </section>
-
-            <section className="admin-stats-section">
-                <h2>Spending</h2>
-
-                <div className="admin-stat-grid">
-                    <StatCard
-                        label="Expenses"
-                        value={formatCurrency(spending.expenses)}
-                    />
-
-                    <StatCard
-                        label="Real Spent"
-                        value={formatCurrency(spending.realSpent)}
-                    />
-
-                    <StatCard
-                        label="Real Avg / Month"
-                        value={formatCurrency(spending.realAvgPerMonth)}
-                    />
-
-                    <StatCard
-                        label="Months Left"
-                        value={Number(spending.monthsLeft || 0).toFixed(2)}
+                        label={t('admin.budgetSection.stats.totalFunds', 'Total Funds')}
+                        value={formatVal(funds.totalFunds)}
                     />
                 </div>
             </section>
 
             <section className="admin-stats-section">
-                <h2>Budget</h2>
+                <h2>💸 {t('admin.budgetSection.stats.spending', 'Spending')}</h2>
 
-                <div className="admin-stat-grid">
+                <div className="admin-stat-grid admin-stat-grid-4">
                     <StatCard
-                        label="ME Budgeted (to date)"
-                        value={formatCurrency(meBudgeted)}
+                        label={t('admin.budgetSection.stats.expenses', 'Expenses')}
+                        value={formatVal(spending.expenses)}
                     />
 
                     <StatCard
-                        label="ME Surplus"
-                        value={formatCurrency(budget.meSurplus)}
+                        label={t('admin.budgetSection.stats.realSpent', 'Real Spent')}
+                        value={formatVal(spending.realSpent)}
+                    />
+
+                    <StatCard
+                        label={t('admin.budgetSection.stats.realAvgPerMonth', 'Real Avg / Month')}
+                        value={formatVal(spending.realAvgPerMonth)}
+                    />
+
+                    <StatCard
+                        label={t('admin.budgetSection.stats.monthsLeft', 'Months Left')}
+                        value={formatNum(spending.monthsLeft)}
+                    />
+                </div>
+            </section>
+
+            <section className="admin-stats-section">
+                <h2>🎯 {t('admin.budgetSection.stats.budget', 'Budget')}</h2>
+
+                <div className="admin-stat-grid admin-stat-grid-3">
+                    <StatCard
+                        label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted (to date)')}
+                        value={formatVal(meBudgeted)}
+                    />
+
+                    <StatCard
+                        label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
+                        value={formatVal(budget.meSurplus)}
                         negative={budget.meSurplus < 0}
                     />
 
                     <StatCard
-                        label="Net Balance"
-                        value={formatCurrency(budget.netBalance)}
+                        label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
+                        value={formatVal(budget.netBalance)}
                     />
                 </div>
             </section>
 
             <section className="admin-stats-section">
-                <h2>Transaction Statistics</h2>
+                <h2>📊 {t('admin.budgetSection.stats.transactionStats', 'Transaction Statistics')}</h2>
 
                 <div className="admin-stat-grid admin-stat-grid-6">
                     <StatCard
-                        label="Q1"
-                        value={formatCurrency(transactionStats.q1)}
+                        label={t('admin.budgetSection.stats.q1', 'Q1')}
+                        value={formatVal(transactionStats.q1)}
                     />
 
                     <StatCard
-                        label="Tran Med"
-                        value={formatCurrency(transactionStats.median)}
+                        label={t('admin.budgetSection.stats.median', 'Tran Med')}
+                        value={formatVal(transactionStats.median)}
                     />
 
                     <StatCard
-                        label="Q3"
-                        value={formatCurrency(transactionStats.q3)}
+                        label={t('admin.budgetSection.stats.q3', 'Q3')}
+                        value={formatVal(transactionStats.q3)}
                     />
 
                     <StatCard
-                        label="Tran Mean"
-                        value={formatCurrency(transactionStats.mean)}
+                        label={t('admin.budgetSection.stats.mean', 'Tran Mean')}
+                        value={formatVal(transactionStats.mean)}
                     />
 
                     <StatCard
-                        label="Trim Mean"
-                        value={formatCurrency(transactionStats.trimMean)}
+                        label={t('admin.budgetSection.stats.trimMean', 'Trim Mean')}
+                        value={formatVal(transactionStats.trimMean)}
                     />
 
                     <StatCard
-                        label="Tran Mode"
-                        value={formatCurrency(transactionStats.mode)}
+                        label={t('admin.budgetSection.stats.mode', 'Tran Mode')}
+                        value={formatVal(transactionStats.mode)}
                     />
                 </div>
             </section>
 
             <section className="admin-stats-section">
-                <h2>Ayana (6-month period)</h2>
+                <h2>🗓️ {t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
 
-                <div className="admin-stat-grid">
+                <div className="admin-stat-grid admin-stat-grid-4">
                     <StatCard
-                        label="Completed Ayanas"
-                        value={Number(ayana.completedAyanas || 0).toFixed(2)}
+                        label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
+                        value={formatNum(ayana.completedAyanas)}
                     />
 
                     <StatCard
-                        label="Real Avg / Ayana"
-                        value={formatCurrency(ayana.realAvgPerAyana)}
+                        label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
+                        value={formatVal(ayana.realAvgPerAyana)}
                     />
 
                     <StatCard
-                        label="AE Budgeted (to date)"
-                        value={formatCurrency(aeBudgeted)}
+                        label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted (to date)')}
+                        value={formatVal(aeBudgeted)}
                     />
 
                     <StatCard
-                        label="AE Surplus"
-                        value={formatCurrency(ayana.aeSurplus)}
+                        label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
+                        value={formatVal(ayana.aeSurplus)}
                         negative={ayana.aeSurplus < 0}
                     />
                 </div>
@@ -233,14 +229,14 @@ const BudgetStats = ({ stats }) => {
 
             <div className="admin-stats-columns">
                 <section className="admin-stats-section">
-                    <h2>Category Spending</h2>
+                    <h2>🏷️ {t('admin.budgetSection.stats.categorySpending', 'Category Spending')}</h2>
 
                     <table className="admin-table">
                         <thead>
                         <tr>
-                            <th>Category</th>
-                            <th>Spending</th>
-                            <th>Spending / Ayana</th>
+                            <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
+                            <th>{t('admin.budgetSection.stats.spending', 'Spending')}</th>
+                            <th>{t('admin.budgetSection.stats.spendingPerAyana', 'Spending / Ayana')}</th>
                         </tr>
                         </thead>
 
@@ -248,22 +244,20 @@ const BudgetStats = ({ stats }) => {
                         {categoryList.map((cat) => (
                             <tr key={cat.category}>
                                 <td>{cat.category}</td>
-                                <td>{formatCurrency(cat.spending)}</td>
-                                <td>
-                                    {formatCurrency(cat.spendingPerAyana)}
-                                </td>
+                                <td>{formatVal(cat.spending)}</td>
+                                <td>{formatVal(cat.spendingPerAyana)}</td>
                             </tr>
                         ))}
 
                         <tr className="admin-table-total">
-                            <td>Total</td>
+                            <td>{t('admin.budgetSection.stats.total', 'Total')}</td>
 
                             <td>
-                                {formatCurrency(spending.expenses)}
+                                {formatVal(spending.expenses)}
                             </td>
 
                             <td>
-                                {formatCurrency(
+                                {formatVal(
                                     categoryList.reduce(
                                         (sum, category) =>
                                             sum +
@@ -280,7 +274,7 @@ const BudgetStats = ({ stats }) => {
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>Category Breakdown</h2>
+                    <h2>📈 {t('admin.budgetSection.stats.categoryBreakdown', 'Category Breakdown')}</h2>
 
                     <div className="admin-bar-chart">
                         {categoryList.map((cat) => (
@@ -288,7 +282,9 @@ const BudgetStats = ({ stats }) => {
                                 key={cat.category}
                                 name={cat.category}
                                 value={Number(cat.spending) || 0}
+                                totalValue={totalCategorySpending}
                                 maxValue={maxCategory}
+                                formatVal={formatVal}
                             />
                         ))}
                     </div>
@@ -296,7 +292,7 @@ const BudgetStats = ({ stats }) => {
             </div>
 
             <section className="admin-stats-section">
-                <h2>Monthly Trend</h2>
+                <h2>{t('admin.budgetSection.stats.monthlyTrend', 'Monthly Trend')}</h2>
 
                 <div className="admin-monthly-chart">
                     {monthlyTrend.map((month) => (
@@ -314,7 +310,7 @@ const BudgetStats = ({ stats }) => {
                                             100
                                         }%`,
                                     }}
-                                    title={`Income: ${formatCurrency(
+                                    title={`${t('admin.budgetSection.stats.incomeLabel', 'Income:')} ${formatVal(
                                         month.income
                                     )}`}
                                 />
@@ -328,27 +324,27 @@ const BudgetStats = ({ stats }) => {
                                             100
                                         }%`,
                                     }}
-                                    title={`Expenses: ${formatCurrency(
+                                    title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
                                         month.expenses
                                     )}`}
                                 />
                             </div>
 
                             <span className="admin-monthly-label">
-                                {month.month.slice(5)}
+                                {formatNumber(month.month.slice(5))}
                             </span>
                         </div>
                     ))}
                 </div>
 
                 <div className="admin-chart-legend">
-                    <span className="legend-income">Income</span>
-                    <span className="legend-expenses">Expenses</span>
+                    <span className="legend-income">{t('admin.budgetSection.stats.income', 'Income')}</span>
+                    <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
                 </div>
             </section>
 
             <section className="admin-stats-section">
-                <h2>Income vs Expenses</h2>
+                <h2>{t('admin.budgetSection.stats.incomeVsExpenses', 'Income vs Expenses')}</h2>
 
                 <div className="admin-comparison-chart">
                     <div className="admin-comparison-bar">
@@ -366,8 +362,8 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <span>
-                            Income:{' '}
-                            {formatCurrency(incomeVsExpenses.income)}
+                            {t('admin.budgetSection.stats.incomeLabel', 'Income:')}{' '}
+                            {formatVal(incomeVsExpenses.income)}
                         </span>
                     </div>
 
@@ -386,8 +382,8 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <span>
-                            Expenses:{' '}
-                            {formatCurrency(incomeVsExpenses.expenses)}
+                            {t('admin.budgetSection.stats.expensesLabel', 'Expenses:')}{' '}
+                            {formatVal(incomeVsExpenses.expenses)}
                         </span>
                     </div>
                 </div>

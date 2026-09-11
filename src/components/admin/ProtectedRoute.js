@@ -1,15 +1,17 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
+import { useContent } from '../../utils/ContentContext';
 
 const ProtectedRoute = ({ children }) => {
     const { authenticated, loading } = useAuth();
+    const { t } = useContent();
     const location = useLocation();
 
     if (loading) {
         return (
             <div className="admin-loading">
-                <p>Checking session...</p>
+                <p>{t('admin.login.checkingSession', 'Checking session...')}</p>
             </div>
         );
     }

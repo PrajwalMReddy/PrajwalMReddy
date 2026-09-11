@@ -62,20 +62,10 @@ table {
     --secondary-color: #4A6B8A;
     --accent-color: #7D9BA6;
     --highlight-color: #95A5A6;
+    --background: #F5F7FA;
+    --text: #2C3E50;
+    --gray: #E8EDF2;
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #181A1B;
-        --text: #F5F7FA;
-        --gray: #23272A;
-        --primary-color: #F5F7FA;
-        --primary-color-rgb: 245, 247, 250;
-        --secondary-color: #AAB7B8;
-        --accent-color: #4A6B8A;
-        --highlight-color: #7D9BA6;
-    }
 }
 
 body.dark-mode {

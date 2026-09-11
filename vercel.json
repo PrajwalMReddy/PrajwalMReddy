@@ -31,7 +31,7 @@
       "destination": "/api/index?path=/:path*"
     },
     {
-      "source": "/((?!api(?:/|$)).*)",
+      "source": "/((?!api(?:/|$)|photography(?:/|$)|img(?:/|$)|research(?:/|$)).*)",
       "destination": "/index.html"
     }
   ]

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AdminLayout from './AdminLayout';
+import { useContent } from '../../utils/ContentContext';
 import TodoCard from './todo/TodoCard';
 import TodoModal from './todo/TodoModal';
 import {
@@ -7,12 +8,14 @@ import {
     getDueDayKey,
     getDueState,
     getNextThreeDaysRange,
+    isRecurringChildVisible,
     isScheduledForFuture,
     parseDateOnly,
     TODO_API,
 } from './todo/todoUtils';
 
 const TodoAdmin = () => {
+    const { t, formatNumber } = useContent();
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState('');
     const [dueDate, setDueDate] = useState('');
@@ -25,6 +28,8 @@ const TodoAdmin = () => {
     const [activeTodo, setActiveTodo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [expandedSubtasks, setExpandedSubtasks] = useState(new Set());
+    const [selectedTag, setSelectedTag] = useState(null);
+    const [search, setSearch] = useState('');
 
     const loadTodos = useCallback(async () => {
         try {
@@ -46,14 +51,67 @@ const TodoAdmin = () => {
         loadTodos();
     }, [loadTodos]);
 
+    const allTags = useMemo(() => {
+        const tagSet = new Set();
+        todos.forEach((todo) => {
+            if (Array.isArray(todo.tags)) {
+                todo.tags.forEach((tag) => {
+                    const trimmed = String(tag || '').trim();
+                    if (trimmed) tagSet.add(trimmed);
+                });
+            }
+        });
+        return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+    }, [todos]);
+
+    useEffect(() => {
+        if (selectedTag && !allTags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) {
+            setSelectedTag(null);
+        }
+    }, [allTags, selectedTag]);
+
+    const displayTodos = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        return todos.filter((todo) => {
+            if (!isRecurringChildVisible(todo, todos)) {
+                return false;
+            }
+
+            if (selectedTag) {
+                const hasTag =
+                    Array.isArray(todo.tags) &&
+                    todo.tags.some(
+                        (t) => String(t).trim().toLowerCase() === selectedTag.toLowerCase()
+                    );
+                if (!hasTag) return false;
+            }
+
+            if (query) {
+                const titleMatch = (todo.title || '').toLowerCase().includes(query);
+                const descMatch = (todo.description || '').toLowerCase().includes(query);
+                const tagMatch =
+                    Array.isArray(todo.tags) &&
+                    todo.tags.some((t) => String(t).toLowerCase().includes(query));
+                const subtaskMatch =
+                    Array.isArray(todo.subtasks) &&
+                    todo.subtasks.some((st) => (st.title || '').toLowerCase().includes(query));
+                if (!titleMatch && !descMatch && !tagMatch && !subtaskMatch) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }, [todos, selectedTag, search]);
+
     const pendingCount = useMemo(
-        () => todos.filter((todo) => !todo.completed).length,
-        [todos]
+        () => displayTodos.filter((todo) => !todo.completed).length,
+        [displayTodos]
     );
 
     const doneCount = useMemo(
-        () => todos.filter((todo) => todo.completed).length,
-        [todos]
+        () => displayTodos.filter((todo) => todo.completed).length,
+        [displayTodos]
     );
 
     const priorityOrder = { high: 0, medium: 1, low: 2 };
@@ -62,7 +120,7 @@ const TodoAdmin = () => {
 
     const overdueTodos = useMemo(
         () =>
-            todos
+            displayTodos
                 .filter(
                     (todo) =>
                         !todo.completed &&
@@ -74,12 +132,12 @@ const TodoAdmin = () => {
                     if (priorityDiff !== 0) return priorityDiff;
                     return getDueDayKey(a) - getDueDayKey(b);
                 }),
-        [todos]
+        [displayTodos]
     );
 
     const todayTodos = useMemo(
         () =>
-            todos
+            displayTodos
                 .filter(
                     (todo) =>
                         !todo.completed &&
@@ -87,12 +145,12 @@ const TodoAdmin = () => {
                         getDueState(todo) === 'today'
                 )
                 .sort(sortByPriority),
-        [todos]
+        [displayTodos]
     );
 
     const nextThreeDaysTodos = useMemo(() => {
         const { startKey, endKey } = getNextThreeDaysRange();
-        return todos
+        return displayTodos
             .filter((todo) => {
                 if (todo.completed || isScheduledForFuture(todo)) return false;
                 const dueKey = getDueDayKey(todo);
@@ -104,11 +162,11 @@ const TodoAdmin = () => {
                 if (priorityDiff !== 0) return priorityDiff;
                 return getDueDayKey(a) - getDueDayKey(b);
             });
-    }, [todos]);
+    }, [displayTodos]);
 
     const upcomingTodos = useMemo(() => {
         const { endKey } = getNextThreeDaysRange();
-        return todos
+        return displayTodos
             .filter((todo) => {
                 if (todo.completed || isScheduledForFuture(todo)) return false;
                 const dueKey = getDueDayKey(todo);
@@ -120,11 +178,11 @@ const TodoAdmin = () => {
                 if (dateDiff !== 0) return dateDiff;
                 return sortByPriority(a, b);
             });
-    }, [todos]);
+    }, [displayTodos]);
 
     const noDueDateTodos = useMemo(
         () =>
-            todos
+            displayTodos
                 .filter(
                     (todo) =>
                         !todo.completed &&
@@ -132,24 +190,24 @@ const TodoAdmin = () => {
                         getDueDayKey(todo) === null
                 )
                 .sort(sortByPriority),
-        [todos]
+        [displayTodos]
     );
 
     const scheduledTodos = useMemo(
         () =>
-            todos
+            displayTodos
                 .filter((todo) => isScheduledForFuture(todo) && !todo.completed)
                 .sort(
                     (a, b) =>
                         getDayKey(parseDateOnly(a.scheduledAt)) -
                         getDayKey(parseDateOnly(b.scheduledAt))
                 ),
-        [todos]
+        [displayTodos]
     );
 
     const completedTodos = useMemo(
         () =>
-            todos
+            displayTodos
                 .filter((todo) => todo.completed)
                 .sort((a, b) => {
                     if (a.updatedAt && b.updatedAt) {
@@ -160,12 +218,12 @@ const TodoAdmin = () => {
                         (b.order ?? b.serialNumber ?? 0)
                     );
                 }),
-        [todos]
+        [displayTodos]
     );
 
     const highPriorityTodos = useMemo(
-        () => todos.filter((todo) => !todo.completed && todo.priority === 'high'),
-        [todos]
+        () => displayTodos.filter((todo) => !todo.completed && todo.priority === 'high'),
+        [displayTodos]
     );
 
     const persistTodoUpdate = async (todoId, updates) => {
@@ -375,12 +433,12 @@ const TodoAdmin = () => {
                 setActiveTodo(t);
                 setIsModalOpen(true);
             }}
-            onDelete={(t) => {
+            onDelete={(taskItem) => {
                 const confirmed = window.confirm(
-                    `Are you sure you want to delete "${t.title}"?`
+                    t('admin.todoSection.deleteConfirm', 'Are you sure you want to delete this task?')
                 );
                 if (confirmed) {
-                    handleDeleteTodo(t.id);
+                    handleDeleteTodo(taskItem.id);
                 }
             }}
             onChangePriority={handleChangePriority}
@@ -390,36 +448,49 @@ const TodoAdmin = () => {
         />
     );
 
-    const renderColumn = (title, items) => (
-        <div className="admin-todo-column" key={title}>
-            <div className="admin-todo-column-header">
-                <span className="admin-todo-column-title">{title}</span>
-                <span className="admin-todo-column-count">{items.length}</span>
+    const renderColumn = (titleKey, items) => {
+        const columnTitleMap = {
+            'Overdue': t('admin.todoSection.columns.overdue', 'Overdue'),
+            'Today': t('admin.todoSection.columns.today', 'Today'),
+            'Next 3 Days': t('admin.todoSection.columns.next3Days', 'Next 3 Days'),
+            'Upcoming': t('admin.todoSection.columns.upcoming', 'Upcoming'),
+            'No Due Date': t('admin.todoSection.columns.noDueDate', 'No Due Date'),
+            'Scheduled': t('admin.todoSection.columns.scheduled', 'Scheduled'),
+            'Completed': t('admin.todoSection.columns.completed', 'Completed'),
+        };
+        const displayTitle = columnTitleMap[titleKey] || titleKey;
+
+        return (
+            <div className="admin-todo-column" key={titleKey}>
+                <div className="admin-todo-column-header">
+                    <span className="admin-todo-column-title">{displayTitle}</span>
+                    <span className="admin-todo-column-count">{formatNumber(items.length)}</span>
+                </div>
+                <div className="admin-todo-column-body">
+                    {items.map(renderTodoCard)}
+                </div>
             </div>
-            <div className="admin-todo-column-body">
-                {items.map(renderTodoCard)}
-            </div>
-        </div>
-    );
+        );
+    };
 
     return (
-        <AdminLayout title="To-Do Manager">
+        <AdminLayout title={t('admin.todoSection.title', 'To-Do Manager')}>
             <div className="admin-todo-top-dashboard">
                 <form className="admin-form admin-todo-form" onSubmit={handleAddTodo}>
-                    <h3>Add a task</h3>
+                    <h3>{t('admin.todoSection.addATask', 'Add a task')}</h3>
                     <div className="admin-todo-form-row">
                         <label className="admin-todo-title-field">
-                            <span>Task title</span>
+                            <span>{t('admin.todoSection.taskTitle', 'Task title')}</span>
                             <input
                                 type="text"
                                 value={newTodo}
                                 onChange={(event) => setNewTodo(event.target.value)}
-                                placeholder="Write a new item"
+                                placeholder={t('admin.todoSection.placeholder', 'Write a new item')}
                             />
                         </label>
 
                         <label className="admin-todo-date-field">
-                            <span>Due date</span>
+                            <span>{t('admin.todoSection.dueDate', 'Due date')}</span>
                             <input
                                 type="date"
                                 value={dueDate}
@@ -428,14 +499,14 @@ const TodoAdmin = () => {
                         </label>
 
                         <label className="admin-todo-priority-field">
-                            <span>Priority</span>
+                            <span>{t('admin.todoSection.priority', 'Priority')}</span>
                             <select
                                 value={priority}
                                 onChange={(event) => setPriority(event.target.value)}
                             >
-                                <option value="low">🟢 Low</option>
-                                <option value="medium">🟡 Medium</option>
-                                <option value="high">🔴 High</option>
+                                <option value="low">🟢 {t('admin.todoSection.priorities.low', 'Low')}</option>
+                                <option value="medium">🟡 {t('admin.todoSection.priorities.medium', 'Medium')}</option>
+                                <option value="high">🔴 {t('admin.todoSection.priorities.high', 'High')}</option>
                             </select>
                         </label>
 
@@ -444,7 +515,7 @@ const TodoAdmin = () => {
                             className="admin-todo-submit"
                             disabled={loading}
                         >
-                            Add task
+                            {t('admin.todoSection.addTask', 'Add task')}
                         </button>
                     </div>
 
@@ -453,49 +524,137 @@ const TodoAdmin = () => {
 
                 <div className="admin-todo-overview">
                     <div className="admin-todo-stat">
-                        <span>Pending</span>
-                        <strong>{pendingCount}</strong>
+                        <span>{t('admin.todoSection.pending', 'Pending')}</span>
+                        <strong>{formatNumber(pendingCount)}</strong>
                     </div>
 
                     <div className="admin-todo-stat admin-todo-stat-urgent">
-                        <span>🔴 Urgent</span>
-                        <strong>{highPriorityTodos.length}</strong>
+                        <span>🔴 {t('admin.todoSection.urgent', 'Urgent')}</span>
+                        <strong>{formatNumber(highPriorityTodos.length)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>Completed</span>
-                        <strong>{doneCount}</strong>
+                        <span>{t('admin.todoSection.completed', 'Completed')}</span>
+                        <strong>{formatNumber(doneCount)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>Total</span>
-                        <strong>{todos.length}</strong>
+                        <span>{t('admin.todoSection.total', 'Total')}</span>
+                        <strong>{formatNumber(displayTodos.length)}</strong>
                     </div>
                 </div>
             </div>
 
-            <div className="admin-tabs">
-                <button
-                    type="button"
-                    className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('all')}
-                >
-                    All Tasks
-                </button>
+            <div className="admin-todo-nav-bar">
+                <div className="admin-todo-nav-main">
+                    <div className="admin-tabs">
+                        <button
+                            type="button"
+                            className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('all')}
+                        >
+                            {t('admin.todoSection.allTasks', 'All Tasks')}
+                        </button>
 
-                <button
-                    type="button"
-                    className={`admin-tab ${activeTab === 'other' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('other')}
-                >
-                    Other
-                </button>
+                        <button
+                            type="button"
+                            className={`admin-tab ${activeTab === 'other' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('other')}
+                        >
+                            {t('admin.todoSection.other', 'Other')}
+                        </button>
+                    </div>
+
+                    <div className="admin-todo-search-wrap">
+                        <span className="admin-todo-search-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            placeholder={t('admin.todoSection.searchPlaceholder', 'Search tasks...')}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape' && search) {
+                                    e.stopPropagation();
+                                    setSearch('');
+                                }
+                            }}
+                            className="admin-todo-search-input"
+                            aria-label={t('admin.todoSection.searchAriaLabel', 'Search tasks')}
+                        />
+                        {search && (
+                            <button
+                                type="button"
+                                className="admin-todo-search-clear"
+                                onClick={() => setSearch('')}
+                                aria-label={t('admin.todoSection.clearSearch', 'Clear search')}
+                                title={t('admin.todoSection.clearSearch', 'Clear search')}
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {allTags.length > 0 && (
+                    <div className="admin-todo-tag-filter-container">
+                        <span className="admin-todo-tag-filter-label">{t('admin.todoSection.filterByTag', 'Filter by tag:')}</span>
+                        <div className="admin-todo-tag-filter-pills">
+                            <button
+                                type="button"
+                                className={`admin-todo-tag-filter-pill ${!selectedTag ? 'active' : ''}`}
+                                onClick={() => setSelectedTag(null)}
+                            >
+                                {t('admin.todoSection.all', 'All')}
+                            </button>
+                            {allTags.map((tag) => {
+                                const isSelected = selectedTag?.toLowerCase() === tag.toLowerCase();
+                                return (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        className={`admin-todo-tag-filter-pill ${isSelected ? 'active' : ''}`}
+                                        onClick={() => setSelectedTag(isSelected ? null : tag)}
+                                        title={`${t('admin.todoSection.filterByTag', 'Filter by tag:')} ${tag}`}
+                                    >
+                                        🏷️ {tag}
+                                        {isSelected && <span className="admin-todo-tag-filter-clear">✕</span>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {loading ? (
-                <p className="admin-loading-text">Loading tasks...</p>
+                <p className="admin-loading-text">{t('admin.todoSection.loading', 'Loading tasks...')}</p>
             ) : todos.length === 0 ? (
-                <p className="admin-empty">No tasks yet. Add your first one above.</p>
+                <p className="admin-empty">{t('admin.todoSection.empty', 'No tasks yet. Add your first one above.')}</p>
+            ) : displayTodos.length === 0 ? (
+                <div className="admin-todo-filter-empty">
+                    <p>
+                        {search.trim()
+                            ? t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')
+                            : t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')}
+                    </p>
+                    <button
+                        type="button"
+                        className="admin-todo-clear-filter-btn"
+                        onClick={() => {
+                            if (search) setSearch('');
+                            if (selectedTag) setSelectedTag(null);
+                        }}
+                    >
+                        {search.trim() && !selectedTag
+                            ? t('admin.todoSection.clearSearch', 'Clear search')
+                            : t('admin.todoSection.clearFilter', 'Clear filter')}
+                    </button>
+                </div>
             ) : (
                 <div className="admin-todo-board">
                     {activeTab === 'other' && (

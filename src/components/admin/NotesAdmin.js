@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AdminLayout from './AdminLayout';
+import { useContent } from '../../utils/ContentContext';
 import {
     BLOCK_TYPES,
     MAX_GRID_ROWS,
@@ -13,11 +14,13 @@ import {
     generateNoteContent,
     FOLDERS_STORAGE_KEY,
     EXPANDED_FOLDERS_KEY,
+    getBacklinks,
 } from './notes/noteUtils';
 import { NoteBlock } from './notes/NoteWidgets';
 import NoteSidebar from './notes/NoteSidebar';
 
 const NotesAdmin = () => {
+    const { t } = useContent();
     const [notes, setNotes] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [draft, setDraft] = useState({ title: '', content: '', folder: '', blocks: [] });
@@ -120,6 +123,7 @@ const NotesAdmin = () => {
         'text',
         'heading',
         'table',
+        'link',
         'list',
         'callout',
         'quote',
@@ -127,8 +131,8 @@ const NotesAdmin = () => {
         'code',
         'divider',
         'todo',
-        'link',
         'note_link',
+        'timeline',
         'date',
         'status',
         'counter',
@@ -141,7 +145,11 @@ const NotesAdmin = () => {
         'equation',
         'habit',
     ];
-    const primaryWidgetTypes = widgetOrder.slice(0, 9);
+    const primaryWidgetTypes = widgetOrder.slice(0, 10);
+    const activeBacklinks = useMemo(
+        () => getBacklinks(selectedId, notes),
+        [selectedId, notes]
+    );
     const boardRowCount = Math.max(
         30,
         ...draft.blocks.map((block) => (block.position?.row || 1) + (block.height || 3) - 1)
@@ -352,12 +360,11 @@ const NotesAdmin = () => {
     };
 
     const handleDeleteFolder = async (folderName) => {
-        if (
-            !window.confirm(
-                `Delete folder "${folderName}"? Notes in this folder will be moved to / (root).`
-            )
-        )
-            return;
+        const confirmMsg = t(
+            'admin.notesSection.deleteConfirmFolder',
+            'Delete folder "{name}"? Notes in this folder will be moved to / (root).'
+        ).replace('{name}', folderName);
+        if (!window.confirm(confirmMsg)) return;
 
         setCustomFolders((current) => current.filter((f) => f !== folderName));
         setExpandedFolders((current) => {
@@ -503,7 +510,13 @@ const NotesAdmin = () => {
     };
 
     const handleDelete = async () => {
-        if (!selectedId || !window.confirm('Delete this note?')) return;
+        if (
+            !selectedId ||
+            !window.confirm(
+                t('admin.notesSection.deleteConfirmNote', 'Delete this note?')
+            )
+        )
+            return;
 
         setSaving(true);
         setError('');
@@ -667,9 +680,9 @@ const NotesAdmin = () => {
         const blockBounds = event.currentTarget.parentElement.getBoundingClientRect();
         const startColumn = metrics
             ? Math.floor(
-                  (blockBounds.left - metrics.bounds.left - metrics.paddingX) /
-                      (metrics.cellWidth + metrics.gap)
-              ) + 1
+                (blockBounds.left - metrics.bounds.left - metrics.paddingX) /
+                (metrics.cellWidth + metrics.gap)
+            ) + 1
             : block.position?.col || 1;
         resizeSessionRef.current = {
             id: block.id,
@@ -839,18 +852,19 @@ const NotesAdmin = () => {
     );
 
     return (
-        <AdminLayout title="Notes Manager">
+        <AdminLayout title={t('admin.notesSection.title', 'Notes & Ideas')}>
             <div
                 className={`admin-notes-workspace${isFullScreen ? ' is-full-screen' : ''}`}
             >
                 <div className="admin-notes-toolbar">
                     <label className="admin-notes-search">
-                        <span>Search notes</span>
+                        <span>{t('admin.notesSection.searchNotes', 'Search notes')}</span>
                         <input
-                            type="search"
+                            type="text"
+                            inputMode="search"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Search title, folder, or content"
+                            placeholder={t('admin.notesSection.searchPlaceholder', 'Search title, folder, or content')}
                         />
                     </label>
                     <div className="admin-notes-toolbar-actions">
@@ -865,8 +879,8 @@ const NotesAdmin = () => {
                                         type="text"
                                         value={toolbarFolderName}
                                         onChange={(e) => setToolbarFolderName(e.target.value)}
-                                        placeholder="New folder..."
-                                        aria-label="New folder name"
+                                        placeholder={t('admin.notesSection.newFolderEllipsis', 'New folder...')}
+                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
@@ -898,7 +912,7 @@ const NotesAdmin = () => {
                                             }
                                         }}
                                     >
-                                        Create
+                                        {t('admin.notesSection.create', 'Create')}
                                     </button>
                                     <button
                                         type="button"
@@ -907,8 +921,8 @@ const NotesAdmin = () => {
                                             setIsCreatingToolbarFolder(false);
                                             setToolbarFolderName('');
                                         }}
-                                        title="Cancel"
-                                        aria-label="Cancel"
+                                        title={t('admin.notesSection.cancel', 'Cancel')}
+                                        aria-label={t('admin.notesSection.cancel', 'Cancel')}
                                     >
                                         ✕
                                     </button>
@@ -921,9 +935,9 @@ const NotesAdmin = () => {
                                         setIsCreatingToolbarFolder(true);
                                         setToolbarFolderName('');
                                     }}
-                                    title="Create new folder"
+                                    title={t('admin.notesSection.newFolder', 'Create new folder')}
                                 >
-                                    + New folder
+                                    {t('admin.notesSection.newFolderBtn', '+ New folder')}
                                 </button>
                             )
                         )}
@@ -935,13 +949,13 @@ const NotesAdmin = () => {
                                 startNewNote('');
                             }}
                         >
-                            + New note
+                            {t('admin.notesSection.newNoteBtn', '+ New note')}
                         </button>
                     </div>
                 </div>
 
                 {error && <p className="admin-error">{error}</p>}
-                {loading && <p className="admin-loading-text">Loading notes...</p>}
+                {loading && <p className="admin-loading-text">{t('admin.notesSection.loading', 'Loading notes...')}</p>}
 
                 {!loading && (
                     <div className="admin-notes-layout">
@@ -984,8 +998,8 @@ const NotesAdmin = () => {
                                             onChange={(event) =>
                                                 setDraft({ ...draft, title: event.target.value })
                                             }
-                                            placeholder="Untitled note"
-                                            aria-label="Note title"
+                                            placeholder={t('admin.notesSection.untitledNote', 'Untitled note')}
+                                            aria-label={t('admin.labels.title', 'Note title')}
                                         />
                                         {noteView !== 'archived' && (
                                             <div
@@ -994,15 +1008,14 @@ const NotesAdmin = () => {
                                             >
                                                 <button
                                                     type="button"
-                                                    className={`admin-note-folder-chip${
-                                                        isFolderDropdownOpen ? ' is-open' : ''
-                                                    }`}
+                                                    className={`admin-note-folder-chip${isFolderDropdownOpen ? ' is-open' : ''
+                                                        }`}
                                                     onClick={() =>
                                                         setIsFolderDropdownOpen((prev) => !prev)
                                                     }
                                                     aria-expanded={isFolderDropdownOpen}
                                                     aria-haspopup="listbox"
-                                                    title="Change note folder location"
+                                                    title={t('admin.notesSection.changeFolder', 'Change note folder location')}
                                                 >
                                                     <span
                                                         className="admin-note-folder-chip-icon"
@@ -1013,7 +1026,7 @@ const NotesAdmin = () => {
                                                     <span className="admin-note-folder-chip-label">
                                                         {draft.folder
                                                             ? `/${draft.folder}`
-                                                            : '/ (Root)'}
+                                                            : t('admin.notesSection.rootFolder', '/ (Root)')}
                                                     </span>
                                                     <span
                                                         className="admin-note-folder-chip-arrow"
@@ -1029,14 +1042,13 @@ const NotesAdmin = () => {
                                                         role="listbox"
                                                     >
                                                         <div className="admin-note-folder-menu-header">
-                                                            <span>Note Location</span>
+                                                            <span>{t('admin.notesSection.noteLocation', 'Note Location')}</span>
                                                         </div>
                                                         <div className="admin-note-folder-menu-items">
                                                             <button
                                                                 type="button"
-                                                                className={`admin-note-folder-menu-item${
-                                                                    !draft.folder ? ' is-selected' : ''
-                                                                }`}
+                                                                className={`admin-note-folder-menu-item${!draft.folder ? ' is-selected' : ''
+                                                                    }`}
                                                                 onClick={() => {
                                                                     handleFolderChange('');
                                                                     setIsFolderDropdownOpen(false);
@@ -1048,7 +1060,7 @@ const NotesAdmin = () => {
                                                                     📁
                                                                 </span>
                                                                 <span className="admin-note-folder-item-text">
-                                                                    / (Root)
+                                                                    {t('admin.notesSection.rootFolder', '/ (Root)')}
                                                                 </span>
                                                                 {!draft.folder && (
                                                                     <span
@@ -1067,11 +1079,10 @@ const NotesAdmin = () => {
                                                                     <button
                                                                         type="button"
                                                                         key={folder}
-                                                                        className={`admin-note-folder-menu-item${
-                                                                            isSelected
-                                                                                ? ' is-selected'
-                                                                                : ''
-                                                                        }`}
+                                                                        className={`admin-note-folder-menu-item${isSelected
+                                                                            ? ' is-selected'
+                                                                            : ''
+                                                                            }`}
                                                                         onClick={() => {
                                                                             handleFolderChange(
                                                                                 folder
@@ -1122,8 +1133,8 @@ const NotesAdmin = () => {
                                                                                 e.target.value
                                                                             )
                                                                         }
-                                                                        placeholder="New folder name..."
-                                                                        aria-label="New folder name"
+                                                                        placeholder={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name...')}
+                                                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
                                                                         onKeyDown={(e) => {
                                                                             if (
                                                                                 e.key === 'Enter'
@@ -1204,7 +1215,7 @@ const NotesAdmin = () => {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        Create
+                                                                        {t('admin.notesSection.create', 'Create')}
                                                                     </button>
                                                                     <button
                                                                         type="button"
@@ -1219,8 +1230,8 @@ const NotesAdmin = () => {
                                                                                 ''
                                                                             );
                                                                         }}
-                                                                        title="Cancel"
-                                                                        aria-label="Cancel"
+                                                                        title={t('admin.notesSection.cancel', 'Cancel')}
+                                                                        aria-label={t('admin.notesSection.cancel', 'Cancel')}
                                                                     >
                                                                         ✕
                                                                     </button>
@@ -1237,7 +1248,7 @@ const NotesAdmin = () => {
                                                                     }}
                                                                 >
                                                                     <span aria-hidden="true">+</span>{' '}
-                                                                    New folder...
+                                                                    {t('admin.notesSection.newFolderEllipsis', 'New folder...')}
                                                                 </button>
                                                             )}
                                                         </div>
@@ -1255,8 +1266,8 @@ const NotesAdmin = () => {
                                                 disabled={saving}
                                             >
                                                 {noteView === 'archived'
-                                                    ? 'Unarchive'
-                                                    : 'Archive'}
+                                                    ? t('admin.notesSection.unarchive', 'Unarchive')
+                                                    : t('admin.notesSection.archive', 'Archive')}
                                             </button>
                                         )}
                                         {selectedId && (
@@ -1266,7 +1277,7 @@ const NotesAdmin = () => {
                                                 onClick={handleDelete}
                                                 disabled={saving}
                                             >
-                                                Delete
+                                                {t('admin.notesSection.delete', 'Delete')}
                                             </button>
                                         )}
 
@@ -1279,18 +1290,22 @@ const NotesAdmin = () => {
                                             aria-pressed={isFullScreen}
                                             aria-label={
                                                 isFullScreen
-                                                    ? 'Exit full screen'
-                                                    : 'Enter full screen'
+                                                    ? t('admin.notesSection.exitFullScreen', 'Exit full screen')
+                                                    : t('admin.notesSection.fullScreen', 'Full screen')
                                             }
                                         >
-                                            {isFullScreen ? 'Exit full screen' : 'Full screen'}
+                                            {isFullScreen
+                                                ? t('admin.notesSection.exitFullScreen', 'Exit full screen')
+                                                : t('admin.notesSection.fullScreen', 'Full screen')}
                                         </button>
                                         <button
                                             type="submit"
                                             className="primary"
                                             disabled={saving}
                                         >
-                                            {saving ? 'Saving...' : 'Save note'}
+                                            {saving
+                                                ? t('admin.actions.saving', 'Saving...')
+                                                : t('admin.notesSection.saveNote', 'Save note')}
                                         </button>
                                     </div>
                                 </div>
@@ -1301,7 +1316,7 @@ const NotesAdmin = () => {
                                     >
                                         <div className="admin-note-widget-group">
                                             <div className="admin-note-widget-top-row">
-                                                <span>Widgets</span>
+                                                <span>{t('admin.notesSection.widgets', 'Widgets')}</span>
                                                 <div className="admin-note-widget-core">
                                                     {primaryWidgetTypes.map((blockType) => (
                                                         <button
@@ -1310,7 +1325,7 @@ const NotesAdmin = () => {
                                                             onClick={() => addBlock(blockType)}
                                                         >
                                                             <b>{BLOCK_TYPES[blockType].icon}</b>
-                                                            {BLOCK_TYPES[blockType].label}
+                                                            {t(`admin.notesSection.blockTypes.${blockType}`, BLOCK_TYPES[blockType].label)}
                                                         </button>
                                                     ))}
                                                 </div>
@@ -1329,13 +1344,13 @@ const NotesAdmin = () => {
                                                     aria-expanded={showMoreWidgets}
                                                     aria-label={
                                                         showMoreWidgets
-                                                            ? 'Hide more widgets'
-                                                            : 'Show more widgets'
+                                                            ? t('admin.notesSection.hideMoreWidgets', 'Hide more widgets')
+                                                            : t('admin.notesSection.showMoreWidgets', 'Show more widgets')
                                                     }
                                                     title={
                                                         showMoreWidgets
-                                                            ? 'Hide more widgets'
-                                                            : 'Show more widgets'
+                                                            ? t('admin.notesSection.hideMoreWidgets', 'Hide more widgets')
+                                                            : t('admin.notesSection.showMoreWidgets', 'Show more widgets')
                                                     }
                                                 >
                                                     <span aria-hidden="true">
@@ -1352,7 +1367,7 @@ const NotesAdmin = () => {
                                                             onClick={() => addBlock(blockType)}
                                                         >
                                                             <b>{BLOCK_TYPES[blockType].icon}</b>
-                                                            {BLOCK_TYPES[blockType].label}
+                                                            {t(`admin.notesSection.blockTypes.${blockType}`, BLOCK_TYPES[blockType].label)}
                                                         </button>
                                                     ))}
                                                 </div>
@@ -1360,7 +1375,7 @@ const NotesAdmin = () => {
                                         </div>
                                         {showMoreWidgets && (
                                             <div className="admin-note-text-tools">
-                                                <span>Text styling</span>
+                                                <span>{t('admin.notesSection.textStyling', 'Text styling')}</span>
                                                 {TEXT_STYLES.map((style) => (
                                                     <button
                                                         type="button"
@@ -1374,10 +1389,10 @@ const NotesAdmin = () => {
                                                             !draft.blocks.some(
                                                                 (block) =>
                                                                     block.type === 'text'
-                                                                )
+                                                            )
                                                         }
                                                     >
-                                                        {style.label}
+                                                        {t(`admin.notesSection.textStyles.${style.command}`, style.label)}
                                                     </button>
                                                 ))}
                                                 {TEXT_LIST_STYLES.map((style) => (
@@ -1393,10 +1408,10 @@ const NotesAdmin = () => {
                                                             !draft.blocks.some(
                                                                 (block) =>
                                                                     block.type === 'text'
-                                                                )
+                                                            )
                                                         }
                                                     >
-                                                        {style.label}
+                                                        {t(`admin.notesSection.textStyles.${style.command}`, style.label)}
                                                     </button>
                                                 ))}
                                                 <div
@@ -1441,7 +1456,7 @@ const NotesAdmin = () => {
                                                         {textSizeLevel === 0
                                                             ? 'T'
                                                             : TEXT_SIZE_OPTIONS[textSizeLevel]
-                                                                  .label}
+                                                                .label}
                                                     </button>
                                                     <button
                                                         type="button"
@@ -1464,6 +1479,30 @@ const NotesAdmin = () => {
                                             </div>
                                         )}
                                     </div>
+                                    {selectedId && activeBacklinks.length > 0 && (
+                                        <div className="admin-note-backlinks-bar" aria-label="Backlinks">
+                                            <span className="admin-note-backlinks-label">
+                                                🔗 {t('admin.notesSection.backlinks', 'Linked from')}:
+                                            </span>
+                                            <div className="admin-note-backlinks-list">
+                                                {activeBacklinks.map((bl) => (
+                                                    <button
+                                                        key={bl.id}
+                                                        type="button"
+                                                        className="admin-note-backlink-chip"
+                                                        onClick={() => selectNote(bl.note)}
+                                                        title={bl.preview || bl.title}
+                                                    >
+                                                        <span className="admin-note-backlink-chip-icon">📎</span>
+                                                        <span className="admin-note-backlink-chip-title">{bl.title}</span>
+                                                        {bl.folder && (
+                                                            <span className="admin-note-backlink-chip-folder">/{bl.folder}</span>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="admin-note-blocks" ref={boardRef}>
                                         {Array.from(
                                             { length: boardRowCount * 12 },
@@ -1472,11 +1511,10 @@ const NotesAdmin = () => {
                                                 const row = Math.floor(cellIndex / 12) + 1;
                                                 return (
                                                     <div
-                                                        className={`admin-note-grid-cell${
-                                                            isPreviewCell(col, row)
-                                                                ? ' is-preview'
-                                                                : ''
-                                                        }`}
+                                                        className={`admin-note-grid-cell${isPreviewCell(col, row)
+                                                            ? ' is-preview'
+                                                            : ''
+                                                            }`}
                                                         key={`${col}-${row}`}
                                                         style={{
                                                             gridColumn: col,
@@ -1494,8 +1532,8 @@ const NotesAdmin = () => {
                                                 className="admin-note-board-empty"
                                                 aria-label="Empty board"
                                             >
-                                                <p>No widgets on this board</p>
-                                                <span>Click any widget above to add content</span>
+                                                <p>{t('admin.notesSection.noWidgets', 'No widgets on this board')}</p>
+                                                <span>{t('admin.notesSection.clickWidgetToAdd', 'Click any widget above to add content')}</span>
                                             </div>
                                         )}
                                     </div>

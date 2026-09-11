@@ -8,7 +8,7 @@ import {getResearchPostBySlug} from '../utils/researchUtils';
 
 const ResearchPost = () => {
     const {slug} = useParams();
-    const {t} = useLanguage();
+    const {t, formatNumber} = useLanguage();
     const [postData, setPostData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -64,7 +64,7 @@ const ResearchPost = () => {
                         )}
                         <div className="blog-post-meta research-article-meta">
                             {postData.date && (
-                                <time className="blog-post-date">{postData.date}</time>
+                                <time className="blog-post-date">{formatNumber(postData.date)}</time>
                             )}
                             {postData.author && (
                                 <span className="blog-post-author">by {postData.author}</span>

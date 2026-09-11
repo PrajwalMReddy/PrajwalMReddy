@@ -8,16 +8,8 @@ const handlers = {
     '/api/budget/planner': require('../lib/api-handlers/budget/planner'),
     '/api/todo': require('../lib/api-handlers/todo'),
     '/api/notes': require('../lib/api-handlers/notes'),
-    '/api/ai/chat': require('../lib/api-handlers/ai/chat'),
-    '/api/ai/memory': require('../lib/api-handlers/ai/memory'),
-    '/api/ai/goals': require('../lib/api-handlers/ai/goals'),
-    '/api/ai/projects': require('../lib/api-handlers/ai/projects'),
-    '/api/ai/conversations': require('../lib/api-handlers/ai/conversations'),
-    '/api/ai/preferences': require('../lib/api-handlers/ai/preferences'),
-    '/api/ai/briefing': require('../lib/api-handlers/ai/briefing'),
-    '/api/ai/news': require('../lib/api-handlers/ai/news'),
-    '/api/ai/tools': require('../lib/api-handlers/ai/tools'),
     '/api/cms/content': require('../lib/api-handlers/cms/content'),
+    '/api/content': require('../lib/api-handlers/cms/content'),
     '/api/cms/markdown': require('../lib/api-handlers/cms/markdown'),
     '/api/cms/upload': require('../lib/api-handlers/cms/upload'),
 };
@@ -28,10 +20,6 @@ const itemHandlers = {
     planner: require('../lib/api-handlers/budget/planner/[id]'),
     todo: require('../lib/api-handlers/todo/[id]'),
     notes: require('../lib/api-handlers/notes/[id]'),
-    memory: require('../lib/api-handlers/ai/memory'),
-    goals: require('../lib/api-handlers/ai/goals'),
-    projects: require('../lib/api-handlers/ai/projects'),
-    conversations: require('../lib/api-handlers/ai/conversations'),
 };
 
 function getHandler(pathname, query) {
@@ -47,16 +35,19 @@ function getHandler(pathname, query) {
         return itemHandlers[simpleItemMatch[1]];
     }
 
-    const aiItemMatch = pathname.match(/^\/api\/ai\/(memory|goals|projects|conversations)\/([^/]+)$/);
-    if (aiItemMatch) {
-        query.id = decodeURIComponent(aiItemMatch[2]);
-        return itemHandlers[aiItemMatch[1]];
-    }
-
     return handlers[pathname];
 }
 
 module.exports = async (req, res) => {
+    if (res && res.setHeader && !res.headersSent) {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+
     const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
     const query = { ...Object.fromEntries(url.searchParams) };
     const pathname = query.path ? `/api/${query.path.replace(/^\/+/, '')}` : url.pathname;
