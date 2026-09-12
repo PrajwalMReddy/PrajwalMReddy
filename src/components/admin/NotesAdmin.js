@@ -674,6 +674,7 @@ const NotesAdmin = () => {
     };
 
     const startBlockResize = (event, block) => {
+        if (window.innerWidth <= 768) return;
         event.stopPropagation();
         event.currentTarget.setPointerCapture(event.pointerId);
         const metrics = getBoardMetrics();
@@ -723,8 +724,10 @@ const NotesAdmin = () => {
 
     const startBlockDrag = (event, id) => {
         if (
+            event.pointerType === 'touch' ||
+            window.innerWidth <= 768 ||
             event.target.closest(
-                'a, input, textarea, select, button, .admin-note-flashcard, .admin-note-image-display'
+                'a, input, textarea, select, button, .admin-note-flashcard, .admin-note-image-display, .admin-note-text-editor, .admin-note-table-wrap'
             )
         )
             return;

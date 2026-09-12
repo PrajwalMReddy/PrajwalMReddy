@@ -113,11 +113,6 @@ const Home = () => {
                                 <div
                                     className="experience-row"
                                     key={rowIdx}
-                                    style={{
-                                        display: 'flex',
-                                        width: '100%',
-                                        gap: '30px'
-                                    }}
                                 >
                                     {row.map((item, idx) => (
                                         <ExperienceCard
@@ -131,7 +126,7 @@ const Home = () => {
                                         />
                                     ))}
                                     {row.length === 1 && (
-                                        <div className="experience-info" style={{visibility: 'hidden'}} />
+                                        <div className="experience-info experience-info-spacer" style={{visibility: 'hidden'}} />
                                     )}
                                 </div>
                             ))}

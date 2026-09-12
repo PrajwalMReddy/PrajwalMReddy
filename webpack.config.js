@@ -44,6 +44,26 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
+                    from: path.resolve(__dirname, 'public/manifest.json'),
+                    to: 'manifest.json',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/sw.js'),
+                    to: 'sw.js',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/icons'),
+                    to: 'icons',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.resolve(__dirname, 'public/hurricane.ico'),
+                    to: 'hurricane.ico',
+                    noErrorOnMissing: true,
+                },
+                {
                     from: path.resolve(__dirname, 'public/research'),
                     to: 'research',
                     noErrorOnMissing: true,

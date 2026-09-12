@@ -3989,28 +3989,153 @@ body.dark-mode .admin-note-linked-note-link {
     }
 
     .admin-note-blocks {
-        min-height: 400px;
-        padding: 0.8rem 0.5rem;
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(30, 52px);
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+        min-height: auto !important;
+        height: auto !important;
+        padding: 0.75rem 0.5rem !important;
+        box-sizing: border-box !important;
+        background-image: none !important;
+        grid-template-columns: none !important;
+        grid-template-rows: none !important;
+    }
+
+    .admin-note-grid-cell {
+        display: none !important;
+    }
+
+    .admin-note-drop-preview {
+        display: none !important;
     }
 
     .admin-note-block {
-        grid-column: 1 / -1 !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        min-height: 64px !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
+        margin: 0 !important;
+        padding: 0.65rem 1.85rem 0.65rem 0.75rem !important;
+        box-sizing: border-box !important;
+        touch-action: pan-y !important;
+        cursor: default !important;
     }
 
     .admin-note-block-span-1,
     .admin-note-block-span-2,
     .admin-note-block-span-3 {
-        grid-column: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
+    }
+
+    .admin-note-block-resize,
+    .admin-note-block-grip {
+        display: none !important;
+    }
+
+    .admin-note-block-remove {
+        opacity: 0.7 !important;
+        top: 0.35rem !important;
+        right: 0.35rem !important;
+        padding: 0.25rem !important;
+        font-size: 0.95rem !important;
+        line-height: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 5 !important;
+    }
+
+    .admin-note-block-remove:hover,
+    .admin-note-block-remove:focus {
+        opacity: 1 !important;
+    }
+
+    .admin-note-block textarea,
+    .admin-note-block input:not([type='checkbox']) {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 44px !important;
+    }
+
+    .admin-note-text-wrap {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .admin-note-text-editor {
+        width: 100% !important;
+        min-height: 48px !important;
+        height: auto !important;
+    }
+
+    .admin-note-block-table {
+        width: 100% !important;
+        height: auto !important;
+        overflow: hidden !important;
+    }
+
+    .admin-note-block-table .admin-note-table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .admin-note-block-code {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .admin-note-code-main pre {
+        overflow-x: auto !important;
+        width: 100% !important;
+    }
+
+    .admin-note-block-chart {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 220px !important;
+    }
+
+    .admin-note-block-flashcards,
+    .admin-note-block-timeline,
+    .admin-note-counter-wrap,
+    .admin-note-picker-wrap {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .admin-note-block-habit {
+        width: 100% !important;
+        height: auto !important;
+        overflow-x: auto !important;
+    }
+
+    .admin-note-board-empty {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        width: 100% !important;
+        padding: 2.5rem 1rem !important;
     }
 
     .admin-note-preview-board {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.85rem !important;
         grid-template-columns: 1fr;
     }
 }
 
-@media (min-width: 721px) and (max-width: 960px) {
+@media (min-width: 769px) and (max-width: 960px) {
     .admin-notes-layout {
         grid-template-columns: 210px minmax(0, 1fr);
     }
@@ -4029,13 +4154,78 @@ body.dark-mode .admin-note-linked-note-link {
     }
 }
 
-@media (max-width: 720px) {
-    .admin-note-widget-core,
-    .admin-note-secondary-widgets,
-    .admin-note-text-tools {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 768px) {
+    .admin-notes-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
+    .admin-note-widget-palette {
+        padding: 0.6rem 0.5rem !important;
+    }
+
+    .admin-note-widget-top-row {
+        flex-wrap: wrap !important;
+        gap: 0.4rem !important;
+    }
+
+    .admin-note-widget-core {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.3rem !important;
+        grid-template-columns: none !important;
+    }
+
+    .admin-note-secondary-widgets {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.3rem !important;
+        padding-left: 0 !important;
+        padding-top: 0.3rem !important;
+        grid-template-columns: none !important;
+    }
+
+    .admin-note-text-tools {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.35rem !important;
+        grid-template-columns: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-main {
+        padding: 0.75rem 0.5rem 2rem 0.5rem !important;
+    }
+
+    .admin-notes-toolbar {
+        padding: 0.65rem 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .admin-notes-toolbar-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.4rem;
+    }
+
+    .admin-notes-toolbar-actions button {
+        flex: 1 1 auto;
+    }
+
+    .admin-note-editor-header {
+        padding: 0.65rem 0.5rem !important;
+    }
+
+    .admin-note-blocks {
+        padding: 0.5rem 0.25rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .admin-note-block {
+        padding: 0.5rem 1.65rem 0.5rem 0.6rem !important;
+    }
 }
 
 /* ============================================================
@@ -6445,10 +6635,13 @@ body.dark-mode .admin-comparison-bar span {
     }
 
     .admin-note-blocks {
-        min-height: 360px;
-        padding: 0.65rem 0.5rem;
-        grid-template-rows: repeat(30, 44px);
-        background-size: 28px 44px;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+        min-height: auto !important;
+        height: auto !important;
+        background-image: none !important;
     }
 
     .admin-todo-top-dashboard {

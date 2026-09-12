@@ -1,14 +1,65 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../utils/LanguageContext';
+import { useAuth } from '../utils/AuthContext';
 import Settings from './Settings';
 
 const SideNav = () => {
     const { t } = useLanguage();
+    const { authenticated } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const pressTimerRef = useRef(null);
+    const isLongPressRef = useRef(false);
+    const touchStartPosRef = useRef({ x: 0, y: 0 });
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
+    };
+
+    const startPress = (e) => {
+        isLongPressRef.current = false;
+        if (e.touches && e.touches[0]) {
+            touchStartPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        pressTimerRef.current = setTimeout(() => {
+            isLongPressRef.current = true;
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try {
+                    navigator.vibrate(60);
+                } catch (_) {}
+            }
+            setIsOpen(false);
+            navigate('/admin/login');
+        }, 1500);
+    };
+
+    const cancelPress = () => {
+        if (pressTimerRef.current) {
+            clearTimeout(pressTimerRef.current);
+            pressTimerRef.current = null;
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (e.touches && e.touches[0]) {
+            const dx = Math.abs(e.touches[0].clientX - touchStartPosRef.current.x);
+            const dy = Math.abs(e.touches[0].clientY - touchStartPosRef.current.y);
+            if (dx > 10 || dy > 10) {
+                cancelPress();
+            }
+        }
+    };
+
+    const handleMainClick = (e) => {
+        if (isLongPressRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            isLongPressRef.current = false;
+            return;
+        }
+        setIsOpen(false);
     };
 
     return (<>
@@ -23,8 +74,28 @@ const SideNav = () => {
         </button>
         <nav id="nav-div" className={isOpen ? 'open' : ''}>
             <ul id="nav-list">
-                <li id="nav-main"><Link to="/" className="nav-link"
-                    onClick={() => setIsOpen(false)}>{t('navName')}</Link></li>
+                <li id="nav-main">
+                    <Link
+                        to="/"
+                        className="nav-link"
+                        onClick={handleMainClick}
+                        onTouchStart={startPress}
+                        onTouchEnd={cancelPress}
+                        onTouchMove={handleTouchMove}
+                        onTouchCancel={cancelPress}
+                        onMouseDown={startPress}
+                        onMouseUp={cancelPress}
+                        onMouseLeave={cancelPress}
+                        onContextMenu={(e) => {
+                            if (isLongPressRef.current) {
+                                e.preventDefault();
+                            }
+                        }}
+                        style={{ WebkitTouchCallout: 'none', userSelect: 'none' }}
+                    >
+                        {t('navName')}
+                    </Link>
+                </li>
                 <li className="nav-element"><Link to="/projects" className="nav-link"
                     onClick={() => setIsOpen(false)}>{t('project')}</Link></li>
                 {/*<li className="nav-element"><Link to="/experience" className="nav-link"
@@ -35,6 +106,10 @@ const SideNav = () => {
                     onClick={() => setIsOpen(false)}>{t('photography')}</Link></li>
                 <li className="nav-element"><Link to="/about" className="nav-link"
                     onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>
+                {authenticated && (
+                    <li className="nav-element"><Link to="/admin" className="nav-link"
+                        onClick={() => setIsOpen(false)}>{t('navAdmin', 'Admin')}</Link></li>
+                )}
             </ul>
             <Settings />
         </nav>
@@ -43,3 +118,4 @@ const SideNav = () => {
 };
 
 export default SideNav;
+

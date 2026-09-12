@@ -123,13 +123,13 @@ body.dark-mode .research-card:hover {
 }
 
 /* Responsive tweaks */
-@media (max-width: 900px) {
-    .research-breadcrumb {
-        margin-left: 6%;
-    }
-}
-
 @media (max-width: 768px) {
+    .research-breadcrumb {
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 10px;
+    }
+
     /* Keep same padding as blog cards for consistency */
     .research-card-title {
         font-size: 1.15rem;
@@ -138,10 +138,16 @@ body.dark-mode .research-card:hover {
     .research-article {
         margin-left: 0;
         margin-right: 0;
+        padding: 1.5rem 5%;
+        box-sizing: border-box;
     }
-}
 
-/* Make research grid spacing match blog grid */
-.research-page .project-grid {
-    padding: 0 5%;
+    .research-page .project-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+        max-width: 500px;
+        margin: 1.5rem auto !important;
+        padding: 0 5% !important;
+        box-sizing: border-box;
+    }
 }

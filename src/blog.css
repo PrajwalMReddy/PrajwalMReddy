@@ -48,7 +48,7 @@
 
 .blog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: 2.5rem;
     margin-left: var(--nav-width);
     padding: 0 5%;
@@ -330,75 +330,113 @@
 }
 
 /* Responsive Styles (Blog) */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     #blog-heading {
         margin-left: 0;
         margin-right: 0;
+        font-size: 32px;
+        text-align: center;
+        padding: 10px 5% 0 5%;
+        box-sizing: border-box;
     }
 
     #blog-subtitle {
         margin-left: 0;
         margin-right: 0;
+        font-size: 1rem;
+        text-align: center;
+        padding: 0 5%;
+        margin-top: 10px;
+        margin-bottom: 1.5rem;
+        box-sizing: border-box;
+    }
+
+    #blog-notice-div {
+        margin-left: 0;
+        padding: 0 5%;
+        margin-bottom: 1.5rem;
+        box-sizing: border-box;
+    }
+
+    .blog-notice {
+        padding: 1rem 1.25rem;
+    }
+
+    .blog-notice-content {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 5%;
+        max-width: 500px;
+        margin: 1.5rem auto;
+        box-sizing: border-box;
+    }
+
+    .blog-card {
+        margin: 0;
+        padding: 1.25rem;
+        border-radius: 10px;
+        box-sizing: border-box;
+    }
+
+    .blog-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .blog-excerpt {
+        font-size: 0.95rem;
+        line-height: 1.45;
+        margin-bottom: 0.8rem;
+    }
+
+    .blog-meta {
+        font-size: 0.85rem;
+    }
+
+    .blog-external-notice {
+        margin-left: 0;
+        padding: 0 5%;
+        text-align: center;
     }
 
     .blog-post {
         margin-left: 0;
         margin-right: 0;
         max-width: 100%;
-        padding: 2rem 2%;
-    }
-}
-
-@media (max-width: 768px) {
-    #blog-subtitle {
-        font-size: 1rem;
-        padding-left: 2%;
-        padding-right: 2%;
-    }
-
-    .blog-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .blog-card {
-        margin: 0;
-    }
-
-    #blog-notice-div {
-        margin-left: 0;
-        padding: 1rem 2%;
-    }
-
-    .blog-notice {
-        padding: 1rem;
-    }
-
-    .blog-notice-content {
-        font-size: 0.95rem;
+        padding: 1.5rem 5%;
+        box-sizing: border-box;
     }
 
     .blog-post-content {
-        padding: 1rem 0.5rem;
-        font-size: 15px;
+        padding: 1rem 0;
+        font-size: 16px;
+        line-height: 1.6;
     }
 
-    .blog-post-content h1 {
-        font-size: 24px;
-    }
-
-    .blog-post-content h2 {
-        font-size: 20px;
+    .blog-post-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
     }
 
     .blog-post-content pre {
-        padding: 10px;
-        font-size: 14px;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px;
+        font-size: 13px;
+        box-sizing: border-box;
+        border-radius: 6px;
     }
 
     .blog-post-title {
-        font-size: 1.3rem;
-        margin-bottom: 0.3rem;
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
     }
 
     .blog-post-description {
@@ -407,7 +445,7 @@
     }
 
     .blog-post-date, .blog-post-author {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .blog-post-meta {
@@ -417,28 +455,27 @@
 }
 
 @media (max-width: 480px) {
-    .blog-grid {
-        max-width: 100%;
+    #blog-heading {
+        font-size: 26px;
     }
 
-    .blog-post {
-        padding: 0.5rem 0.2rem;
+    #blog-subtitle {
+        font-size: 0.92rem;
+    }
+
+    .blog-title {
+        font-size: 1.15rem;
+    }
+
+    .blog-card {
+        padding: 1rem;
     }
 
     .blog-post-title {
-        font-size: 1.05rem;
-    }
-
-    .blog-post-description {
-        font-size: 0.95rem;
-    }
-
-    .blog-post-date, .blog-post-author {
-        font-size: 0.85rem;
+        font-size: 1.25rem;
     }
 
     .blog-post-content {
-        font-size: 14px;
-        padding: 0.5rem 0.2rem;
+        font-size: 15px;
     }
 }

@@ -8,6 +8,7 @@ export const sideNav = {
         skill: "Skills",
         experience: "Experience",
         contact: "About Me",
+        navAdmin: "Admin",
     }, kn: {
         navName: "ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
         project: "ಯೋಜನೆಗಳು",
@@ -16,5 +17,7 @@ export const sideNav = {
         skill: "ಕಲಿಕೆಗಳು",
         experience: "ಅನುಬವ",
         contact: "ನನ್ನ ಬಗ್ಗೆ",
+        navAdmin: "ಆಡಳಿತ",
     }
 };
+

@@ -389,6 +389,7 @@ export const NoteBlock = ({
             }`}
             key={block.id}
             style={{
+                order: (position.row || 1) * 20 + (position.col || 1),
                 gridColumn: `${position.col} / span ${(block.span || 1) * 4}`,
                 gridRow: `${position.row} / span ${
                     block.type === 'chart'
