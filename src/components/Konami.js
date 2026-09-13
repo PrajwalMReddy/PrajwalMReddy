@@ -1,40 +1,45 @@
-import React, {useEffect, useRef} from 'react';
-import {useLanguage} from '../utils/LanguageContext';
-import {animate} from "../platformer/controller";
-import {TILE_SIZE} from "../platformer/model";
+import React, { useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useLanguage } from '../utils/LanguageContext';
+import { setPlatformerLocale, startPlatformer, stopPlatformer } from '../platformer/controller';
+import { syncCoinsWithCode } from '../platformer/model';
 
 const Konami = () => {
-    const {t} = useLanguage();
+    const { t, language } = useLanguage();
+    const { code } = useParams();
     const canvasRef = useRef(null);
 
     useEffect(() => {
-        document.title = t('pageTitles.konami');
+        syncCoinsWithCode(code);
+        document.title = t('pageTitles.konami') || 'Konami | Prajwal Reddy';
         const canvas = canvasRef.current;
-        if (!canvas) {
-            console.warn('Canvas ref is null');
-            return;
-        }
-        // Calculate grid size to fit window exactly
-        const cols = Math.floor(window.innerWidth / TILE_SIZE);
-        const rows = Math.floor(window.innerHeight / TILE_SIZE);
-        canvas.width = cols * TILE_SIZE;
-        canvas.height = rows * TILE_SIZE;
-        const context = canvas.getContext('2d');
-        if (!context) {
-            console.warn('2D context is null');
-            return;
-        }
-        const displayText = t('displayText');
-        animate(context, displayText);
-    }, [t]);
+        if (!canvas) return;
 
-    return (<div id="app-root" style={{width: '100vw', height: '100vh', overflow: 'hidden'}}>
-        <canvas
-            id="konami-canvas"
-            ref={canvasRef}
-            style={{display: 'block', width: '100vw', height: '100vh', background: '#222'}}
-        ></canvas>
-    </div>);
+        startPlatformer(canvas, {
+            language,
+            t,
+            displayText: t('platformer.loading') || t('displayText')
+        });
+
+        return () => {
+            stopPlatformer();
+        };
+    }, [code]);
+
+    useEffect(() => {
+        setPlatformerLocale(language, t);
+        document.title = t('pageTitles.konami') || 'Konami | Prajwal Reddy';
+    }, [language, t]);
+
+    return (
+        <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#1e1e1e' }}>
+            <canvas
+                id="konami-canvas"
+                ref={canvasRef}
+                style={{ display: 'block', width: '100vw', height: '100vh' }}
+            />
+        </div>
+    );
 };
 
 export default Konami;

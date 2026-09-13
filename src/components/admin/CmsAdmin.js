@@ -6,7 +6,7 @@ import CmsBlog from './cms/CmsBlog';
 import CmsResearch from './cms/CmsResearch';
 import CmsPhotography from './cms/CmsPhotography';
 import { useContent } from '../../utils/ContentContext';
-import './cms/cms.css';
+import '../../cms.css';
 
 const TABS = [
     { id: 'projects', labelKey: 'admin.tabs.projects', defaultLabel: 'Projects' },
@@ -69,6 +69,10 @@ const CmsAdmin = () => {
             setLoading(false);
         }
     }, []);
+
+    useEffect(() => {
+        document.title = t('pageTitles.adminCms', 'CMS | Admin | Prajwal Reddy');
+    }, [t]);
 
     useEffect(() => {
         loadAllContent();

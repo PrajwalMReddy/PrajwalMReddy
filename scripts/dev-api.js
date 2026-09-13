@@ -58,13 +58,17 @@ const routeMap = {
     '/api/content': '../lib/api-handlers/cms/content',
     '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
     '/api/cms/upload': '../lib/api-handlers/cms/upload',
+    '/api/konami/levels': '../lib/api-handlers/konami/levels',
 };
 
 function getHandler(pathname, query) {
     // Invalidate require cache for lib/ in development so changes take effect immediately
-    const libDir = path.resolve(__dirname, '..', 'lib');
+    // Exclude lib/db.js so MongoDB client pool is persistent across requests
+    const libDir = path.resolve(__dirname, '..', 'lib').toLowerCase();
+    const dbPath = path.resolve(__dirname, '..', 'lib', 'db.js').toLowerCase();
     Object.keys(require.cache).forEach((key) => {
-        if (key.startsWith(libDir)) {
+        const resolvedKey = path.resolve(key).toLowerCase();
+        if (resolvedKey.startsWith(libDir) && resolvedKey !== dbPath) {
             delete require.cache[key];
         }
     });
@@ -154,6 +158,10 @@ function getHandler(pathname, query) {
         return require(
             '../lib/api-handlers/cms/upload'
         );
+    }
+
+    if (pathname === '/api/konami/levels') {
+        return require('../lib/api-handlers/konami/levels');
     }
 
     if (routeMap[pathname]) {
@@ -286,3 +294,15 @@ server.listen(port, () => {
         `Local API server listening on http://localhost:${port}`
     );
 });
+
+async function gracefulShutdown() {
+    if (global.__mongoState && global.__mongoState.cachedClient) {
+        try {
+            await global.__mongoState.cachedClient.close();
+        } catch (_) {}
+    }
+    process.exit(0);
+}
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);

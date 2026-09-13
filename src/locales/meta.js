@@ -11,7 +11,14 @@ export const meta = {
             dictionary: "Bengaluru Telugu Dictionary | Research | Prajwal Reddy",
             photography: "Photography | Prajwal Reddy",
 
-            konami: "Konami",
+            adminLogin: "Admin Login | Prajwal Reddy",
+            adminTodo: "To-Do | Admin | Prajwal Reddy",
+            adminNotes: "Notes | Admin | Prajwal Reddy",
+            adminBudget: "Budget | Admin | Prajwal Reddy",
+            adminCms: "CMS | Admin | Prajwal Reddy",
+            adminKonami: "Konami Level Editor | Admin | Prajwal Reddy",
+
+            konami: "Konami | Prajwal Reddy",
             notFound: "Page Not Found | Prajwal Reddy",
         },
 
@@ -29,7 +36,14 @@ export const meta = {
             dictionary: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ | ಸಂಶೋದನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             photography: "ಚಾಯಾಗ್ರಹಣ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
 
-            konami: "ಕೊನಮಿ",
+            adminLogin: "ಆಡಳಿತ ಪ್ರವೇಶ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminTodo: "ಕಾರ್ಯಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminNotes: "ಟಿಪ್ಪಣಿಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminBudget: "ಆಯವ್ಯಯ | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminCms: "ಸಿಎಂಎಸ್ | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminKonami: "ಕೊನಮಿ ಹಂತ ಸಂಪಾದಕ | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+
+            konami: "ಕೊನಮಿ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             notFound: "ಪುಟ ಸಿಗಲಿಲ್ಲ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
         },
 

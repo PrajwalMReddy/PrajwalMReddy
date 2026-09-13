@@ -12,6 +12,7 @@ const handlers = {
     '/api/content': require('../lib/api-handlers/cms/content'),
     '/api/cms/markdown': require('../lib/api-handlers/cms/markdown'),
     '/api/cms/upload': require('../lib/api-handlers/cms/upload'),
+    '/api/konami/levels': require('../lib/api-handlers/konami/levels'),
 };
 
 const itemHandlers = {

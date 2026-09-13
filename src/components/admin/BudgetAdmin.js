@@ -42,6 +42,10 @@ const BudgetAdmin = () => {
     }, []);
 
     useEffect(() => {
+        document.title = t('pageTitles.adminBudget', 'Budget | Admin | Prajwal Reddy');
+    }, [t]);
+
+    useEffect(() => {
         loadData();
     }, [loadData]);
 

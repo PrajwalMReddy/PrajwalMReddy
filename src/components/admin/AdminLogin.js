@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
 import { useContent } from '../../utils/ContentContext';
@@ -10,6 +10,10 @@ const AdminLogin = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        document.title = t('pageTitles.adminLogin', 'Admin Login | Prajwal Reddy');
+    }, [t]);
 
     const rawFrom = location.state?.from;
     const from = (rawFrom && rawFrom !== '/admin/login' && rawFrom !== '/admin' && rawFrom !== '/admin/home')

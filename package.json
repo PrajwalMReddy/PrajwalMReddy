@@ -10,6 +10,7 @@
     "build:local": "cross-env SERVE_DIST=true webpack --mode production",
     "serve-dist": "npm run build:local && serve -s dist -l 5000",
     "hash-password": "node scripts/hash-password.js",
+    "sync-db": "node scripts/sync-levels-to-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

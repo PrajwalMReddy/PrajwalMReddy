@@ -97,27 +97,77 @@ const Photography = () => {
     const columns = useMemo(() => {
         if (!photos || photos.length === 0) return [];
         const count = Math.max(1, numColumns);
+        if (count === 1) return [photos];
+
+        const items = photos.map((p, originalIdx) => {
+            const w = p.width || 1600;
+            const h = p.height || 1200;
+            const aspect = w > 0 && h > 0 ? w / h : 1.33;
+            return {
+                photo: p,
+                originalIdx,
+                heightFactor: 1 / aspect,
+            };
+        });
+
         const cols = Array.from({ length: count }, () => []);
         const colHeights = Array(count).fill(0);
 
-        photos.forEach((photo) => {
-            const w = photo.width || 1600;
-            const h = photo.height || 1200;
-            const aspect = w > 0 && h > 0 ? w / h : 1.33;
-            const heightFactor = 1 / aspect;
-
-            // Pick the column that currently has the lowest total height
+        // Initial assignment: greedily place into shortest column
+        items.forEach((item) => {
             let minCol = 0;
             for (let i = 1; i < count; i++) {
                 if (colHeights[i] < colHeights[minCol]) {
                     minCol = i;
                 }
             }
-            cols[minCol].push(photo);
-            colHeights[minCol] += heightFactor;
+            cols[minCol].push(item);
+            colHeights[minCol] += item.heightFactor;
         });
 
-        return cols;
+        // Optimization pass: balance columns so they terminate at virtually the exact same baseline
+        for (let iter = 0; iter < 10; iter++) {
+            let maxCol = 0;
+            let minCol = 0;
+            for (let i = 1; i < count; i++) {
+                if (colHeights[i] > colHeights[maxCol]) maxCol = i;
+                if (colHeights[i] < colHeights[minCol]) minCol = i;
+            }
+
+            const currentDiff = colHeights[maxCol] - colHeights[minCol];
+            if (currentDiff < 0.25) break;
+
+            let bestCandidate = -1;
+            let bestNewDiff = currentDiff;
+
+            for (let j = cols[maxCol].length - 1; j >= 0; j--) {
+                const item = cols[maxCol][j];
+                const newHMax = colHeights[maxCol] - item.heightFactor;
+                const newHMin = colHeights[minCol] + item.heightFactor;
+                const testHeights = [...colHeights];
+                testHeights[maxCol] = newHMax;
+                testHeights[minCol] = newHMin;
+                const newDiff = Math.max(...testHeights) - Math.min(...testHeights);
+                if (newDiff < bestNewDiff) {
+                    bestNewDiff = newDiff;
+                    bestCandidate = j;
+                }
+            }
+
+            if (bestCandidate !== -1 && bestNewDiff < currentDiff - 0.05) {
+                const [moved] = cols[maxCol].splice(bestCandidate, 1);
+                cols[minCol].push(moved);
+                colHeights[maxCol] -= moved.heightFactor;
+                colHeights[minCol] += moved.heightFactor;
+            } else {
+                break;
+            }
+        }
+
+        // Sort items in each column by original index so relative flow stays natural
+        cols.forEach((col) => col.sort((a, b) => a.originalIdx - b.originalIdx));
+
+        return cols.map((col) => col.map((item) => item.photo));
     }, [photos, numColumns]);
 
     return (
@@ -217,14 +267,15 @@ const Photography = () => {
                                 <path d="M18 6L6 18M6 6l12 12" />
                             </svg>
                         </button>
-                        <img
-                            src={fullscreenPhoto.filename && (fullscreenPhoto.filename.startsWith('http://') || fullscreenPhoto.filename.startsWith('https://') || fullscreenPhoto.filename.startsWith('/'))
-                                ? fullscreenPhoto.filename
-                                : `/photography/${fullscreenPhoto.filename}`}
-                            alt={fullscreenPhoto.title || "Fullscreen image"}
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                        <div className="image-protector" onClick={(e) => e.stopPropagation()} />
+                        <div className="fullscreen-image-container" onClick={(e) => e.stopPropagation()}>
+                            <img
+                                src={fullscreenPhoto.filename && (fullscreenPhoto.filename.startsWith('http://') || fullscreenPhoto.filename.startsWith('https://') || fullscreenPhoto.filename.startsWith('/'))
+                                    ? fullscreenPhoto.filename
+                                    : `/photography/${fullscreenPhoto.filename}`}
+                                alt={fullscreenPhoto.title || "Fullscreen image"}
+                            />
+                            <div className="image-protector" />
+                        </div>
                         <div className="fullscreen-meta">
                             <div className="fullscreen-title">{fullscreenPhoto.title}</div>
                             {(fullscreenPhoto.date || fullscreenPhoto.location?.place) && (

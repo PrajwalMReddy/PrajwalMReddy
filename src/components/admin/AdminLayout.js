@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
 import { useContent } from '../../utils/ContentContext';
 
-const AdminLayout = ({ children, title }) => {
+const AdminLayout = ({ children, title, documentTitle }) => {
     const { logout } = useAuth();
     const location = useLocation();
     const { t } = useContent();
@@ -20,6 +20,30 @@ const AdminLayout = ({ children, title }) => {
         if (tTitle === 'Notes & Ideas' || tTitle === 'Notes Manager') return t('admin.notesSection.title', t('admin.titles.notes', tTitle));
         return tTitle;
     };
+
+    useEffect(() => {
+        if (documentTitle) {
+            document.title = documentTitle;
+            return;
+        }
+
+        if (location.pathname.startsWith('/admin/todo')) {
+            document.title = t('pageTitles.adminTodo', 'To-Do | Admin | Prajwal Reddy');
+        } else if (location.pathname.startsWith('/admin/notes')) {
+            document.title = t('pageTitles.adminNotes', 'Notes | Admin | Prajwal Reddy');
+        } else if (location.pathname.startsWith('/admin/budget')) {
+            document.title = t('pageTitles.adminBudget', 'Budget | Admin | Prajwal Reddy');
+        } else if (location.pathname.startsWith('/admin/cms')) {
+            document.title = t('pageTitles.adminCms', 'CMS | Admin | Prajwal Reddy');
+        } else if (location.pathname.startsWith('/admin/konami')) {
+            document.title = t('pageTitles.adminKonami', 'Konami | Admin | Prajwal Reddy');
+        } else if (title) {
+            const localized = getLocalizedTitle(title);
+            document.title = `${localized} | Admin | Prajwal Reddy`;
+        } else {
+            document.title = 'Admin | Prajwal Reddy';
+        }
+    }, [location.pathname, title, documentTitle, t]);
 
     return (
         <div className="admin-page">
@@ -50,6 +74,12 @@ const AdminLayout = ({ children, title }) => {
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/cms') ? 'active' : ''}`}
                         >
                             {t('admin.nav.cms', 'CMS')}
+                        </Link>
+                        <Link
+                            to="/admin/konami"
+                            className={`admin-nav-item ${location.pathname.startsWith('/admin/konami') ? 'active' : ''}`}
+                        >
+                            {t('admin.nav.konami', 'Konami')}
                         </Link>
                     </nav>
 

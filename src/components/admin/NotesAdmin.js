@@ -23,6 +23,10 @@ const NotesAdmin = () => {
     const { t } = useContent();
     const [notes, setNotes] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
+
+    useEffect(() => {
+        document.title = t('pageTitles.adminNotes', 'Notes | Admin | Prajwal Reddy');
+    }, [t]);
     const [draft, setDraft] = useState({ title: '', content: '', folder: '', blocks: [] });
     const [search, setSearch] = useState('');
     const [noteView, setNoteView] = useState('active');

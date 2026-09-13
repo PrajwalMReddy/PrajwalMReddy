@@ -3,6 +3,7 @@ export const adminCommon = {
         // Header Navigation
         nav: {
             cms: 'CMS',
+            konami: 'Konami',
             todo: 'To-Do',
             notes: 'Notes',
             budget: 'Budget',
@@ -15,6 +16,7 @@ export const adminCommon = {
         // Page Titles
         titles: {
             cms: 'Content Management System',
+            konami: 'Konami Level Editor',
             budget: 'Budget Manager',
             todo: 'To-Do List',
             notes: 'Notes & Ideas',
@@ -53,6 +55,7 @@ export const adminCommon = {
         moveDown: 'Move Down',
         feature: 'Feature',
         featured: 'Featured',
+        noCustomLevels: 'No custom levels',
         english: 'English',
         kannada: 'ಕನ್ನಡ',
     },
@@ -61,6 +64,7 @@ export const adminCommon = {
         // Header Navigation
         nav: {
             cms: 'ಸಿಎಂಎಸ್',
+            konami: 'ಕೊನಮಿ',
             todo: 'ಕಾರ್ಯಗಳು',
             notes: 'ಟಿಪ್ಪಣಿಗಳು',
             budget: 'ಆಯವ್ಯಯ',
@@ -73,6 +77,7 @@ export const adminCommon = {
         // Page Titles
         titles: {
             cms: 'ವಿಷಯ ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ',
+            konami: 'ಕೊನಮಿ ಹಂತ ಸಂಪಾದಕ',
             budget: 'ಆಯವ್ಯಯ ನಿರ್ವಾಹಕ',
             todo: 'ಕಾರ್ಯಗಳ ಪಟ್ಟಿ',
             notes: 'ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ಕಲ್ಪನೆಗಳು',
@@ -111,6 +116,7 @@ export const adminCommon = {
         moveDown: 'ಕೆಳಗೆ ಸರಿಸಿ',
         feature: 'ಮುಖಪುಟಕ್ಕೆ ಸೇರಿಸಿ',
         featured: 'ಮುಖಪುಟದಲ್ಲಿದೆ',
+        noCustomLevels: 'ಯಾವುದೇ ಕಸ್ಟಮ್ ಹಂತಗಳಿಲ್ಲ',
         english: 'English',
         kannada: 'ಕನ್ನಡ',
     },

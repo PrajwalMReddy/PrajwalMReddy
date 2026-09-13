@@ -6,6 +6,7 @@ import {AuthProvider} from './utils/AuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import AdminLogin from './components/admin/AdminLogin';
 import CmsAdmin from './components/admin/CmsAdmin';
+import KonamiAdmin from './components/admin/KonamiAdmin';
 import BudgetAdmin from './components/admin/BudgetAdmin';
 import TodoAdmin from './components/admin/TodoAdmin';
 import NotesAdmin from './components/admin/NotesAdmin';
@@ -25,6 +26,8 @@ import KonamiListener from './components/KonamiListener';
 import './blog.css';
 import './research.css';
 import './admin.css';
+import './cms.css';
+import './konami-admin.css';
 import Experience from './components/Experience';
 import {useKonami} from './utils/KonamiContext';
 
@@ -70,7 +73,7 @@ function App() {
         <LanguageProvider>
             <KonamiProvider>
                 <AuthProvider>
-                <Router>
+                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <KonamiListener/>
                     <Routes>
                         <Route path="/" element={<Home/>}/>
@@ -91,6 +94,9 @@ function App() {
                         <Route path="/admin/login" element={<AdminLogin />} />
                         <Route path="/admin/cms" element={
                             <ProtectedRoute><CmsAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/konami" element={
+                            <ProtectedRoute><KonamiAdmin /></ProtectedRoute>
                         } />
                         <Route path="/admin/content" element={<Navigate to="/admin/cms" replace />} />
                         <Route path="/admin/budget" element={

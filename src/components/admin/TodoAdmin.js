@@ -48,6 +48,10 @@ const TodoAdmin = () => {
     }, []);
 
     useEffect(() => {
+        document.title = t('pageTitles.adminTodo', 'To-Do | Admin | Prajwal Reddy');
+    }, [t]);
+
+    useEffect(() => {
         loadTodos();
     }, [loadTodos]);
 
