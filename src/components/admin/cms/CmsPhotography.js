@@ -274,12 +274,22 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                             </h4>
                                             {(photo.location?.place?.en || photo.location?.place?.kn) && (
                                                 <span className="cms-tag cms-tag-section">
-                                                    📍 {getLocalized(photo.location?.place)}
+                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '3px' }}>
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                        <circle cx="12" cy="10" r="3" />
+                                                    </svg>
+                                                    {getLocalized(photo.location?.place)}
                                                 </span>
                                             )}
                                             {(photo.date?.en || photo.date?.kn) && (
                                                 <span className="cms-date-tag">
-                                                    📅 {getLocalized(photo.date)}
+                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '3px' }}>
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                                    </svg>
+                                                    {getLocalized(photo.date)}
                                                 </span>
                                             )}
                                         </div>
@@ -338,7 +348,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                         label={t('admin.labels.photoFile', 'Photo Image File')}
                                         value={editingPhoto.filename}
                                         onChange={(newFilename) =>
-                                            setEditingPhoto({ ...editingPhoto, filename: newFilename })
+                                            setEditingPhoto((prev) => ({ ...prev, filename: newFilename }))
                                         }
                                         helpText="Select from existing images or upload a new photo."
                                     />
@@ -587,9 +597,9 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         >
                             <strong>{fullscreenPhoto.title.en}</strong>
                             {fullscreenPhoto.location.place.en && (
-                                <span> &bull; 📍 {fullscreenPhoto.location.place.en}</span>
+                                <span> &bull; {fullscreenPhoto.location.place.en}</span>
                             )}
-                            {fullscreenPhoto.date.en && <span> &bull; 📅 {fullscreenPhoto.date.en}</span>}
+                            {fullscreenPhoto.date.en && <span> &bull; {fullscreenPhoto.date.en}</span>}
                         </div>
                     </div>
                 </div>

@@ -54,23 +54,51 @@ export const fetchResearchContent = async (filename) => {
 
 // Get translated research items for the current language
 // `metadata` is expected to be a flat array of items. This groups them by sectionTitle.
-// Accept two metadata shapes:
-// 1) fields nested under language keys (e.g. item.en.title)
-// 2) fields nested under named keys (e.g. item.title.en)
 export const getTranslatedResearch = (metadata, language) => {
     const visible = (metadata || []).filter(item => !item.visibility || item.visibility === 'public');
 
     const groups = {};
     for (const item of visible) {
-        // Helper to read a translated field from either shape
+        // Helper to read a translated field from any metadata shape
         const readTranslated = (fieldName) => {
-            // shape A: item[fieldName] is an object with language keys
-            if (item[fieldName] && typeof item[fieldName] === 'object') {
-                return item[fieldName][language] || item[fieldName].en || '';
+            // 1. Language-keyed translation on item (shape B: item[language][fieldName])
+            if (item[language] && typeof item[language][fieldName] === 'string' && item[language][fieldName].trim()) {
+                return item[language][fieldName].trim();
             }
-            // shape B: translations are top-level language keys containing the field
-            if (item[language] && item[language][fieldName]) return item[language][fieldName];
-            if (item.en && item.en[fieldName]) return item.en[fieldName];
+            // 2. Shape A: item[fieldName] is an object with language keys
+            if (item[fieldName] && typeof item[fieldName] === 'object') {
+                const val = item[fieldName][language] || item[fieldName].en || item[fieldName].kn;
+                if (typeof val === 'string' && val.trim()) return val.trim();
+            }
+            // 3. Fallback language in shape B
+            if (language !== 'en' && item.en && typeof item.en[fieldName] === 'string' && item.en[fieldName].trim()) {
+                return item.en[fieldName].trim();
+            }
+            if (language !== 'kn' && item.kn && typeof item.kn[fieldName] === 'string' && item.kn[fieldName].trim()) {
+                return item.kn[fieldName].trim();
+            }
+            // 4. Direct string property on item (used as fallback)
+            if (!item.en && !item.kn && typeof item[fieldName] === 'string' && item[fieldName].trim()) {
+                return item[fieldName].trim();
+            }
+            // 5. Alternate field names for sectionTitle (e.g. group, section, category)
+            if (fieldName === 'sectionTitle') {
+                for (const alt of ['group', 'section', 'category']) {
+                    if (item[language] && typeof item[language][alt] === 'string' && item[language][alt].trim()) {
+                        return item[language][alt].trim();
+                    }
+                    if (item[alt] && typeof item[alt] === 'object') {
+                        const val = item[alt][language] || item[alt].en || item[alt].kn;
+                        if (typeof val === 'string' && val.trim()) return val.trim();
+                    }
+                    if (language !== 'en' && item.en && typeof item.en[alt] === 'string' && item.en[alt].trim()) {
+                        return item.en[alt].trim();
+                    }
+                    if (!item.en && !item.kn && typeof item[alt] === 'string' && item[alt].trim()) {
+                        return item[alt].trim();
+                    }
+                }
+            }
             return '';
         };
 

@@ -117,6 +117,7 @@ const CmsAdmin = () => {
             console.error(`Error saving ${targetType}:`, err);
             setError(err.message || 'Failed to save changes');
             showToast(`Save failed: ${err.message}`, 'error');
+            throw err;
         } finally {
             setSaving(false);
         }
@@ -148,7 +149,7 @@ const CmsAdmin = () => {
 
     return (
         <AdminLayout title={t('admin.titles.cms', 'Content Management System')}>
-            {/* Subtabs Bar matching Budget */}
+            {/* Subtabs Bar matching Budget & Todo */}
             <div className="admin-tabs">
                 {TABS.map((tab) => {
                     const badge = getTabBadge(tab.id);
@@ -157,21 +158,14 @@ const CmsAdmin = () => {
                             key={tab.id}
                             type="button"
                             className={activeTab === tab.id ? 'active' : ''}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => {
+                                setActiveTab(tab.id);
+                                setError('');
+                            }}
                         >
-                            {t(tab.labelKey, tab.defaultLabel)}
+                            <span>{t(tab.labelKey, tab.defaultLabel)}</span>
                             {badge !== null && (
-                                <span
-                                    style={{
-                                        marginLeft: '0.45rem',
-                                        fontSize: '0.75rem',
-                                        padding: '0.1rem 0.45rem',
-                                        borderRadius: '9999px',
-                                        background: activeTab === tab.id ? '#0f172a' : '#f1f5f9',
-                                        color: activeTab === tab.id ? '#ffffff' : '#64748b',
-                                        fontWeight: 600,
-                                    }}
-                                >
+                                <span className="admin-tab-badge">
                                     {formatNumber(badge)}
                                 </span>
                             )}
@@ -219,14 +213,14 @@ const CmsAdmin = () => {
                     {activeTab === 'projects' && (
                         <CmsProjects
                             data={contentData.projects}
-                            onSave={handleSaveTabContent}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'projects')}
                             saving={saving}
                         />
                     )}
                     {activeTab === 'experiences' && (
                         <CmsExperiences
                             data={contentData.experiences}
-                            onSave={handleSaveTabContent}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'experiences')}
                             saving={saving}
                         />
                     )}
@@ -242,14 +236,14 @@ const CmsAdmin = () => {
                     {activeTab === 'research' && (
                         <CmsResearch
                             data={contentData.research}
-                            onSave={handleSaveTabContent}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'research')}
                             saving={saving}
                         />
                     )}
                     {activeTab === 'photography' && (
                         <CmsPhotography
                             data={contentData.photography}
-                            onSave={handleSaveTabContent}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'photography')}
                             saving={saving}
                         />
                     )}

@@ -220,7 +220,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
                                 <div className="admin-todo-tag-pills">
                                     {draft.tags.map((tag, idx) => (
                                         <span key={idx} className="admin-todo-tag-pill">
-                                            🏷️ {tag}
+                                            {tag}
                                             <button
                                                 type="button"
                                                 className="admin-todo-tag-remove"

@@ -508,9 +508,9 @@ const TodoAdmin = () => {
                                 value={priority}
                                 onChange={(event) => setPriority(event.target.value)}
                             >
-                                <option value="low">🟢 {t('admin.todoSection.priorities.low', 'Low')}</option>
-                                <option value="medium">🟡 {t('admin.todoSection.priorities.medium', 'Medium')}</option>
-                                <option value="high">🔴 {t('admin.todoSection.priorities.high', 'High')}</option>
+                                <option value="low">{t('admin.todoSection.priorities.low', 'Low')}</option>
+                                <option value="medium">{t('admin.todoSection.priorities.medium', 'Medium')}</option>
+                                <option value="high">{t('admin.todoSection.priorities.high', 'High')}</option>
                             </select>
                         </label>
 
@@ -533,7 +533,7 @@ const TodoAdmin = () => {
                     </div>
 
                     <div className="admin-todo-stat admin-todo-stat-urgent">
-                        <span>🔴 {t('admin.todoSection.urgent', 'Urgent')}</span>
+                        <span>{t('admin.todoSection.urgent', 'Urgent')}</span>
                         <strong>{formatNumber(highPriorityTodos.length)}</strong>
                     </div>
 
@@ -625,7 +625,7 @@ const TodoAdmin = () => {
                                         onClick={() => setSelectedTag(isSelected ? null : tag)}
                                         title={`${t('admin.todoSection.filterByTag', 'Filter by tag:')} ${tag}`}
                                     >
-                                        🏷️ {tag}
+                                        {tag}
                                         {isSelected && <span className="admin-todo-tag-filter-clear">✕</span>}
                                     </button>
                                 );

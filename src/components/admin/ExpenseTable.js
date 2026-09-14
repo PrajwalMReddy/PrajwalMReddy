@@ -113,9 +113,6 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
             <form className="admin-budget-form-card" onSubmit={handleSubmit}>
                 <div className="admin-budget-form-header">
                     <div className="admin-budget-form-title-wrap">
-                        <span className="admin-budget-form-icon" aria-hidden="true">
-                            {editingId ? '✏️' : '💳'}
-                        </span>
                         <div>
                             <h3 className="admin-budget-form-title">
                                 {editingId
@@ -227,7 +224,10 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                     <div className="admin-budget-search-area">
                         <div className="admin-table-search-wrap">
                             <span className="admin-table-search-icon" aria-hidden="true">
-                                🔍
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
                             </span>
                             <input
                                 type="text"

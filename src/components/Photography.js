@@ -1,12 +1,120 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useContent } from "../utils/ContentContext";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
+
+// In-memory module cache for dynamically detected aspect ratios
+const aspectCache = new Map();
+
+const getInitialAspectRatios = () => {
+    const initial = {};
+    aspectCache.forEach((val, key) => {
+        initial[key] = val;
+    });
+    if (typeof window !== 'undefined') {
+        try {
+            const stored = sessionStorage.getItem('gallery_aspect_ratios');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                Object.entries(parsed).forEach(([k, v]) => {
+                    aspectCache.set(k, v);
+                    initial[k] = v;
+                });
+            }
+        } catch (_) {}
+    }
+    return initial;
+};
 
 const Photography = () => {
     const { t, photos, formatNumber } = useContent();
     const [hoveredIdx, setHoveredIdx] = useState(null);
     const [fullscreenPhotoId, setFullscreenPhotoId] = useState(null);
+    const [aspectRatios, setAspectRatios] = useState(getInitialAspectRatios);
+    const pendingAspectsRef = useRef({});
+    const flushTimerRef = useRef(null);
+
+    const recordAspectRatio = useCallback((photoKey, aspect) => {
+        if (!photoKey || !aspect || isNaN(aspect) || aspect <= 0) return;
+        aspectCache.set(photoKey, aspect);
+        try {
+            sessionStorage.setItem('gallery_aspect_ratios', JSON.stringify(Object.fromEntries(aspectCache)));
+        } catch (_) {}
+
+        setAspectRatios((prev) => {
+            if (prev[photoKey] && Math.abs(prev[photoKey] - aspect) < 0.01) {
+                return prev;
+            }
+            pendingAspectsRef.current[photoKey] = aspect;
+            if (!flushTimerRef.current) {
+                flushTimerRef.current = setTimeout(() => {
+                    flushTimerRef.current = null;
+                    setAspectRatios((current) => ({
+                        ...current,
+                        ...pendingAspectsRef.current,
+                    }));
+                    pendingAspectsRef.current = {};
+                }, 50);
+            }
+            return prev;
+        });
+    }, []);
+
+    const handleImageLoad = useCallback((photoKey, e) => {
+        const { naturalWidth, naturalHeight } = e.target;
+        if (naturalWidth && naturalHeight) {
+            recordAspectRatio(photoKey, naturalWidth / naturalHeight);
+        }
+    }, [recordAspectRatio]);
+
+    // Automatically detect aspect ratios dynamically for all photos
+    useEffect(() => {
+        if (!photos || photos.length === 0) return;
+
+        let cancelled = false;
+        const immediate = {};
+        let hasImmediate = false;
+
+        photos.forEach((photo, idx) => {
+            const photoKey = photo.id || photo.filename || String(idx);
+            if (aspectCache.has(photoKey)) {
+                immediate[photoKey] = aspectCache.get(photoKey);
+                hasImmediate = true;
+                return;
+            }
+
+            const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
+                ? photo.filename
+                : `/photography/${photo.filename}`;
+
+            const img = new Image();
+            img.onload = () => {
+                if (cancelled) return;
+                if (img.naturalWidth && img.naturalHeight) {
+                    recordAspectRatio(photoKey, img.naturalWidth / img.naturalHeight);
+                }
+            };
+            img.src = imgUrl;
+            if (img.complete && img.naturalWidth && img.naturalHeight) {
+                const aspect = img.naturalWidth / img.naturalHeight;
+                aspectCache.set(photoKey, aspect);
+                immediate[photoKey] = aspect;
+                hasImmediate = true;
+            }
+        });
+
+        if (hasImmediate) {
+            setAspectRatios((prev) => ({ ...prev, ...immediate }));
+        }
+
+        return () => {
+            cancelled = true;
+            if (flushTimerRef.current) {
+                clearTimeout(flushTimerRef.current);
+                flushTimerRef.current = null;
+            }
+        };
+    }, [photos, recordAspectRatio]);
 
     useEffect(() => {
         document.title = t('pageTitles.photography');
@@ -100,9 +208,8 @@ const Photography = () => {
         if (count === 1) return [photos];
 
         const items = photos.map((p, originalIdx) => {
-            const w = p.width || 1600;
-            const h = p.height || 1200;
-            const aspect = w > 0 && h > 0 ? w / h : 1.33;
+            const photoKey = p.id || p.filename || String(originalIdx);
+            const aspect = aspectRatios[photoKey] || 1.33;
             return {
                 photo: p,
                 originalIdx,
@@ -168,7 +275,7 @@ const Photography = () => {
         cols.forEach((col) => col.sort((a, b) => a.originalIdx - b.originalIdx));
 
         return cols.map((col) => col.map((item) => item.photo));
-    }, [photos, numColumns]);
+    }, [photos, numColumns, aspectRatios]);
 
     return (
         <div id="app-root">
@@ -185,10 +292,11 @@ const Photography = () => {
                                         const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
                                             ? photo.filename
                                             : `/photography/${photo.filename}`;
+                                        const photoKey = photo.id || photo.filename || String(originalIdx);
                                         return (
                                             <div
                                                 className="gallery-item"
-                                                key={photo.id || photo.filename || originalIdx}
+                                                key={photoKey}
                                                 style={{ position: "relative" }}
                                                 onMouseEnter={() => setHoveredIdx(originalIdx)}
                                                 onMouseLeave={() => setHoveredIdx(null)}
@@ -197,6 +305,7 @@ const Photography = () => {
                                                     src={imgUrl}
                                                     alt={photo.title || `Photography ${originalIdx + 1}`}
                                                     loading="lazy"
+                                                    onLoad={(e) => handleImageLoad(photoKey, e)}
                                                     style={{ opacity: 1, transition: 'opacity 0.3s ease' }}
                                                 />
                                                 {hoveredIdx === originalIdx && (

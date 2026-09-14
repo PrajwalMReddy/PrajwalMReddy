@@ -16,9 +16,9 @@ const AdminLogin = () => {
     }, [t]);
 
     const rawFrom = location.state?.from;
-    const from = (rawFrom && rawFrom !== '/admin/login' && rawFrom !== '/admin' && rawFrom !== '/admin/home')
+    const from = (rawFrom && rawFrom !== '/admin/login' && rawFrom !== '/admin/home')
         ? rawFrom
-        : '/admin/todo';
+        : '/admin';
     if (authenticated) {
         return <Navigate to={from} replace />;
     }

@@ -124,7 +124,7 @@ const Blog = () => {
 
                 {blogPosts.length > 0 && (<div className="blog-grid">
                     {blogPosts.map((post) => {
-                        const key = post.id || post.slug || post.title;
+                        const key = post.id || post.slug || post.externalUrl || post.title;
 
                         if (post.externalUrl) {
                             return (<a
@@ -168,7 +168,10 @@ const Blog = () => {
                                         aria-label="Interactive React Component"
                                         title="Interactive React Component"
                                     >
-                                        ⚛
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                                            <polyline points="16 18 22 12 16 6" />
+                                            <polyline points="8 6 2 12 8 18" />
+                                        </svg>
                                     </span>
                                 )}
                             </h2>

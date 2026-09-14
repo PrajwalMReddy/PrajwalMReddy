@@ -333,15 +333,16 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
     // Lives
     let hearts = '';
     for (let i = 0; i < 3; i++) {
-        hearts += i < gameState.lives ? '❤️ ' : '🖤 ';
+        hearts += i < gameState.lives ? '♥ ' : '♡ ';
     }
-    ctx.font = '14px monospace';
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '16px monospace';
     ctx.fillText(hearts, heartsX, hudY + 19);
 
     // Coins
     ctx.fillStyle = '#ffd700';
-    ctx.font = getCanvasFont(13, 'bold');
-    ctx.fillText(`🪙 ${formatNumber(gameState.totalCoins, gameState.lang)}`, coinsX, hudY + 19);
+    ctx.font = getCanvasFont(12, 'bold');
+    ctx.fillText(`COINS: ${formatNumber(gameState.totalCoins, gameState.lang)}`, coinsX, hudY + 19);
 
     // Controls hint
     ctx.fillStyle = '#94a3b8';
@@ -449,9 +450,10 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
 
         // Trophy Icon
         ctx.font = '38px monospace';
+        ctx.fillStyle = '#fbbf24';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('🏆', width / 2, cardY + 42);
+        ctx.fillText('★', width / 2, cardY + 42);
 
         // YOU WIN! title
         ctx.font = getCanvasFont(32, 'bold');
@@ -487,7 +489,7 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
         ctx.fillText(getPlatformerText('victoryCoinsAwarded', { coins: gameState.totalCoins }), width / 2, rewardBoxY + 38);
 
         // --- BUTTONS ---
-        // 1. Primary Action Button: [ ♾️ Play Unlimited Platformer ]
+        // 1. Primary Action Button: [ Play Unlimited Platformer ]
         const btnW = Math.min(320, cardWidth - 60);
         const btnH = 46;
         const btnX = (width - btnW) / 2;
@@ -527,7 +529,7 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
         ctx.fillText(getPlatformerText('playUnlimitedBtn'), width / 2, btnY + btnH / 2);
         ctx.restore();
 
-        // 2. Secondary Action Button: [ 🔄 Replay Custom Levels ]
+        // 2. Secondary Action Button: [ Replay Custom Levels ]
         const repW = Math.min(240, cardWidth - 90);
         const repH = 36;
         const repX = (width - repW) / 2;
@@ -606,11 +608,12 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Skull Icon
+        // Failure Icon
         ctx.font = '36px monospace';
+        ctx.fillStyle = '#ef4444';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('💀', width / 2, cardY + 36);
+        ctx.fillText('✕', width / 2, cardY + 36);
 
         // GAME OVER heading
         ctx.font = getCanvasFont(30, 'bold');
@@ -659,7 +662,7 @@ export function draw(ctx, width, height, displayText = 'Coming Soon') {
         }
         ctx.fillStyle = '#fbbf24';
         ctx.font = getCanvasFont(13, 'bold');
-        ctx.fillText(`🪙 ${getPlatformerText('coinsSaved', { coins: gameState.totalCoins })}`, width / 2, statsY + 38);
+        ctx.fillText(getPlatformerText('coinsSaved', { coins: gameState.totalCoins }), width / 2, statsY + 38);
 
         // Action Prompt
         ctx.fillStyle = '#38bdf8';

@@ -12,6 +12,8 @@ export const meta = {
             photography: "Photography | Prajwal Reddy",
 
             adminLogin: "Admin Login | Prajwal Reddy",
+            admin: "Admin | Prajwal Reddy",
+            adminDashboard: "Admin | Prajwal Reddy",
             adminTodo: "To-Do | Admin | Prajwal Reddy",
             adminNotes: "Notes | Admin | Prajwal Reddy",
             adminBudget: "Budget | Admin | Prajwal Reddy",
@@ -37,6 +39,8 @@ export const meta = {
             photography: "ಚಾಯಾಗ್ರಹಣ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
 
             adminLogin: "ಆಡಳಿತ ಪ್ರವೇಶ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            admin: "ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminDashboard: "ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminTodo: "ಕಾರ್ಯಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminNotes: "ಟಿಪ್ಪಣಿಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminBudget: "ಆಯವ್ಯಯ | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",

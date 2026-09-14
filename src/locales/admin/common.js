@@ -2,6 +2,8 @@ export const adminCommon = {
     en: {
         // Header Navigation
         nav: {
+            admin: 'Admin',
+            dashboard: 'Admin',
             cms: 'CMS',
             konami: 'Konami',
             todo: 'To-Do',
@@ -15,11 +17,54 @@ export const adminCommon = {
 
         // Page Titles
         titles: {
+            dashboard: 'Admin Dashboard',
             cms: 'Content Management System',
             konami: 'Konami Level Editor',
             budget: 'Budget Manager',
             todo: 'To-Do List',
             notes: 'Notes & Ideas',
+        },
+
+        // Dashboard Home
+        dashboard: {
+            title: 'Admin Dashboard',
+            subtitle: 'Central control hub for portfolio content, personal finances, tasks, and notes.',
+            greetingMorning: 'Good morning',
+            greetingAfternoon: 'Good afternoon',
+            greetingEvening: 'Good evening',
+            systemOnline: 'System Online',
+            quickActions: {
+                newTask: 'New Task',
+                newNote: 'New Note',
+                addExpense: 'Log Expense',
+                editCms: 'Edit CMS',
+                viewSite: 'View Site',
+            },
+            metrics: {
+                tasks: 'Tasks',
+                pending: 'pending',
+                overdue: 'overdue',
+                highPriority: 'high priority',
+                notes: 'Notes',
+                folders: 'folders',
+                balance: 'Net Balance',
+                totalFunds: 'total funds',
+                cms: 'Portfolio Content',
+                items: 'items published',
+                arcade: 'Arcade Levels',
+                levels: 'custom levels',
+            },
+            sections: {
+                focusTasks: 'Urgent & Priority Tasks',
+                noTasks: 'All caught up! No urgent tasks pending.',
+                quickAddPlaceholder: 'Add a new task...',
+                add: 'Add',
+                recentNotes: 'Recent Notes & Ideas',
+                noNotes: 'No notes created yet.',
+                financialHealth: 'Financial Snapshot',
+                modules: 'Admin Modules',
+                viewAll: 'View all',
+            },
         },
 
         // Login Page
@@ -33,6 +78,7 @@ export const adminCommon = {
         },
 
         // Direct convenience shortcuts
+        dashboardLink: 'Dashboard',
         cms: 'CMS',
         todo: 'To-Do',
         notes: 'Notes',
@@ -63,6 +109,8 @@ export const adminCommon = {
     kn: {
         // Header Navigation
         nav: {
+            admin: 'ಆಡಳಿತ',
+            dashboard: 'ಆಡಳಿತ',
             cms: 'ಸಿಎಂಎಸ್',
             konami: 'ಕೊನಮಿ',
             todo: 'ಕಾರ್ಯಗಳು',
@@ -76,11 +124,54 @@ export const adminCommon = {
 
         // Page Titles
         titles: {
+            dashboard: 'ಆಡಳಿತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
             cms: 'ವಿಷಯ ನಿರ್ವಹಣಾ ವ್ಯವಸ್ಥೆ',
             konami: 'ಕೊನಮಿ ಹಂತ ಸಂಪಾದಕ',
             budget: 'ಆಯವ್ಯಯ ನಿರ್ವಾಹಕ',
             todo: 'ಕಾರ್ಯಗಳ ಪಟ್ಟಿ',
             notes: 'ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ಕಲ್ಪನೆಗಳು',
+        },
+
+        // Dashboard Home
+        dashboard: {
+            title: 'ಆಡಳಿತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+            subtitle: 'ಜಾಲತಾಣ ವಿಷಯ, ವೈಯಕ್ತಿಕ ಆಯವ್ಯಯ, ಕಾರ್ಯಗಳು ಮತ್ತು ಟಿಪ್ಪಣಿಗಳ ನಿಯಂತ್ರಣ ಕೇಂದ್ರ.',
+            greetingMorning: 'ಶುಭೋದಯ',
+            greetingAfternoon: 'ಶುಭ ಮಧ್ಯಾಹ್ನ',
+            greetingEvening: 'ಶುಭ ಸಂಜೆ',
+            systemOnline: 'ವ್ಯವಸ್ಥೆ ಸಕ್ರಿಯವಾಗಿದೆ',
+            quickActions: {
+                newTask: 'ಹೊಸ ಕಾರ್ಯ',
+                newNote: 'ಹೊಸ ಟಿಪ್ಪಣಿ',
+                addExpense: 'ವೆಚ್ಚ ಸೇರಿಸಿ',
+                editCms: 'ಸಿಎಂಎಸ್ ಸಂಪಾದಿಸಿ',
+                viewSite: 'ಜಾಲತಾಣ ವೀಕ್ಷಿಸಿ',
+            },
+            metrics: {
+                tasks: 'ಕಾರ್ಯಗಳು',
+                pending: 'ಬಾಕಿ ಇವೆ',
+                overdue: 'ಅವಧಿ ಮೀರಿದೆ',
+                highPriority: 'ಹೆಚ್ಚಿನ ಆದ್ಯತೆ',
+                notes: 'ಟಿಪ್ಪಣಿಗಳು',
+                folders: 'ಕೋಶಗಳು',
+                balance: 'ನಿವ್ವಳ ಬಾಕಿ',
+                totalFunds: 'ಒಟ್ಟು ನಿಧಿ',
+                cms: 'ಜಾಲತಾಣ ವಿಷಯ',
+                items: 'ಪ್ರಕಟಿತ ಅಂಶಗಳು',
+                arcade: 'ಆಟದ ಹಂತಗಳು',
+                levels: 'ಕಸ್ಟಮ್ ಹಂತಗಳು',
+            },
+            sections: {
+                focusTasks: 'ತುರ್ತು ಮತ್ತು ಆದ್ಯತೆಯ ಕಾರ್ಯಗಳು',
+                noTasks: 'ಎಲ್ಲಾ ಕೆಲಸಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ! ಯಾವುದೇ ತುರ್ತು ಕಾರ್ಯಗಳಿಲ್ಲ.',
+                quickAddPlaceholder: 'ಹೊಸ ಕಾರ್ಯವನ್ನು ಸೇರಿಸಿ...',
+                add: 'ಸೇರಿಸಿ',
+                recentNotes: 'ಇತ್ತೀಚಿನ ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ಕಲ್ಪನೆಗಳು',
+                noNotes: 'ಇನ್ನೂ ಯಾವುದೇ ಟಿಪ್ಪಣಿಗಳನ್ನು ರಚಿಸಿಲ್ಲ.',
+                financialHealth: 'ಆರ್ಥಿಕ ನೋಟ',
+                modules: 'ಆಡಳಿತ ವಿಭಾಗಗಳು',
+                viewAll: 'ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ',
+            },
         },
 
         // Login Page
@@ -94,6 +185,7 @@ export const adminCommon = {
         },
 
         // Direct convenience shortcuts
+        dashboardLink: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
         cms: 'ಸಿಎಂಎಸ್',
         todo: 'ಕಾರ್ಯಗಳು',
         notes: 'ಟಿಪ್ಪಣಿಗಳು',

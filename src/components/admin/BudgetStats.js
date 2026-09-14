@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useContent } from '../../utils/ContentContext';
 import { formatCurrency } from '../../utils/budgetApi';
 
@@ -79,13 +79,21 @@ const BudgetStats = ({ stats }) => {
             ? Math.max(...categoryList.map((cat) => Number(cat.spending) || 0))
             : 0;
 
-    const maxMonthly = Math.max(
-        ...monthlyTrend.flatMap((month) => [
-            Number(month.expenses) || 0,
-            Number(month.income) || 0,
-        ]),
-        1
-    );
+    const [trendFilter, setTrendFilter] = useState('all');
+
+    const visibleMonthlyValues = monthlyTrend.flatMap((month) => {
+        const vals = [];
+        if (trendFilter === 'all' || trendFilter === 'income') {
+            vals.push(Number(month.income) || 0);
+        }
+        if (trendFilter === 'all' || trendFilter === 'expenses') {
+            vals.push(Number(month.expenses) || 0);
+        }
+        return vals;
+    });
+
+    const maxMonthly = Math.max(...visibleMonthlyValues, 1);
+    const chartMax = maxMonthly * 1.08;
 
     const comparisonMax = Math.max(
         Number(incomeVsExpenses.income) || 0,
@@ -95,186 +103,188 @@ const BudgetStats = ({ stats }) => {
 
     return (
         <div className="admin-stats">
-            <section className="admin-stats-section">
-                <h2>💰 {t('admin.budgetSection.stats.funds', 'Funds')}</h2>
+            <div className="admin-stats-overview">
+                <section className="admin-stats-section">
+                    <h2>{t('admin.budgetSection.stats.funds', 'Funds')}</h2>
 
-                <div className="admin-stat-grid admin-stat-grid-3">
-                    <StatCard
-                        label={t('admin.budgetSection.stats.injections', 'Injections')}
-                        value={formatVal(funds.injections)}
-                    />
+                    <div className="admin-stat-grid admin-stat-grid-3">
+                        <StatCard
+                            label={t('admin.budgetSection.stats.injections', 'Injections')}
+                            value={formatVal(funds.injections)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.otherIncome', 'Other Income')}
-                        value={formatVal(funds.otherIncome)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.otherIncome', 'Other Income')}
+                            value={formatVal(funds.otherIncome)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.totalFunds', 'Total Funds')}
-                        value={formatVal(funds.totalFunds)}
-                    />
-                </div>
-            </section>
+                        <StatCard
+                            label={t('admin.budgetSection.stats.totalFunds', 'Total Funds')}
+                            value={formatVal(funds.totalFunds)}
+                        />
+                    </div>
+                </section>
 
-            <section className="admin-stats-section">
-                <h2>💸 {t('admin.budgetSection.stats.spending', 'Spending')}</h2>
+                <section className="admin-stats-section">
+                    <h2>{t('admin.budgetSection.stats.spending', 'Spending')}</h2>
 
-                <div className="admin-stat-grid admin-stat-grid-4">
-                    <StatCard
-                        label={t('admin.budgetSection.stats.expenses', 'Expenses')}
-                        value={formatVal(spending.expenses)}
-                    />
+                    <div className="admin-stat-grid admin-stat-grid-4">
+                        <StatCard
+                            label={t('admin.budgetSection.stats.expenses', 'Expenses')}
+                            value={formatVal(spending.expenses)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.realSpent', 'Real Spent')}
-                        value={formatVal(spending.realSpent)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.realSpent', 'Real Spent')}
+                            value={formatVal(spending.realSpent)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.realAvgPerMonth', 'Real Avg / Month')}
-                        value={formatVal(spending.realAvgPerMonth)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.realAvgPerMonth', 'Real Avg / Month')}
+                            value={formatVal(spending.realAvgPerMonth)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.monthsLeft', 'Months Left')}
-                        value={formatNum(spending.monthsLeft)}
-                    />
-                </div>
-            </section>
+                        <StatCard
+                            label={t('admin.budgetSection.stats.monthsLeft', 'Months Left')}
+                            value={formatNum(spending.monthsLeft)}
+                        />
+                    </div>
+                </section>
 
-            <section className="admin-stats-section">
-                <h2>🎯 {t('admin.budgetSection.stats.budget', 'Budget')}</h2>
+                <section className="admin-stats-section">
+                    <h2>{t('admin.budgetSection.stats.budget', 'Budget')}</h2>
 
-                <div className="admin-stat-grid admin-stat-grid-3">
-                    <StatCard
-                        label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted (to date)')}
-                        value={formatVal(meBudgeted)}
-                    />
+                    <div className="admin-stat-grid admin-stat-grid-3">
+                        <StatCard
+                            label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted (to date)')}
+                            value={formatVal(meBudgeted)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
-                        value={formatVal(budget.meSurplus)}
-                        negative={budget.meSurplus < 0}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
+                            value={formatVal(budget.meSurplus)}
+                            negative={budget.meSurplus < 0}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
-                        value={formatVal(budget.netBalance)}
-                    />
-                </div>
-            </section>
+                        <StatCard
+                            label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
+                            value={formatVal(budget.netBalance)}
+                        />
+                    </div>
+                </section>
 
-            <section className="admin-stats-section">
-                <h2>📊 {t('admin.budgetSection.stats.transactionStats', 'Transaction Statistics')}</h2>
+                <section className="admin-stats-section">
+                    <h2>{t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
 
-                <div className="admin-stat-grid admin-stat-grid-6">
-                    <StatCard
-                        label={t('admin.budgetSection.stats.q1', 'Q1')}
-                        value={formatVal(transactionStats.q1)}
-                    />
+                    <div className="admin-stat-grid admin-stat-grid-4">
+                        <StatCard
+                            label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
+                            value={formatNum(ayana.completedAyanas)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.median', 'Tran Med')}
-                        value={formatVal(transactionStats.median)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
+                            value={formatVal(ayana.realAvgPerAyana)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.q3', 'Q3')}
-                        value={formatVal(transactionStats.q3)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted (to date)')}
+                            value={formatVal(aeBudgeted)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.mean', 'Tran Mean')}
-                        value={formatVal(transactionStats.mean)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
+                            value={formatVal(ayana.aeSurplus)}
+                            negative={ayana.aeSurplus < 0}
+                        />
+                    </div>
+                </section>
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.trimMean', 'Trim Mean')}
-                        value={formatVal(transactionStats.trimMean)}
-                    />
+                <section className="admin-stats-section admin-stats-span-2">
+                    <h2>{t('admin.budgetSection.stats.transactionStats', 'Transaction Statistics')}</h2>
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.mode', 'Tran Mode')}
-                        value={formatVal(transactionStats.mode)}
-                    />
-                </div>
-            </section>
+                    <div className="admin-stat-grid admin-stat-grid-6">
+                        <StatCard
+                            label={t('admin.budgetSection.stats.q1', 'Q1')}
+                            value={formatVal(transactionStats.q1)}
+                        />
 
-            <section className="admin-stats-section">
-                <h2>🗓️ {t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
+                        <StatCard
+                            label={t('admin.budgetSection.stats.median', 'Tran Med')}
+                            value={formatVal(transactionStats.median)}
+                        />
 
-                <div className="admin-stat-grid admin-stat-grid-4">
-                    <StatCard
-                        label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
-                        value={formatNum(ayana.completedAyanas)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.q3', 'Q3')}
+                            value={formatVal(transactionStats.q3)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
-                        value={formatVal(ayana.realAvgPerAyana)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.mean', 'Tran Mean')}
+                            value={formatVal(transactionStats.mean)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted (to date)')}
-                        value={formatVal(aeBudgeted)}
-                    />
+                        <StatCard
+                            label={t('admin.budgetSection.stats.trimMean', 'Trim Mean')}
+                            value={formatVal(transactionStats.trimMean)}
+                        />
 
-                    <StatCard
-                        label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
-                        value={formatVal(ayana.aeSurplus)}
-                        negative={ayana.aeSurplus < 0}
-                    />
-                </div>
-            </section>
+                        <StatCard
+                            label={t('admin.budgetSection.stats.mode', 'Tran Mode')}
+                            value={formatVal(transactionStats.mode)}
+                        />
+                    </div>
+                </section>
+            </div>
 
             <div className="admin-stats-columns">
                 <section className="admin-stats-section">
-                    <h2>🏷️ {t('admin.budgetSection.stats.categorySpending', 'Category Spending')}</h2>
+                    <h2>{t('admin.budgetSection.stats.categorySpending', 'Category Spending')}</h2>
 
                     <table className="admin-table">
                         <thead>
-                        <tr>
-                            <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
-                            <th>{t('admin.budgetSection.stats.spending', 'Spending')}</th>
-                            <th>{t('admin.budgetSection.stats.spendingPerAyana', 'Spending / Ayana')}</th>
-                        </tr>
+                            <tr>
+                                <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
+                                <th>{t('admin.budgetSection.stats.spending', 'Spending')}</th>
+                                <th>{t('admin.budgetSection.stats.spendingPerAyana', 'Spending / Ayana')}</th>
+                            </tr>
                         </thead>
 
                         <tbody>
-                        {categoryList.map((cat) => (
-                            <tr key={cat.category}>
-                                <td>{cat.category}</td>
-                                <td>{formatVal(cat.spending)}</td>
-                                <td>{formatVal(cat.spendingPerAyana)}</td>
+                            {categoryList.map((cat) => (
+                                <tr key={cat.category}>
+                                    <td>{cat.category}</td>
+                                    <td>{formatVal(cat.spending)}</td>
+                                    <td>{formatVal(cat.spendingPerAyana)}</td>
+                                </tr>
+                            ))}
+
+                            <tr className="admin-table-total">
+                                <td>{t('admin.budgetSection.stats.total', 'Total')}</td>
+
+                                <td>
+                                    {formatVal(spending.expenses)}
+                                </td>
+
+                                <td>
+                                    {formatVal(
+                                        categoryList.reduce(
+                                            (sum, category) =>
+                                                sum +
+                                                (Number(
+                                                    category.spendingPerAyana
+                                                ) || 0),
+                                            0
+                                        )
+                                    )}
+                                </td>
                             </tr>
-                        ))}
-
-                        <tr className="admin-table-total">
-                            <td>{t('admin.budgetSection.stats.total', 'Total')}</td>
-
-                            <td>
-                                {formatVal(spending.expenses)}
-                            </td>
-
-                            <td>
-                                {formatVal(
-                                    categoryList.reduce(
-                                        (sum, category) =>
-                                            sum +
-                                            (Number(
-                                                category.spendingPerAyana
-                                            ) || 0),
-                                        0
-                                    )
-                                )}
-                            </td>
-                        </tr>
                         </tbody>
                     </table>
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>📈 {t('admin.budgetSection.stats.categoryBreakdown', 'Category Breakdown')}</h2>
+                    <h2>{t('admin.budgetSection.stats.categoryBreakdown', 'Category Breakdown')}</h2>
 
                     <div className="admin-bar-chart">
                         {categoryList.map((cat) => (
@@ -292,54 +302,100 @@ const BudgetStats = ({ stats }) => {
             </div>
 
             <section className="admin-stats-section">
-                <h2>{t('admin.budgetSection.stats.monthlyTrend', 'Monthly Trend')}</h2>
+                <div className="admin-stats-header-with-actions">
+                    <h2>{t('admin.budgetSection.stats.monthlyTrend', 'Monthly Trend')}</h2>
+
+                    <div className="admin-trend-filter-group" role="group" aria-label="Monthly trend filter">
+                        <button
+                            type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'income' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('income')}
+                        >
+                            {t('admin.budgetSection.stats.income', 'Income')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'expenses' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('expenses')}
+                        >
+                            {t('admin.budgetSection.stats.expenses', 'Expenses')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'all' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('all')}
+                        >
+                            {t('admin.budgetSection.stats.filterBoth', 'Unified')}
+                        </button>
+                    </div>
+                </div>
 
                 <div className="admin-monthly-chart">
-                    {monthlyTrend.map((month) => (
-                        <div
-                            key={month.month}
-                            className="admin-monthly-group"
-                        >
-                            <div className="admin-monthly-bars">
-                                <div
-                                    className="admin-monthly-bar income"
-                                    style={{
-                                        height: `${
-                                            ((Number(month.income) || 0) /
-                                                maxMonthly) *
-                                            100
-                                        }%`,
-                                    }}
-                                    title={`${t('admin.budgetSection.stats.incomeLabel', 'Income:')} ${formatVal(
-                                        month.income
-                                    )}`}
-                                />
+                    {monthlyTrend.map((month) => {
+                        const monthStr = String(month.month || '');
+                        const monthPart = monthStr.slice(5);
+                        const yearPart = monthStr.slice(0, 4);
+                        const isOne = parseInt(monthPart, 10) === 1;
 
-                                <div
-                                    className="admin-monthly-bar expenses"
-                                    style={{
-                                        height: `${
-                                            ((Number(month.expenses) || 0) /
-                                                maxMonthly) *
-                                            100
-                                        }%`,
-                                    }}
-                                    title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
-                                        month.expenses
-                                    )}`}
-                                />
+                        return (
+                            <div
+                                key={month.month}
+                                className="admin-monthly-group"
+                            >
+                                <div className="admin-monthly-bars">
+                                    {(trendFilter === 'all' || trendFilter === 'income') && (
+                                        <div
+                                            className="admin-monthly-bar income"
+                                            style={{
+                                                height: `${((Number(month.income) || 0) /
+                                                    chartMax) *
+                                                    100
+                                                    }%`,
+                                            }}
+                                            title={`${t('admin.budgetSection.stats.incomeLabel', 'Income:')} ${formatVal(
+                                                month.income
+                                            )}`}
+                                        />
+                                    )}
+
+                                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
+                                        <div
+                                            className="admin-monthly-bar expenses"
+                                            style={{
+                                                height: `${((Number(month.expenses) || 0) /
+                                                    chartMax) *
+                                                    100
+                                                    }%`,
+                                            }}
+                                            title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
+                                                month.expenses
+                                            )}`}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="admin-monthly-label-wrapper">
+                                    <span className={`admin-monthly-label ${isOne ? 'is-year-start' : ''}`}>
+                                        {formatNumber(monthPart)}
+                                    </span>
+                                    {isOne && (
+                                        <span className="admin-monthly-year">
+                                            {formatNumber(yearPart)}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-
-                            <span className="admin-monthly-label">
-                                {formatNumber(month.month.slice(5))}
-                            </span>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <div className="admin-chart-legend">
-                    <span className="legend-income">{t('admin.budgetSection.stats.income', 'Income')}</span>
-                    <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                    {(trendFilter === 'all' || trendFilter === 'income') && (
+                        <span className="legend-income">{t('admin.budgetSection.stats.income', 'Income')}</span>
+                    )}
+                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
+                        <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                    )}
                 </div>
             </section>
 
@@ -351,13 +407,12 @@ const BudgetStats = ({ stats }) => {
                         <div
                             className="admin-comparison-fill income"
                             style={{
-                                width: `${
-                                    ((Number(
-                                            incomeVsExpenses.income
-                                        ) || 0) /
-                                        comparisonMax) *
+                                width: `${((Number(
+                                    incomeVsExpenses.income
+                                ) || 0) /
+                                    comparisonMax) *
                                     100
-                                }%`,
+                                    }%`,
                             }}
                         />
 
@@ -371,13 +426,12 @@ const BudgetStats = ({ stats }) => {
                         <div
                             className="admin-comparison-fill expenses"
                             style={{
-                                width: `${
-                                    ((Number(
-                                            incomeVsExpenses.expenses
-                                        ) || 0) /
-                                        comparisonMax) *
+                                width: `${((Number(
+                                    incomeVsExpenses.expenses
+                                ) || 0) /
+                                    comparisonMax) *
                                     100
-                                }%`,
+                                    }%`,
                             }}
                         />
 

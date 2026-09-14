@@ -219,8 +219,6 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         return (
                             <div key={quote.id || originalIndex} className="cms-item-row">
                                 <div className="cms-item-main">
-                                    <div className="cms-item-thumb-placeholder">💬</div>
-
                                     <div className="cms-item-content">
                                         <div className="cms-item-header">
                                             <h4 className="cms-item-title">

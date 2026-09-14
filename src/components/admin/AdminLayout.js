@@ -14,6 +14,7 @@ const AdminLayout = ({ children, title, documentTitle }) => {
 
     const getLocalizedTitle = (tTitle) => {
         if (!tTitle) return '';
+        if (tTitle === 'Admin Dashboard' || tTitle === 'Dashboard') return t('admin.titles.dashboard', tTitle);
         if (tTitle === 'Content Management System') return t('admin.titles.cms', tTitle);
         if (tTitle === 'Budget Manager') return t('admin.titles.budget', tTitle);
         if (tTitle === 'To-Do List' || tTitle === 'To-Do Manager') return t('admin.todoSection.title', t('admin.titles.todo', tTitle));
@@ -27,7 +28,9 @@ const AdminLayout = ({ children, title, documentTitle }) => {
             return;
         }
 
-        if (location.pathname.startsWith('/admin/todo')) {
+        if (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/home' || location.pathname === '/admin/dashboard') {
+            document.title = t('pageTitles.admin', 'Admin | Prajwal Reddy');
+        } else if (location.pathname.startsWith('/admin/todo')) {
             document.title = t('pageTitles.adminTodo', 'To-Do | Admin | Prajwal Reddy');
         } else if (location.pathname.startsWith('/admin/notes')) {
             document.title = t('pageTitles.adminNotes', 'Notes | Admin | Prajwal Reddy');
@@ -45,11 +48,19 @@ const AdminLayout = ({ children, title, documentTitle }) => {
         }
     }, [location.pathname, title, documentTitle, t]);
 
+    const isAdminActive = location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/home' || location.pathname === '/admin/dashboard';
+
     return (
         <div className="admin-page">
             <header className="admin-header-bar">
                 <div className="admin-header">
                     <nav className="admin-nav" aria-label="Admin navigation">
+                        <Link
+                            to="/admin"
+                            className={`admin-nav-item ${isAdminActive ? 'active' : ''}`}
+                        >
+                            {t('admin.nav.admin', 'Admin')}
+                        </Link>
                         <Link
                             to="/admin/todo"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/todo') ? 'active' : ''}`}

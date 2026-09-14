@@ -11,6 +11,7 @@ const DEFAULT_RESEARCH = {
     visibility: 'public',
     date: '',
     url: '',
+    sectionTitle: '',
     en: {
         sectionTitle: '',
         title: '',
@@ -25,9 +26,44 @@ const DEFAULT_RESEARCH = {
 
 const CmsResearch = ({ data = [], onSave, saving }) => {
     const { t, language, formatNumber } = useContent();
-    const items = Array.isArray(data) ? data : [];
+    const items = Array.isArray(data) ? data : (data?.research || data?.items || []);
+
+    const getLocalized = (obj, fallback = '') => {
+        if (!obj) return fallback;
+        if (typeof obj === 'string') return obj;
+        if (language === 'kn') {
+            return obj.kn || obj.en || fallback;
+        }
+        return obj.en || obj.kn || fallback;
+    };
+
+    const getItemSection = (item) => {
+        const baseSec = (typeof item.sectionTitle === 'string' ? item.sectionTitle : '') ||
+            (typeof item.group === 'string' ? item.group : '') || '';
+
+        const rawSecEn = (typeof item.en?.sectionTitle === 'string' && item.en.sectionTitle.trim())
+            ? item.en.sectionTitle.trim()
+            : (item.sectionTitle?.en || item.group?.en || '');
+
+        const rawSecKn = (typeof item.kn?.sectionTitle === 'string' && item.kn.sectionTitle.trim())
+            ? item.kn.sectionTitle.trim()
+            : (item.sectionTitle?.kn || item.group?.kn || '');
+
+        const enVal = (rawSecEn || baseSec).trim();
+        const knVal = (rawSecKn || baseSec).trim();
+        const localized = language === 'kn' ? (knVal || enVal) : (enVal || knVal);
+        const id = enVal || knVal || '';
+        return {
+            en: enVal,
+            kn: knVal,
+            localized: localized,
+            id: id,
+            key: id.toLowerCase(),
+        };
+    };
 
     const [search, setSearch] = useState('');
+    const [selectedSection, setSelectedSection] = useState('all');
     const [filterType, setFilterType] = useState('all');
     const [filterVis, setFilterVis] = useState('all');
 
@@ -49,25 +85,74 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isEditModalOpen]);
 
+    const sections = useMemo(() => {
+        const sectionMap = new Map();
+
+        if (Array.isArray(data?.sections)) {
+            data.sections.forEach((sec) => {
+                const id = sec.id || sec.key || (typeof sec.title === 'string' ? sec.title : (sec.title?.en || sec.title?.kn || ''));
+                if (id) {
+                    const titleEn = typeof sec.title === 'object' ? sec.title?.en || '' : (sec.title || id);
+                    const titleKn = typeof sec.title === 'object' ? sec.title?.kn || '' : (sec.title || id);
+                    sectionMap.set(id.toLowerCase(), {
+                        id: id,
+                        title: { en: titleEn, kn: titleKn },
+                    });
+                }
+            });
+        }
+
+        items.forEach((item) => {
+            const secInfo = getItemSection(item);
+            if (secInfo.id) {
+                if (!sectionMap.has(secInfo.key)) {
+                    sectionMap.set(secInfo.key, {
+                        id: secInfo.id,
+                        title: { en: secInfo.en || secInfo.kn, kn: secInfo.kn || secInfo.en },
+                    });
+                }
+            }
+        });
+
+        return Array.from(sectionMap.values());
+    }, [data, items, language]);
+
+    const hasUngrouped = useMemo(() => {
+        return items.some((item) => !getItemSection(item).id);
+    }, [items, language]);
+
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
             const titleEn = item.en?.title || item.title?.en || item.title || '';
             const titleKn = item.kn?.title || item.title?.kn || '';
             const descEn = item.en?.description || item.description?.en || item.description || '';
 
+            const secInfo = getItemSection(item);
+            const secEn = secInfo.en;
+            const secKn = secInfo.kn;
+
             const matchesSearch =
                 !search ||
                 titleEn.toLowerCase().includes(search.toLowerCase()) ||
                 titleKn.toLowerCase().includes(search.toLowerCase()) ||
                 descEn.toLowerCase().includes(search.toLowerCase()) ||
+                secEn.toLowerCase().includes(search.toLowerCase()) ||
+                secKn.toLowerCase().includes(search.toLowerCase()) ||
                 (item.slug || '').toLowerCase().includes(search.toLowerCase());
+
+            const matchesSection =
+                selectedSection === 'all' ||
+                (selectedSection === '__none__' && !secInfo.id) ||
+                (secInfo.id && secInfo.id.toLowerCase() === selectedSection.toLowerCase()) ||
+                (secInfo.en && secInfo.en.toLowerCase() === selectedSection.toLowerCase()) ||
+                (secInfo.kn && secInfo.kn.toLowerCase() === selectedSection.toLowerCase());
 
             const matchesType = filterType === 'all' || item.type === filterType;
             const matchesVis = filterVis === 'all' || (item.visibility || 'public') === filterVis;
 
-            return matchesSearch && matchesType && matchesVis;
+            return matchesSearch && matchesSection && matchesType && matchesVis;
         });
-    }, [items, search, filterType, filterVis]);
+    }, [items, search, selectedSection, filterType, filterVis, language]);
 
     const handleOpenAddModal = () => {
         setEditingItem({
@@ -80,16 +165,36 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
     };
 
     const handleOpenEditModal = async (item, index) => {
+        const baseSec = (typeof item.sectionTitle === 'string' ? item.sectionTitle : '') ||
+            (typeof item.group === 'string' ? item.group : '') || '';
+
+        const rawSecEn = (typeof item.en?.sectionTitle === 'string' && item.en.sectionTitle.trim())
+            ? item.en.sectionTitle.trim()
+            : (item.sectionTitle?.en || item.group?.en || baseSec.trim());
+
+        const rawSecKn = (typeof item.kn?.sectionTitle === 'string' && item.kn.sectionTitle.trim())
+            ? item.kn.sectionTitle.trim()
+            : (item.sectionTitle?.kn || item.group?.kn || baseSec.trim());
+
+        const secEn = rawSecEn || '';
+        const secKn = rawSecKn || '';
+
         const normalized = {
             ...item,
             _index: index,
+            _initialSecEn: secEn,
+            _initialSecKn: secKn,
+            slug: item.slug || '',
+            component: item.component || '',
+            url: item.url || '',
+            sectionTitle: (secEn || secKn || '').trim(),
             en: {
-                sectionTitle: item.en?.sectionTitle || item.sectionTitle?.en || item.sectionTitle || '',
+                sectionTitle: secEn.trim(),
                 title: item.en?.title || item.title?.en || item.title || '',
                 description: item.en?.description || item.description?.en || item.description || '',
             },
             kn: {
-                sectionTitle: item.kn?.sectionTitle || item.sectionTitle?.kn || '',
+                sectionTitle: secKn.trim(),
                 title: item.kn?.title || item.title?.kn || '',
                 description: item.kn?.description || item.description?.kn || '',
             },
@@ -124,46 +229,69 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
 
     const handleSaveItemModal = async (e) => {
         e.preventDefault();
-        const safeSlug = editingItem.slug.trim();
+        const safeSlug = (editingItem.slug || '').trim();
         if (!safeSlug) {
             alert('Slug is required');
             return;
         }
-        if (!editingItem.en.title.trim() && !editingItem.kn.title.trim()) {
+        const titleEn = (editingItem.en?.title || '').trim();
+        const titleKn = (editingItem.kn?.title || '').trim();
+        if (!titleEn && !titleKn) {
             alert('A research title in English or Kannada is required');
             return;
         }
 
         const isNew = editingItem._index === undefined;
 
-        if (isNew && items.some((it) => it.slug?.toLowerCase() === safeSlug.toLowerCase())) {
+        if (items.some((it, idx) => (isNew || idx !== editingItem._index) && it.slug?.toLowerCase() === safeSlug.toLowerCase())) {
             alert('A research entry with this slug already exists.');
             return;
         }
 
+        let secTitleEn = (editingItem.en?.sectionTitle || '').trim();
+        let secTitleKn = (editingItem.kn?.sectionTitle || '').trim();
+
+        // Cross-language synchronization for Section Title
+        const origSecEn = (editingItem._initialSecEn || '').trim();
+        const origSecKn = (editingItem._initialSecKn || '').trim();
+
+        if (secTitleEn !== origSecEn && secTitleKn === origSecKn) {
+            // User modified or cleared English; keep Kannada in sync
+            secTitleKn = secTitleEn;
+        } else if (secTitleKn !== origSecKn && secTitleEn === origSecEn) {
+            // User modified or cleared Kannada; keep English in sync
+            secTitleEn = secTitleKn;
+        } else if (!secTitleEn && !secTitleKn) {
+            secTitleEn = '';
+            secTitleKn = '';
+        }
+
+        const topSecTitle = secTitleEn || secTitleKn || '';
+
         const itemData = {
-            type: editingItem.type,
+            type: editingItem.type || 'article',
             slug: safeSlug,
             visibility: editingItem.visibility || 'public',
             image: editingItem.image || '',
             date: editingItem.date || '',
+            sectionTitle: topSecTitle,
             content: editingItem.type === 'article' ? markdownContent : '',
             en: {
-                sectionTitle: (editingItem.en.sectionTitle || editingItem.kn.sectionTitle || '').trim(),
-                title: (editingItem.en.title || editingItem.kn.title || '').trim(),
-                description: (editingItem.en.description || editingItem.kn.description || '').trim(),
+                sectionTitle: secTitleEn,
+                title: titleEn || titleKn,
+                description: (editingItem.en?.description || '').trim(),
             },
             kn: {
-                sectionTitle: (editingItem.kn.sectionTitle || editingItem.en.sectionTitle || '').trim(),
-                title: (editingItem.kn.title || editingItem.en.title || '').trim(),
-                description: (editingItem.kn.description || editingItem.en.description || '').trim(),
+                sectionTitle: secTitleKn,
+                title: titleKn || titleEn,
+                description: (editingItem.kn?.description || '').trim(),
             },
         };
 
         if (editingItem.type === 'custom') {
-            itemData.component = editingItem.component.trim();
+            itemData.component = (editingItem.component || '').trim();
         } else if (editingItem.type === 'external') {
-            itemData.url = editingItem.url.trim();
+            itemData.url = (editingItem.url || '').trim();
         }
 
         let updatedItems;
@@ -178,9 +306,32 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             updatedItems = [...items, itemData];
         }
 
-        setIsEditModalOpen(false);
-        setEditingItem(null);
-        await onSave(updatedItems, `Saved research entry "${itemData.en.title}"`);
+        try {
+            await onSave(updatedItems, `Saved research entry "${itemData.en.title}"`);
+            setIsEditModalOpen(false);
+            setEditingItem(null);
+        } catch (saveErr) {
+            console.error('Save research entry failed:', saveErr);
+            alert(`Failed to save research entry: ${saveErr.message || 'Unknown error'}`);
+        }
+    };
+
+    const handleToggleVisibility = async (index) => {
+        const item = items[index];
+        if (!item) return;
+        const currentVis = item.visibility || 'public';
+        const newVis = currentVis === 'public' ? 'unlisted' : 'public';
+        const updated = items.map((it, idx) => {
+            if (idx === index) {
+                return {
+                    ...it,
+                    visibility: newVis,
+                };
+            }
+            return it;
+        });
+        const title = item.en?.title || item.title?.en || item.title || item.slug || 'Publication';
+        await onSave(updated, `Updated visibility to ${newVis} for "${title}"`);
     };
 
     const handleDelete = async (index) => {
@@ -224,6 +375,26 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                             className="cms-search-input"
                         />
                     </div>
+
+                    <select
+                        value={selectedSection}
+                        onChange={(e) => setSelectedSection(e.target.value)}
+                        className="cms-select"
+                    >
+                        <option value="all">
+                            {t('admin.filters.allSections', 'All Sections')} ({formatNumber(sections.length)})
+                        </option>
+                        {sections.map((s) => (
+                            <option key={s.id} value={s.id}>
+                                {getLocalized(s.title, s.id)}
+                            </option>
+                        ))}
+                        {hasUngrouped && (
+                            <option value="__none__">
+                                {t('admin.filters.noSection', 'No Section / Ungrouped')}
+                            </option>
+                        )}
+                    </select>
 
                     <select
                         value={filterType}
@@ -276,37 +447,66 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         const titleKn = item.kn?.title || item.title?.kn || '';
                         const descEn = item.en?.description || item.description?.en || item.description || '';
                         const descKn = item.kn?.description || item.description?.kn || '';
-                        const secTitleEn = item.en?.sectionTitle || item.sectionTitle?.en || item.sectionTitle || '';
-                        const secTitleKn = item.kn?.sectionTitle || item.sectionTitle?.kn || '';
+                        const secInfo = getItemSection(item);
+                        const displaySecTitle = secInfo.localized;
 
                         const displayTitle = language === 'kn' ? (titleKn || titleEn || 'Untitled Research') : (titleEn || titleKn || 'Untitled Research');
-                        const displaySecTitle = language === 'kn' ? (secTitleKn || secTitleEn) : (secTitleEn || secTitleKn);
                         const displayDesc = language === 'kn' ? (descKn || descEn) : (descEn || descKn);
 
-                        return (
-                            <div key={item.slug || originalIndex} className="cms-item-row">
-                                <div className="cms-item-main">
-                                    <div className="cms-item-thumb-placeholder">🔬</div>
+                        const targetUrl = item.type === 'external'
+                            ? (item.url?.match(/^https?:\/\//i) ? item.url : `https://${item.url || ''}`)
+                            : (item.slug ? `/research/${item.slug.replace(/^\/+/, '')}` : (item.url || '/research'));
 
+                        let externalHost = '';
+                        if (item.type === 'external' && item.url) {
+                            try {
+                                const parsed = new URL(item.url.match(/^https?:\/\//i) ? item.url : `https://${item.url}`);
+                                externalHost = parsed.hostname;
+                            } catch {
+                                externalHost = item.url.replace(/^https?:\/\//i, '').split('/')[0];
+                            }
+                        }
+
+                        return (
+                            <div key={item.slug || item.url || originalIndex} className="cms-item-row">
+                                <div className="cms-item-main">
                                     <div className="cms-item-content">
                                         <div className="cms-item-header">
                                             <h4 className="cms-item-title">
                                                 {displayTitle}
                                             </h4>
-                                            <span className="cms-tag cms-tag-source">
-                                                {item.type}
+                                            <span className={`cms-tag ${item.type === 'custom' ? 'cms-tag-custom' : item.type === 'external' ? 'cms-tag-external' : 'cms-tag-source'}`}>
+                                                {item.type || 'article'}
                                             </span>
                                             {displaySecTitle && (
-                                                <span className="cms-tag cms-tag-section">
+                                                <button
+                                                    type="button"
+                                                    className="cms-tag cms-tag-section cms-tag-interactive"
+                                                    title={t('admin.actions.filterBySection', 'Filter by this section')}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedSection(secInfo.id || 'all');
+                                                    }}
+                                                >
                                                     {displaySecTitle}
-                                                </span>
+                                                </button>
                                             )}
-                                            <span className={`cms-tag ${item.visibility === 'public' ? 'cms-tag-public' : 'cms-tag-unlisted'}`}>
-                                                {item.visibility || 'public'}
-                                            </span>
-                                            {item.slug && (
-                                                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                                                    <code>/{item.slug}</code>
+                                            <button
+                                                type="button"
+                                                className={`cms-tag ${item.visibility === 'public' ? 'cms-tag-public' : 'cms-tag-unlisted'} cms-tag-interactive`}
+                                                title={t('admin.actions.toggleVisibility', 'Click to toggle visibility (public/unlisted)')}
+                                                disabled={saving}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleToggleVisibility(originalIndex);
+                                                }}
+                                            >
+                                                <span className={`cms-status-indicator ${item.visibility === 'public' ? 'public' : 'unlisted'}`} />
+                                                {item.visibility === 'public' ? t('admin.filters.public', 'Public') : t('admin.filters.unlisted', 'Unlisted')}
+                                            </button>
+                                            {item.slug && item.type !== 'external' && (
+                                                <span className="cms-item-slug" title={`/${item.slug.replace(/^\/+/, '')}`}>
+                                                    /{item.slug.replace(/^\/+/, '')}
                                                 </span>
                                             )}
                                         </div>
@@ -315,6 +515,28 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <p className="cms-item-desc">
                                                 {displayDesc}
                                             </p>
+                                        )}
+
+                                        {(item.date || externalHost) && (
+                                            <div className="cms-item-meta-sub">
+                                                {item.date && (
+                                                    <span className="cms-item-date">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                            <line x1="16" y1="2" x2="16" y2="6" />
+                                                            <line x1="8" y1="2" x2="8" y2="6" />
+                                                            <line x1="3" y1="10" x2="21" y2="10" />
+                                                        </svg>
+                                                        <span>{item.date}</span>
+                                                    </span>
+                                                )}
+                                                {item.date && externalHost && <span className="cms-meta-dot">•</span>}
+                                                {externalHost && (
+                                                    <span style={{ fontSize: '0.735rem', color: '#94a3b8' }}>
+                                                        {externalHost}
+                                                    </span>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -327,7 +549,9 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         disabled={originalIndex === 0 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, -1)}
                                     >
-                                        ▲
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="18 15 12 9 6 15" />
+                                        </svg>
                                     </button>
                                     <button
                                         type="button"
@@ -336,8 +560,25 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         disabled={originalIndex === items.length - 1 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, 1)}
                                     >
-                                        ▼
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
                                     </button>
+                                    <a
+                                        href={targetUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="cms-btn cms-btn-sm cms-btn-view"
+                                        title={t('admin.actions.viewInNewTab', 'View in new tab')}
+                                        aria-label={t('admin.actions.viewInNewTab', 'View in new tab')}
+                                    >
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                            <polyline points="15 3 21 3 21 9" />
+                                            <line x1="10" y1="14" x2="21" y2="3" />
+                                        </svg>
+                                        <span>{t('admin.actions.view', 'View')}</span>
+                                    </a>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
@@ -511,11 +752,11 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <input
                                                 type="text"
                                                 className="cms-input"
-                                                value={editingItem.en.title}
+                                                value={editingItem.en?.title || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        en: { ...editingItem.en, title: e.target.value },
+                                                        en: { ...(editingItem.en || {}), title: e.target.value },
                                                     })
                                                 }
                                                 placeholder="Research Paper Title"
@@ -529,15 +770,21 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <input
                                                 type="text"
                                                 className="cms-input"
-                                                value={editingItem.en.sectionTitle}
+                                                list="research-sections-list-en"
+                                                value={editingItem.en?.sectionTitle || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        en: { ...editingItem.en, sectionTitle: e.target.value },
+                                                        en: { ...(editingItem.en || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
                                                 placeholder="e.g. Linguistics / Natural Language Processing"
                                             />
+                                            <datalist id="research-sections-list-en">
+                                                {sections.map((s) => (
+                                                    <option key={s.id} value={s.title?.en || s.id} />
+                                                ))}
+                                            </datalist>
                                         </div>
 
                                         <div className="cms-form-group">
@@ -546,11 +793,11 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
-                                                value={editingItem.en.description}
+                                                value={editingItem.en?.description || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        en: { ...editingItem.en, description: e.target.value },
+                                                        en: { ...(editingItem.en || {}), description: e.target.value },
                                                     })
                                                 }
                                                 placeholder="Summary of research..."
@@ -568,11 +815,11 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <input
                                                 type="text"
                                                 className="cms-input"
-                                                value={editingItem.kn.title}
+                                                value={editingItem.kn?.title || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        kn: { ...editingItem.kn, title: e.target.value },
+                                                        kn: { ...(editingItem.kn || {}), title: e.target.value },
                                                     })
                                                 }
                                                 placeholder="ಸಂಶೋಧನಾ ಶೀರ್ಷಿಕೆ"
@@ -586,15 +833,21 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <input
                                                 type="text"
                                                 className="cms-input"
-                                                value={editingItem.kn.sectionTitle}
+                                                list="research-sections-list-kn"
+                                                value={editingItem.kn?.sectionTitle || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        kn: { ...editingItem.kn, sectionTitle: e.target.value },
+                                                        kn: { ...(editingItem.kn || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
                                                 placeholder="ವಿಭಾಗದ ಶೀರ್ಷಿಕೆ"
                                             />
+                                            <datalist id="research-sections-list-kn">
+                                                {sections.map((s) => (
+                                                    <option key={s.id} value={s.title?.kn || s.title?.en || s.id} />
+                                                ))}
+                                            </datalist>
                                         </div>
 
                                         <div className="cms-form-group">
@@ -603,11 +856,11 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
-                                                value={editingItem.kn.description}
+                                                value={editingItem.kn?.description || ''}
                                                 onChange={(e) =>
                                                     setEditingItem({
                                                         ...editingItem,
-                                                        kn: { ...editingItem.kn, description: e.target.value },
+                                                        kn: { ...(editingItem.kn || {}), description: e.target.value },
                                                     })
                                                 }
                                                 placeholder="ಸಂಶೋಧನೆಯ ಸಾರಾಂಶ..."

@@ -187,8 +187,6 @@ export const ContentProvider = ({ children }) => {
         filename: photo.filename,
         title: resolveLocalizedField(photo.title, language),
         date: resolveLocalizedField(photo.date, language),
-        width: photo.width || null,
-        height: photo.height || null,
         location: {
             place: resolveLocalizedField(photo.location?.place, language),
             lat: photo.location?.lat ?? null,

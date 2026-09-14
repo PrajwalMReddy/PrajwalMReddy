@@ -106,14 +106,24 @@ const TodoCard = ({
                             {dueDateLabel && (
                                 <span className={`admin-todo-card-due due-${dueState}`}>
                                     <span className="admin-todo-card-due-date">
-                                        📅 {dueDateLabel}
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '3px' }}>
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                            <line x1="16" y1="2" x2="16" y2="6" />
+                                            <line x1="8" y1="2" x2="8" y2="6" />
+                                            <line x1="3" y1="10" x2="21" y2="10" />
+                                        </svg>
+                                        {dueDateLabel}
                                     </span>
                                 </span>
                             )}
 
                             {todo.estimatedTime && (
                                 <span className="admin-todo-card-time" title={t('admin.todoSection.estimatedTime', 'Estimated time')}>
-                                    ⏱️ {formatNumber(todo.estimatedTime)}{t('admin.todoSection.min', 'min')}
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '3px' }}>
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    {formatNumber(todo.estimatedTime)}{t('admin.todoSection.min', 'min')}
                                 </span>
                             )}
                         </div>
@@ -123,13 +133,13 @@ const TodoCard = ({
                         <div className="admin-todo-card-secondary-info">
                             {todo.recurrence && todo.recurrence !== 'none' && (
                                 <span className="admin-todo-card-recurrence" title={t('admin.todoSection.recurrence', 'Recurrence')}>
-                                    🔄 {formatRecurrence(todo, t)}
+                                    {formatRecurrence(todo, t)}
                                 </span>
                             )}
 
                             {Array.isArray(todo.tags) && todo.tags.map((tag, idx) => (
                                 <span key={idx} className="admin-todo-card-recurrence admin-todo-card-tag" title={tag}>
-                                    🏷️ {tag}
+                                    {tag}
                                 </span>
                             ))}
                         </div>

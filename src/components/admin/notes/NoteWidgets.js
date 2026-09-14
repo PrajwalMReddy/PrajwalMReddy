@@ -968,7 +968,7 @@ export const NoteBlock = ({
                                     title={t('admin.notesSection.widgetsDetail.openLinkedNote', 'Click to open note (Double-click to edit)')}
                                 >
                                     <span className="admin-note-link-icon" aria-hidden="true">
-                                        📎
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                     </span>
                                     <div className="admin-note-linked-note-details">
                                         <button
@@ -1268,7 +1268,9 @@ export const NoteBlock = ({
                 <div className="admin-note-timeline-wrap">
                     <div className="admin-note-timeline-header">
                         <div className="admin-note-timeline-header-left">
-                            <span className="admin-note-timeline-header-icon" aria-hidden="true">🏁</span>
+                            <span className="admin-note-timeline-header-icon" aria-hidden="true">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                            </span>
                             <input
                                 className="admin-note-timeline-title-input"
                                 value={block.label || ''}

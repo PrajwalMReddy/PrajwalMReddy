@@ -150,6 +150,7 @@ const NotesAdmin = () => {
         'habit',
     ];
     const primaryWidgetTypes = widgetOrder.slice(0, 10);
+    const secondaryWidgetTypes = widgetOrder.slice(primaryWidgetTypes.length);
     const activeBacklinks = useMemo(
         () => getBacklinks(selectedId, notes),
         [selectedId, notes]
@@ -879,7 +880,7 @@ const NotesAdmin = () => {
                             isCreatingToolbarFolder ? (
                                 <div className="admin-notes-toolbar-folder-form">
                                     <span className="admin-note-folder-icon" aria-hidden="true">
-                                        📁
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                     </span>
                                     <input
                                         autoFocus
@@ -1028,7 +1029,7 @@ const NotesAdmin = () => {
                                                         className="admin-note-folder-chip-icon"
                                                         aria-hidden="true"
                                                     >
-                                                        📁
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                                     </span>
                                                     <span className="admin-note-folder-chip-label">
                                                         {draft.folder
@@ -1064,7 +1065,7 @@ const NotesAdmin = () => {
                                                                 aria-selected={!draft.folder}
                                                             >
                                                                 <span className="admin-note-folder-item-icon">
-                                                                    📁
+                                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                                                 </span>
                                                                 <span className="admin-note-folder-item-text">
                                                                     {t('admin.notesSection.rootFolder', '/ (Root)')}
@@ -1102,7 +1103,7 @@ const NotesAdmin = () => {
                                                                         aria-selected={isSelected}
                                                                     >
                                                                         <span className="admin-note-folder-item-icon">
-                                                                            📁
+                                                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                                                         </span>
                                                                         <span className="admin-note-folder-item-text">
                                                                             /{folder}
@@ -1127,7 +1128,7 @@ const NotesAdmin = () => {
                                                                         className="admin-note-folder-item-icon"
                                                                         aria-hidden="true"
                                                                     >
-                                                                        📁
+                                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                                                     </span>
                                                                     <input
                                                                         autoFocus
@@ -1367,7 +1368,7 @@ const NotesAdmin = () => {
                                             </div>
                                             {showMoreWidgets && (
                                                 <div className="admin-note-secondary-widgets">
-                                                    {widgetOrder.slice(8).map((blockType) => (
+                                                    {secondaryWidgetTypes.map((blockType) => (
                                                         <button
                                                             type="button"
                                                             key={blockType}
@@ -1489,7 +1490,8 @@ const NotesAdmin = () => {
                                     {selectedId && activeBacklinks.length > 0 && (
                                         <div className="admin-note-backlinks-bar" aria-label="Backlinks">
                                             <span className="admin-note-backlinks-label">
-                                                🔗 {t('admin.notesSection.backlinks', 'Linked from')}:
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                                {t('admin.notesSection.backlinks', 'Linked from')}:
                                             </span>
                                             <div className="admin-note-backlinks-list">
                                                 {activeBacklinks.map((bl) => (
@@ -1500,7 +1502,9 @@ const NotesAdmin = () => {
                                                         onClick={() => selectNote(bl.note)}
                                                         title={bl.preview || bl.title}
                                                     >
-                                                        <span className="admin-note-backlink-chip-icon">📎</span>
+                                                        <span className="admin-note-backlink-chip-icon">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                                        </span>
                                                         <span className="admin-note-backlink-chip-title">{bl.title}</span>
                                                         {bl.folder && (
                                                             <span className="admin-note-backlink-chip-folder">/{bl.folder}</span>

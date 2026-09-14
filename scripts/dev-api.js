@@ -59,6 +59,7 @@ const routeMap = {
     '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
     '/api/cms/upload': '../lib/api-handlers/cms/upload',
     '/api/konami/levels': '../lib/api-handlers/konami/levels',
+    '/api/admin/summary': '../lib/api-handlers/admin/summary',
 };
 
 function getHandler(pathname, query) {

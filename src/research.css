@@ -150,4 +150,33 @@ body.dark-mode .research-card:hover {
         padding: 0 5% !important;
         box-sizing: border-box;
     }
+
+    .research-page .project-type-heading {
+        margin-left: 0 !important;
+        padding-left: 5% !important;
+        padding-right: 5% !important;
+        text-align: center;
+        font-size: 24px;
+        padding-top: 1.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* Research Page Section Headings & Groups (Desktop) */
+.research-page .project-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.research-page .project-type-heading {
+    margin-left: var(--nav-width);
+    padding-left: 6%;
+    padding-right: 6%;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    padding-top: 2.25rem;
+    padding-bottom: 0.5rem;
+    box-sizing: border-box;
+    display: block;
 }

@@ -112,8 +112,8 @@ const CmsImageUploader = ({
         ? value.startsWith('/') || value.startsWith('http') || value.startsWith('data:')
             ? value
             : folder === 'photography'
-            ? `/photography/${value}`
-            : `/img/${value}`
+                ? `/photography/${value}`
+                : `/img/${value}`
         : null;
 
     return (
@@ -183,7 +183,7 @@ const CmsImageUploader = ({
                         onChange={(e) => onChange(e.target.value.trim())}
                     />
                     <p className="cms-help-text" style={{ marginTop: '0.35rem', fontSize: '0.85rem' }}>
-                        {t('admin.labels.pasteImageUrlHelp', 'Paste any external image URL (e.g. Unsplash, Cloudinary, Imgur). Uses zero database or disk space.')}
+                        {t('admin.labels.pasteImageUrlHelp', 'Paste any external image URL.')}
                     </p>
                 </div>
             )}

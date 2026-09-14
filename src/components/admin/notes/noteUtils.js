@@ -66,8 +66,8 @@ export const BLOCK_TYPES = {
     equation: { label: 'Equation', icon: 'Σ', placeholder: 'Enter an equation', span: 2, height: 3 },
     divider: { label: 'Divider', icon: '-', placeholder: '', span: 3, height: 1 },
     habit: { label: 'Habit', icon: '✓', placeholder: 'Habit name', span: 2, height: 6 },
-    note_link: { label: 'Linked Notes', icon: '📎', placeholder: '', span: 1, height: 3 },
-    timeline: { label: 'Timeline', icon: '🏁', placeholder: 'Timeline title', span: 3, height: 6 },
+    note_link: { label: 'Linked Notes', icon: '⧉', placeholder: '', span: 1, height: 3 },
+    timeline: { label: 'Timeline', icon: '⫶', placeholder: 'Timeline title', span: 3, height: 6 },
 };
 
 export const TEXT_STYLES = [

@@ -265,7 +265,7 @@ export function initInfiniteMode(viewportHeight = 640, isVictoryReward = false) 
     gameState.uiButtons = { playInfinite: null, replayLevels: null };
     gameState.hoveredButton = null;
     gameState.milestoneBanner = isVictoryReward
-        ? { text: '🎁 VICTORY REWARD: PROCEDURAL INFINITE PLATFORMER! ♾️', timer: 180 }
+        ? { text: 'VICTORY REWARD: PROCEDURAL INFINITE PLATFORMER!', timer: 180 }
         : null;
 
     const calculatedTileSize = Math.max(16, Math.floor(viewportHeight / GRID_ROWS));
