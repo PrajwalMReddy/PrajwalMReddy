@@ -79,15 +79,22 @@ const BudgetStats = ({ stats }) => {
             ? Math.max(...categoryList.map((cat) => Number(cat.spending) || 0))
             : 0;
 
-    const [trendFilter, setTrendFilter] = useState('all');
+    const [trendFilter, setTrendFilter] = useState('income');
 
     const visibleMonthlyValues = monthlyTrend.flatMap((month) => {
         const vals = [];
+        const monthIncome = Number(month.income) || 0;
+        const monthExpenses = Number(month.expenses) || 0;
+        const monthNetExpenses = monthExpenses - monthIncome;
+
         if (trendFilter === 'all' || trendFilter === 'income') {
-            vals.push(Number(month.income) || 0);
+            vals.push(monthIncome);
         }
         if (trendFilter === 'all' || trendFilter === 'expenses') {
-            vals.push(Number(month.expenses) || 0);
+            vals.push(monthExpenses);
+        }
+        if (trendFilter === 'all' || trendFilter === 'netExpenses') {
+            vals.push(Math.max(monthNetExpenses, 0));
         }
         return vals;
     });
@@ -100,6 +107,12 @@ const BudgetStats = ({ stats }) => {
         Number(incomeVsExpenses.expenses) || 0,
         1
     );
+
+    const netExpenses =
+        spending?.netExpenses !== undefined
+            ? Number(spending.netExpenses)
+            : (Number(spending?.expenses ?? incomeVsExpenses?.expenses) || 0) -
+              (Number(funds?.totalFunds ?? incomeVsExpenses?.income) || 0);
 
     return (
         <div className="admin-stats">
@@ -128,10 +141,15 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.spending', 'Spending')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-4">
+                    <div className="admin-stat-grid admin-stat-grid-5">
                         <StatCard
                             label={t('admin.budgetSection.stats.expenses', 'Expenses')}
                             value={formatVal(spending.expenses)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}
+                            value={formatVal(netExpenses)}
                         />
 
                         <StatCard
@@ -322,10 +340,17 @@ const BudgetStats = ({ stats }) => {
                         </button>
                         <button
                             type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'netExpenses' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('netExpenses')}
+                        >
+                            {t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}
+                        </button>
+                        <button
+                            type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'all' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('all')}
                         >
-                            {t('admin.budgetSection.stats.filterBoth', 'Unified')}
+                            {t('admin.budgetSection.stats.together', 'Together')}
                         </button>
                     </div>
                 </div>
@@ -372,6 +397,21 @@ const BudgetStats = ({ stats }) => {
                                             )}`}
                                         />
                                     )}
+
+                                    {(trendFilter === 'all' || trendFilter === 'netExpenses') && (
+                                        <div
+                                            className="admin-monthly-bar net-expenses"
+                                            style={{
+                                                height: `${((Math.max((Number(month.expenses) || 0) - (Number(month.income) || 0), 0)) /
+                                                    chartMax) *
+                                                    100
+                                                    }%`,
+                                            }}
+                                            title={`${t('admin.budgetSection.stats.netExpensesLabel', 'Net Expenses:')} ${formatVal(
+                                                (Number(month.expenses) || 0) - (Number(month.income) || 0)
+                                            )}`}
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="admin-monthly-label-wrapper">
@@ -395,6 +435,9 @@ const BudgetStats = ({ stats }) => {
                     )}
                     {(trendFilter === 'all' || trendFilter === 'expenses') && (
                         <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                    )}
+                    {(trendFilter === 'all' || trendFilter === 'netExpenses') && (
+                        <span className="legend-net-expenses">{t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}</span>
                     )}
                 </div>
             </section>

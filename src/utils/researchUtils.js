@@ -6,23 +6,14 @@ export const getAllResearchPosts = async () => {
         const apiRes = await fetch('/api/cms/content?type=research');
         if (apiRes.ok) {
             const data = await apiRes.json();
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 return data;
             }
         }
-    } catch {
-        // Fall back to static JSON
+    } catch (err) {
+        console.error('Error fetching research metadata:', err);
     }
-
-    try {
-        const response = await fetch('/research/metadata.json');
-        if (!response.ok) throw new Error('Failed to fetch research metadata');
-        const metadata = await response.json();
-        return metadata || [];
-    } catch (error) {
-        console.error('Error fetching research metadata:', error);
-        return [];
-    }
+    return [];
 };
 
 // Fetch markdown content by filename
@@ -143,17 +134,25 @@ export const getResearchPostBySlug = async (slug) => {
     try {
         const metadata = await getAllResearchPosts();
 
-        const article = (metadata || []).find(item => item.type === 'article' && item.slug === slug && (!item.visibility || item.visibility === 'public'));
+        const article = (metadata || []).find(item => item.slug === slug && (!item.visibility || item.visibility === 'public'));
         if (!article) throw new Error('Research article not found');
 
+        const isCustom = article.type === 'custom' || Boolean(article.component);
         // Get the content: prefer embedded content from database, fallback to fetchResearchContent
-        const content = article.content || await fetchResearchContent(`${slug}.md`);
-        const htmlContent = parseResearchContent(content || '');
+        const content = article.content || (!isCustom ? await fetchResearchContent(`${slug}.md`).catch(() => '') : '');
+        const htmlContent = isCustom ? '' : parseResearchContent(content || '');
+
+        const title = article.en?.title || article.title?.en || article.title || article.kn?.title || '';
+        const description = article.en?.description || article.description?.en || article.description || article.kn?.description || '';
+        const payload = article.customData !== undefined ? article.customData : (article.data || null);
 
         return {
-            title: article.title?.en || article.title,
-            description: article.description?.en || article.description,
+            ...article,
+            title,
+            description,
             content: htmlContent,
+            customData: payload,
+            data: payload,
             date: article.date
         };
     } catch (error) {

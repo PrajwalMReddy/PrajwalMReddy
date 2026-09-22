@@ -13,6 +13,7 @@ const DEFAULT_POST = {
     source: 'local',
     type: 'article',
     component: '',
+    customDataString: '',
     externalUrl: '',
 };
 
@@ -87,6 +88,7 @@ const CmsBlog = ({
         setEditingPost({
             ...DEFAULT_POST,
             date: formattedDate,
+            customDataString: '',
         });
         setMarkdownContent('# New Post\n\nWrite your blog post content here...\n');
         setIsEditorOpen(true);
@@ -95,6 +97,10 @@ const CmsBlog = ({
     const handleOpenEditModal = async (post, index) => {
         const isCustom = post.type === 'custom' || post.source === 'custom' || Boolean(post.component);
         const isExt = !isCustom && (post.source === 'external' || post.source === 'substack' || post.type === 'external' || Boolean(post.externalUrl));
+        const initialJson = post.customData !== undefined && post.customData !== null
+            ? (typeof post.customData === 'string' ? post.customData : JSON.stringify(post.customData, null, 2))
+            : (post.data !== undefined && post.data !== null ? (typeof post.data === 'string' ? post.data : JSON.stringify(post.data, null, 2)) : '');
+
         setEditingPost({
             ...post,
             _index: index,
@@ -102,6 +108,7 @@ const CmsBlog = ({
             type: isCustom ? 'custom' : (isExt ? 'external' : 'article'),
             slug: isExt ? '' : (post.slug || ''),
             component: post.component || '',
+            customDataString: initialJson,
             externalUrl: post.externalUrl || '',
         });
         setIsEditorOpen(true);
@@ -204,6 +211,16 @@ const CmsBlog = ({
         }
         if (isCustom) {
             postMetadata.component = (editingPost.component || '').trim();
+            if (editingPost.customDataString && editingPost.customDataString.trim()) {
+                try {
+                    postMetadata.customData = JSON.parse(editingPost.customDataString.trim());
+                } catch (jsonErr) {
+                    alert(`Custom Data must be valid JSON: ${jsonErr.message}`);
+                    return;
+                }
+            } else {
+                postMetadata.customData = null;
+            }
         }
 
         let updatedPosts;
@@ -664,19 +681,65 @@ const CmsBlog = ({
                                     </div>
 
                                     {editingPost.source === 'custom' && (
-                                        <div className="cms-form-group">
-                                            <label className="cms-form-label">
-                                                {t('admin.labels.componentName', 'Component Name')} <span className="required">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="cms-input"
-                                                value={editingPost.component || ''}
-                                                onChange={(e) => setEditingPost({ ...editingPost, component: e.target.value })}
-                                                placeholder="e.g. BengaluruTeluguDictionary"
-                                                required
-                                            />
-                                        </div>
+                                        <>
+                                            <div className="cms-form-group">
+                                                <label className="cms-form-label">
+                                                    {t('admin.labels.componentName', 'Component Name')} <span className="required">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="cms-input"
+                                                    value={editingPost.component || ''}
+                                                    onChange={(e) => setEditingPost({ ...editingPost, component: e.target.value })}
+                                                    placeholder="e.g. BengaluruTeluguDictionary"
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="cms-form-group" style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                                                    <label className="cms-form-label" style={{ marginBottom: 0 }}>
+                                                        {t('admin.labels.customDataJson', 'Custom Data (Optional JSON)')}
+                                                    </label>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                        {Boolean(editingPost.customDataString?.trim()) && (
+                                                            (() => {
+                                                                try {
+                                                                    JSON.parse(editingPost.customDataString);
+                                                                    return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ Valid JSON</span>;
+                                                                } catch (err) {
+                                                                    return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>⚠ Invalid JSON</span>;
+                                                                }
+                                                            })()
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            className="cms-btn cms-btn-xs cms-btn-secondary"
+                                                            onClick={() => {
+                                                                if (!editingPost.customDataString?.trim()) return;
+                                                                try {
+                                                                    const parsed = JSON.parse(editingPost.customDataString);
+                                                                    setEditingPost({ ...editingPost, customDataString: JSON.stringify(parsed, null, 2) });
+                                                                } catch (err) {
+                                                                    alert('Cannot format invalid JSON: ' + err.message);
+                                                                }
+                                                            }}
+                                                        >
+                                                            Prettify JSON
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <textarea
+                                                    className="cms-textarea"
+                                                    style={{ fontFamily: 'monospace', fontSize: '0.82rem', minHeight: '160px', whiteSpace: 'pre' }}
+                                                    value={editingPost.customDataString || ''}
+                                                    onChange={(e) =>
+                                                        setEditingPost({ ...editingPost, customDataString: e.target.value })
+                                                    }
+                                                    placeholder={'// Optional JSON payload passed to component props (e.g. array of entries, config object)'}
+                                                />
+                                            </div>
+                                        </>
                                     )}
 
                                     {editingPost.source === 'external' && (

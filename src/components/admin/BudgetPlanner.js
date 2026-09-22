@@ -139,7 +139,7 @@ const BudgetPlanner = () => {
         setExpandedMonth((previous) =>
             previous && months.includes(previous)
                 ? previous
-                : months[0] || null
+                : null
         );
 
         const forms = {};

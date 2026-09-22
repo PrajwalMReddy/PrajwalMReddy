@@ -11,7 +11,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            '@img': path.resolve(__dirname, 'public/img'),
+            '@public': path.resolve(__dirname, 'public'),
         },
         extensions: ['.js', '.jsx', '.json'], // ensure JSX files are handled
     },
@@ -64,18 +64,8 @@ module.exports = {
                     noErrorOnMissing: true,
                 },
                 {
-                    from: path.resolve(__dirname, 'public/research'),
-                    to: 'research',
-                    noErrorOnMissing: true,
-                },
-                {
-                    from: path.resolve(__dirname, 'public/photography'),
-                    to: 'photography',
-                    noErrorOnMissing: true,
-                },
-                {
-                    from: path.resolve(__dirname, 'public/img'),
-                    to: 'img',
+                    from: path.resolve(__dirname, 'public/hurricane.png'),
+                    to: 'hurricane.png',
                     noErrorOnMissing: true,
                 },
             ],

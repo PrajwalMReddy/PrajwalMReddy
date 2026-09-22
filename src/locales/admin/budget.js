@@ -99,6 +99,10 @@ export const adminBudget = {
                 income: 'Income',
                 incomeLabel: 'Income:',
                 expensesLabel: 'Expenses:',
+                together: 'Together',
+                filterBoth: 'Together',
+                netExpenses: 'Net Expenses',
+                netExpensesLabel: 'Net Expenses:',
             },
             planner: {
                 planFor: 'Plan for',
@@ -255,6 +259,10 @@ export const adminBudget = {
                 income: 'ಆದಾಯ',
                 incomeLabel: 'ಆದಾಯ:',
                 expensesLabel: 'ವೆಚ್ಚಗಳು:',
+                together: 'ಒಟ್ಟಿಗೆ',
+                filterBoth: 'ಒಟ್ಟಿಗೆ',
+                netExpenses: 'ನಿವ್ವಳ ವೆಚ್ಚ',
+                netExpensesLabel: 'ನಿವ್ವಳ ವೆಚ್ಚ:',
             },
             planner: {
                 planFor: 'ಯೋಜನೆ',

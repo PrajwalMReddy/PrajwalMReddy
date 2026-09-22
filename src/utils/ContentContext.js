@@ -51,37 +51,23 @@ export const ContentProvider = ({ children }) => {
 
     const loadAllContent = useCallback(async () => {
         try {
-            const cacheBust = `?v=${Date.now()}`;
-
-            const fetchWithFallback = async (type, staticPath) => {
+            const fetchType = async (type) => {
                 try {
                     const apiRes = await fetch(`/api/cms/content?type=${type}&_t=${Date.now()}`);
                     if (apiRes.ok) {
-                        const data = await apiRes.json();
-                        if (data && (Array.isArray(data) ? data.length > 0 : (data.projects?.length > 0 || data.experiences?.length > 0))) {
-                            return data;
-                        }
+                        return await apiRes.json();
                     }
-                } catch {
-                    // Fall back to static JSON
-                }
-
-                try {
-                    const staticRes = await fetch(`${staticPath}${cacheBust}`);
-                    if (staticRes.ok) {
-                        return await staticRes.json();
-                    }
-                } catch {
-                    return null;
+                } catch (fetchErr) {
+                    console.warn(`[ContentProvider] Error fetching ${type}:`, fetchErr);
                 }
                 return null;
             };
 
             const [projData, expData, photoData, quotesData] = await Promise.all([
-                fetchWithFallback('projects', '/projects/metadata.json'),
-                fetchWithFallback('experiences', '/experience/metadata.json'),
-                fetchWithFallback('photography', '/photography/metadata.json'),
-                fetchWithFallback('quotes', '/blog/quotes.json'),
+                fetchType('projects'),
+                fetchType('experiences'),
+                fetchType('photography'),
+                fetchType('quotes'),
             ]);
 
             const newContent = {

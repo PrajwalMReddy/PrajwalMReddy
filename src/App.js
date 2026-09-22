@@ -11,6 +11,7 @@ import KonamiAdmin from './components/admin/KonamiAdmin';
 import BudgetAdmin from './components/admin/BudgetAdmin';
 import TodoAdmin from './components/admin/TodoAdmin';
 import NotesAdmin from './components/admin/NotesAdmin';
+import NetworkingAdmin from './components/admin/NetworkingAdmin';
 import Home from './components/Home';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
@@ -113,6 +114,9 @@ function App() {
                         } />
                         <Route path="/admin/notes" element={
                             <ProtectedRoute><NotesAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/networking" element={
+                            <ProtectedRoute><NetworkingAdmin /></ProtectedRoute>
                         } />
 
                         <Route path="*" element={<NotFound/>}/>

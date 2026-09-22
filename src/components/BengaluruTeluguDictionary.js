@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import {useLanguage} from '../utils/LanguageContext';
+import {useCustomData} from '../utils/useCustomData';
+import './BengaluruTeluguDictionary.css';
 
 // Helper function to group entries by initial letter
 const groupByInitial = (entries) => {
     const grouped = {};
-    entries.forEach(entry => {
+    (entries || []).forEach(entry => {
         if (entry.telugu && entry.telugu.length > 0) {
             let initial = entry.telugu.charAt(0);
             if (initial === '-') {
@@ -32,32 +34,18 @@ const splitIntoColumns = (arr) => {
     return [arr.slice(0, mid), arr.slice(mid)];
 };
 
-const BengaluruTeluguDictionary = () => {
-    const [entries, setEntries] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const BengaluruTeluguDictionary = (props) => {
+    const { data: entriesData, loading, error } = useCustomData(props, {
+        type: 'research',
+        slug: 'bengaluru-telugu-dictionary',
+        defaultData: []
+    });
+    const entries = Array.isArray(entriesData) ? entriesData : [];
     const [search, setSearch] = useState("");
     const {t} = useLanguage();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('/research/bengaluru-telugu-lexicon.json');
-                if (!response.ok) throw new Error('Failed to fetch dictionary');
-                const data = await response.json();
-
-                setEntries(Array.isArray(data) ? data : []);
-
-                // Set the page title for the dictionary subpage
-                document.title = t('pageTitles.dictionary');
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
+        document.title = t('pageTitles.dictionary');
     }, [t]);
 
     // Filter entries by search

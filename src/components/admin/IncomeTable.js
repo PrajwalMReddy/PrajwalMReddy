@@ -207,9 +207,6 @@ const IncomeTable = ({ income, onRefresh }) => {
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
                         <h3 className="admin-budget-table-title">{t('admin.budgetSection.incomeHistory', 'Income History')}</h3>
-                        <span className="admin-budget-count-badge">
-                            {formatNumber(income.length)} {income.length === 1 ? t('admin.budgetSection.entry', 'entry') : t('admin.budgetSection.entries', 'entries')}
-                        </span>
                         {searchQuery && filteredIncome.length !== income.length && (
                             <span className="admin-budget-filter-badge">
                                 {formatNumber(filteredIncome.length)} {t('admin.budgetSection.matching', 'matching')}
@@ -271,9 +268,7 @@ const IncomeTable = ({ income, onRefresh }) => {
                                     <td>{formatNumber(formatDate(entry.date, language))}</td>
                                     <td className="admin-item-cell">{entry.item}</td>
                                     <td>
-                                        <span
-                                            className={`admin-type-tag ${entry.type || 'other'}`}
-                                        >
+                                        <span className="admin-category-tag">
                                             {entry.type === 'injection'
                                                 ? t('admin.budgetSection.injection', 'Injection')
                                                 : t('admin.budgetSection.otherIncome', 'Other Income')}

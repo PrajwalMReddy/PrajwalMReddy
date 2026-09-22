@@ -212,9 +212,6 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
                         <h3 className="admin-budget-table-title">{t('admin.budgetSection.expenseHistory', 'Expense History')}</h3>
-                        <span className="admin-budget-count-badge">
-                            {formatNumber(expenses.length)} {expenses.length === 1 ? t('admin.budgetSection.record', 'record') : t('admin.budgetSection.records', 'records')}
-                        </span>
                         {searchQuery && filteredExpenses.length !== expenses.length && (
                             <span className="admin-budget-filter-badge">
                                 {formatNumber(filteredExpenses.length)} {t('admin.budgetSection.matching', 'matching')}

@@ -116,15 +116,6 @@ const CmsPhotography = ({ data, onSave, saving }) => {
         const label = photo.title.en || photo.filename;
         if (!window.confirm(`Are you sure you want to delete photo "${label}"?`)) return;
 
-        try {
-            await fetch(
-                `/api/cms/upload?folder=photography&filename=${encodeURIComponent(photo.filename)}`,
-                { method: 'DELETE', credentials: 'include' }
-            );
-        } catch {
-            // ignore
-        }
-
         const updated = photos
             .filter((_, idx) => idx !== index)
             .map(({ _originalIndex, ...clean }) => clean);
@@ -160,7 +151,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
     const handleSavePhotoModal = async (e) => {
         e.preventDefault();
         if (!editingPhoto.filename.trim()) {
-            alert('Please select or upload an image file');
+            alert('Please enter an image URL / link');
             return;
         }
         if (!editingPhoto.title.en.trim() && !editingPhoto.title.kn.trim()) {
@@ -235,7 +226,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.uploadPhoto', '+ Upload Photo')}
+                        {t('admin.actions.uploadPhoto', '+ Add Photo')}
                     </button>
                 </div>
             </div>
@@ -249,23 +240,38 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                 <div className="cms-list">
                     {filteredPhotos.map((photo) => {
                         const originalIndex = photo._originalIndex;
-                        const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
-                            ? photo.filename
-                            : `/photography/${photo.filename}`;
+                        const imgUrl = photo.filename || '';
 
                         return (
                             <div key={photo.filename || originalIndex} className="cms-item-row">
                                 <div className="cms-item-main">
-                                    <img
-                                        src={imgUrl}
-                                        alt={photo.title.en || photo.filename}
-                                        className="cms-item-thumb"
-                                        style={{ objectFit: 'cover', cursor: 'pointer' }}
-                                        onClick={() => setFullscreenPhoto(photo)}
-                                        onError={(e) => {
-                                            e.target.style.opacity = '0.3';
-                                        }}
-                                    />
+                                    {imgUrl ? (
+                                        <img
+                                            src={imgUrl}
+                                            alt={photo.title.en || photo.filename}
+                                            className="cms-item-thumb"
+                                            style={{ objectFit: 'cover', cursor: 'pointer' }}
+                                            onClick={() => setFullscreenPhoto(photo)}
+                                            onError={(e) => {
+                                                e.target.style.opacity = '0.3';
+                                            }}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="cms-item-thumb"
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                background: '#f1f5f9',
+                                                color: '#64748b',
+                                                fontSize: '0.75rem',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            No Link
+                                        </div>
+                                    )}
 
                                     <div className="cms-item-content">
                                         <div className="cms-item-header">
@@ -344,13 +350,12 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                             <div className="cms-modal-body">
                                 <div className="cms-form-group">
                                     <CmsImageUploader
-                                        folder="photography"
-                                        label={t('admin.labels.photoFile', 'Photo Image File')}
+                                        label={t('admin.labels.photoUrl', 'Photo Image URL (Link)')}
                                         value={editingPhoto.filename}
                                         onChange={(newFilename) =>
                                             setEditingPhoto((prev) => ({ ...prev, filename: newFilename }))
                                         }
-                                        helpText="Select from existing images or upload a new photo."
+                                        helpText="Paste any direct image link or Google Drive share link."
                                     />
                                 </div>
 
@@ -577,13 +582,17 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         >
                             ✕ Close
                         </button>
-                        <img
-                            src={fullscreenPhoto.filename && (fullscreenPhoto.filename.startsWith('http://') || fullscreenPhoto.filename.startsWith('https://') || fullscreenPhoto.filename.startsWith('/'))
-                                ? fullscreenPhoto.filename
-                                : `/photography/${fullscreenPhoto.filename}`}
-                            alt={fullscreenPhoto.title.en}
-                            className="cms-photo-fullscreen-img"
-                        />
+                        {fullscreenPhoto.filename ? (
+                            <img
+                                src={fullscreenPhoto.filename}
+                                alt={fullscreenPhoto.title.en}
+                                className="cms-photo-fullscreen-img"
+                            />
+                        ) : (
+                            <div style={{ color: '#fff', padding: '3rem', textAlign: 'center' }}>
+                                No Image Link Provided
+                            </div>
+                        )}
                         <div
                             style={{
                                 marginTop: '1rem',

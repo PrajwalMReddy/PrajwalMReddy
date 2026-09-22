@@ -71,7 +71,7 @@ async function inspectDatabase() {
 
     // 6. Inspect CMS Collections
     console.log('\n[CMS Collections]');
-    const cmsCollections = ['cms_projects', 'cms_experiences', 'cms_blog', 'cms_quotes', 'cms_research', 'cms_photography'];
+    const cmsCollections = ['cms_projects', 'cms_experiences', 'cms_blog', 'cms_quotes', 'cms_research', 'cms_photography', 'cms_konami'];
     for (const c of cmsCollections) {
         const count = await db.collection(c).countDocuments();
         const doc = await db.collection(c).findOne({ _id: 'current' });

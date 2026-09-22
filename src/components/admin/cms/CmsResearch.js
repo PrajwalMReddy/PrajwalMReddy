@@ -158,6 +158,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         setEditingItem({
             ...DEFAULT_RESEARCH,
             slug: `research-${Date.now()}`,
+            customDataString: '',
         });
         setMarkdownContent('# Research Article\n\nWrite research content here...\n');
         setActiveLangTab('en');
@@ -179,6 +180,10 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         const secEn = rawSecEn || '';
         const secKn = rawSecKn || '';
 
+        const initialJson = item.customData !== undefined && item.customData !== null
+            ? (typeof item.customData === 'string' ? item.customData : JSON.stringify(item.customData, null, 2))
+            : (item.data !== undefined && item.data !== null ? (typeof item.data === 'string' ? item.data : JSON.stringify(item.data, null, 2)) : '');
+
         const normalized = {
             ...item,
             _index: index,
@@ -187,6 +192,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             slug: item.slug || '',
             component: item.component || '',
             url: item.url || '',
+            customDataString: initialJson,
             sectionTitle: (secEn || secKn || '').trim(),
             en: {
                 sectionTitle: secEn.trim(),
@@ -290,6 +296,16 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
 
         if (editingItem.type === 'custom') {
             itemData.component = (editingItem.component || '').trim();
+            if (editingItem.customDataString && editingItem.customDataString.trim()) {
+                try {
+                    itemData.customData = JSON.parse(editingItem.customDataString.trim());
+                } catch (jsonErr) {
+                    alert(`Custom Data must be valid JSON: ${jsonErr.message}`);
+                    return;
+                }
+            } else {
+                itemData.customData = null;
+            }
         } else if (editingItem.type === 'external') {
             itemData.url = (editingItem.url || '').trim();
         }
@@ -674,21 +690,67 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 </div>
 
                                 {editingItem.type === 'custom' && (
-                                    <div className="cms-form-group">
-                                        <label className="cms-form-label">
-                                            Component Name <span className="required">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="cms-input"
-                                            value={editingItem.component || ''}
-                                            onChange={(e) =>
-                                                setEditingItem({ ...editingItem, component: e.target.value })
-                                            }
-                                            placeholder="e.g. BengaluruTeluguDictionary"
-                                            required
-                                        />
-                                    </div>
+                                    <>
+                                        <div className="cms-form-group">
+                                            <label className="cms-form-label">
+                                                Component Name <span className="required">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="cms-input"
+                                                value={editingItem.component || ''}
+                                                onChange={(e) =>
+                                                    setEditingItem({ ...editingItem, component: e.target.value })
+                                                }
+                                                placeholder="e.g. BengaluruTeluguDictionary"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="cms-form-group" style={{ marginTop: '0.85rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                                                <label className="cms-form-label" style={{ margin: 0 }}>
+                                                    Custom Data (Optional JSON)
+                                                </label>
+                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                    {editingItem.customDataString && editingItem.customDataString.trim() && (
+                                                        (() => {
+                                                            try {
+                                                                JSON.parse(editingItem.customDataString.trim());
+                                                                return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ Valid JSON</span>;
+                                                            } catch (err) {
+                                                                return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>⚠ Invalid JSON</span>;
+                                                            }
+                                                        })()
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        className="cms-btn cms-btn-xs cms-btn-secondary"
+                                                        onClick={() => {
+                                                            if (!editingItem.customDataString?.trim()) return;
+                                                            try {
+                                                                const parsed = JSON.parse(editingItem.customDataString);
+                                                                setEditingItem({ ...editingItem, customDataString: JSON.stringify(parsed, null, 2) });
+                                                            } catch (err) {
+                                                                alert('Cannot format invalid JSON: ' + err.message);
+                                                            }
+                                                        }}
+                                                    >
+                                                        Prettify JSON
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <textarea
+                                                className="cms-textarea"
+                                                style={{ fontFamily: 'monospace', fontSize: '0.82rem', minHeight: '180px', whiteSpace: 'pre' }}
+                                                value={editingItem.customDataString || ''}
+                                                onChange={(e) =>
+                                                    setEditingItem({ ...editingItem, customDataString: e.target.value })
+                                                }
+                                                placeholder={'// Optional JSON payload passed to component props (e.g. array of entries, config object)'}
+                                            />
+                                        </div>
+                                    </>
                                 )}
 
                                 {editingItem.type === 'external' && (

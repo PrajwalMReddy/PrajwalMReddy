@@ -30,9 +30,12 @@ export const getImage = (imageName) => {
         if (imageName.startsWith('/') || imageName.startsWith('http') || imageName.startsWith('data:')) {
             return imageName;
         }
+        if (imageName === 'hurricane' || imageName === 'hurricane.png') {
+            return '/hurricane.png';
+        }
         const ext = IMAGE_EXTENSIONS[imageName] || (imageName.includes('.') ? '' : 'png');
         const filename = ext ? `${imageName}.${ext}` : imageName;
-        return `/img/${filename}`;
+        return `/${filename}`;
     }
     return null;
 };

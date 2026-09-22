@@ -151,10 +151,10 @@ export const isRecurringChildVisible = (todo, allTodos = []) => {
         if (!belongsToSeries) return false;
 
         const otherDueKey = getDueDayKey(other);
-        if (currentDueKey !== null && otherDueKey !== null) {
+        if (currentDueKey !== null && otherDueKey !== null && otherDueKey !== currentDueKey) {
             return otherDueKey < currentDueKey;
         }
-        return (other.order ?? 0) < (todo.order ?? 0);
+        return (other.order ?? other.serialNumber ?? 0) < (todo.order ?? todo.serialNumber ?? 0);
     });
 
     for (const prev of precedingTasks) {
@@ -166,3 +166,4 @@ export const isRecurringChildVisible = (todo, allTodos = []) => {
     return true;
 };
 
+export const COLLAPSED_COLUMNS_KEY = 'admin_todo_collapsed_columns';

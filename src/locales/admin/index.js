@@ -3,6 +3,7 @@ import { adminCms } from './cms.js';
 import { adminTodo } from './todo.js';
 import { adminBudget } from './budget.js';
 import { adminNotes } from './notes.js';
+import { adminNetworking } from './networking.js';
 
 export const admin = {
     en: {
@@ -12,6 +13,7 @@ export const admin = {
             ...adminTodo.en,
             ...adminBudget.en,
             ...adminNotes.en,
+            ...adminNetworking.en,
         },
     },
     kn: {
@@ -21,6 +23,7 @@ export const admin = {
             ...adminTodo.kn,
             ...adminBudget.kn,
             ...adminNotes.kn,
+            ...adminNetworking.kn,
         },
     },
 };
@@ -30,3 +33,4 @@ export { adminCms } from './cms.js';
 export { adminTodo } from './todo.js';
 export { adminBudget } from './budget.js';
 export { adminNotes } from './notes.js';
+export { adminNetworking } from './networking.js';

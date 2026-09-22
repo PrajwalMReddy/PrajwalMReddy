@@ -83,9 +83,8 @@ const Photography = () => {
                 return;
             }
 
-            const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
-                ? photo.filename
-                : `/photography/${photo.filename}`;
+            const imgUrl = photo.url || photo.image || photo.filename || '';
+            if (!imgUrl) return;
 
             const img = new Image();
             img.onload = () => {
@@ -289,10 +288,9 @@ const Photography = () => {
                                 <div key={colIdx} className="gallery-column">
                                     {columnPhotos.map((photo) => {
                                         const originalIdx = photos.indexOf(photo);
-                                        const imgUrl = photo.filename && (photo.filename.startsWith('http://') || photo.filename.startsWith('https://') || photo.filename.startsWith('/'))
-                                            ? photo.filename
-                                            : `/photography/${photo.filename}`;
+                                        const imgUrl = photo.url || photo.image || photo.filename || '';
                                         const photoKey = photo.id || photo.filename || String(originalIdx);
+                                        const photoAlt = photo.title || `Photography ${originalIdx + 1}`;
                                         return (
                                             <div
                                                 className="gallery-item"
@@ -301,13 +299,39 @@ const Photography = () => {
                                                 onMouseEnter={() => setHoveredIdx(originalIdx)}
                                                 onMouseLeave={() => setHoveredIdx(null)}
                                             >
-                                                <img
-                                                    src={imgUrl}
-                                                    alt={photo.title || `Photography ${originalIdx + 1}`}
-                                                    loading="lazy"
-                                                    onLoad={(e) => handleImageLoad(photoKey, e)}
-                                                    style={{ opacity: 1, transition: 'opacity 0.3s ease' }}
-                                                />
+                                                {imgUrl ? (
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={photoAlt}
+                                                        loading="lazy"
+                                                        onLoad={(e) => handleImageLoad(photoKey, e)}
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            const fallback = e.target.parentElement.querySelector('.photo-fallback-alt');
+                                                            if (fallback) fallback.style.display = 'flex';
+                                                        }}
+                                                        style={{ opacity: 1, transition: 'opacity 0.3s ease' }}
+                                                    />
+                                                ) : null}
+                                                <div
+                                                    className="photo-fallback-alt"
+                                                    style={{
+                                                        display: imgUrl ? 'none' : 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        minHeight: '220px',
+                                                        background: 'var(--card-bg, #f1f5f9)',
+                                                        color: 'var(--text-color, #64748b)',
+                                                        padding: '1.5rem',
+                                                        textAlign: 'center',
+                                                        fontSize: '0.95rem',
+                                                        fontWeight: 500,
+                                                        borderRadius: '8px',
+                                                        border: '1px dashed #cbd5e1',
+                                                    }}
+                                                >
+                                                    <span>{photoAlt}</span>
+                                                </div>
                                                 {hoveredIdx === originalIdx && (
                                                     <>
                                                         <div className="photo-meta-overlay">
@@ -377,12 +401,16 @@ const Photography = () => {
                             </svg>
                         </button>
                         <div className="fullscreen-image-container" onClick={(e) => e.stopPropagation()}>
-                            <img
-                                src={fullscreenPhoto.filename && (fullscreenPhoto.filename.startsWith('http://') || fullscreenPhoto.filename.startsWith('https://') || fullscreenPhoto.filename.startsWith('/'))
-                                    ? fullscreenPhoto.filename
-                                    : `/photography/${fullscreenPhoto.filename}`}
-                                alt={fullscreenPhoto.title || "Fullscreen image"}
-                            />
+                            {(fullscreenPhoto.url || fullscreenPhoto.image || fullscreenPhoto.filename) ? (
+                                <img
+                                    src={fullscreenPhoto.url || fullscreenPhoto.image || fullscreenPhoto.filename}
+                                    alt={fullscreenPhoto.title || "Fullscreen image"}
+                                />
+                            ) : (
+                                <div style={{ color: '#ffffff', padding: '3rem', textAlign: 'center', fontSize: '1.2rem' }}>
+                                    {fullscreenPhoto.title || "No Image Link Available"}
+                                </div>
+                            )}
                             <div className="image-protector" />
                         </div>
                         <div className="fullscreen-meta">

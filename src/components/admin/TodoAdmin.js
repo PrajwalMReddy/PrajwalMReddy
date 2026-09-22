@@ -4,6 +4,7 @@ import { useContent } from '../../utils/ContentContext';
 import TodoCard from './todo/TodoCard';
 import TodoModal from './todo/TodoModal';
 import {
+    COLLAPSED_COLUMNS_KEY,
     getDayKey,
     getDueDayKey,
     getDueState,
@@ -28,8 +29,38 @@ const TodoAdmin = () => {
     const [activeTodo, setActiveTodo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [expandedSubtasks, setExpandedSubtasks] = useState(new Set());
-    const [selectedTag, setSelectedTag] = useState(null);
+    const [collapsedColumns, setCollapsedColumns] = useState(() => {
+        try {
+            const saved = localStorage.getItem(COLLAPSED_COLUMNS_KEY);
+            return saved ? new Set(JSON.parse(saved)) : new Set();
+        } catch {
+            return new Set();
+        }
+    });
     const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                COLLAPSED_COLUMNS_KEY,
+                JSON.stringify(Array.from(collapsedColumns))
+            );
+        } catch (e) {
+            // ignore
+        }
+    }, [collapsedColumns]);
+
+    const toggleColumnCollapse = useCallback((columnKey) => {
+        setCollapsedColumns((prev) => {
+            const next = new Set(prev);
+            if (next.has(columnKey)) {
+                next.delete(columnKey);
+            } else {
+                next.add(columnKey);
+            }
+            return next;
+        });
+    }, []);
 
     const loadTodos = useCallback(async () => {
         try {
@@ -55,39 +86,11 @@ const TodoAdmin = () => {
         loadTodos();
     }, [loadTodos]);
 
-    const allTags = useMemo(() => {
-        const tagSet = new Set();
-        todos.forEach((todo) => {
-            if (Array.isArray(todo.tags)) {
-                todo.tags.forEach((tag) => {
-                    const trimmed = String(tag || '').trim();
-                    if (trimmed) tagSet.add(trimmed);
-                });
-            }
-        });
-        return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
-    }, [todos]);
-
-    useEffect(() => {
-        if (selectedTag && !allTags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) {
-            setSelectedTag(null);
-        }
-    }, [allTags, selectedTag]);
-
     const displayTodos = useMemo(() => {
         const query = search.trim().toLowerCase();
         return todos.filter((todo) => {
             if (!isRecurringChildVisible(todo, todos)) {
                 return false;
-            }
-
-            if (selectedTag) {
-                const hasTag =
-                    Array.isArray(todo.tags) &&
-                    todo.tags.some(
-                        (t) => String(t).trim().toLowerCase() === selectedTag.toLowerCase()
-                    );
-                if (!hasTag) return false;
             }
 
             if (query) {
@@ -106,7 +109,8 @@ const TodoAdmin = () => {
 
             return true;
         });
-    }, [todos, selectedTag, search]);
+    }, [todos, search]);
+
 
     const pendingCount = useMemo(
         () => displayTodos.filter((todo) => !todo.completed).length,
@@ -212,7 +216,33 @@ const TodoAdmin = () => {
     const completedTodos = useMemo(
         () =>
             displayTodos
-                .filter((todo) => todo.completed)
+                .filter(
+                    (todo) =>
+                        todo.completed &&
+                        (!todo.recurrence || todo.recurrence === 'none' || todo.recurrenceSeriesId)
+                )
+                .sort((a, b) => {
+                    if (a.updatedAt && b.updatedAt) {
+                        return new Date(b.updatedAt) - new Date(a.updatedAt);
+                    }
+                    return (
+                        (a.order ?? a.serialNumber ?? 0) -
+                        (b.order ?? b.serialNumber ?? 0)
+                    );
+                }),
+        [displayTodos]
+    );
+
+    const completedMasterTodos = useMemo(
+        () =>
+            displayTodos
+                .filter(
+                    (todo) =>
+                        todo.completed &&
+                        todo.recurrence &&
+                        todo.recurrence !== 'none' &&
+                        !todo.recurrenceSeriesId
+                )
                 .sort((a, b) => {
                     if (a.updatedAt && b.updatedAt) {
                         return new Date(b.updatedAt) - new Date(a.updatedAt);
@@ -337,6 +367,34 @@ const TodoAdmin = () => {
         }
     };
 
+    const handleToggleSubtask = async (todoId, subtaskIndex) => {
+        const previousTodos = todos;
+        const currentTodo = todos.find((todo) => todo.id === todoId);
+        if (!currentTodo || !Array.isArray(currentTodo.subtasks)) return;
+
+        const updatedSubtasks = currentTodo.subtasks.map((subtask, idx) =>
+            idx === subtaskIndex ? { ...subtask, completed: !subtask.completed } : subtask
+        );
+
+        setTodos((currentTodos) =>
+            currentTodos.map((todo) =>
+                todo.id === todoId ? { ...todo, subtasks: updatedSubtasks } : todo
+            )
+        );
+
+        try {
+            const updatedTodo = await persistTodoUpdate(todoId, { subtasks: updatedSubtasks });
+            setTodos((currentTodos) =>
+                currentTodos.map((todo) =>
+                    todo.id === todoId ? updatedTodo : todo
+                )
+            );
+        } catch (err) {
+            setTodos(previousTodos);
+            setError(err.message);
+        }
+    };
+
     const handleDeleteTodo = async (todoId) => {
         try {
             const res = await fetch(`${TODO_API}/${todoId}`, {
@@ -446,7 +504,7 @@ const TodoAdmin = () => {
                 }
             }}
             onChangePriority={handleChangePriority}
-            onSaveTodo={handleSaveTodo}
+            onToggleSubtask={handleToggleSubtask}
             isExpanded={expandedSubtasks.has(todo.id)}
             onToggleSubtasksExpanded={toggleSubtasksExpanded}
         />
@@ -460,19 +518,47 @@ const TodoAdmin = () => {
             'Upcoming': t('admin.todoSection.columns.upcoming', 'Upcoming'),
             'No Due Date': t('admin.todoSection.columns.noDueDate', 'No Due Date'),
             'Scheduled': t('admin.todoSection.columns.scheduled', 'Scheduled'),
+            'Completed Master Tasks': t('admin.todoSection.columns.masterTasks', 'Completed Master Tasks'),
             'Completed': t('admin.todoSection.columns.completed', 'Completed'),
         };
         const displayTitle = columnTitleMap[titleKey] || titleKey;
+        const isCollapsed = collapsedColumns.has(titleKey);
 
         return (
-            <div className="admin-todo-column" key={titleKey}>
-                <div className="admin-todo-column-header">
+            <div className={`admin-todo-column${isCollapsed ? ' is-collapsed' : ''}`} key={titleKey}>
+                <button
+                    type="button"
+                    className={`admin-todo-column-header${isCollapsed ? ' is-collapsed' : ''}`}
+                    onClick={() => toggleColumnCollapse(titleKey)}
+                    aria-expanded={!isCollapsed}
+                    title={
+                        isCollapsed
+                            ? t('admin.todoSection.showColumn', 'Show column')
+                            : t('admin.todoSection.hideColumn', 'Hide column')
+                    }
+                >
                     <span className="admin-todo-column-title">{displayTitle}</span>
                     <span className="admin-todo-column-count">{formatNumber(items.length)}</span>
-                </div>
-                <div className="admin-todo-column-body">
-                    {items.map(renderTodoCard)}
-                </div>
+                    <span className="admin-todo-column-chevron" aria-hidden="true">
+                        <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </span>
+                </button>
+                {!isCollapsed && (
+                    <div className="admin-todo-column-body">
+                        {items.map(renderTodoCard)}
+                    </div>
+                )}
             </div>
         );
     };
@@ -604,35 +690,6 @@ const TodoAdmin = () => {
                     </div>
                 </div>
 
-                {allTags.length > 0 && (
-                    <div className="admin-todo-tag-filter-container">
-                        <span className="admin-todo-tag-filter-label">{t('admin.todoSection.filterByTag', 'Filter by tag:')}</span>
-                        <div className="admin-todo-tag-filter-pills">
-                            <button
-                                type="button"
-                                className={`admin-todo-tag-filter-pill ${!selectedTag ? 'active' : ''}`}
-                                onClick={() => setSelectedTag(null)}
-                            >
-                                {t('admin.todoSection.all', 'All')}
-                            </button>
-                            {allTags.map((tag) => {
-                                const isSelected = selectedTag?.toLowerCase() === tag.toLowerCase();
-                                return (
-                                    <button
-                                        key={tag}
-                                        type="button"
-                                        className={`admin-todo-tag-filter-pill ${isSelected ? 'active' : ''}`}
-                                        onClick={() => setSelectedTag(isSelected ? null : tag)}
-                                        title={`${t('admin.todoSection.filterByTag', 'Filter by tag:')} ${tag}`}
-                                    >
-                                        {tag}
-                                        {isSelected && <span className="admin-todo-tag-filter-clear">✕</span>}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
             </div>
 
             {loading ? (
@@ -642,28 +699,24 @@ const TodoAdmin = () => {
             ) : displayTodos.length === 0 ? (
                 <div className="admin-todo-filter-empty">
                     <p>
-                        {search.trim()
-                            ? t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')
-                            : t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')}
+                        {t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
                     </p>
-                    <button
-                        type="button"
-                        className="admin-todo-clear-filter-btn"
-                        onClick={() => {
-                            if (search) setSearch('');
-                            if (selectedTag) setSelectedTag(null);
-                        }}
-                    >
-                        {search.trim() && !selectedTag
-                            ? t('admin.todoSection.clearSearch', 'Clear search')
-                            : t('admin.todoSection.clearFilter', 'Clear filter')}
-                    </button>
+                    {search && (
+                        <button
+                            type="button"
+                            className="admin-todo-clear-filter-btn"
+                            onClick={() => setSearch('')}
+                        >
+                            {t('admin.todoSection.clearSearch', 'Clear search')}
+                        </button>
+                    )}
                 </div>
             ) : (
                 <div className="admin-todo-board">
                     {activeTab === 'other' && (
                         <>
                             {renderColumn('Scheduled', scheduledTodos)}
+                            {renderColumn('Completed Master Tasks', completedMasterTodos)}
                             {renderColumn('Completed', completedTodos)}
                         </>
                     )}

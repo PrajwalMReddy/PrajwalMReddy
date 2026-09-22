@@ -57,19 +57,31 @@ const routeMap = {
     '/api/cms/content': '../lib/api-handlers/cms/content',
     '/api/content': '../lib/api-handlers/cms/content',
     '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
-    '/api/cms/upload': '../lib/api-handlers/cms/upload',
     '/api/konami/levels': '../lib/api-handlers/konami/levels',
     '/api/admin/summary': '../lib/api-handlers/admin/summary',
+    '/api/networking/people': '../lib/api-handlers/networking',
+    '/api/networking/interactions': '../lib/api-handlers/networking/interactions',
+    '/api/assistant': '../lib/api-handlers/assistant',
+    '/api/assistant/chat': '../lib/api-handlers/assistant',
+    '/api/assistant/digest': '../lib/api-handlers/assistant',
+    '/api/assistant/alerts': '../lib/api-handlers/assistant',
+    '/api/assistant/confirm': '../lib/api-handlers/assistant',
+    '/api/assistant/context': '../lib/api-handlers/assistant',
+    '/api/assistant/news': '../lib/api-handlers/assistant',
 };
 
 function getHandler(pathname, query) {
-    // Invalidate require cache for lib/ in development so changes take effect immediately
+    // Invalidate require cache for lib/, services/, routes/ in development so changes take effect immediately
     // Exclude lib/db.js so MongoDB client pool is persistent across requests
     const libDir = path.resolve(__dirname, '..', 'lib').toLowerCase();
+    const servicesDir = path.resolve(__dirname, '..', 'services').toLowerCase();
     const dbPath = path.resolve(__dirname, '..', 'lib', 'db.js').toLowerCase();
     Object.keys(require.cache).forEach((key) => {
         const resolvedKey = path.resolve(key).toLowerCase();
-        if (resolvedKey.startsWith(libDir) && resolvedKey !== dbPath) {
+        if (
+            (resolvedKey.startsWith(libDir) || resolvedKey.startsWith(servicesDir)) &&
+            resolvedKey !== dbPath
+        ) {
             delete require.cache[key];
         }
     });
@@ -144,25 +156,43 @@ function getHandler(pathname, query) {
         );
     }
 
-
-
-    const mediaMatch = pathname.match(
-        /^\/(photography|img)\/([^/]+)$/
+    const networkingPersonMatch = pathname.match(
+        /^\/api\/networking\/people\/([^/]+)$/
     );
 
-    if (mediaMatch) {
-        query.folder = mediaMatch[1];
-        query.file = decodeURIComponent(
-            mediaMatch[2]
+    if (networkingPersonMatch) {
+        query.id = decodeURIComponent(
+            networkingPersonMatch[1]
         );
 
         return require(
-            '../lib/api-handlers/cms/upload'
+            '../lib/api-handlers/networking/people/[id]'
         );
     }
 
+    const networkingInteractionMatch = pathname.match(
+        /^\/api\/networking\/interactions\/([^/]+)$/
+    );
+
+    if (networkingInteractionMatch) {
+        query.id = decodeURIComponent(
+            networkingInteractionMatch[1]
+        );
+
+        return require(
+            '../lib/api-handlers/networking/interactions/[id]'
+        );
+    }
+
+
+
+
     if (pathname === '/api/konami/levels') {
         return require('../lib/api-handlers/konami/levels');
+    }
+
+    if (pathname.startsWith('/api/assistant')) {
+        return require('../lib/api-handlers/assistant');
     }
 
     if (routeMap[pathname]) {
@@ -294,9 +324,27 @@ server.listen(port, () => {
     console.log(
         `Local API server listening on http://localhost:${port}`
     );
+
+    if (process.env.ENABLE_CRON_JOBS !== 'false') {
+        try {
+            const { startDigestCron } = require('../jobs/digest');
+            const { startAlertsCron } = require('../jobs/alerts');
+            startDigestCron();
+            startAlertsCron();
+        } catch (cronErr) {
+            console.warn('[Dev Server] Could not initialize cron jobs:', cronErr.message);
+        }
+    }
 });
 
 async function gracefulShutdown() {
+    try {
+        const { stopDigestCron } = require('../jobs/digest');
+        const { stopAlertsCron } = require('../jobs/alerts');
+        stopDigestCron();
+        stopAlertsCron();
+    } catch (_) {}
+
     if (global.__mongoState && global.__mongoState.cachedClient) {
         try {
             await global.__mongoState.cachedClient.close();

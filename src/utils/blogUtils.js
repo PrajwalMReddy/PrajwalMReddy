@@ -32,19 +32,14 @@ const getLocalMarkdownIndex = async (basePath) => {
         const apiRes = await fetch(`/api/cms/content?type=${basePath}`);
         if (apiRes.ok) {
             const index = await apiRes.json();
-            if (Array.isArray(index) && index.length > 0) {
+            if (Array.isArray(index)) {
                 return index.filter(item => !item.visibility || item.visibility === 'public');
             }
         }
-    } catch {
-        // Fall back to static JSON
+    } catch (err) {
+        console.warn(`[blogUtils] Error fetching ${basePath} index:`, err);
     }
-
-    const response = await fetch(`/${basePath}/_metadata.json`);
-    if (!response.ok) throw new Error(`Failed to fetch ${basePath} index`);
-
-    const index = await response.json();
-    return index.filter(item => !item.visibility || item.visibility === 'public');
+    return [];
 };
 
 const getMarkdownEntryBySlug = async (basePath, slug) => {
@@ -104,11 +99,14 @@ export const getBlogPostBySlug = async (slug, language) => {
     const post = await getMarkdownEntryBySlug('blog', slug);
     const isCustom = post.type === 'custom' || Boolean(post.component);
     const rawContent = post.content || (!isCustom ? await fetchBlogContent(`${slug}.md`).catch(() => '') : '');
+    const payload = post.customData !== undefined ? post.customData : (post.data || null);
 
     return {
         ...post,
         type: isCustom ? 'custom' : (post.externalUrl ? 'external' : 'article'),
         component: post.component || '',
+        customData: payload,
+        data: payload,
         date: formatDisplayDate(post.date, language),
         content: isCustom ? '' : parseBlogContent(rawContent || ''),
     };

@@ -13,9 +13,21 @@ const SideNav = () => {
     const pressTimerRef = useRef(null);
     const isLongPressRef = useRef(false);
     const touchStartPosRef = useRef({ x: 0, y: 0 });
+    const tapCountRef = useRef(0);
+    const tapTimerRef = useRef(null);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
+    };
+
+    const triggerAdmin = () => {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(60);
+            } catch (_) {}
+        }
+        setIsOpen(false);
+        navigate('/admin/login');
     };
 
     const startPress = (e) => {
@@ -23,16 +35,11 @@ const SideNav = () => {
         if (e.touches && e.touches[0]) {
             touchStartPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         }
+        if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
         pressTimerRef.current = setTimeout(() => {
             isLongPressRef.current = true;
-            if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                try {
-                    navigator.vibrate(60);
-                } catch (_) {}
-            }
-            setIsOpen(false);
-            navigate('/admin/login');
-        }, 1500);
+            triggerAdmin();
+        }, 750);
     };
 
     const cancelPress = () => {
@@ -46,7 +53,7 @@ const SideNav = () => {
         if (e.touches && e.touches[0]) {
             const dx = Math.abs(e.touches[0].clientX - touchStartPosRef.current.x);
             const dy = Math.abs(e.touches[0].clientY - touchStartPosRef.current.y);
-            if (dx > 10 || dy > 10) {
+            if (dx > 30 || dy > 30) {
                 cancelPress();
             }
         }
@@ -59,6 +66,22 @@ const SideNav = () => {
             isLongPressRef.current = false;
             return;
         }
+
+        // Multi-tap detection (Triple tap triggers admin login)
+        tapCountRef.current += 1;
+        if (tapCountRef.current === 1) {
+            tapTimerRef.current = setTimeout(() => {
+                tapCountRef.current = 0;
+            }, 800);
+        } else if (tapCountRef.current >= 3) {
+            e.preventDefault();
+            e.stopPropagation();
+            clearTimeout(tapTimerRef.current);
+            tapCountRef.current = 0;
+            triggerAdmin();
+            return;
+        }
+
         setIsOpen(false);
     };
 
@@ -107,8 +130,15 @@ const SideNav = () => {
                 <li className="nav-element"><Link to="/about" className="nav-link"
                     onClick={() => setIsOpen(false)}>{t('contact')}</Link></li>
                 {authenticated && (
-                    <li className="nav-element"><Link to="/admin" className="nav-link"
-                        onClick={() => setIsOpen(false)}>{t('navAdmin', 'Admin')}</Link></li>
+                    <li className="nav-element">
+                        <Link
+                            to="/admin"
+                            className="nav-link"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            {t('navAdmin', 'Admin')}
+                        </Link>
+                    </li>
                 )}
             </ul>
             <Settings />

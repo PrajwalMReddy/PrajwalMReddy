@@ -5,7 +5,7 @@ const ResearchCard = ({type, component, title, image, description, link}) => {
     const content = (
         <div className="research-card-inner">
             <h2 className="research-card-title">{title}</h2>
-            {image && <img className="research-card-image" src={image} alt={title}/>}
+            {image && <img className="research-card-image" src={image} alt={title} onError={(e) => { e.target.style.display = 'none'; }}/>}
             {description && <p className="research-card-desc">{description}</p>}
         </div>
     );

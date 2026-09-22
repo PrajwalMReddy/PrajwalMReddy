@@ -87,11 +87,12 @@ const BlogPost = () => {
 
     if (!blogData) return null;
 
-    // Full-page standalone custom components (like BengaluruTeluguDictionary)
+    // Full-page standalone custom components (or custom components without separate article content)
     const isStandalone = Boolean(
         blogData.standalone ||
         blogData.isFullPage ||
-        blogData.component === 'BengaluruTeluguDictionary'
+        blogData.fullPage ||
+        (!blogData.content && CustomComponent)
     );
 
     if (CustomComponent && isStandalone) {
@@ -106,7 +107,7 @@ const BlogPost = () => {
                         <Footer/>
                     </div>
                 }>
-                    <CustomComponent post={blogData} />
+                    <CustomComponent post={blogData} customData={blogData.customData || blogData.data} data={blogData.customData || blogData.data} />
                 </Suspense>
             </ComponentErrorBoundary>
         );
@@ -147,7 +148,7 @@ const BlogPost = () => {
                         <div className="blog-post-content blog-post-custom-component">
                             <ComponentErrorBoundary componentName={blogData.component}>
                                 <Suspense fallback={<div className="blog-post-loading">Loading component...</div>}>
-                                    <CustomComponent post={blogData} />
+                                    <CustomComponent post={blogData} customData={blogData.customData || blogData.data} data={blogData.customData || blogData.data} />
                                 </Suspense>
                             </ComponentErrorBoundary>
                         </div>

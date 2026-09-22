@@ -11,9 +11,10 @@ const handlers = {
     '/api/cms/content': require('../lib/api-handlers/cms/content'),
     '/api/content': require('../lib/api-handlers/cms/content'),
     '/api/cms/markdown': require('../lib/api-handlers/cms/markdown'),
-    '/api/cms/upload': require('../lib/api-handlers/cms/upload'),
     '/api/konami/levels': require('../lib/api-handlers/konami/levels'),
     '/api/admin/summary': require('../lib/api-handlers/admin/summary'),
+    '/api/networking/people': require('../lib/api-handlers/networking'),
+    '/api/networking/interactions': require('../lib/api-handlers/networking/interactions'),
 };
 
 const itemHandlers = {
@@ -22,6 +23,8 @@ const itemHandlers = {
     planner: require('../lib/api-handlers/budget/planner/[id]'),
     todo: require('../lib/api-handlers/todo/[id]'),
     notes: require('../lib/api-handlers/notes/[id]'),
+    'networking-people': require('../lib/api-handlers/networking/people/[id]'),
+    'networking-interactions': require('../lib/api-handlers/networking/interactions/[id]'),
 };
 
 function getHandler(pathname, query) {
@@ -31,10 +34,26 @@ function getHandler(pathname, query) {
         return itemHandlers[itemMatch[1]];
     }
 
+    const networkingPersonMatch = pathname.match(/^\/api\/networking\/people\/([^/]+)$/);
+    if (networkingPersonMatch) {
+        query.id = decodeURIComponent(networkingPersonMatch[1]);
+        return itemHandlers['networking-people'];
+    }
+
+    const networkingInteractionMatch = pathname.match(/^\/api\/networking\/interactions\/([^/]+)$/);
+    if (networkingInteractionMatch) {
+        query.id = decodeURIComponent(networkingInteractionMatch[1]);
+        return itemHandlers['networking-interactions'];
+    }
+
     const simpleItemMatch = pathname.match(/^\/api\/(todo|notes)\/([^/]+)$/);
     if (simpleItemMatch) {
         query.id = decodeURIComponent(simpleItemMatch[2]);
         return itemHandlers[simpleItemMatch[1]];
+    }
+
+    if (pathname.startsWith('/api/assistant')) {
+        return require('../lib/api-handlers/assistant');
     }
 
     return handlers[pathname];
