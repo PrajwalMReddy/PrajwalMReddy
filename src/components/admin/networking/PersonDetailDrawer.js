@@ -17,6 +17,32 @@ function getInitials(name = '') {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+function formatDisplayDate(val) {
+    if (!val) return '';
+    const str = String(val).trim();
+    if (!str) return '';
+    const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+        const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        if (!Number.isNaN(date.getTime())) {
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            });
+        }
+    }
+    const d = new Date(str);
+    if (!Number.isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+    }
+    return str;
+}
+
 const PersonDetailDrawer = ({
     person,
     interactions = [],
@@ -97,8 +123,11 @@ const PersonDetailDrawer = ({
         if (onUpdatePerson) {
             await onUpdatePerson(person.id, {
                 nextFollowUpAt: null,
+                followUpDueDate: null,
+                followUpScheduledDate: null,
                 followUpStatus: 'none',
                 followUpNotes: '',
+                syncTodo: false,
             });
         }
     };
@@ -304,10 +333,10 @@ const PersonDetailDrawer = ({
                                     <span>{person.whereMet}</span>
                                 </div>
                             )}
-                            {person.dateMet && (
+                            {person.lastInteractionAt && (
                                 <div className="admin-networking-meta-item">
-                                    <strong>Date Met</strong>
-                                    <span>{new Date(person.dateMet).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                    <strong>Last Contacted</strong>
+                                    <span>{formatDisplayDate(person.lastInteractionAt)}</span>
                                 </div>
                             )}
                             {person.category && (

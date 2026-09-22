@@ -69,6 +69,11 @@ export const adminNetworking = {
             lessOptions: 'Fewer Details',
             openLinkedIn: 'Open LinkedIn Profile',
             viewDetails: 'View Details',
+            interactionHistoryTitle: 'Interaction History',
+            addInteractionPlaceholder: 'Log a quick interaction (e.g. Discussed proposal, coffee meeting)...',
+            addInteractionBtn: 'Add',
+            noInteractions: 'No interactions logged yet.',
+            deleteInteractionTooltip: 'Delete interaction',
         },
     },
     kn: {
@@ -141,6 +146,11 @@ export const adminNetworking = {
             lessOptions: 'ಕಡಿಮೆ ವಿವರಗಳು',
             openLinkedIn: 'ಲಿಂಕ್ಡ್ಇನ್ ಪ್ರೊಫೈಲ್ ತೆರೆಯಿರಿ',
             viewDetails: 'ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+            interactionHistoryTitle: 'ಸಂಪರ್ಕ ಇತಿಹಾಸ',
+            addInteractionPlaceholder: 'ಸಂಪರ್ಕದ ವಿವರವನ್ನು ದಾಖಲಿಸಿ (ಉದಾ. ಫೋನ್‌ನಲ್ಲಿ ಚರ್ಚಿಸಲಾಗಿದೆ)...',
+            addInteractionBtn: 'ಸೇರಿಸಿ',
+            noInteractions: 'ಇನ್ನೂ ಯಾವುದೇ ಸಂಪರ್ಕ ವಿವರಗಳನ್ನು ದಾಖಲಿಸಿಲ್ಲ.',
+            deleteInteractionTooltip: 'ದಾಖಲೆಯನ್ನು ಅಳಿಸಿ',
         },
     },
 };

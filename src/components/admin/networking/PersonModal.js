@@ -25,7 +25,6 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
         name: '',
         linkedin: '',
         whereMet: '',
-        lastContacted: '',
         notes: '',
         followUpTitle: '',
         followUpScheduledDate: '',
@@ -35,23 +34,59 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
+    // Interaction History state
+    const [interactions, setInteractions] = useState([]);
+    const [loadingInteractions, setLoadingInteractions] = useState(false);
+    const [interactionDate, setInteractionDate] = useState(getTodayString());
+    const [interactionText, setInteractionText] = useState('');
+    const [addingInteraction, setAddingInteraction] = useState(false);
+
     useEffect(() => {
         if (person) {
+            const isFollowUpActive = person.followUpStatus && person.followUpStatus !== 'none';
+            const hasDates = Boolean(person.followUpScheduledDate || person.followUpDueDate || person.nextFollowUpAt);
+            const rawNotes = (person.followUpNotes || '').trim();
+            const isDefaultTitle = rawNotes.toLowerCase() === `follow up with ${person.name || ''}`.trim().toLowerCase();
+            const followUpTitleToUse = (isFollowUpActive || hasDates || (!isDefaultTitle && rawNotes)) ? rawNotes : '';
+
             const hasExistingSync = person.syncTodo !== undefined ? Boolean(person.syncTodo) : Boolean(person.todoId);
+
             setDraft({
                 name: person.name || '',
                 linkedin: person.linkedin || '',
                 whereMet: person.whereMet || person.howMet || '',
-                lastContacted: person.lastContacted || person.dateMet || '',
                 notes: person.notes || '',
-                followUpTitle: person.followUpNotes || (person.name ? `Follow up with ${person.name}` : ''),
-                followUpScheduledDate: person.followUpScheduledDate || '',
-                followUpDueDate: person.followUpDueDate || person.nextFollowUpAt || '',
-                syncTodo: hasExistingSync,
+                followUpTitle: followUpTitleToUse,
+                followUpScheduledDate: (isFollowUpActive || hasDates) ? (person.followUpScheduledDate || '') : '',
+                followUpDueDate: (isFollowUpActive || hasDates) ? (person.followUpDueDate || person.nextFollowUpAt || '') : '',
+                syncTodo: (isFollowUpActive || hasDates) ? hasExistingSync : false,
             });
         }
         setError('');
     }, [person, isOpen]);
+
+    useEffect(() => {
+        if (isOpen && person?.id) {
+            setLoadingInteractions(true);
+            fetch(`/api/networking/interactions?personId=${person.id}`, {
+                credentials: 'include',
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (Array.isArray(data)) {
+                        setInteractions(data);
+                    } else {
+                        setInteractions([]);
+                    }
+                })
+                .catch(() => setInteractions([]))
+                .finally(() => setLoadingInteractions(false));
+        } else {
+            setInteractions([]);
+        }
+        setInteractionDate(getTodayString());
+        setInteractionText('');
+    }, [person?.id, isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -68,6 +103,53 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
     }, [isOpen, draft, onClose]);
 
     if (!isOpen || !person) return null;
+
+    const handleAddInteraction = async () => {
+        const trimmed = interactionText.trim();
+        if (!trimmed || !person?.id) return;
+
+        try {
+            setAddingInteraction(true);
+            const dateVal = interactionDate ? interactionDate.trim() : getTodayString();
+            const res = await fetch('/api/networking/interactions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    personId: person.id,
+                    date: dateVal,
+                    summary: trimmed,
+                    type: 'meeting',
+                }),
+            });
+            const newDoc = await res.json();
+            if (!res.ok) {
+                throw new Error(newDoc.error || 'Failed to add interaction');
+            }
+            setInteractions((prev) => [newDoc, ...prev]);
+            setInteractionText('');
+            setInteractionDate(getTodayString());
+        } catch (err) {
+            setError(err.message || 'Failed to add interaction');
+        } finally {
+            setAddingInteraction(false);
+        }
+    };
+
+    const handleDeleteInteraction = async (interactionId) => {
+        if (!interactionId) return;
+        try {
+            const res = await fetch(`/api/networking/interactions/${interactionId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (res.ok) {
+                setInteractions((prev) => prev.filter((item) => item.id !== interactionId));
+            }
+        } catch (err) {
+            console.error('Failed to delete interaction', err);
+        }
+    };
 
     const handleSave = async (e) => {
         if (e) e.preventDefault();
@@ -92,9 +174,6 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                 linkedin: normalizeLinkedInUrl(draft.linkedin),
                 whereMet: draft.whereMet.trim(),
                 notes: draft.notes.trim(),
-                lastContacted: draft.lastContacted ? draft.lastContacted.trim() : null,
-                dateMet: draft.lastContacted ? draft.lastContacted.trim() : null,
-                lastInteractionAt: draft.lastContacted ? draft.lastContacted.trim() : null,
                 nextFollowUpAt: isFollowUpConfigured ? (followUpDueVal || followUpScheduledVal || null) : null,
                 followUpDueDate: isFollowUpConfigured ? followUpDueVal : null,
                 followUpScheduledDate: isFollowUpConfigured ? followUpScheduledVal : null,
@@ -122,20 +201,20 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
         }));
     };
 
-    const handleDelete = async () => {
-        const confirmMsg = t('admin.networkingSection.deleteConfirm', 'Are you sure you want to delete {name}?').replace('{name}', person.name);
-        if (window.confirm(confirmMsg)) {
-            await onDelete(person);
-            onClose();
+    const handleDelete = () => {
+        if (person && onDelete) {
+            onDelete(person);
         }
     };
 
     const displayName = draft.name || person.name || t('admin.networkingSection.personDetails', 'Contact Details');
 
+    if (!isOpen || !person) return null;
+
     return (
         <div className="admin-todo-modal-overlay" onClick={onClose}>
             <div className="admin-todo-modal-card" onClick={(e) => e.stopPropagation()}>
-                {/* Header without Avatar */}
+                {/* Header */}
                 <div className="admin-todo-modal-header" style={{ alignItems: 'center' }}>
                     <h3 className="admin-todo-modal-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {displayName}
@@ -153,6 +232,12 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                 {/* Modal Body */}
                 <div className="admin-todo-modal-body">
                     <form className="admin-todo-modal-form" onSubmit={handleSave}>
+                        {error && (
+                            <div style={{ color: '#dc2626', background: 'rgba(239,68,68,0.1)', padding: '0.65rem 0.85rem', borderRadius: '6px', fontSize: '0.85rem' }}>
+                                {error}
+                            </div>
+                        )}
+
                         {/* Row 1: Name & LinkedIn */}
                         <div className="admin-todo-modal-row">
                             <div className="admin-todo-modal-field">
@@ -177,37 +262,15 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             </div>
                         </div>
 
-                        {/* Row 2: Where Met & Last Contacted */}
-                        <div className="admin-todo-modal-row">
-                            <div className="admin-todo-modal-field">
-                                <label>{t('admin.networkingSection.whereMet', 'Where I Met Them')}</label>
-                                <input
-                                    type="text"
-                                    placeholder={t('admin.networkingSection.whereMetPlaceholder', 'e.g. Tech Summit, mutual friend')}
-                                    value={draft.whereMet}
-                                    onChange={(e) => setDraft({ ...draft, whereMet: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="admin-todo-modal-field">
-                                <label>{t('admin.networkingSection.lastContacted', 'Last Contacted')}</label>
-                                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                                    <input
-                                        type="date"
-                                        value={draft.lastContacted}
-                                        onChange={(e) => setDraft({ ...draft, lastContacted: e.target.value })}
-                                        style={{ flex: 1 }}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="admin-networking-today-btn"
-                                        onClick={() => setDraft({ ...draft, lastContacted: getTodayString() })}
-                                        title={t('admin.networkingSection.today', 'Today')}
-                                    >
-                                        {t('admin.networkingSection.today', 'Today')}
-                                    </button>
-                                </div>
-                            </div>
+                        {/* Row 2: Where Met */}
+                        <div className="admin-todo-modal-field">
+                            <label>{t('admin.networkingSection.whereMet', 'Where I Met Them')}</label>
+                            <input
+                                type="text"
+                                placeholder={t('admin.networkingSection.whereMetPlaceholder', 'e.g. Tech Summit, mutual friend')}
+                                value={draft.whereMet}
+                                onChange={(e) => setDraft({ ...draft, whereMet: e.target.value })}
+                            />
                         </div>
 
                         {/* Notes Field */}
@@ -281,6 +344,88 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                 />
                                 <span>{t('admin.networkingSection.syncWithTodo', 'Sync / Add to To-Do List')}</span>
                             </label>
+                        </div>
+
+                        {/* Interaction History Section */}
+                        <div className="admin-networking-interactions-card">
+                            <div className="admin-networking-interactions-header">
+                                <div className="admin-networking-interactions-title-wrap">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="admin-networking-interactions-icon">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                    <h4 className="admin-networking-interactions-title">
+                                        {t('admin.networkingSection.interactionHistoryTitle', 'Interaction History')}
+                                    </h4>
+                                </div>
+                                {interactions.length > 0 && (
+                                    <span className="admin-networking-interactions-count">{interactions.length}</span>
+                                )}
+                            </div>
+
+                            {/* One-liner input with attached date */}
+                            <div className="admin-networking-interaction-add-row">
+                                <input
+                                    type="date"
+                                    className="admin-networking-interaction-date-input"
+                                    value={interactionDate}
+                                    onChange={(e) => setInteractionDate(e.target.value)}
+                                    title="Interaction Date"
+                                />
+                                <input
+                                    type="text"
+                                    className="admin-networking-interaction-text-input"
+                                    placeholder={t('admin.networkingSection.addInteractionPlaceholder', 'Log a quick interaction (e.g. Discussed proposal, coffee meeting)...')}
+                                    value={interactionText}
+                                    onChange={(e) => setInteractionText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleAddInteraction();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="admin-networking-interaction-add-btn"
+                                    onClick={handleAddInteraction}
+                                    disabled={addingInteraction || !interactionText.trim()}
+                                >
+                                    {addingInteraction ? '...' : t('admin.networkingSection.addInteractionBtn', 'Add')}
+                                </button>
+                            </div>
+
+                            {/* Interaction List */}
+                            <div className="admin-networking-interactions-list">
+                                {loadingInteractions ? (
+                                    <p className="admin-networking-interactions-empty">
+                                        {t('admin.networkingSection.loadingContacts', 'Loading...')}
+                                    </p>
+                                ) : interactions.length === 0 ? (
+                                    <p className="admin-networking-interactions-empty">
+                                        {t('admin.networkingSection.noInteractions', 'No interactions logged yet.')}
+                                    </p>
+                                ) : (
+                                    interactions.map((item) => (
+                                        <div key={item.id} className="admin-networking-interaction-item">
+                                            <span className="admin-networking-interaction-date-badge">
+                                                {item.date || 'No date'}
+                                            </span>
+                                            <span className="admin-networking-interaction-summary" title={item.summary}>
+                                                {item.summary}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="admin-networking-interaction-del-btn"
+                                                onClick={() => handleDeleteInteraction(item.id)}
+                                                title={t('admin.networkingSection.deleteInteractionTooltip', 'Delete interaction')}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
 
                         {error && (

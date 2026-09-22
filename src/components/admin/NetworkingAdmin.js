@@ -33,6 +33,25 @@ function parseDateKey(val) {
     return null;
 }
 
+function formatDisplayDate(val) {
+    if (!val) return '';
+    const dateStr = parseDateKey(val);
+    if (!dateStr) return String(val);
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const [year, month, day] = parts;
+        const date = new Date(Number(year), Number(month) - 1, Number(day));
+        if (!Number.isNaN(date.getTime())) {
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            });
+        }
+    }
+    return dateStr;
+}
+
 function getTodayString() {
     const d = new Date();
     const year = d.getFullYear();
@@ -42,12 +61,14 @@ function getTodayString() {
 }
 
 function getFollowUpDisplay(person) {
-    if (!person || person.followUpStatus === 'completed') return null;
+    if (!person || person.followUpStatus === 'completed' || person.followUpStatus === 'none') return null;
     
     const scheduledDate = parseDateKey(person.followUpScheduledDate);
     const dueDate = parseDateKey(person.followUpDueDate || person.nextFollowUpAt);
-    const hasFollowUpNotes = Boolean(person.followUpNotes && person.followUpNotes.trim());
-    const isConfigured = Boolean(scheduledDate || dueDate || hasFollowUpNotes || (person.followUpStatus && person.followUpStatus !== 'none'));
+    const rawNotes = (person.followUpNotes || '').trim();
+    const isDefaultTitle = rawNotes.toLowerCase() === `follow up with ${person.name || ''}`.trim().toLowerCase();
+    const hasCustomFollowUpNotes = Boolean(rawNotes && !isDefaultTitle);
+    const isConfigured = Boolean(scheduledDate || dueDate || hasCustomFollowUpNotes || person.followUpStatus === 'pending');
     
     if (!isConfigured) return null;
 
@@ -171,8 +192,9 @@ const NetworkingAdmin = () => {
             const notesMatch = (person.notes || '').toLowerCase().includes(query);
             const linkedinMatch = (person.linkedin || '').toLowerCase().includes(query);
             const followUpMatch = (person.followUpNotes || '').toLowerCase().includes(query);
+            const contactedMatch = (person.lastInteractionAt || '').toLowerCase().includes(query);
 
-            return nameMatch || whereMetMatch || notesMatch || linkedinMatch || followUpMatch;
+            return nameMatch || whereMetMatch || notesMatch || linkedinMatch || followUpMatch || contactedMatch;
         });
     }, [people, search]);
 
@@ -254,15 +276,16 @@ const NetworkingAdmin = () => {
     };
 
     const handleDeletePerson = async (person) => {
-        const deleteMsg = t('admin.networkingSection.deleteConfirm', 'Are you sure you want to delete {name}?').replace('{name}', person.name);
-        const confirmed = window.confirm(deleteMsg);
-        if (!confirmed) return;
+        if (!person) return;
+        const confirmMsg = t('admin.networkingSection.deleteConfirm', 'Are you sure you want to delete {name}?').replace('{name}', person.name || 'this contact');
+        if (!window.confirm(confirmMsg)) return;
 
         try {
             const res = await fetch(`${NETWORKING_API}/${person.id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
+
             const data = await res.json();
             if (!res.ok) {
                 throw new Error(data.error || 'Failed to delete contact');
@@ -434,7 +457,7 @@ const NetworkingAdmin = () => {
                                                 {person.name}
                                             </h4>
 
-                                            {(person.linkedin || whereMet) && (
+                                            {(person.linkedin || whereMet || person.lastInteractionAt) && (
                                                 <div className="admin-networking-card-meta-row">
                                                     {person.linkedin && (
                                                         <a
@@ -452,9 +475,15 @@ const NetworkingAdmin = () => {
                                                         </a>
                                                     )}
 
+                                                    {person.lastInteractionAt && (
+                                                        <div className="admin-networking-met-badge">
+                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.contactedLabel', 'Contacted:')}</span> {formatDisplayDate(person.lastInteractionAt)}
+                                                        </div>
+                                                    )}
+
                                                     {whereMet && (
                                                         <div className="admin-networking-met-badge">
-                                                            <span className="admin-networking-met-prefix">Met:</span> {whereMet}
+                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.metLabel', 'Met:')}</span> {whereMet}
                                                         </div>
                                                     )}
                                                 </div>
@@ -536,7 +565,10 @@ const NetworkingAdmin = () => {
             <PersonModal
                 person={selectedPersonForModal}
                 isOpen={Boolean(selectedPersonForModal)}
-                onClose={() => setSelectedPersonForModal(null)}
+                onClose={() => {
+                    setSelectedPersonForModal(null);
+                    loadPeople();
+                }}
                 onSave={handleSavePersonModal}
                 onDelete={handleDeletePerson}
             />
