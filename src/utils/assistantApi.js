@@ -129,7 +129,10 @@ export const assistantApi = {
     getNews: (params = {}) => request(`${API_BASE}/news?${new URLSearchParams(params).toString()}`),
 
     // Fetch live weather independently (independent of LLM)
-    getWeather: () => request(`${API_BASE}/weather`),
+    getWeather: (params = {}) => {
+        const queryParams = new URLSearchParams(params).toString();
+        return request(`${API_BASE}/weather${queryParams ? `?${queryParams}` : ''}`);
+    },
 
     // Update / complete todo item directly from briefing
     completeTodo: (id) =>
@@ -168,4 +171,25 @@ export const assistantApi = {
 
     // Assistant service status
     getStatus: () => request(`${API_BASE}`),
+
+    // Live data sources settings
+    getSettings: (params = {}) => {
+        const queryParams = new URLSearchParams(params).toString();
+        return request(`${API_BASE}/settings${queryParams ? `?${queryParams}` : ''}`);
+    },
+    updateSettings: (settings) =>
+        request(`${API_BASE}/settings`, {
+            method: 'PUT',
+            body: JSON.stringify(settings),
+        }),
+    testCalendarFeed: (icsUrl) =>
+        request(`${API_BASE}/settings/test-calendar`, {
+            method: 'POST',
+            body: JSON.stringify({ icsUrl }),
+        }),
+    testLocation: (location) =>
+        request(`${API_BASE}/settings/test-location`, {
+            method: 'POST',
+            body: JSON.stringify({ location }),
+        }),
 };

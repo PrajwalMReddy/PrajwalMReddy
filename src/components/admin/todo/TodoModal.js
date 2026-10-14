@@ -12,6 +12,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
             setDraft({
                 ...todo,
                 tags: Array.isArray(todo.tags) ? [...todo.tags] : [],
+                link: todo.link || '',
             });
             setTagInput('');
         }
@@ -100,6 +101,15 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
                             <textarea
                                 value={draft.description || ''}
                                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                            />
+                        </div>
+                        <div className="admin-todo-modal-field">
+                            <label>{t('admin.todoSection.modal.link', 'Link')}</label>
+                            <input
+                                type="url"
+                                placeholder={t('admin.todoSection.modal.linkPlaceholder', 'https://example.com')}
+                                value={draft.link || ''}
+                                onChange={(e) => setDraft({ ...draft, link: e.target.value })}
                             />
                         </div>
                         <div className="admin-todo-modal-row">

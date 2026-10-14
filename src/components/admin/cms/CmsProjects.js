@@ -22,10 +22,9 @@ const CmsProjects = ({ data, onSave, saving }) => {
     const getLocalized = (obj, fallback = '') => {
         if (!obj) return fallback;
         if (typeof obj === 'string') return obj;
-        if (language === 'kn') {
-            return obj.kn || obj.en || fallback;
-        }
-        return obj.en || obj.kn || fallback;
+        const current = editLangTab || language;
+        const alt = current === 'kn' ? 'en' : 'kn';
+        return obj[current] || obj[alt] || Object.values(obj).find((v) => typeof v === 'string' && v.trim() !== '') || fallback;
     };
 
     const [search, setSearch] = useState('');
@@ -35,7 +34,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
     // Modal state
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
-    const [editLangTab, setEditLangTab] = useState('en');
+    const [editLangTab, setEditLangTab] = useState(language || 'kn');
 
     // Sections Modal
     const [isSectionsModalOpen, setIsSectionsModalOpen] = useState(false);
@@ -61,7 +60,8 @@ const CmsProjects = ({ data, onSave, saving }) => {
                 !search ||
                 (p.title?.en || '').toLowerCase().includes(search.toLowerCase()) ||
                 (p.title?.kn || '').toLowerCase().includes(search.toLowerCase()) ||
-                (p.description?.en || '').toLowerCase().includes(search.toLowerCase());
+                (p.description?.en || '').toLowerCase().includes(search.toLowerCase()) ||
+                (p.description?.kn || '').toLowerCase().includes(search.toLowerCase());
 
             const matchesSection = selectedSection === 'all' || p.section === selectedSection;
             const matchesFeatured =
@@ -98,8 +98,8 @@ const CmsProjects = ({ data, onSave, saving }) => {
 
     const handleDelete = async (index) => {
         const project = projects[index];
-        const title = project.title?.en || project.title || 'this project';
-        if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
+        const title = getLocalized(project.title, 'this project');
+        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${title})`)) return;
 
         const updated = projects.filter((_, idx) => idx !== index);
         await onSave({ sections, projects: updated }, `Deleted "${title}"`);
@@ -111,7 +111,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
             id: `project-${Date.now()}`,
             section: sections[0]?.id || 'programming',
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
@@ -122,14 +122,14 @@ const CmsProjects = ({ data, onSave, saving }) => {
             title: typeof project.title === 'string' ? { en: project.title, kn: '' } : { en: '', kn: '', ...project.title },
             description: typeof project.description === 'string' ? { en: project.description, kn: '' } : { en: '', kn: '', ...project.description },
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
     const handleSaveProjectModal = async (e) => {
         e.preventDefault();
         if (!editingProject.title?.en?.trim() && !editingProject.title?.kn?.trim()) {
-            alert('A project title in English or Kannada is required');
+            alert(language === 'kn' ? 'ಯೋಜನೆಯ ಹೆಸರನ್ನು ಇಂಗ್ಲಿಷ್ ಅಥವಾ ಕನ್ನಡದಲ್ಲಿ ನಮೂದಿಸಿ.' : 'A project title in English or Kannada is required');
             return;
         }
 
@@ -366,17 +366,17 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                 <div className="cms-lang-pills">
                                     <button
                                         type="button"
-                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
-                                        onClick={() => setEditLangTab('en')}
-                                    >
-                                        English
-                                    </button>
-                                    <button
-                                        type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        ಕನ್ನಡ
+                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
+                                        onClick={() => setEditLangTab('en')}
+                                    >
+                                        {t('admin.labels.english', 'English')}
                                     </button>
                                 </div>
 
@@ -515,7 +515,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
 
                                 <div className="cms-form-group">
                                     <CmsImageUploader
-                                        folder="img"
+                                        folder="projects"
                                         label={t('admin.labels.imageUpload', 'Project Card Image')}
                                         value={editingProject.image || ''}
                                         onChange={(imgVal) =>

@@ -5,13 +5,17 @@ export const blog = {
         blogEmpty: "Blog posts are loading...",
         blogSubtitle: "This is my personal blog where I share my thoughts, opinions, and perspective in the form of poems, essays, and short stories.",
 
-        blogExternalSourceNotice: "Dates indicate when published, not necessarily when written."
+        blogExternalSourceNotice: "Dates indicate when published, not necessarily when written.",
+        opensExternalPost: "Opens external post",
+        interactiveReactComponent: "Interactive React Component"
     }, kn: {
         // Blog Page
         blogHeading: "ಮಿಂಬರಹಗಳು",
         blogEmpty: "ಮಿಂಬರಹಗಳು ತುಂಬಿಸುತ್ತವೆ...",
         blogSubtitle: "ಇದು ಕವಿತೆ, ಬರಹ, ಮತ್ತು ಚಿಕ್ಕಕತೆಗಳ ರೂಪದಲ್ಲಿ ನನ್ನ ಅನಿಸಿಕೆಗಳು, ಅಭಿಪ್ರಾಯಗಳು, ಮತ್ತು ದೃಷ್ಟಿಕೋನ ಹಂಚಿಕೊಳ್ಳುವ ನನ್ನ ಸ್ವಂತ ಮೀಂಬರಹ.",
 
-        blogExternalSourceNotice: "ದಿನಾಂಕಗಳು ಪ್ರಕಟವಾದಾಗ ಸೂಚಿಸುತ್ತವೆ, ಬರೆಯುವಾಗ ಅಲ್ಲ."
+        blogExternalSourceNotice: "ದಿನಾಂಕಗಳು ಪ್ರಕಟವಾದಾಗ ಸೂಚಿಸುತ್ತವೆ, ಬರೆಯುವಾಗ ಅಲ್ಲ.",
+        opensExternalPost: "ಬಾಹ್ಯ ಲೇಖನವನ್ನು ತೆರೆಯುತ್ತದೆ",
+        interactiveReactComponent: "ಸಂವಾದಾತ್ಮಕ ರಿಯಾಕ್ಟ್ ಕಾಂಪೊನೆಂಟ್"
     }
 };

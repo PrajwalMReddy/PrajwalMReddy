@@ -6,13 +6,30 @@ import PersonModal from './networking/PersonModal';
 const NETWORKING_API = '/api/networking/people';
 const TODO_API = '/api/todo';
 
-function normalizeLinkedInUrl(input = '') {
+function normalizeWebsiteUrl(input = '') {
     let val = input.trim();
     if (!val) return '';
     if (val.startsWith('http://') || val.startsWith('https://')) return val;
     if (val.startsWith('linkedin.com')) return `https://${val}`;
-    if (!val.includes('/')) return `https://linkedin.com/in/${val}`;
     return `https://${val}`;
+}
+
+function extractPersonTags(person) {
+    if (!person) return [];
+    const raw = person.tags;
+    if (Array.isArray(raw)) {
+        return raw
+            .flatMap((t) => String(t || '').split(','))
+            .map((s) => s.trim().replace(/^#/, ''))
+            .filter(Boolean);
+    }
+    if (typeof raw === 'string') {
+        return raw
+            .split(',')
+            .map((s) => s.trim().replace(/^#/, ''))
+            .filter(Boolean);
+    }
+    return [];
 }
 
 function parseDateKey(val) {
@@ -33,25 +50,6 @@ function parseDateKey(val) {
     return null;
 }
 
-function formatDisplayDate(val) {
-    if (!val) return '';
-    const dateStr = parseDateKey(val);
-    if (!dateStr) return String(val);
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-        const [year, month, day] = parts;
-        const date = new Date(Number(year), Number(month) - 1, Number(day));
-        if (!Number.isNaN(date.getTime())) {
-            return date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-            });
-        }
-    }
-    return dateStr;
-}
-
 function getTodayString() {
     const d = new Date();
     const year = d.getFullYear();
@@ -60,7 +58,7 @@ function getTodayString() {
     return `${year}-${month}-${day}`;
 }
 
-function getFollowUpDisplay(person) {
+function getFollowUpDisplay(person, t, formatDate) {
     if (!person || person.followUpStatus === 'completed' || person.followUpStatus === 'none') return null;
     
     const scheduledDate = parseDateKey(person.followUpScheduledDate);
@@ -80,15 +78,16 @@ function getFollowUpDisplay(person) {
         return null;
     }
 
-    const title = person.followUpNotes || `Follow up with ${person.name || 'contact'}`;
+    const defaultTitle = t('admin.networkingSection.taskTitlePlaceholder', 'Follow up with {name}').replace('{name}', person.name || t('admin.networkingSection.contactFallback', 'contact'));
+    const title = person.followUpNotes || defaultTitle;
 
     // 2. Due by date is when I should do it by
     // If dueDate is in the past (< todayStr), it is OVERDUE
     if (dueDate && dueDate < todayStr) {
         return {
             isOverdue: true,
-            label: 'Overdue',
-            date: dueDate,
+            label: t('admin.networkingSection.overdue', 'Overdue'),
+            date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
     }
@@ -97,8 +96,8 @@ function getFollowUpDisplay(person) {
     if (dueDate && dueDate === todayStr) {
         return {
             isOverdue: false,
-            label: 'Due Today',
-            date: dueDate,
+            label: t('admin.networkingSection.dueToday', 'Due Today'),
+            date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
     }
@@ -107,8 +106,8 @@ function getFollowUpDisplay(person) {
     if (dueDate) {
         return {
             isOverdue: false,
-            label: 'Due',
-            date: dueDate,
+            label: t('admin.networkingSection.dueDateLabel', 'Due:').replace(/:$/, ''),
+            date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
     }
@@ -117,8 +116,8 @@ function getFollowUpDisplay(person) {
     if (scheduledDate) {
         return {
             isOverdue: false,
-            label: scheduledDate === todayStr ? 'Follow-up Today' : 'Follow-up',
-            date: scheduledDate,
+            label: scheduledDate === todayStr ? t('admin.networkingSection.followUpToday', 'Follow-up Today') : t('admin.networkingSection.followUpBadge', 'Follow-up'),
+            date: formatDate ? formatDate(scheduledDate) : scheduledDate,
             title,
         };
     }
@@ -126,14 +125,16 @@ function getFollowUpDisplay(person) {
     // 6. If neither scheduledDate nor dueDate is set, but follow-up is active
     return {
         isOverdue: false,
-        label: 'Follow-up',
+        label: t('admin.networkingSection.followUpBadge', 'Follow-up'),
         date: '',
         title,
     };
 }
 
+const SELECTED_TAGS_KEY = 'admin_networking_selected_tags';
+
 const NetworkingAdmin = () => {
-    const { t } = useContent();
+    const { t, formatDate, formatNumber } = useContent();
     const [people, setPeople] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -144,10 +145,30 @@ const NetworkingAdmin = () => {
     // Form state (Add Person)
     const [formData, setFormData] = useState({
         name: '',
-        linkedin: '',
+        website: '',
         whereMet: '',
+        tags: '',
         notes: '',
     });
+
+    // Tag filter state
+    const [selectedTags, setSelectedTags] = useState(() => {
+        try {
+            const saved = localStorage.getItem(SELECTED_TAGS_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    return new Set(parsed.map((s) => String(s).toLowerCase()));
+                }
+            }
+        } catch {
+            // ignore localStorage parse error
+        }
+        return new Set();
+    });
+    const [isTagDropdownOpen, setIsTagDropdownOpen] = useState(false);
+    const [tagFilterSearch, setTagFilterSearch] = useState('');
+    const tagDropdownRef = useRef(null);
 
     // Person Modal state (Edit Person & Follow-up)
     const [selectedPersonForModal, setSelectedPersonForModal] = useState(null);
@@ -181,22 +202,131 @@ const NetworkingAdmin = () => {
         loadPeople();
     }, [loadPeople]);
 
-    // Filtered People by Search Query
+    // Persist selected tags to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                SELECTED_TAGS_KEY,
+                JSON.stringify(Array.from(selectedTags))
+            );
+        } catch {
+            // ignore storage error
+        }
+    }, [selectedTags]);
+
+    // Close tag dropdown on click outside or Escape
+    useEffect(() => {
+        if (!isTagDropdownOpen) return;
+        const handleClickOutside = (e) => {
+            if (tagDropdownRef.current && !tagDropdownRef.current.contains(e.target)) {
+                setIsTagDropdownOpen(false);
+            }
+        };
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setIsTagDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isTagDropdownOpen]);
+
+    // Available tags aggregated from all people
+    const allAvailableTags = useMemo(() => {
+        const tagMap = new Map();
+        people.forEach((person) => {
+            const personTags = extractPersonTags(person);
+            personTags.forEach((tag) => {
+                const lower = tag.toLowerCase();
+                if (tagMap.has(lower)) {
+                    tagMap.get(lower).count += 1;
+                } else {
+                    tagMap.set(lower, {
+                        key: lower,
+                        label: tag,
+                        count: 1,
+                    });
+                }
+            });
+        });
+        return Array.from(tagMap.values()).sort((a, b) => a.label.localeCompare(b.label));
+    }, [people]);
+
+    const filteredDropdownTags = useMemo(() => {
+        const q = tagFilterSearch.trim().toLowerCase();
+        if (!q) return allAvailableTags;
+        return allAvailableTags.filter((t) => t.label.toLowerCase().includes(q));
+    }, [allAvailableTags, tagFilterSearch]);
+
+    const toggleTag = useCallback((tagKey) => {
+        setSelectedTags((prev) => {
+            const next = new Set(prev);
+            if (next.has(tagKey)) {
+                next.delete(tagKey);
+            } else {
+                next.add(tagKey);
+            }
+            return next;
+        });
+    }, []);
+
+    const selectAllTags = useCallback(() => {
+        const allKeys = new Set(allAvailableTags.map((t) => t.key));
+        setSelectedTags(allKeys);
+    }, [allAvailableTags]);
+
+    const clearAllTags = useCallback(() => {
+        setSelectedTags(new Set());
+    }, []);
+
+    // Filtered People by Search Query & Selected Tags
     const searchFilteredPeople = useMemo(() => {
         const query = search.trim().toLowerCase();
-        if (!query) return people;
 
         return people.filter((person) => {
+            const personTags = extractPersonTags(person);
+
+            if (selectedTags.size > 0) {
+                const lowerTags = personTags.map((t) => t.toLowerCase());
+                const hasMatchingTag = lowerTags.some((t) => selectedTags.has(t));
+                if (!hasMatchingTag) {
+                    return false;
+                }
+            }
+
+            if (!query) return true;
+
             const nameMatch = (person.name || '').toLowerCase().includes(query);
             const whereMetMatch = (person.whereMet || person.howMet || '').toLowerCase().includes(query);
             const notesMatch = (person.notes || '').toLowerCase().includes(query);
-            const linkedinMatch = (person.linkedin || '').toLowerCase().includes(query);
+            const websiteMatch = (person.website || person.linkedin || '').toLowerCase().includes(query);
+            const roleMatch = (person.role || '').toLowerCase().includes(query);
+            const companyMatch = (person.company || '').toLowerCase().includes(query);
+            const emailMatch = (person.email || '').toLowerCase().includes(query);
+            const locationMatch = (person.location || '').toLowerCase().includes(query);
             const followUpMatch = (person.followUpNotes || '').toLowerCase().includes(query);
             const contactedMatch = (person.lastInteractionAt || '').toLowerCase().includes(query);
+            const tagMatch = personTags.some((t) => t.toLowerCase().includes(query));
 
-            return nameMatch || whereMetMatch || notesMatch || linkedinMatch || followUpMatch || contactedMatch;
+            return (
+                nameMatch ||
+                whereMetMatch ||
+                notesMatch ||
+                websiteMatch ||
+                roleMatch ||
+                companyMatch ||
+                emailMatch ||
+                locationMatch ||
+                followUpMatch ||
+                contactedMatch ||
+                tagMatch
+            );
         });
-    }, [people, search]);
+    }, [people, search, selectedTags]);
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -210,10 +340,17 @@ const NetworkingAdmin = () => {
             setSubmitting(true);
             setFormError('');
 
+            const normalizedUrl = normalizeWebsiteUrl(formData.website);
+            const parsedTags = typeof formData.tags === 'string'
+                ? formData.tags.split(',').map((t) => t.trim().replace(/^#/, '')).filter(Boolean)
+                : (Array.isArray(formData.tags) ? formData.tags : []);
+
             const payload = {
                 name: trimmedName,
-                linkedin: normalizeLinkedInUrl(formData.linkedin),
+                website: normalizedUrl,
+                linkedin: normalizedUrl,
                 whereMet: formData.whereMet.trim(),
+                tags: parsedTags,
                 notes: formData.notes.trim(),
             };
 
@@ -232,8 +369,9 @@ const NetworkingAdmin = () => {
             // Reset form
             setFormData({
                 name: '',
-                linkedin: '',
+                website: '',
                 whereMet: '',
+                tags: '',
                 notes: '',
             });
             await loadPeople();
@@ -247,8 +385,9 @@ const NetworkingAdmin = () => {
     const handleResetForm = () => {
         setFormData({
             name: '',
-            linkedin: '',
+            website: '',
             whereMet: '',
+            tags: '',
             notes: '',
         });
         setFormError('');
@@ -298,12 +437,12 @@ const NetworkingAdmin = () => {
         }
     };
 
-    const hasFormData = Boolean(formData.name || formData.linkedin || formData.whereMet || formData.notes);
+    const hasFormData = Boolean(formData.name || formData.website || formData.whereMet || formData.tags || formData.notes);
 
     return (
         <AdminLayout title={t('admin.networkingSection.title', 'Networking Manager')}>
             <div className="admin-networking-page">
-                {/* Add Person Card Form matching the reference screenshot */}
+                {/* Add Person Card Form */}
                 <div className="admin-networking-form-card">
                     <form
                         ref={formRef}
@@ -314,7 +453,7 @@ const NetworkingAdmin = () => {
                             {t('admin.networkingSection.addPerson', 'Add Person')}
                         </h3>
 
-                        {/* Row 1: 3 Fields (Name, LinkedIn, Where Met) */}
+                        {/* Row 1: 4 Fields (Name, Website, Where Met, Tags) */}
                         <div className="admin-networking-form-row">
                             <label className="admin-networking-form-field">
                                 <span>{t('admin.networkingSection.name', 'Name *')}</span>
@@ -328,12 +467,12 @@ const NetworkingAdmin = () => {
                             </label>
 
                             <label className="admin-networking-form-field">
-                                <span>{t('admin.networkingSection.linkedin', 'LinkedIn')}</span>
+                                <span>{t('admin.networkingSection.website', 'Website')}</span>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.linkedinPlaceholder', 'e.g. linkedin.com/in/username')}
-                                    value={formData.linkedin}
-                                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                                    placeholder={t('admin.networkingSection.websitePlaceholder', 'e.g. example.com')}
+                                    value={formData.website}
+                                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                                 />
                             </label>
 
@@ -344,6 +483,17 @@ const NetworkingAdmin = () => {
                                     placeholder={t('admin.networkingSection.whereMetPlaceholder', 'e.g. House, Tech Summit')}
                                     value={formData.whereMet}
                                     onChange={(e) => setFormData({ ...formData, whereMet: e.target.value })}
+                                />
+                            </label>
+
+                            <label className="admin-networking-form-field">
+                                <span>{t('admin.networkingSection.tags', 'Tags')}</span>
+                                <input
+                                    type="text"
+                                    placeholder={t('admin.networkingSection.tagsPlaceholder', 'e.g. alumni, ai, mentor')}
+                                    value={formData.tags}
+                                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                                    autoComplete="off"
                                 />
                             </label>
                         </div>
@@ -386,37 +536,155 @@ const NetworkingAdmin = () => {
                     </form>
                 </div>
 
-                {/* Full-width Search Bar */}
-                <div className="admin-networking-search-bar">
-                    <span className="admin-networking-search-icon" aria-hidden="true">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                    </span>
-                    <input
-                        type="text"
-                        placeholder={t('admin.networkingSection.searchPlaceholder', 'Search by name, LinkedIn, where met, notes...')}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Escape' && search) {
-                                e.stopPropagation();
-                                setSearch('');
-                            }
-                        }}
-                        className="admin-networking-search-input"
-                    />
-                    {search && (
+                {/* Controls Group: Search Bar & Tag Filter Dropdown */}
+                <div className="admin-todo-controls-group admin-networking-controls-group">
+                    <div className="admin-todo-search-wrap">
+                        <span className="admin-todo-search-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            placeholder={t('admin.networkingSection.searchPlaceholder', 'Search contacts...')}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape' && search) {
+                                    e.stopPropagation();
+                                    setSearch('');
+                                }
+                            }}
+                            className="admin-todo-search-input"
+                            aria-label={t('admin.networkingSection.searchAriaLabel', 'Search contacts')}
+                        />
+                        {search && (
+                            <button
+                                type="button"
+                                className="admin-todo-search-clear"
+                                onClick={() => setSearch('')}
+                                aria-label={t('admin.networkingSection.clearSearch', 'Clear search')}
+                                title={t('admin.networkingSection.clearSearch', 'Clear search')}
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Tag Filter Dropdown Button & Popover */}
+                    <div className="admin-todo-tag-filter-wrap" ref={tagDropdownRef}>
                         <button
                             type="button"
-                            className="admin-networking-search-clear"
-                            onClick={() => setSearch('')}
-                            title={t('admin.networkingSection.clearSearch', 'Clear search')}
+                            className={`admin-todo-tag-filter-btn ${selectedTags.size > 0 ? 'has-active' : ''} ${isTagDropdownOpen ? 'is-open' : ''}`}
+                            onClick={() => setIsTagDropdownOpen((prev) => !prev)}
+                            aria-expanded={isTagDropdownOpen}
+                            title={t('admin.networkingSection.filterByTags', 'Filter by Tags')}
                         >
-                            ✕
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                <line x1="7" y1="7" x2="7.01" y2="7" />
+                            </svg>
+                            <span>{t('admin.networkingSection.tags', 'Tags')}</span>
+                            {selectedTags.size > 0 && (
+                                <span className="admin-todo-tag-filter-badge">
+                                    {formatNumber(selectedTags.size)}
+                                </span>
+                            )}
+                            <svg className={`admin-todo-tag-filter-arrow ${isTagDropdownOpen ? 'rotated' : ''}`} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
                         </button>
-                    )}
+
+                        {isTagDropdownOpen && (
+                            <div className="admin-todo-tag-dropdown-menu">
+                                <div className="admin-todo-tag-dropdown-header">
+                                    <span className="admin-todo-tag-dropdown-title">
+                                        {t('admin.networkingSection.filterByTags', 'Filter by Tags')}
+                                    </span>
+                                </div>
+
+                                {allAvailableTags.length > 5 && (
+                                    <div className="admin-todo-tag-dropdown-search">
+                                        <input
+                                            type="text"
+                                            placeholder={t('admin.networkingSection.searchTagsPlaceholder', 'Search tags...')}
+                                            value={tagFilterSearch}
+                                            onChange={(e) => setTagFilterSearch(e.target.value)}
+                                            className="admin-todo-tag-dropdown-search-input"
+                                            autoFocus
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="admin-todo-tag-dropdown-list">
+                                    {allAvailableTags.length === 0 ? (
+                                        <div className="admin-todo-tag-dropdown-empty">
+                                            {t('admin.networkingSection.noTagsFound', 'No tags created yet')}
+                                        </div>
+                                    ) : filteredDropdownTags.length === 0 ? (
+                                        <div className="admin-todo-tag-dropdown-empty">
+                                            {t('admin.networkingSection.noMatchingTags', 'No matching tags')}
+                                        </div>
+                                    ) : (
+                                        filteredDropdownTags.map((tag) => {
+                                            const isSelected = selectedTags.has(tag.key);
+                                            return (
+                                                <button
+                                                    key={tag.key}
+                                                    type="button"
+                                                    className={`admin-todo-tag-dropdown-item ${isSelected ? 'is-selected' : ''}`}
+                                                    onClick={() => toggleTag(tag.key)}
+                                                >
+                                                    <span className={`admin-todo-tag-checkbox ${isSelected ? 'checked' : ''}`}>
+                                                        {isSelected && (
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            </svg>
+                                                        )}
+                                                    </span>
+                                                    <span className="admin-todo-tag-dropdown-item-name">
+                                                        {tag.label}
+                                                    </span>
+                                                    <span className="admin-todo-tag-dropdown-item-count">
+                                                        {formatNumber(tag.count)}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })
+                                    )}
+                                </div>
+
+                                {allAvailableTags.length > 0 && (
+                                    <div className="admin-todo-tag-dropdown-footer">
+                                        <span className="admin-todo-tag-dropdown-summary">
+                                            {t('admin.networkingSection.selectedCount', '{count} selected').replace('{count}', formatNumber(selectedTags.size))}
+                                        </span>
+                                        <div className="admin-todo-tag-dropdown-footer-actions">
+                                            {selectedTags.size < allAvailableTags.length && (
+                                                <button
+                                                    type="button"
+                                                    className="admin-todo-tag-dropdown-select-all-btn"
+                                                    onClick={selectAllTags}
+                                                >
+                                                    {t('admin.networkingSection.selectAllTags', 'Select All')}
+                                                </button>
+                                            )}
+                                            {selectedTags.size > 0 && (
+                                                <button
+                                                    type="button"
+                                                    className="admin-todo-tag-dropdown-clear-btn"
+                                                    onClick={clearAllTags}
+                                                >
+                                                    {t('admin.networkingSection.clearTags', 'Clear')}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Error Banner */}
@@ -431,19 +699,23 @@ const NetworkingAdmin = () => {
                     <div style={{ textAlign: 'center', padding: '3.5rem 0', color: 'var(--text-muted)' }}>
                         {t('admin.networkingSection.loadingContacts', 'Loading contacts...')}
                     </div>
+                ) : people.length === 0 ? (
+                    <p className="admin-empty">
+                        {t('admin.networkingSection.noContacts', 'No contacts yet. Add your first one above.')}
+                    </p>
                 ) : searchFilteredPeople.length === 0 ? (
-                    <div className="admin-networking-empty">
-                        <p>
-                            {search
-                                ? t('admin.networkingSection.noMatch', 'No contacts match your current search.')
-                                : t('admin.networkingSection.noContacts', 'No contacts yet. Add your first one above.')}
-                        </p>
-                    </div>
+                    <p className="admin-empty">
+                        {selectedTags.size > 0 && search
+                            ? t('admin.networkingSection.noMatchingFilterContacts', 'No contacts match your search and tag filters.')
+                            : selectedTags.size > 0
+                            ? t('admin.networkingSection.noMatchingTagContacts', 'No contacts match this tag filter.')
+                            : t('admin.networkingSection.noMatch', 'No contacts match your current search.')}
+                    </p>
                 ) : (
                     <div className="admin-networking-grid">
                         {searchFilteredPeople.map((person) => {
                             const whereMet = person.whereMet || person.howMet;
-                            const followUpInfo = getFollowUpDisplay(person);
+                            const followUpInfo = getFollowUpDisplay(person, t, formatDate);
 
                             return (
                                 <div
@@ -457,27 +729,29 @@ const NetworkingAdmin = () => {
                                                 {person.name}
                                             </h4>
 
-                                            {(person.linkedin || whereMet || person.lastInteractionAt) && (
+                                            {(person.website || person.linkedin || whereMet || person.lastInteractionAt) && (
                                                 <div className="admin-networking-card-meta-row">
-                                                    {person.linkedin && (
+                                                    {(person.website || person.linkedin) && (
                                                         <a
-                                                            href={person.linkedin}
+                                                            href={person.website || person.linkedin}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="admin-networking-linkedin-link"
-                                                            title="LinkedIn"
+                                                            className="admin-networking-website-link admin-networking-linkedin-link"
+                                                            title={t('admin.networkingSection.website', 'Website')}
                                                             onClick={(e) => e.stopPropagation()}
                                                         >
-                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                                                                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 0 0 1.45-1.45 1.45 1.45 0 0 0-1.45-1.45 1.45 1.45 0 0 0-1.45 1.45c0 .8.65 1.45 1.45 1.45m1.39 9.74v-8.37H5.07v8.37h2.78z" />
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <line x1="2" y1="12" x2="22" y2="12" />
+                                                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                                                             </svg>
-                                                            LinkedIn
+                                                            {t('admin.networkingSection.website', 'Website')}
                                                         </a>
                                                     )}
 
                                                     {person.lastInteractionAt && (
                                                         <div className="admin-networking-met-badge">
-                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.contactedLabel', 'Contacted:')}</span> {formatDisplayDate(person.lastInteractionAt)}
+                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.contactedLabel', 'Contacted:')}</span> {formatDate(person.lastInteractionAt)}
                                                         </div>
                                                     )}
 
@@ -523,36 +797,62 @@ const NetworkingAdmin = () => {
 
                                     {/* Middle: Notes box */}
                                     <div className="admin-networking-notes-box">
-                                        {person.notes || <span className="admin-networking-notes-empty">No notes</span>}
+                                        {person.notes || <span className="admin-networking-notes-empty">{t('admin.networkingSection.noNotesEmpty', 'No notes')}</span>}
                                     </div>
 
-                                    {/* Bottom: Action Buttons Edit & Delete */}
+                                    {/* Bottom: Tags on left, Edit & Delete on right */}
                                     <div className="admin-networking-card-footer">
-                                        <button
-                                            type="button"
-                                            className="admin-networking-card-btn admin-networking-card-btn-edit"
-                                            onClick={() => setSelectedPersonForModal(person)}
-                                            title={t('admin.networkingSection.editBtn', 'Edit')}
-                                        >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                            </svg>
-                                            {t('admin.networkingSection.editBtn', 'Edit')}
-                                        </button>
+                                        <div className="admin-networking-card-tags">
+                                            {extractPersonTags(person).map((tagStr, idx) => {
+                                                const isTagSelected = selectedTags.has(tagStr.toLowerCase());
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        type="button"
+                                                        className={`admin-networking-tag-badge ${isTagSelected ? 'is-active' : ''}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleTag(tagStr.toLowerCase());
+                                                        }}
+                                                        title={isTagSelected ? `Active tag filter: ${tagStr}` : `Filter by tag: ${tagStr}`}
+                                                    >
+                                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                                            <line x1="7" y1="7" x2="7.01" y2="7" />
+                                                        </svg>
+                                                        <span>{tagStr}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
 
-                                        <button
-                                            type="button"
-                                            className="admin-networking-card-btn admin-networking-card-btn-delete"
-                                            onClick={() => handleDeletePerson(person)}
-                                            title={t('admin.networkingSection.deleteBtn', 'Delete')}
-                                        >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="3 6 5 6 21 6" />
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                            </svg>
-                                            {t('admin.networkingSection.deleteBtn', 'Delete')}
-                                        </button>
+                                        <div className="admin-networking-card-actions">
+                                            <button
+                                                type="button"
+                                                className="admin-networking-card-btn admin-networking-card-btn-edit"
+                                                onClick={() => setSelectedPersonForModal(person)}
+                                                title={t('admin.networkingSection.editBtn', 'Edit')}
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                </svg>
+                                                <span>{t('admin.networkingSection.editBtn', 'Edit')}</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="admin-networking-card-btn admin-networking-card-btn-delete"
+                                                onClick={() => handleDeletePerson(person)}
+                                                title={t('admin.networkingSection.deleteBtn', 'Delete')}
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="3 6 5 6 21 6" />
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                </svg>
+                                                <span>{t('admin.networkingSection.deleteBtn', 'Delete')}</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );

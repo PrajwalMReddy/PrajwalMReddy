@@ -175,8 +175,8 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         onChange={(e) => setFilterLang(e.target.value)}
                     >
                         <option value="all">{t('admin.filters.allLanguages', 'All Languages')}</option>
-                        <option value="en">English</option>
-                        <option value="kn">ಕನ್ನಡ</option>
+                        <option value="en">{t('admin.labels.english', 'English')}</option>
+                        <option value="kn">{t('admin.labels.kannada', 'ಕನ್ನಡ')}</option>
                     </select>
 
                     <span className="cms-meta-summary">
@@ -228,7 +228,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                                 <span className="cms-tag cms-tag-source">— {quote.author}</span>
                                             )}
                                             <span className="cms-tag cms-tag-lang">
-                                                {quote.language === 'kn' ? 'ಕನ್ನಡ' : 'English'}
+                                                {quote.language === 'kn' ? t('admin.labels.kannada', 'ಕನ್ನಡ') : t('admin.labels.english', 'English')}
                                             </span>
                                         </div>
                                     </div>
@@ -255,7 +255,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        className="cms-btn cms-btn-sm cms-btn-secondary"
+                                        className="cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEdit(quote, originalIndex)}
                                         disabled={saving}
                                     >
@@ -263,7 +263,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        className="cms-btn cms-btn-sm cms-btn-danger"
+                                        className="cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                         disabled={saving}
                                     >
@@ -308,7 +308,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     <textarea
                                         className="cms-textarea"
                                         rows={4}
-                                        placeholder="Enter the quote text..."
+                                        placeholder={t('admin.placeholders.enterQuoteText', 'Enter the quote text...')}
                                         value={formState.text}
                                         onChange={(e) =>
                                             setFormState((prev) => ({
@@ -326,7 +326,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                         <input
                                             type="text"
                                             className="cms-input"
-                                            placeholder="e.g. James Madison"
+                                            placeholder={t('admin.placeholders.quoteAuthor', 'e.g. James Madison')}
                                             value={formState.author}
                                             onChange={(e) =>
                                                 setFormState((prev) => ({
@@ -349,8 +349,8 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                                 }))
                                             }
                                         >
-                                            <option value="en">English</option>
-                                            <option value="kn">ಕನ್ನಡ</option>
+                                            <option value="en">{t('admin.labels.english', 'English')}</option>
+                                            <option value="kn">{t('admin.labels.kannada', 'ಕನ್ನಡ')}</option>
                                         </select>
                                     </div>
                                 </div>

@@ -1,6 +1,13 @@
 import React from 'react';
 import {useContent} from '../../../utils/ContentContext';
-import {formatRecurrence, getDueDateLabel, getDueState, PRIORITY_LABEL,} from './todoUtils';
+import {
+    formatRecurrence,
+    formatTodoUrl,
+    getDisplayUrl,
+    getDueDateLabel,
+    getDueState,
+    PRIORITY_LABEL,
+} from './todoUtils';
 
 const TodoCard = ({
                       todo,
@@ -30,6 +37,14 @@ const TodoCard = ({
             : 'normal';
 
     const hasSubtasks = todo.subtasks && todo.subtasks.length > 0;
+    const hasBottomContent = Boolean(
+        dueDateLabel ||
+        todo.estimatedTime ||
+        (todo.recurrence && todo.recurrence !== 'none') ||
+        todo.personId ||
+        (Array.isArray(todo.tags) && todo.tags.length > 0) ||
+        hasSubtasks
+    );
 
     return (
         <div
@@ -64,33 +79,6 @@ const TodoCard = ({
                     <span className="admin-todo-card-title">{todo.title}</span>
                 </div>
 
-                {hasSubtasks && (
-                    <button
-                        type="button"
-                        className={`admin-todo-card-subtasks-toggle${isExpanded ? ' is-open' : ''}`}
-                        onClick={() => onToggleSubtasksExpanded(todo.id)}
-                        aria-expanded={isExpanded}
-                        title={isExpanded ? t('admin.todoSection.hideSubtasks', 'Hide subtasks') : t('admin.todoSection.showSubtasks', 'Show subtasks')}
-                    >
-                        <svg
-                            className="admin-todo-card-subtasks-chevron"
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                        <span className="admin-todo-card-subtasks-count">
-                            {formatNumber(todo.subtasks.filter((st) => st.completed).length)}/{formatNumber(todo.subtasks.length)}
-                        </span>
-                    </button>
-                )}
 
                 <button
                     type="button"
@@ -113,7 +101,8 @@ const TodoCard = ({
                 </button>
             </div>
 
-            <div className="admin-todo-card-bottom">
+            {hasBottomContent && (
+                <div className="admin-todo-card-bottom">
                 <div className="admin-todo-card-info">
                     {(dueDateLabel || todo.estimatedTime) && (
                         <div className="admin-todo-card-primary-info">
@@ -188,19 +177,67 @@ const TodoCard = ({
                     )}
                 </div>
 
-                {!todo.completed && (
-                    <select
-                        className="admin-todo-card-priority"
-                        value={todo.priority}
-                        onChange={(e) => onChangePriority(todo.id, e.target.value)}
-                        title={t('admin.todoSection.changePriority', 'Change priority')}
+                {hasSubtasks && (
+                    <button
+                        type="button"
+                        className={`admin-todo-card-subtasks-toggle${isExpanded ? ' is-open' : ''}`}
+                        onClick={() => onToggleSubtasksExpanded(todo.id)}
+                        aria-expanded={isExpanded}
+                        title={isExpanded ? t('admin.todoSection.hideSubtasks', 'Hide subtasks') : t('admin.todoSection.showSubtasks', 'Show subtasks')}
                     >
-                        <option value="low">{t('admin.todoSection.priorities.low', 'Low')}</option>
-                        <option value="medium">{t('admin.todoSection.priorities.medium', 'Medium')}</option>
-                        <option value="high">{t('admin.todoSection.priorities.high', 'High')}</option>
-                    </select>
+                        <svg
+                            className="admin-todo-card-subtasks-chevron"
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                        >
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                        <span className="admin-todo-card-subtasks-count">
+                            {formatNumber(todo.subtasks.filter((st) => st.completed).length)}/{formatNumber(todo.subtasks.length)}
+                        </span>
+                    </button>
                 )}
             </div>
+            )}
+
+            {todo.link && todo.link.trim() && (
+                <div className="admin-todo-card-link-row">
+                    <a
+                        href={formatTodoUrl(todo.link)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-todo-card-link"
+                        onClick={(e) => e.stopPropagation()}
+                        title={todo.link}
+                    >
+                        <svg
+                            className="admin-todo-card-link-icon"
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                        <span className="admin-todo-card-link-text">
+                            {getDisplayUrl(todo.link)}
+                        </span>
+                    </a>
+                </div>
+            )}
 
             {isExpanded && hasSubtasks && (
                 <div className="admin-todo-card-subtasks">

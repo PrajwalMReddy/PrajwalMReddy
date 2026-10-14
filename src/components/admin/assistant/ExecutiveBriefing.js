@@ -40,7 +40,7 @@ function formatNewsDate(dateString, t, formatNumber) {
 
 const PAGE_SIZE = 5;
 
-const ExecutiveBriefing = () => {
+const ExecutiveBriefing = ({ onOpenSettings }) => {
     const { t, formatNumber, language } = useContent();
     const [newsArticles, setNewsArticles] = useState([]);
     const [newsOffset, setNewsOffset] = useState(0);
@@ -69,7 +69,7 @@ const ExecutiveBriefing = () => {
                 setHasMoreNews(initialNews.length >= PAGE_SIZE);
             }
         } catch (err) {
-            console.error('Failed to load recent news:', err);
+            console.error(t('logs.newsLoadError', 'Failed to load recent news:'), err);
             setError(err.message || t('admin.news.error', 'Failed to load recent news.'));
         } finally {
             setLoading(false);
@@ -114,7 +114,7 @@ const ExecutiveBriefing = () => {
                 }
             }
         } catch (err) {
-            console.error('Failed to load more news:', err);
+            console.error(t('logs.moreNewsLoadError', 'Failed to load more news:'), err);
         } finally {
             setLoadingMore(false);
         }
@@ -138,7 +138,7 @@ const ExecutiveBriefing = () => {
         <article className="briefing-memo-document" aria-label={t('admin.news.recentNews', 'Recent News')}>
             {/* Header */}
             <header className="memo-masthead" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem' }}>
-                <div className="memo-header-top" style={{ marginBottom: 0, alignItems: 'center' }}>
+                <div className="memo-header-top" style={{ marginBottom: 0 }}>
                     <h2 className="memo-title" style={{ fontSize: '1.4rem', margin: 0 }}>
                         {t('admin.news.recentNews', 'Recent News')}
                     </h2>

@@ -57,6 +57,7 @@ const routeMap = {
     '/api/cms/content': '../lib/api-handlers/cms/content',
     '/api/content': '../lib/api-handlers/cms/content',
     '/api/cms/markdown': '../lib/api-handlers/cms/markdown',
+    '/api/cms/upload': '../lib/api-handlers/cms/upload',
     '/api/konami/levels': '../lib/api-handlers/konami/levels',
     '/api/admin/summary': '../lib/api-handlers/admin/summary',
     '/api/networking/people': '../lib/api-handlers/networking',

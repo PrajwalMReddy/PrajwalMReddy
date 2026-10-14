@@ -75,8 +75,8 @@ const BengaluruTeluguDictionary = (props) => {
                     className="dictionary-search-input"
                 />
             </div>
-            {loading ? (<div className="blog-post-loading">Loading...</div>) : error ? (
-                <div className="blog-post-error">Error: {error}</div>) : (<div className="dictionary-list">
+            {loading ? (<div className="blog-post-loading">{t('loading')}</div>) : error ? (
+                <div className="blog-post-error">{t('errorPrefix', 'Error: ')}{error}</div>) : (<div className="dictionary-list">
                 {sortedInitials.length === 0 && (<div className="blog-post-error">{t('researchNoResults')}</div>)}
                 {sortedInitials.map(initial => {
                     const [col1, col2] = splitIntoColumns(grouped[initial]);

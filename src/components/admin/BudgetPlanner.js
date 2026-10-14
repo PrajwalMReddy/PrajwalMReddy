@@ -22,12 +22,13 @@ const emptyItemForm = {
 
 const isCloseToZero = (n) => Math.abs(n) < 0.005;
 
-const BudgetPlanner = () => {
+const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
     const { t, formatNumber, language } = useContent();
     const [plans, setPlans] = useState([]);
     const [selectedPlanId, setSelectedPlanId] = useState(null);
     const [draftPlan, setDraftPlan] = useState(null);
 
+    const [expenses, setExpenses] = useState(propExpenses || []);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
@@ -35,8 +36,21 @@ const BudgetPlanner = () => {
     const [budgetTotal, setBudgetTotal] = useState('');
     const [monthlyBudget, setMonthlyBudget] = useState({});
 
+
+
     const [expandedMonth, setExpandedMonth] = useState(null);
     const [itemForms, setItemForms] = useState({});
+
+    useEffect(() => {
+        if (Array.isArray(propExpenses)) {
+            setExpenses(propExpenses);
+        } else {
+            budgetApi
+                .getExpenses()
+                .then((data) => setExpenses(data || []))
+                .catch((err) => console.error('Failed to load expenses for planner:', err));
+        }
+    }, [propExpenses]);
 
     const currentAyanaNumber = useMemo(
         () => getCurrentAyanaNumber(AYANA_START_DATE),
@@ -44,13 +58,18 @@ const BudgetPlanner = () => {
     );
 
     const availableAyanaNumbers = useMemo(() => {
-        const maxAyana = currentAyanaNumber + 1;
+        const highestPlanNumber = (plans || []).reduce(
+            (max, plan) => Math.max(max, plan.ayanaNumber || 0),
+            0
+        );
+        const draftNumber = draftPlan?.ayanaNumber || 0;
+        const maxAyana = Math.max(currentAyanaNumber + 1, highestPlanNumber, draftNumber);
 
         return Array.from(
             {length: maxAyana},
             (_, index) => index + 1
         );
-    }, [currentAyanaNumber]);
+    }, [currentAyanaNumber, plans, draftPlan?.ayanaNumber]);
 
     const loadPlans = async (preferId = null) => {
         setLoading(true);
@@ -237,7 +256,7 @@ const BudgetPlanner = () => {
         const total = Number(budgetTotal) || 0;
 
         if (total <= 0 || monthsInAyana.length === 0) {
-            setError('Enter a total Ayana budget first.');
+            setError(t('admin.budgetSection.planner.enterTotalFirst', 'Enter a total Ayana budget first.'));
             return;
         }
 
@@ -297,7 +316,7 @@ const BudgetPlanner = () => {
         const amount = Number(form.amount);
 
         if (!Number.isFinite(amount) || amount < 0) {
-            setError('Enter a valid expense amount.');
+            setError(t('admin.budgetSection.planner.validAmountError', 'Enter a valid expense amount.'));
             return;
         }
 
@@ -336,6 +355,78 @@ const BudgetPlanner = () => {
         });
     };
 
+    const isPastAyana = Boolean(
+        draftPlan && draftPlan.ayanaNumber < currentAyanaNumber
+    );
+
+    const isCurrentAyana = Boolean(
+        draftPlan && draftPlan.ayanaNumber === currentAyanaNumber
+    );
+
+    const currentMonthKey = useMemo(() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }, []);
+
+    const getExpenseMonthKey = (dateVal) => {
+        if (!dateVal) return '';
+        if (dateVal instanceof Date) {
+            const y = dateVal.getFullYear();
+            const m = String(dateVal.getMonth() + 1).padStart(2, '0');
+            return `${y}-${m}`;
+        }
+        const str = String(dateVal).split('T')[0];
+        const parts = str.split('-');
+        if (parts.length >= 2) {
+            return `${parts[0]}-${parts[1].padStart(2, '0')}`;
+        }
+        return '';
+    };
+
+    const actualExpensesByMonth = useMemo(() => {
+        const map = {};
+        monthsInAyana.forEach((m) => {
+            map[m] = [];
+        });
+        (expenses || []).forEach((expense) => {
+            const mKey = getExpenseMonthKey(expense.date);
+            if (map[mKey]) {
+                map[mKey].push(expense);
+            }
+        });
+        return map;
+    }, [expenses, monthsInAyana]);
+
+    const monthlyActuals = useMemo(() => {
+        return monthsInAyana.map((month) => {
+            const list = actualExpensesByMonth[month] || [];
+            const actualSpent = list.reduce(
+                (sum, e) => sum + (Number(e.cost) || 0),
+                0
+            );
+            const budgeted = Number(monthlyBudget[month]) || 0;
+            const diff = actualSpent - budgeted;
+            const isOver = budgeted > 0 ? diff > 0.005 : actualSpent > 0;
+            const overAmount = Math.max(0, diff);
+            const underAmount = Math.max(0, -diff);
+            const pctUsed = budgeted > 0 ? (actualSpent / budgeted) * 100 : null;
+
+            return {
+                month,
+                actualSpent,
+                budgeted,
+                diff,
+                isOver,
+                overAmount,
+                underAmount,
+                pctUsed,
+                transactionCount: list.length,
+                expensesList: list,
+            };
+        });
+    }, [actualExpensesByMonth, monthlyBudget, monthsInAyana]);
+
+
     const monthlyTotals = useMemo(() => {
         return monthsInAyana.map((month) => {
             const items =
@@ -352,18 +443,22 @@ const BudgetPlanner = () => {
             const budgeted =
                 Number(monthlyBudget[month]) || 0;
 
+            const actualData = monthlyActuals.find((a) => a.month === month);
+
             return {
                 month,
                 items,
                 budgeted,
                 planned,
                 remaining: budgeted - planned,
+                actualData,
             };
         });
     }, [
         draftPlan?.monthlyItems,
         monthlyBudget,
         monthsInAyana,
+        monthlyActuals,
     ]);
 
     const totalBudget =
@@ -383,11 +478,32 @@ const BudgetPlanner = () => {
             0
         );
 
+    const totalActualSpent = useMemo(() => {
+        return monthlyActuals.reduce(
+            (sum, m) => sum + (m.actualSpent || 0),
+            0
+        );
+    }, [monthlyActuals]);
+
+    const ayanaAnalysis = useMemo(() => {
+        const diff = totalActualSpent - totalBudget;
+        const isOver = totalBudget > 0 ? diff > 0.005 : totalActualSpent > 0;
+        const overAmount = Math.max(0, diff);
+        const underAmount = Math.max(0, -diff);
+        return {
+            totalActualSpent,
+            diff,
+            isOver,
+            overAmount,
+            underAmount,
+        };
+    }, [totalActualSpent, totalBudget]);
+
     const allocationDifference =
         totalBudget - totalMonthlyBudget;
 
     const remainingToSpend =
-        totalBudget - totalPlanned;
+        totalBudget - totalActualSpent;
 
     const allocationValid =
         totalBudget > 0 &&
@@ -400,14 +516,11 @@ const BudgetPlanner = () => {
         }
 
         if (!allocationValid) {
+            const formattedDiff = formatNumber(formatCurrency(Math.abs(allocationDifference)));
             setError(
                 allocationDifference < 0
-                    ? `The monthly budgets are ${formatCurrency(
-                        Math.abs(allocationDifference)
-                    )} over the Ayana budget.`
-                    : `Allocate the full Ayana budget. ${formatCurrency(
-                        allocationDifference
-                    )} remains unallocated.`
+                    ? `${t('admin.budgetSection.planner.budgetExceeded', 'Budget exceeded by')} ${formattedDiff}.`
+                    : `${formattedDiff} ${t('admin.budgetSection.planner.leftToAllocate', 'left to allocate')}.`
             );
             return;
         }
@@ -452,6 +565,9 @@ const BudgetPlanner = () => {
 
                 await loadPlans(created.id);
             }
+            if (onRefresh) {
+                onRefresh();
+            }
         } catch (err) {
             setError(
                 err.message ||
@@ -487,6 +603,9 @@ const BudgetPlanner = () => {
             setDraftPlan(null);
 
             await loadPlans();
+            if (onRefresh) {
+                onRefresh();
+            }
         } catch (err) {
             setError(
                 err.message ||
@@ -620,10 +739,6 @@ const BudgetPlanner = () => {
                         </div>
                     </div>
 
-                    {/* =================================================
-                        BUDGET OVERVIEW
-                    ================================================== */}
-
                     <section className="admin-planner-overview">
                         <div className="admin-planner-budget-input">
                             <label>
@@ -658,7 +773,7 @@ const BudgetPlanner = () => {
 
                         <div className="admin-planner-overview-stats">
                             <div>
-                                <span>{t('admin.budgetSection.planner.monthlyBudget', 'Monthly Budget')}</span>
+                                <span>{t('admin.budgetSection.planner.totalAllocated', 'Total Allocated')}</span>
 
                                 <strong>
                                     {formatNumber(formatCurrency(
@@ -677,27 +792,54 @@ const BudgetPlanner = () => {
                                 </strong>
                             </div>
 
-                            <div
-                                className={
-                                    remainingToSpend < 0
-                                        ? 'negative'
-                                        : ''
-                                }
-                            >
-                                <span>
-                                    {remainingToSpend < 0
-                                        ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
-                                        : t('admin.budgetSection.planner.remaining', 'Remaining')}
-                                </span>
+                            <div>
+                                <span>{t('admin.budgetSection.planner.actualSpent', 'Actual Spent')}</span>
 
                                 <strong>
                                     {formatNumber(formatCurrency(
-                                        Math.abs(
-                                            remainingToSpend
-                                        )
+                                        totalActualSpent
                                     ))}
                                 </strong>
                             </div>
+
+                            {isPastAyana ? (
+                                <div className={ayanaAnalysis.isOver ? 'negative' : 'positive'}>
+                                    <span>
+                                        {ayanaAnalysis.isOver
+                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
+                                            : t('admin.budgetSection.planner.underBudget', 'Under Budget')}
+                                    </span>
+
+                                    <strong>
+                                        {ayanaAnalysis.isOver
+                                            ? `+${formatNumber(formatCurrency(ayanaAnalysis.overAmount))}`
+                                            : `${formatNumber(formatCurrency(ayanaAnalysis.underAmount))}`}
+                                    </strong>
+                                </div>
+                            ) : (
+                                <div
+                                    className={
+                                        remainingToSpend < 0
+                                            ? 'negative'
+                                            : ''
+                                    }
+                                >
+                                    <span>
+                                        {remainingToSpend < 0
+                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
+                                            : t('admin.budgetSection.planner.remaining', 'Remaining')}
+                                    </span>
+
+                                    <strong>
+                                        {remainingToSpend < 0 ? '+' : ''}
+                                        {formatNumber(formatCurrency(
+                                            Math.abs(
+                                                remainingToSpend
+                                            )
+                                        ))}
+                                    </strong>
+                                </div>
+                            )}
                         </div>
 
                         <div className="admin-planner-allocation">
@@ -769,6 +911,7 @@ const BudgetPlanner = () => {
                                  budgeted,
                                  planned,
                                  remaining,
+                                 actualData,
                              }) => {
                                 const form =
                                     itemForms[month] ||
@@ -776,6 +919,12 @@ const BudgetPlanner = () => {
 
                                 const isOpen =
                                     expandedMonth === month;
+
+                                const isMonthCompleted =
+                                    isPastAyana || (isCurrentAyana && month < currentMonthKey);
+
+                                const isMonthCurrent =
+                                    isCurrentAyana && month === currentMonthKey;
 
                                 return (
                                     <div
@@ -823,25 +972,58 @@ const BudgetPlanner = () => {
                                                     </strong>
                                                 </span>
 
-                                                <span
-                                                    className={
-                                                        remaining < 0
-                                                            ? 'negative'
-                                                            : ''
-                                                    }
-                                                >
-                                                    {remaining < 0
-                                                        ? t('admin.budgetSection.planner.over', 'Over ')
-                                                        : t('admin.budgetSection.planner.left', 'Left ')}
-
+                                                <span>
+                                                    {t('admin.budgetSection.planner.actualSpent', 'Actual Spent')}{' '}
                                                     <strong>
                                                         {formatNumber(formatCurrency(
-                                                            Math.abs(
-                                                                remaining
-                                                            )
+                                                            actualData?.actualSpent || 0
                                                         ))}
                                                     </strong>
                                                 </span>
+
+                                                {isMonthCompleted ? (
+                                                    <span className={actualData?.isOver ? 'negative' : 'positive'}>
+                                                        {actualData?.isOver
+                                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
+                                                            : t('admin.budgetSection.planner.underBudget', 'Under Budget')}{': '}
+                                                        <strong>
+                                                            {actualData?.isOver
+                                                                ? `+${formatNumber(formatCurrency(actualData.overAmount))}`
+                                                                : `${formatNumber(formatCurrency(actualData?.underAmount || 0))}`}
+                                                        </strong>
+                                                    </span>
+                                                ) : isMonthCurrent ? (
+                                                    <span className={actualData?.isOver ? 'negative' : ''}>
+                                                        {actualData?.isOver
+                                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
+                                                            : t('admin.budgetSection.planner.left', 'Left')}{': '}
+                                                        <strong>
+                                                            {actualData?.isOver
+                                                                ? `+${formatNumber(formatCurrency(actualData.overAmount))}`
+                                                                : `${formatNumber(formatCurrency(actualData?.underAmount || 0))}`}
+                                                        </strong>
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className={
+                                                            remaining < 0
+                                                                ? 'negative'
+                                                                : ''
+                                                        }
+                                                    >
+                                                        {remaining < 0
+                                                            ? t('admin.budgetSection.planner.over', 'Over ')
+                                                            : t('admin.budgetSection.planner.left', 'Left ')}{': '}
+
+                                                        <strong>
+                                                            {formatNumber(formatCurrency(
+                                                                Math.abs(
+                                                                    remaining
+                                                                )
+                                                            ))}
+                                                        </strong>
+                                                    </span>
+                                                )}
                                             </span>
 
                                             <span

@@ -89,7 +89,7 @@ const SideNav = () => {
         <button
             className="hamburger-menu"
             onClick={toggleMenu}
-            aria-label="Toggle menu"
+            aria-label={t('toggleMenu')}
         >
             <span></span>
             <span></span>

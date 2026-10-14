@@ -3,6 +3,18 @@ import { useContent } from "../utils/ContentContext";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
 
+export const getPhotoUrl = (photoOrFilename) => {
+    if (!photoOrFilename) return '';
+    const src = typeof photoOrFilename === 'string'
+        ? photoOrFilename.trim()
+        : (photoOrFilename.url || photoOrFilename.image || photoOrFilename.filename || '').trim();
+    if (!src) return '';
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:') || src.startsWith('/')) {
+        return src;
+    }
+    return `/${src}`;
+};
+
 // In-memory module cache for dynamically detected aspect ratios
 const aspectCache = new Map();
 
@@ -83,7 +95,7 @@ const Photography = () => {
                 return;
             }
 
-            const imgUrl = photo.url || photo.image || photo.filename || '';
+            const imgUrl = getPhotoUrl(photo);
             if (!imgUrl) return;
 
             const img = new Image();
@@ -288,9 +300,9 @@ const Photography = () => {
                                 <div key={colIdx} className="gallery-column">
                                     {columnPhotos.map((photo) => {
                                         const originalIdx = photos.indexOf(photo);
-                                        const imgUrl = photo.url || photo.image || photo.filename || '';
+                                        const imgUrl = getPhotoUrl(photo);
                                         const photoKey = photo.id || photo.filename || String(originalIdx);
-                                        const photoAlt = photo.title || `Photography ${originalIdx + 1}`;
+                                        const photoAlt = photo.title || t('photoAltDefault', `Photography ${originalIdx + 1}`).replace('{index}', formatNumber(originalIdx + 1));
                                         return (
                                             <div
                                                 className="gallery-item"
@@ -361,8 +373,8 @@ const Photography = () => {
                                                                 e.stopPropagation();
                                                                 openFullscreen(photo);
                                                             }}
-                                                            aria-label="Expand image"
-                                                            title="Expand image"
+                                                            aria-label={t('expandImage')}
+                                                            title={t('expandImage')}
                                                             style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}
                                                         >
                                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -393,7 +405,7 @@ const Photography = () => {
                                 e.stopPropagation();
                                 closeFullscreen();
                             }}
-                            aria-label="Close fullscreen"
+                            aria-label={t('closeFullscreen')}
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2">
@@ -401,14 +413,14 @@ const Photography = () => {
                             </svg>
                         </button>
                         <div className="fullscreen-image-container" onClick={(e) => e.stopPropagation()}>
-                            {(fullscreenPhoto.url || fullscreenPhoto.image || fullscreenPhoto.filename) ? (
+                            {getPhotoUrl(fullscreenPhoto) ? (
                                 <img
-                                    src={fullscreenPhoto.url || fullscreenPhoto.image || fullscreenPhoto.filename}
-                                    alt={fullscreenPhoto.title || "Fullscreen image"}
+                                    src={getPhotoUrl(fullscreenPhoto)}
+                                    alt={fullscreenPhoto.title || t('fullscreenImage')}
                                 />
                             ) : (
                                 <div style={{ color: '#ffffff', padding: '3rem', textAlign: 'center', fontSize: '1.2rem' }}>
-                                    {fullscreenPhoto.title || "No Image Link Available"}
+                                    {fullscreenPhoto.title || t('noImageAvailable')}
                                 </div>
                             )}
                             <div className="image-protector" />

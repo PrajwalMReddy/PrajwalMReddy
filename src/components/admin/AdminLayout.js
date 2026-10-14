@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
 import { useContent } from '../../utils/ContentContext';
 
-const AdminLayout = ({ children, title, documentTitle }) => {
+const AdminLayout = ({ children, title, documentTitle, actions }) => {
     const { logout } = useAuth();
     const location = useLocation();
     const { t } = useContent();
@@ -264,7 +264,14 @@ const AdminLayout = ({ children, title, documentTitle }) => {
             </aside>
 
             <main className="admin-main">
-                {title && <h1 className="admin-page-title">{getLocalizedTitle(title)}</h1>}
+                {title ? (
+                    <div className="admin-page-header-row">
+                        <h1 className="admin-page-title">{getLocalizedTitle(title)}</h1>
+                        {actions && <div className="admin-page-header-actions">{actions}</div>}
+                    </div>
+                ) : (
+                    actions && <div className="admin-page-header-actions" style={{ marginBottom: '1.5rem' }}>{actions}</div>
+                )}
                 {typeof children === 'function' ? children({}) : children}
             </main>
         </div>

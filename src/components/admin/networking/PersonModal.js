@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../../../utils/ContentContext';
 
-function normalizeLinkedInUrl(input = '') {
+function normalizeWebsiteUrl(input = '') {
     let val = input.trim();
     if (!val) return '';
     if (val.startsWith('http://') || val.startsWith('https://')) return val;
     if (val.startsWith('linkedin.com')) return `https://${val}`;
-    if (!val.includes('/')) return `https://linkedin.com/in/${val}`;
     return `https://${val}`;
 }
 
@@ -23,14 +22,16 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
     const [draft, setDraft] = useState({
         name: '',
-        linkedin: '',
+        website: '',
         whereMet: '',
+        tags: [],
         notes: '',
         followUpTitle: '',
         followUpScheduledDate: '',
         followUpDueDate: '',
         syncTodo: true,
     });
+    const [tagInput, setTagInput] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -51,16 +52,22 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
             const hasExistingSync = person.syncTodo !== undefined ? Boolean(person.syncTodo) : Boolean(person.todoId);
 
+            const rawTags = Array.isArray(person.tags)
+                ? [...person.tags]
+                : (typeof person.tags === 'string' ? person.tags.split(',').map((s) => s.trim().replace(/^#/, '')).filter(Boolean) : []);
+
             setDraft({
                 name: person.name || '',
-                linkedin: person.linkedin || '',
+                website: person.website || person.linkedin || '',
                 whereMet: person.whereMet || person.howMet || '',
+                tags: rawTags,
                 notes: person.notes || '',
                 followUpTitle: followUpTitleToUse,
                 followUpScheduledDate: (isFollowUpActive || hasDates) ? (person.followUpScheduledDate || '') : '',
                 followUpDueDate: (isFollowUpActive || hasDates) ? (person.followUpDueDate || person.nextFollowUpAt || '') : '',
                 syncTodo: (isFollowUpActive || hasDates) ? hasExistingSync : false,
             });
+            setTagInput('');
         }
         setError('');
     }, [person, isOpen]);
@@ -103,6 +110,28 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
     }, [isOpen, draft, onClose]);
 
     if (!isOpen || !person) return null;
+
+    const handleAddTag = () => {
+        const trimmed = tagInput.trim().replace(/^#/, '');
+        if (!trimmed) return;
+        const currentTags = Array.isArray(draft.tags) ? draft.tags : [];
+        if (!currentTags.some((t) => t.toLowerCase() === trimmed.toLowerCase())) {
+            setDraft({ ...draft, tags: [...currentTags, trimmed] });
+        }
+        setTagInput('');
+    };
+
+    const handleRemoveTag = (tagToRemove) => {
+        const currentTags = Array.isArray(draft.tags) ? draft.tags : [];
+        setDraft({ ...draft, tags: currentTags.filter((t) => t !== tagToRemove) });
+    };
+
+    const handleTagKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            handleAddTag();
+        }
+    };
 
     const handleAddInteraction = async () => {
         const trimmed = interactionText.trim();
@@ -147,7 +176,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                 setInteractions((prev) => prev.filter((item) => item.id !== interactionId));
             }
         } catch (err) {
-            console.error('Failed to delete interaction', err);
+            console.error(t('logs.interactionDeleteError', 'Failed to delete interaction'), err);
         }
     };
 
@@ -169,10 +198,17 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
             const isFollowUpConfigured = Boolean(followUpDueVal || followUpScheduledVal || followUpTitleVal);
 
+            const normalizedUrl = normalizeWebsiteUrl(draft.website);
+            const parsedTags = Array.isArray(draft.tags)
+                ? draft.tags.map((t) => String(t).trim().replace(/^#/, '')).filter(Boolean)
+                : [];
+
             const payload = {
                 name: trimmedName,
-                linkedin: normalizeLinkedInUrl(draft.linkedin),
+                website: normalizedUrl,
+                linkedin: normalizedUrl,
                 whereMet: draft.whereMet.trim(),
+                tags: parsedTags,
                 notes: draft.notes.trim(),
                 nextFollowUpAt: isFollowUpConfigured ? (followUpDueVal || followUpScheduledVal || null) : null,
                 followUpDueDate: isFollowUpConfigured ? followUpDueVal : null,
@@ -225,7 +261,10 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         onClick={onClose}
                         aria-label="Close modal"
                     >
-                        ✕
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
                     </button>
                 </div>
 
@@ -238,7 +277,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             </div>
                         )}
 
-                        {/* Row 1: Name & LinkedIn */}
+                        {/* Row 1: Name & Website */}
                         <div className="admin-todo-modal-row">
                             <div className="admin-todo-modal-field">
                                 <label>{t('admin.networkingSection.name', 'Name *')}</label>
@@ -252,12 +291,12 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             </div>
 
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.networkingSection.linkedin', 'LinkedIn')}</label>
+                                <label>{t('admin.networkingSection.website', 'Website')}</label>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.linkedinPlaceholder', 'e.g. linkedin.com/in/username')}
-                                    value={draft.linkedin}
-                                    onChange={(e) => setDraft({ ...draft, linkedin: e.target.value })}
+                                    placeholder={t('admin.networkingSection.websitePlaceholder', 'e.g. example.com')}
+                                    value={draft.website}
+                                    onChange={(e) => setDraft({ ...draft, website: e.target.value })}
                                 />
                             </div>
                         </div>
@@ -273,6 +312,51 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             />
                         </div>
 
+                        {/* Tags Section matching TodoModal */}
+                        <div className="admin-todo-tags-section">
+                            <label className="admin-todo-tags-label">
+                                {t('admin.networkingSection.tags', 'Tags')} <span className="admin-todo-optional">({t('admin.networkingSection.optional', 'optional')})</span>
+                            </label>
+                            <div className="admin-todo-tag-input-row">
+                                <input
+                                    type="text"
+                                    className="admin-todo-tag-input"
+                                    value={tagInput}
+                                    onChange={(e) => setTagInput(e.target.value)}
+                                    onKeyDown={handleTagKeyDown}
+                                    placeholder={t('admin.networkingSection.addTagPlaceholder', 'Add a tag (press Enter)')}
+                                />
+                                <button
+                                    type="button"
+                                    className="admin-todo-tag-add-btn"
+                                    onClick={handleAddTag}
+                                >
+                                    {t('admin.networkingSection.addTagBtn', '+ Add')}
+                                </button>
+                            </div>
+                            {Array.isArray(draft.tags) && draft.tags.length > 0 && (
+                                <div className="admin-todo-tag-pills">
+                                    {draft.tags.map((tag, idx) => (
+                                        <span key={idx} className="admin-todo-tag-pill">
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                className="admin-todo-tag-remove"
+                                                onClick={() => handleRemoveTag(tag)}
+                                                aria-label={`Remove tag ${tag}`}
+                                                title="Remove tag"
+                                            >
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Notes Field */}
                         <div className="admin-todo-modal-field">
                             <label>{t('admin.networkingSection.notes', 'Notes')}</label>
@@ -282,68 +366,6 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                 value={draft.notes}
                                 onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
                             />
-                        </div>
-
-                        {/* Cleaned-up Follow-up Section */}
-                        <div className="admin-networking-followup-card">
-                            <div className="admin-networking-followup-header">
-                                <div className="admin-networking-followup-title-wrap">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="admin-networking-followup-icon">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
-                                    </svg>
-                                    <h4 className="admin-networking-followup-title">
-                                        {t('admin.networkingSection.followUpSectionTitle', 'Follow-up & Next Steps')}
-                                    </h4>
-                                </div>
-                                {Boolean(draft.followUpTitle || draft.followUpScheduledDate || draft.followUpDueDate) && (
-                                    <button
-                                        type="button"
-                                        className="admin-networking-followup-clear-btn"
-                                        onClick={handleClearFollowUp}
-                                    >
-                                        {t('admin.networkingSection.clearFollowUp', 'Clear Follow-up')}
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="admin-todo-modal-field" style={{ marginTop: '0.75rem' }}>
-                                <label>{t('admin.networkingSection.taskTitle', 'Follow-up Task Name')}</label>
-                                <input
-                                    type="text"
-                                    placeholder={t('admin.networkingSection.taskTitlePlaceholder', 'e.g. Follow up with {name}').replace('{name}', draft.name || 'contact')}
-                                    value={draft.followUpTitle}
-                                    onChange={(e) => setDraft({ ...draft, followUpTitle: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="admin-todo-modal-row" style={{ marginTop: '0.75rem' }}>
-                                <div className="admin-todo-modal-field">
-                                    <label>{t('admin.networkingSection.scheduledDate', 'Scheduled Date (When to show task)')}</label>
-                                    <input
-                                        type="date"
-                                        value={draft.followUpScheduledDate}
-                                        onChange={(e) => setDraft({ ...draft, followUpScheduledDate: e.target.value })}
-                                    />
-                                </div>
-                                <div className="admin-todo-modal-field">
-                                    <label>{t('admin.networkingSection.dueDate', 'Due Date (When to do by)')}</label>
-                                    <input
-                                        type="date"
-                                        value={draft.followUpDueDate}
-                                        onChange={(e) => setDraft({ ...draft, followUpDueDate: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-
-                            <label className="admin-networking-followup-sync">
-                                <input
-                                    type="checkbox"
-                                    checked={draft.syncTodo}
-                                    onChange={(e) => setDraft({ ...draft, syncTodo: e.target.checked })}
-                                />
-                                <span>{t('admin.networkingSection.syncWithTodo', 'Sync / Add to To-Do List')}</span>
-                            </label>
                         </div>
 
                         {/* Interaction History Section */}
@@ -420,12 +442,77 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                                 onClick={() => handleDeleteInteraction(item.id)}
                                                 title={t('admin.networkingSection.deleteInteractionTooltip', 'Delete interaction')}
                                             >
-                                                ✕
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                                </svg>
                                             </button>
                                         </div>
                                     ))
                                 )}
                             </div>
+                        </div>
+
+                        {/* Follow-up Section */}
+                        <div className="admin-networking-followup-card">
+                            <div className="admin-networking-followup-header">
+                                <div className="admin-networking-followup-title-wrap">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="admin-networking-followup-icon">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <h4 className="admin-networking-followup-title">
+                                        {t('admin.networkingSection.followUpSectionTitle', 'Follow-up & Next Steps')}
+                                    </h4>
+                                </div>
+                                {Boolean(draft.followUpTitle || draft.followUpScheduledDate || draft.followUpDueDate) && (
+                                    <button
+                                        type="button"
+                                        className="admin-networking-followup-clear-btn"
+                                        onClick={handleClearFollowUp}
+                                    >
+                                        {t('admin.networkingSection.clearFollowUp', 'Clear Follow-up')}
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="admin-todo-modal-field" style={{ marginTop: '0.75rem' }}>
+                                <label>{t('admin.networkingSection.taskTitle', 'Follow-up Task Name')}</label>
+                                <input
+                                    type="text"
+                                    placeholder={t('admin.networkingSection.taskTitlePlaceholder', 'e.g. Follow up with {name}').replace('{name}', draft.name || 'contact')}
+                                    value={draft.followUpTitle}
+                                    onChange={(e) => setDraft({ ...draft, followUpTitle: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="admin-todo-modal-row" style={{ marginTop: '0.75rem' }}>
+                                <div className="admin-todo-modal-field">
+                                    <label>{t('admin.networkingSection.scheduledDate', 'Scheduled Date (When to show task)')}</label>
+                                    <input
+                                        type="date"
+                                        value={draft.followUpScheduledDate}
+                                        onChange={(e) => setDraft({ ...draft, followUpScheduledDate: e.target.value })}
+                                    />
+                                </div>
+                                <div className="admin-todo-modal-field">
+                                    <label>{t('admin.networkingSection.dueDate', 'Due Date (When to do by)')}</label>
+                                    <input
+                                        type="date"
+                                        value={draft.followUpDueDate}
+                                        onChange={(e) => setDraft({ ...draft, followUpDueDate: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <label className="admin-networking-followup-sync">
+                                <input
+                                    type="checkbox"
+                                    checked={draft.syncTodo}
+                                    onChange={(e) => setDraft({ ...draft, syncTodo: e.target.checked })}
+                                />
+                                <span>{t('admin.networkingSection.syncWithTodo', 'Sync / Add to To-Do List')}</span>
+                            </label>
                         </div>
 
                         {error && (

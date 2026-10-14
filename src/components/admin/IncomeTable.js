@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useContent } from '../../utils/ContentContext';
 import { budgetApi, formatCurrency, formatDate, getTodayInputDate, toInputDate } from '../../utils/budgetApi';
+import { matchesBudgetEntry } from '../../utils/budgetSearch';
 
 const createEmptyIncome = () => ({
     no: '',
@@ -10,7 +11,7 @@ const createEmptyIncome = () => ({
     type: 'injection',
 });
 
-const IncomeTable = ({ income, onRefresh }) => {
+const IncomeTable = ({ income = [], onRefresh }) => {
     const { t, formatNumber, language } = useContent();
     const [form, setForm] = useState(createEmptyIncome);
     const [editingId, setEditingId] = useState(null);
@@ -19,34 +20,9 @@ const IncomeTable = ({ income, onRefresh }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredIncome = useMemo(() => {
-        const q = searchQuery.trim().toLowerCase();
-        if (!q) return income;
-
-        return income.filter((entry) => {
-            const rawDate = String(entry.date || '').toLowerCase();
-            const formattedDateStr = formatDate(entry.date, language).toLowerCase();
-            const inputDateStr = toInputDate(entry.date).toLowerCase();
-            const dateMatch =
-                rawDate.includes(q) || formattedDateStr.includes(q) || inputDateStr.includes(q);
-
-            const noStr = String(entry.no ?? '').toLowerCase();
-            const noHashStr = `#${noStr}`;
-            const noMatch = noStr.includes(q) || noHashStr.includes(q);
-
-            const itemStr = String(entry.item || '').toLowerCase();
-            const itemMatch = itemStr.includes(q);
-
-            const typeRawStr = String(entry.type || '').toLowerCase();
-            const typeLabel = (entry.type === 'injection' ? 'injection' : 'other income').toLowerCase();
-            const typeMatch = typeRawStr.includes(q) || typeLabel.includes(q);
-
-            const valueRawStr = String(entry.value ?? '').toLowerCase();
-            const valueFormattedStr = formatCurrency(entry.value).toLowerCase();
-            const valueMatch = valueRawStr.includes(q) || valueFormattedStr.includes(q);
-
-            return dateMatch || noMatch || itemMatch || typeMatch || valueMatch;
-        });
-    }, [income, searchQuery]);
+        if (!searchQuery.trim()) return income;
+        return income.filter((entry) => matchesBudgetEntry(entry, searchQuery, language));
+    }, [income, searchQuery, language]);
 
     const resetForm = () => {
         setForm(createEmptyIncome());
@@ -59,9 +35,10 @@ const IncomeTable = ({ income, onRefresh }) => {
         setSubmitting(true);
         try {
             const payload = {
-                ...form,
+                date: form.date,
+                item: form.item,
                 value: Number(form.value),
-                no: form.no ? Number(form.no) : undefined,
+                type: form.type,
             };
             if (editingId) {
                 await budgetApi.updateIncome(editingId, payload);
@@ -133,15 +110,6 @@ const IncomeTable = ({ income, onRefresh }) => {
                 </div>
 
                 <div className="admin-budget-form-grid">
-                    <label className="admin-field-group admin-field-serial">
-                        <span className="admin-field-label">{t('admin.budgetSection.no', 'No')}</span>
-                        <input
-                            type="number"
-                            value={form.no}
-                            onChange={(e) => setForm({ ...form, no: e.target.value })}
-                            placeholder={t('admin.budgetSection.auto', 'Auto')}
-                        />
-                    </label>
                     <label className="admin-field-group admin-field-date">
                         <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
                         <input
@@ -318,13 +286,6 @@ const IncomeTable = ({ income, onRefresh }) => {
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
                                         {t('admin.budgetSection.noIncomeMatch', 'No income entries match your search.')}
-                                        <button
-                                            type="button"
-                                            className="admin-table-clear-btn"
-                                            onClick={() => setSearchQuery('')}
-                                        >
-                                            {t('admin.budgetSection.clearSearch', 'Clear search')}
-                                        </button>
                                     </td>
                                 </tr>
                             )}

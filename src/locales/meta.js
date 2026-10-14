@@ -27,6 +27,18 @@ export const meta = {
 
         notFoundHeading: "Error 404",
         notFoundMessage: "The requested webpage was not found. Please check your URL again.",
+
+        // Common UI strings
+        loading: "Loading...",
+        loadingComponent: "Loading component...",
+        byAuthor: "by {author}",
+        byPrefix: "by ",
+        failedToLoadComponent: "Failed to load custom component:",
+        failedToLoadResearchComponent: "Failed to load custom research component:",
+        somethingWentWrong: "Something went wrong.",
+        toggleMenu: "Toggle menu",
+        errorPrefix: "Error: ",
+        noArticleSpecified: "No article specified",
     }, kn: {
         pageTitles: {
             home: "ಮನೆ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
@@ -55,5 +67,17 @@ export const meta = {
 
         notFoundHeading: "ತಪ್ಪು ೪೦೪",
         notFoundMessage: "ನೀವು ಕೋರಿದ ಮಿಂಪುಟ ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಏ.ಸಂ.ಸ್ತ.ವನ್ನು ಇನ್ನೊಮ್ಮೆ ನೋಡಿ.",
+
+        // Common UI strings
+        loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+        loadingComponent: "ಕಾಂಪೊನೆಂಟ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+        byAuthor: "{author} ಅವರಿಂದ",
+        byPrefix: "ಅವರಿಂದ ",
+        failedToLoadComponent: "ಕಸ್ಟಮ್ ಕಾಂಪೊನೆಂಟ್ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ:",
+        failedToLoadResearchComponent: "ಕಸ್ಟಮ್ ಸಂಶೋಧನಾ ಕಾಂಪೊನೆಂಟ್ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ:",
+        somethingWentWrong: "ಏನೋ ತಪ್ಪಾಗಿದೆ.",
+        toggleMenu: "ಮೆನು ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ",
+        errorPrefix: "ದೋಷ: ",
+        noArticleSpecified: "ಯಾವುದೇ ಲೇಖನವನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಿಲ್ಲ",
     }
 };

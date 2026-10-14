@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { tStatic } from '../locales';
 
 /**
  * Universal React hook for custom React components (used in Research / Blog pages)
@@ -80,7 +81,7 @@ export const useCustomData = (props = {}, options = {}) => {
                 }
             } catch (err) {
                 if (!isMounted) return;
-                console.error(`[useCustomData] Failed to load data for ${slug || explicitType}:`, err);
+                console.error((tStatic('logs.customDataError', undefined, '[useCustomData] Failed to load data for {target}:') || '').replace('{target}', slug || explicitType), err);
                 setError(err.message);
                 setData(options.defaultData ?? null);
             } finally {

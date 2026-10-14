@@ -1,3 +1,5 @@
+import { formatDate as formatDateGlobal } from './ContentContext';
+
 const API_BASE = '/api/budget';
 
 // Tracking start date is fixed — no longer user-editable via a Settings page.
@@ -73,6 +75,9 @@ export const parseLocalDate = (dateVal) => {
     if (parts.length === 3 && !parts.some(isNaN)) {
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
+    if (parts.length === 2 && !parts.some(isNaN)) {
+        return new Date(parts[0], parts[1] - 1, 1);
+    }
     const d = new Date(dateVal);
     return isNaN(d.getTime()) ? new Date() : d;
 };
@@ -89,10 +94,7 @@ export const formatCurrency = (value) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value ?? 0);
 
 export const formatDate = (dateStr, lang = 'en') => {
-    if (!dateStr) return '';
-    const date = parseLocalDate(dateStr);
-    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
-    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+    return formatDateGlobal(dateStr, lang, { month: 'short' });
 };
 
 export const toInputDate = (dateStr) => {
@@ -124,8 +126,9 @@ export const DEFAULT_CATEGORIES = [
 // All take a startDateStr — pass AYANA_START_DATE for the app's fixed start.
 
 export const getAyanaRange = (startDateStr, ayanaNumber) => {
-    const rangeStart = parseLocalDate(startDateStr);
-    rangeStart.setMonth(rangeStart.getMonth() + (ayanaNumber - 1) * 6);
+    const rangeStart = parseLocalDate(startDateStr || AYANA_START_DATE);
+    rangeStart.setDate(1);
+    rangeStart.setMonth(rangeStart.getMonth() + (Number(ayanaNumber || 1) - 1) * 6);
     const rangeEnd = new Date(rangeStart);
     rangeEnd.setMonth(rangeEnd.getMonth() + 6);
     rangeEnd.setDate(rangeEnd.getDate() - 1);
@@ -144,8 +147,7 @@ export const getAyanaMonths = (startDateStr, ayanaNumber) => {
 };
 
 export const getCurrentAyanaNumber = (startDateStr) => {
-    if (!startDateStr) return 1;
-    const start = parseLocalDate(startDateStr);
+    const start = parseLocalDate(startDateStr || AYANA_START_DATE);
     const now = new Date();
     const monthsDiff =
         (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
@@ -154,18 +156,13 @@ export const getCurrentAyanaNumber = (startDateStr) => {
 
 export const formatAyanaLabel = (startDateStr, ayanaNumber, lang = 'en', formatNum = (v) => v) => {
     const prefix = lang === 'kn' ? 'ಆಯನ' : 'Ayana';
-    if (!startDateStr) return `${prefix} ${formatNum(ayanaNumber)}`;
-    const { start, end } = getAyanaRange(startDateStr, ayanaNumber);
-    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
-    const opts = { year: 'numeric', month: 'short' };
-    const startStr = formatNum(start.toLocaleDateString(locale, opts));
-    const endStr = formatNum(end.toLocaleDateString(locale, opts));
+    const effectiveStart = startDateStr || AYANA_START_DATE;
+    const { start, end } = getAyanaRange(effectiveStart, ayanaNumber);
+    const startStr = formatDateGlobal(start, lang, { month: 'short', day: false });
+    const endStr = formatDateGlobal(end, lang, { month: 'short', day: false });
     return `${prefix} ${formatNum(ayanaNumber)} (${startStr} \u2013 ${endStr})`;
 };
 
 export const formatMonthLabel = (monthStr, lang = 'en', formatNum = (v) => v) => {
-    const [year, month] = monthStr.split('-').map(Number);
-    const date = new Date(year, month - 1, 1);
-    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
-    return formatNum(date.toLocaleDateString(locale, { year: 'numeric', month: 'long' }));
+    return formatDateGlobal(monthStr, lang, { month: 'long', day: false });
 };

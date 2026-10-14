@@ -32,6 +32,10 @@ import './cms.css';
 import './konami-admin.css';
 import Experience from './components/Experience';
 import {useKonami} from './utils/KonamiContext';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
+import { tStatic } from './locales';
 
 // Wrapper to validate Konami code
 const KonamiValidator = () => {
@@ -56,13 +60,13 @@ class ErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error('Error caught by boundary:', error, errorInfo);
+        console.error(tStatic('logs.errorBoundary', undefined, 'Error caught by boundary:'), error, errorInfo);
     }
 
     render() {
         if (this.state.hasError) {
             return (<div style={{padding: '20px', color: 'red'}}>
-                <h1>Something went wrong.</h1>
+                <h1>{tStatic('somethingWentWrong', undefined, 'Something went wrong.')}</h1>
                 <pre>{this.state.error?.toString()}</pre>
             </div>);
         }
@@ -102,11 +106,17 @@ function App() {
                         <Route path="/admin/cms" element={
                             <ProtectedRoute><CmsAdmin /></ProtectedRoute>
                         } />
+                        <Route path="/admin/cms/:tab" element={
+                            <ProtectedRoute><CmsAdmin /></ProtectedRoute>
+                        } />
                         <Route path="/admin/konami" element={
                             <ProtectedRoute><KonamiAdmin /></ProtectedRoute>
                         } />
                         <Route path="/admin/content" element={<Navigate to="/admin/cms" replace />} />
                         <Route path="/admin/budget" element={
+                            <ProtectedRoute><BudgetAdmin /></ProtectedRoute>
+                        } />
+                        <Route path="/admin/budget/:tab" element={
                             <ProtectedRoute><BudgetAdmin /></ProtectedRoute>
                         } />
                         <Route path="/admin/todo" element={
@@ -115,12 +125,17 @@ function App() {
                         <Route path="/admin/notes" element={
                             <ProtectedRoute><NotesAdmin /></ProtectedRoute>
                         } />
+                        <Route path="/admin/notes/:id" element={
+                            <ProtectedRoute><NotesAdmin /></ProtectedRoute>
+                        } />
                         <Route path="/admin/networking" element={
                             <ProtectedRoute><NetworkingAdmin /></ProtectedRoute>
                         } />
 
                         <Route path="*" element={<NotFound/>}/>
                     </Routes>
+                    <Analytics />
+                    <SpeedInsights />
                 </Router>
                 </AuthProvider>
             </KonamiProvider>

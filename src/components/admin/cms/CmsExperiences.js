@@ -21,10 +21,9 @@ const CmsExperiences = ({ data, onSave, saving }) => {
     const getLocalized = (obj, fallback = '') => {
         if (!obj) return fallback;
         if (typeof obj === 'string') return obj;
-        if (language === 'kn') {
-            return obj.kn || obj.en || fallback;
-        }
-        return obj.en || obj.kn || fallback;
+        const current = editLangTab || language;
+        const alt = current === 'kn' ? 'en' : 'kn';
+        return obj[current] || obj[alt] || Object.values(obj).find((v) => typeof v === 'string' && v.trim() !== '') || fallback;
     };
 
     const [search, setSearch] = useState('');
@@ -34,7 +33,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
     // Modal state
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingExperience, setEditingExperience] = useState(null);
-    const [editLangTab, setEditLangTab] = useState('en');
+    const [editLangTab, setEditLangTab] = useState(language || 'kn');
 
     // Section modal
     const [isSectionsModalOpen, setIsSectionsModalOpen] = useState(false);
@@ -59,8 +58,11 @@ const CmsExperiences = ({ data, onSave, saving }) => {
             const matchesSearch =
                 !search ||
                 (e.title?.en || '').toLowerCase().includes(search.toLowerCase()) ||
+                (e.title?.kn || '').toLowerCase().includes(search.toLowerCase()) ||
                 (e.company?.en || '').toLowerCase().includes(search.toLowerCase()) ||
-                (e.description?.en || '').toLowerCase().includes(search.toLowerCase());
+                (e.company?.kn || '').toLowerCase().includes(search.toLowerCase()) ||
+                (e.description?.en || '').toLowerCase().includes(search.toLowerCase()) ||
+                (e.description?.kn || '').toLowerCase().includes(search.toLowerCase());
 
             const matchesSection = selectedSection === 'all' || e.section === selectedSection;
             const matchesFeatured =
@@ -97,8 +99,8 @@ const CmsExperiences = ({ data, onSave, saving }) => {
 
     const handleDelete = async (index) => {
         const item = experiences[index];
-        const title = item.title?.en || item.company?.en || 'this item';
-        if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
+        const title = getLocalized(item.title, getLocalized(item.company, 'this item'));
+        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${title})`)) return;
 
         const updated = experiences.filter((_, idx) => idx !== index);
         await onSave({ sections, experiences: updated }, `Deleted "${title}"`);
@@ -110,7 +112,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
             id: `exp-${Date.now()}`,
             section: sections[0]?.id || 'professional',
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
@@ -124,7 +126,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
             description: typeof item.description === 'string' ? { en: item.description, kn: '' } : { en: '', kn: '', ...item.description },
             notes: item.notes || { label: '', text: '' },
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
@@ -133,7 +135,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
         const hasTitle = Boolean(editingExperience.title?.en?.trim() || editingExperience.title?.kn?.trim());
         const hasCompany = Boolean(editingExperience.company?.en?.trim() || editingExperience.company?.kn?.trim());
         if (!hasTitle && !hasCompany) {
-            alert('A title or company in English or Kannada is required');
+            alert(language === 'kn' ? 'ಶೀರ್ಷಿಕೆ ಅಥವಾ ಸಂಸ್ಥೆಯ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.' : 'A title or company in English or Kannada is required');
             return;
         }
 
@@ -372,17 +374,17 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                 <div className="cms-lang-pills">
                                     <button
                                         type="button"
-                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
-                                        onClick={() => setEditLangTab('en')}
-                                    >
-                                        English
-                                    </button>
-                                    <button
-                                        type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        ಕನ್ನಡ
+                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
+                                        onClick={() => setEditLangTab('en')}
+                                    >
+                                        {t('admin.labels.english', 'English')}
                                     </button>
                                 </div>
 

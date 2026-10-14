@@ -33,7 +33,7 @@ const Footer = () => {
                 <img
                     className="footer-logo"
                     src="/hurricane.png"
-                    alt="Hurricane Logo"
+                    alt={t('hurricaneLogoAlt')}
                     onClick={handleLogoClick}
                 />
                 <p className="footer-copyright">{t('copyright')}</p>

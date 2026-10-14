@@ -2,10 +2,28 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { assistantApi } from '../../../utils/assistantApi';
 import { useContent } from '../../../utils/ContentContext';
 
-const DEFAULT_CALENDAR_HTML_URL =
-    'https://outlook.office365.com/owa/calendar/5ef4458128274155a3e0052c141f4a12@cornell.edu/011c3e16f06340128352b9771f10846d17964027501824703155/calendar.html';
+const DEFAULT_CALENDAR_HTML_URL = '';
 
 const HOUR_HEIGHT = 68; // Height in pixels for 1 hour
+
+function parseEventLocationAndMeeting(item) {
+    if (!item) return { displayLocation: '', meetingUrl: null };
+    const rawLoc = (item.location || '').trim();
+    const isUrl = /^https?:\/\//i.test(rawLoc);
+    let meetingUrl = item.onlineMeetingUrl || (isUrl ? rawLoc : null);
+    let displayLocation = rawLoc;
+
+    if (isUrl) {
+        displayLocation = '';
+    } else if (displayLocation) {
+        displayLocation = displayLocation
+            .replace(/https?:\/\/[^\s<>"'\)]+/gi, '')
+            .replace(/^[,;\s-]+|[,;\s-]+$/g, '')
+            .trim();
+    }
+
+    return { displayLocation, meetingUrl };
+}
 
 function formatDuration(minutes) {
     if (!minutes || minutes <= 0) return '';
@@ -129,7 +147,7 @@ function computeTimetableLayout(events) {
     return { timedEvents: positioned, minHour, maxHour };
 }
 
-const UpcomingEvents = () => {
+const UpcomingEvents = ({ onOpenSettings }) => {
     const { t } = useContent();
     const [events, setEvents] = useState([]);
     const [meta, setMeta] = useState({
@@ -168,10 +186,10 @@ const UpcomingEvents = () => {
             setMeta({
                 todayCount: list.length,
                 happeningNow: res?.happeningNow || null,
-                calendarHtmlUrl: res?.calendarHtmlUrl || DEFAULT_CALENDAR_HTML_URL,
+                calendarHtmlUrl: res?.calendarHtmlUrl || '',
             });
         } catch (err) {
-            console.error("Failed to load today's events:", err);
+            console.error(t('logs.eventsLoadError', "Failed to load today's events:"), err);
             setError(err.message || t('admin.events.error', 'Failed to load calendar events.'));
         } finally {
             setLoading(false);
@@ -413,32 +431,37 @@ const UpcomingEvents = () => {
                                         </div>
 
                                         {/* Metadata: Location & Meeting links */}
-                                        <div className="admin-event-meta-row">
-                                            {item.location && (
-                                                <span className="admin-event-location">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                                        <circle cx="12" cy="10" r="3" />
-                                                    </svg>
-                                                    <span>{item.location}</span>
-                                                </span>
-                                            )}
+                                        {(() => {
+                                            const { displayLocation, meetingUrl } = parseEventLocationAndMeeting(item);
+                                            return (
+                                                <div className="admin-event-meta-row">
+                                                    {displayLocation && (
+                                                        <span className="admin-event-location" title={displayLocation}>
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                                <circle cx="12" cy="10" r="3" />
+                                                            </svg>
+                                                            <span>{displayLocation}</span>
+                                                        </span>
+                                                    )}
 
-                                            {item.onlineMeetingUrl && (
-                                                <a
-                                                    href={item.onlineMeetingUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="admin-event-join-btn"
-                                                >
-                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polygon points="23 7 16 12 23 17 23 7" />
-                                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                                                    </svg>
-                                                    <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
-                                                </a>
-                                            )}
-                                        </div>
+                                                    {meetingUrl && (
+                                                        <a
+                                                            href={meetingUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="admin-event-join-btn"
+                                                        >
+                                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polygon points="23 7 16 12 23 17 23 7" />
+                                                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                                                            </svg>
+                                                            <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
 
                                         {/* Collapsible details */}
                                         {hasDescription && (
@@ -588,44 +611,49 @@ const UpcomingEvents = () => {
                                         ✕
                                     </button>
                                 </div>
-                                <div className="preview-body">
-                                    <div className="preview-row">
-                                        <span className="preview-label">Time:</span>
-                                        <span className="preview-value">{activeTimetableEvent.timeFormatted}</span>
-                                    </div>
-                                    {activeTimetableEvent.location && (
-                                        <div className="preview-row">
-                                            <span className="preview-label">Location:</span>
-                                            <span className="preview-value">{activeTimetableEvent.location}</span>
+                                {(() => {
+                                    const { displayLocation, meetingUrl } = parseEventLocationAndMeeting(activeTimetableEvent);
+                                    return (
+                                        <div className="preview-body">
+                                            <div className="preview-row">
+                                                <span className="preview-label">Time:</span>
+                                                <span className="preview-value">{activeTimetableEvent.timeFormatted}</span>
+                                            </div>
+                                            {displayLocation && (
+                                                <div className="preview-row">
+                                                    <span className="preview-label">Location:</span>
+                                                    <span className="preview-value">{displayLocation}</span>
+                                                </div>
+                                            )}
+                                            {activeTimetableEvent.category && (
+                                                <div className="preview-row">
+                                                    <span className="preview-label">Category:</span>
+                                                    <span className="preview-value">{activeTimetableEvent.category}</span>
+                                                </div>
+                                            )}
+                                            {activeTimetableEvent.description && (
+                                                <div className="preview-description">
+                                                    {activeTimetableEvent.description}
+                                                </div>
+                                            )}
+                                            {meetingUrl && (
+                                                <a
+                                                    href={meetingUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="admin-event-join-btn"
+                                                    style={{ marginTop: '0.5rem', display: 'inline-flex' }}
+                                                >
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polygon points="23 7 16 12 23 17 23 7" />
+                                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                                                    </svg>
+                                                    <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
+                                                </a>
+                                            )}
                                         </div>
-                                    )}
-                                    {activeTimetableEvent.category && (
-                                        <div className="preview-row">
-                                            <span className="preview-label">Category:</span>
-                                            <span className="preview-value">{activeTimetableEvent.category}</span>
-                                        </div>
-                                    )}
-                                    {activeTimetableEvent.description && (
-                                        <div className="preview-description">
-                                            {activeTimetableEvent.description}
-                                        </div>
-                                    )}
-                                    {activeTimetableEvent.onlineMeetingUrl && (
-                                        <a
-                                            href={activeTimetableEvent.onlineMeetingUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="admin-event-join-btn"
-                                            style={{ marginTop: '0.5rem', display: 'inline-flex' }}
-                                        >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polygon points="23 7 16 12 23 17 23 7" />
-                                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                                            </svg>
-                                            <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
-                                        </a>
-                                    )}
-                                </div>
+                                    );
+                                })()}
                             </div>
                         )}
                     </div>

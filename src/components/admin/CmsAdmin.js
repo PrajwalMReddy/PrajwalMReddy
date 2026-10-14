@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
+import CmsHome from './cms/CmsHome';
+import CmsAbout from './cms/CmsAbout';
 import CmsProjects from './cms/CmsProjects';
 import CmsExperiences from './cms/CmsExperiences';
 import CmsBlog from './cms/CmsBlog';
@@ -9,6 +12,8 @@ import { useContent } from '../../utils/ContentContext';
 import '../../cms.css';
 
 const TABS = [
+    { id: 'home', labelKey: 'admin.tabs.home', defaultLabel: 'Home' },
+    { id: 'about', labelKey: 'admin.tabs.about', defaultLabel: 'About' },
     { id: 'projects', labelKey: 'admin.tabs.projects', defaultLabel: 'Projects' },
     { id: 'experiences', labelKey: 'admin.tabs.experiences', defaultLabel: 'Experiences' },
     { id: 'blog', labelKey: 'admin.tabs.blog', defaultLabel: 'Blog' },
@@ -16,10 +21,18 @@ const TABS = [
     { id: 'photography', labelKey: 'admin.tabs.photography', defaultLabel: 'Photography' },
 ];
 
+const VALID_TAB_IDS = TABS.map((t) => t.id);
+
 const CmsAdmin = () => {
     const { t, formatNumber } = useContent();
-    const [activeTab, setActiveTab] = useState('projects');
+    const { tab: urlTab } = useParams();
+    const navigate = useNavigate();
+
+    const initialTab = urlTab && VALID_TAB_IDS.includes(urlTab.toLowerCase()) ? urlTab.toLowerCase() : 'home';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [contentData, setContentData] = useState({
+        home: null,
+        about: null,
         projects: null,
         experiences: null,
         blog: null,
@@ -36,7 +49,9 @@ const CmsAdmin = () => {
         setLoading(true);
         setError('');
         try {
-            const [projRes, expRes, blogRes, quotesRes, resRes, photoRes] = await Promise.all([
+            const [homeRes, aboutRes, projRes, expRes, blogRes, quotesRes, resRes, photoRes] = await Promise.all([
+                fetch('/api/cms/content?type=home', { credentials: 'include' }),
+                fetch('/api/cms/content?type=about', { credentials: 'include' }),
                 fetch('/api/cms/content?type=projects', { credentials: 'include' }),
                 fetch('/api/cms/content?type=experiences', { credentials: 'include' }),
                 fetch('/api/cms/content?type=blog', { credentials: 'include' }),
@@ -45,7 +60,9 @@ const CmsAdmin = () => {
                 fetch('/api/cms/content?type=photography', { credentials: 'include' }),
             ]);
 
-            const [projects, experiences, blog, quotes, research, photography] = await Promise.all([
+            const [home, about, projects, experiences, blog, quotes, research, photography] = await Promise.all([
+                homeRes.ok ? homeRes.json() : null,
+                aboutRes.ok ? aboutRes.json() : null,
                 projRes.ok ? projRes.json() : { sections: [], projects: [] },
                 expRes.ok ? expRes.json() : { sections: [], experiences: [] },
                 blogRes.ok ? blogRes.json() : [],
@@ -55,6 +72,8 @@ const CmsAdmin = () => {
             ]);
 
             setContentData({
+                home,
+                about,
                 projects,
                 experiences,
                 blog,
@@ -63,12 +82,12 @@ const CmsAdmin = () => {
                 photography,
             });
         } catch (err) {
-            console.error('Error loading CMS data:', err);
+            console.error(t('logs.cmsLoadError', 'Error loading CMS data:'), err);
             setError(`Could not load CMS content: ${err.message}`);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         document.title = t('pageTitles.adminCms', 'CMS | Admin | Prajwal Reddy');
@@ -77,6 +96,20 @@ const CmsAdmin = () => {
     useEffect(() => {
         loadAllContent();
     }, [loadAllContent]);
+
+    useEffect(() => {
+        if (urlTab && VALID_TAB_IDS.includes(urlTab.toLowerCase())) {
+            setActiveTab(urlTab.toLowerCase());
+        } else if (!urlTab) {
+            setActiveTab('home');
+        }
+    }, [urlTab]);
+
+    const handleTabClick = (tabId) => {
+        setActiveTab(tabId);
+        setError('');
+        navigate(`/admin/cms/${tabId}`);
+    };
 
     const showToast = (message, type = 'success') => {
         setToast({ message, type });
@@ -114,7 +147,7 @@ const CmsAdmin = () => {
 
             showToast(successMessage || 'Changes saved successfully', 'success');
         } catch (err) {
-            console.error(`Error saving ${targetType}:`, err);
+            console.error((t('logs.cmsSaveError', 'Error saving {type}:') || '').replace('{type}', targetType), err);
             setError(err.message || 'Failed to save changes');
             showToast(`Save failed: ${err.message}`, 'error');
             throw err;
@@ -125,6 +158,14 @@ const CmsAdmin = () => {
 
     const getTabBadge = (tabId) => {
         if (!contentData[tabId]) return null;
+        if (tabId === 'home') {
+            const count = contentData.home?.skills?.length || 0;
+            return count;
+        }
+        if (tabId === 'about') {
+            const count = contentData.about?.links?.length || 0;
+            return count;
+        }
         if (tabId === 'projects') {
             const count = contentData.projects?.projects?.length || 0;
             return count;
@@ -158,10 +199,7 @@ const CmsAdmin = () => {
                             key={tab.id}
                             type="button"
                             className={activeTab === tab.id ? 'active' : ''}
-                            onClick={() => {
-                                setActiveTab(tab.id);
-                                setError('');
-                            }}
+                            onClick={() => handleTabClick(tab.id)}
                         >
                             <span>{t(tab.labelKey, tab.defaultLabel)}</span>
                             {badge !== null && (
@@ -210,6 +248,20 @@ const CmsAdmin = () => {
 
             {!loading && (
                 <>
+                    {activeTab === 'home' && (
+                        <CmsHome
+                            data={contentData.home}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'home')}
+                            saving={saving}
+                        />
+                    )}
+                    {activeTab === 'about' && (
+                        <CmsAbout
+                            data={contentData.about}
+                            onSave={(data, msg) => handleSaveTabContent(data, msg, 'about')}
+                            saving={saving}
+                        />
+                    )}
                     {activeTab === 'projects' && (
                         <CmsProjects
                             data={contentData.projects}

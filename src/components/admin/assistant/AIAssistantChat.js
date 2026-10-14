@@ -291,7 +291,7 @@ const AIAssistantChat = ({ externalPrompt = '', onClearPrompt }) => {
                                                 }}
                                                 title={`${msg.cacheStats.cacheReadTokens} tokens read from prompt cache (90% discount)`}
                                             >
-                                                ⚡ 90% Cached ({msg.cacheStats.cacheReadTokens} tokens)
+                                                90% Cached ({msg.cacheStats.cacheReadTokens} tokens)
                                             </span>
                                         )}
                                         {msg.cacheStats && msg.cacheStats.cacheCreatedTokens > 0 && (
@@ -306,7 +306,7 @@ const AIAssistantChat = ({ externalPrompt = '', onClearPrompt }) => {
                                                 }}
                                                 title="Prompt cached for 5 minutes"
                                             >
-                                                ⚡ Cached Session
+                                                Cached Session
                                             </span>
                                         )}
                                     </div>

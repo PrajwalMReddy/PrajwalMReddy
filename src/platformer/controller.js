@@ -1,5 +1,6 @@
 // Custom levels platformer controller
 import { sound } from './audio';
+import { tStatic } from '../locales';
 import {
     addDoubleJumpParticles,
     addTextParticle,
@@ -831,7 +832,7 @@ export async function startPlatformer(canvas, options = 'Coming Soon') {
             initInfiniteMode(canvasRef.height);
         }
     } catch (err) {
-        console.warn('Could not fetch custom levels, starting infinite mode:', err);
+        console.warn(tStatic('logs.konamiCustomLevelsError', undefined, 'Could not fetch custom levels, starting infinite mode:'), err);
         initInfiniteMode(canvasRef.height);
     }
 

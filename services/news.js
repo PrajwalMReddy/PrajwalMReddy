@@ -8,70 +8,72 @@
  * source extraction, title normalization, and a 30-minute in-memory cache.
  */
 
+const { getDashboardSettings } = require('./settings');
+
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 let memoryCache = {
     data: null,
     timestamp: 0,
 };
 
-const NEWS_CHANNELS = {
-    ai: {
-        id: 'ai',
-        name: 'AI & Deep Tech',
-        region: 'Global / US',
-        badge: 'AI / TECH',
-        url: 'https://news.google.com/rss/search?q=(AI+OR+"artificial+intelligence"+OR+Anthropic+OR+OpenAI+OR+Nvidia+OR+LLMs+OR+"generative+AI")+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-    technology: {
-        id: 'technology',
-        name: 'Technology & Startups',
-        region: 'Global / US',
-        badge: 'TECH',
-        url: 'https://news.google.com/rss/search?q=(technology+OR+startups+OR+"Silicon+Valley"+OR+semiconductors)+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-    us_politics: {
-        id: 'us_politics',
-        name: 'US Politics & Affairs',
-        region: 'United States',
-        badge: 'US POLITICS',
-        url: 'https://news.google.com/rss/search?q=(US+politics+OR+Congress+OR+"White+House"+OR+"Supreme+Court")+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-    india_politics: {
-        id: 'india_politics',
-        name: 'Indian National Affairs',
-        region: 'India',
-        badge: 'INDIA',
-        url: 'https://news.google.com/rss/search?q=(India+politics+OR+Parliament+OR+"government+of+India"+OR+Modi)+when:24h&hl=en-IN&gl=IN&ceid=IN:en',
-    },
-    karnataka_bengaluru: {
-        id: 'karnataka_bengaluru',
-        name: 'Karnataka & Bengaluru',
-        region: 'Karnataka / Bengaluru',
-        badge: 'BENGALURU',
-        url: 'https://news.google.com/rss/search?q=(Karnataka+OR+Bengaluru+OR+Bangalore)+when:24h&hl=en-IN&gl=IN&ceid=IN:en',
-    },
-    economics: {
-        id: 'economics',
-        name: 'Economics & Markets',
-        region: 'Global / US / India',
-        badge: 'ECONOMICS',
-        url: 'https://news.google.com/rss/search?q=(economy+OR+inflation+OR+Fed+OR+RBI+OR+markets+OR+Sensex+OR+"Wall+Street+OR+Federal+Reserve")+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-    culture: {
-        id: 'culture',
-        name: 'Culture, Arts & Society',
-        region: 'Global / Indo-US',
-        badge: 'CULTURE',
-        url: 'https://news.google.com/rss/search?q=(culture+OR+literature+OR+arts+OR+cinema+OR+heritage+OR+language)+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-    culture: {
-        id: 'finance',
-        name: 'Finance',
-        region: 'Global / Indo-US',
-        badge: 'CULTURE',
-        url: 'https://news.google.com/rss/search?q=(finance+OR+stocks+OR+market+OR+shares)+when:24h&hl=en-US&gl=US&ceid=US:en',
-    },
-};
+function buildGoogleNewsUrl(query, region = 'US') {
+    const isIndia = region && (region.includes('India') || region.includes('Bengaluru') || region.includes('Karnataka'));
+    const hl = isIndia ? 'en-IN' : 'en-US';
+    const gl = isIndia ? 'IN' : 'US';
+    const ceid = isIndia ? 'IN:en' : 'US:en';
+    return `https://news.google.com/rss/search?q=${encodeURIComponent(query + ' when:24h')}&hl=${hl}&gl=${gl}&ceid=${ceid}`;
+}
+
+async function getActiveChannels(forceFresh = false) {
+    const settings = await getDashboardSettings(forceFresh);
+    const channels = {};
+
+    const configuredTags = Array.isArray(settings.news?.tags) ? settings.news.tags : [];
+    const activeTags = configuredTags.filter((t) => t.enabled !== false);
+
+    if (activeTags.length > 0) {
+        // Build channels dynamically based on active tags (batched into queries of up to 4 tags)
+        const BATCH_SIZE = 4;
+        for (let i = 0; i < activeTags.length; i += BATCH_SIZE) {
+            const batch = activeTags.slice(i, i + BATCH_SIZE);
+            const queryParts = batch.map((t) => {
+                const q = (t.query || t.label || t.name || '').trim();
+                return q.includes(' ') && !q.startsWith('(') && !q.startsWith('"') ? `"${q}"` : q;
+            }).filter(Boolean);
+
+            if (queryParts.length > 0) {
+                const combinedQuery = queryParts.length === 1 ? queryParts[0] : `(${queryParts.join(' OR ')})`;
+                const channelId = `topic_batch_${Math.floor(i / BATCH_SIZE) + 1}`;
+                channels[channelId] = {
+                    id: channelId,
+                    name: batch.map((t) => t.label || t.name).join(', '),
+                    region: 'Global',
+                    badge: 'TOPIC',
+                    url: buildGoogleNewsUrl(combinedQuery, 'Global'),
+                };
+            }
+        }
+    }
+
+    // Include custom RSS feeds
+    const customFeeds = Array.isArray(settings.news?.customFeeds) ? settings.news.customFeeds : [];
+    for (const feed of customFeeds) {
+        if (feed.enabled !== false && feed.url) {
+            const feedId = feed.id || `custom_${encodeURIComponent(feed.name || 'feed')}`;
+            channels[feedId] = {
+                id: feedId,
+                name: feed.name || 'Custom Feed',
+                region: 'Custom RSS',
+                badge: feed.badge || 'CUSTOM',
+                url: feed.url,
+            };
+        }
+    }
+
+    return channels;
+}
+
+const NEWS_CHANNELS = {};
 
 /**
  * Decode standard HTML and XML entities
@@ -160,15 +162,14 @@ function parseRssFeed(xmlText, channelMeta, limit = 5) {
 /**
  * Fetch a single RSS channel with timeout protection
  */
-async function fetchChannel(channelKey, limit = 5) {
-    const meta = NEWS_CHANNELS[channelKey];
-    if (!meta) return [];
+async function fetchChannel(channelMeta, limit = 5) {
+    if (!channelMeta || !channelMeta.url) return [];
 
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 6000);
 
-        const res = await fetch(meta.url, {
+        const res = await fetch(channelMeta.url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
                 'Accept': 'application/rss+xml, application/xml, text/xml, */*',
@@ -179,14 +180,14 @@ async function fetchChannel(channelKey, limit = 5) {
         clearTimeout(timeout);
 
         if (!res.ok) {
-            console.warn(`[News Service] Channel ${channelKey} returned HTTP ${res.status}`);
+            console.warn(`[News Service] Channel ${channelMeta.id} returned HTTP ${res.status}`);
             return [];
         }
 
         const xml = await res.text();
-        return parseRssFeed(xml, meta, limit);
+        return parseRssFeed(xml, channelMeta, limit);
     } catch (err) {
-        console.warn(`[News Service] Failed to fetch channel ${channelKey}:`, err.message);
+        console.warn(`[News Service] Failed to fetch channel ${channelMeta.id}:`, err.message);
         return [];
     }
 }
@@ -203,9 +204,10 @@ async function fetchCategorizedNews(forceFresh = false) {
         return { ...memoryCache.data, cached: true };
     }
 
-    const channelKeys = Object.keys(NEWS_CHANNELS);
+    const activeChannels = await getActiveChannels(forceFresh);
+    const channelKeys = Object.keys(activeChannels);
     const results = await Promise.allSettled(
-        channelKeys.map((key) => fetchChannel(key, 5))
+        channelKeys.map((key) => fetchChannel(activeChannels[key], 5))
     );
 
     const categories = {};
@@ -230,11 +232,11 @@ async function fetchCategorizedNews(forceFresh = false) {
         categories,
         topHeadlines: topHeadlines.slice(0, 10),
         totalCount,
-        channels: Object.keys(NEWS_CHANNELS).map((k) => ({
+        channels: Object.keys(activeChannels).map((k) => ({
             id: k,
-            name: NEWS_CHANNELS[k].name,
-            region: NEWS_CHANNELS[k].region,
-            badge: NEWS_CHANNELS[k].badge,
+            name: activeChannels[k].name,
+            region: activeChannels[k].region,
+            badge: activeChannels[k].badge,
             count: (categories[k] || []).length,
         })),
         updatedAt: new Date().toISOString(),
@@ -259,9 +261,10 @@ async function getNewsByTopic(topic = 'all') {
         return data;
     }
     const key = topic.toLowerCase().trim();
+    const channels = await getActiveChannels();
     return {
         topic: key,
-        channel: NEWS_CHANNELS[key] || null,
+        channel: channels[key] || null,
         articles: data.categories[key] || [],
         updatedAt: data.updatedAt,
         cached: data.cached,
@@ -279,6 +282,7 @@ async function getNewsByRegion(region = 'all') {
     if (reg === 'us' || reg === 'american') {
         return [
             ...(data.categories.us_politics || []),
+            ...(data.categories.ai_tech || []),
             ...(data.categories.ai || []),
             ...(data.categories.technology || []),
         ];
@@ -306,8 +310,10 @@ function formatNewsForContext(newsPayload) {
     const lines = [];
     const cats = newsPayload.categories;
 
-    if (cats.ai && cats.ai.length > 0) {
-        lines.push(`- AI & Deep Tech: ${cats.ai.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
+    // Check specific known channels
+    const techItems = cats.ai_tech || cats.ai || cats.technology || [];
+    if (techItems.length > 0) {
+        lines.push(`- AI, Technology & Startups: ${techItems.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
     }
     if (cats.karnataka_bengaluru && cats.karnataka_bengaluru.length > 0) {
         lines.push(`- Karnataka & Bengaluru: ${cats.karnataka_bengaluru.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
@@ -321,8 +327,23 @@ function formatNewsForContext(newsPayload) {
     if (cats.economics && cats.economics.length > 0) {
         lines.push(`- Economics & Markets: ${cats.economics.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
     }
+    if (cats.science && cats.science.length > 0) {
+        lines.push(`- Science & Innovation: ${cats.science.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
+    }
     if (cats.culture && cats.culture.length > 0) {
         lines.push(`- Culture & Arts: ${cats.culture.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
+    }
+    if (cats.custom_topics && cats.custom_topics.length > 0) {
+        lines.push(`- Custom Topics: ${cats.custom_topics.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
+    }
+
+    // Fallback if none of the above matched
+    if (lines.length === 0) {
+        for (const [key, items] of Object.entries(cats)) {
+            if (Array.isArray(items) && items.length > 0) {
+                lines.push(`- ${key}: ${items.slice(0, 2).map((a) => `"${a.title}" (${a.source})`).join('; ')}`);
+            }
+        }
     }
 
     return lines.length > 0 ? lines.join('\n') : 'No recent headlines available.';
@@ -400,6 +421,7 @@ function clearNewsCache() {
 
 module.exports = {
     NEWS_CHANNELS,
+    getActiveChannels,
     fetchCategorizedNews,
     getFlatNewsFeed,
     getNewsByTopic,

@@ -1,4 +1,5 @@
 import {renderMarkdownWithFootnotes} from './markdownUtils';
+import { tStatic } from '../locales';
 
 // Fetch all research post metadata
 export const getAllResearchPosts = async () => {
@@ -11,7 +12,7 @@ export const getAllResearchPosts = async () => {
             }
         }
     } catch (err) {
-        console.error('Error fetching research metadata:', err);
+        console.error(tStatic('logs.researchMetaError', undefined, 'Error fetching research metadata:'), err);
     }
     return [];
 };
@@ -38,7 +39,7 @@ export const fetchResearchContent = async (filename) => {
         if (!response.ok) throw new Error('Failed to fetch research content');
         return response.text();
     } catch (error) {
-        console.error('Error fetching research content:', error);
+        console.error(tStatic('logs.researchContentError', undefined, 'Error fetching research content:'), error);
         return '';
     }
 };
@@ -156,7 +157,7 @@ export const getResearchPostBySlug = async (slug) => {
             date: article.date
         };
     } catch (error) {
-        console.error('Error fetching research article by slug:', error);
+        console.error(tStatic('logs.researchSlugError', undefined, 'Error fetching research article by slug:'), error);
         throw error;
     }
 };

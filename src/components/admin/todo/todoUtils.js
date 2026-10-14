@@ -1,3 +1,5 @@
+import { formatDate } from '../../../utils/ContentContext';
+
 export const TODO_API = '/api/todo';
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
@@ -75,26 +77,17 @@ export const getDueState = (todo) => {
     return 'upcoming';
 };
 
-export const getDueDateLabel = (todo, lang = 'en', formatNum = (v) => v) => {
-    const date = parseDateOnly(todo?.dueDate);
-    if (!date) return '';
-
-    const locale = lang === 'kn' ? 'kn-IN' : 'en-US';
-    const formatted = date.toLocaleDateString(locale, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-    return formatNum(formatted);
+export const getDueDateLabel = (todo, lang = 'en') => {
+    return formatDate(todo?.dueDate, lang, { month: 'short' });
 };
 
 /**
- * Returns the next 3 calendar days after TODAY.
+ * Returns the next N calendar days after TODAY (default: 3).
  */
-export const getNextThreeDaysRange = () => {
+export const getNextNDaysRange = (days = 3) => {
     const today = getToday();
     const end = new Date(today);
-    end.setDate(end.getDate() + 3);
+    end.setDate(end.getDate() + Number(days));
     end.setHours(0, 0, 0, 0);
 
     return {
@@ -102,6 +95,8 @@ export const getNextThreeDaysRange = () => {
         endKey: getDayKey(end),
     };
 };
+
+export const getNextThreeDaysRange = () => getNextNDaysRange(3);
 
 export const PRIORITY_LABEL = {
     high: 'High',
@@ -167,3 +162,34 @@ export const isRecurringChildVisible = (todo, allTodos = []) => {
 };
 
 export const COLLAPSED_COLUMNS_KEY = 'admin_todo_collapsed_columns';
+
+/**
+ * Ensures a valid web protocol for opening external links.
+ */
+export const formatTodoUrl = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//i.test(trimmed)) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+};
+
+/**
+ * Returns a concise, readable URL string for card display without bulky protocol prefixes.
+ */
+export const getDisplayUrl = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    try {
+        const fullUrl = formatTodoUrl(trimmed);
+        const parsed = new URL(fullUrl);
+        const host = parsed.hostname.replace(/^www\./, '');
+        const path = parsed.pathname !== '/' ? parsed.pathname : '';
+        const search = parsed.search ? parsed.search : '';
+        return `${host}${path}${search}` || trimmed;
+    } catch {
+        return trimmed.replace(/^https?:\/\/(www\.)?/i, '');
+    }
+};
+

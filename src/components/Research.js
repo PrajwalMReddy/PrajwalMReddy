@@ -34,7 +34,7 @@ const Research = () => {
             <main className="research-page">
                 <h1 id="project-heading">{t('researchTitle')}</h1>
                 {loading ? (
-                    <div className="blog-loading">Loading...</div>
+                    <div className="blog-loading">{t('loading')}</div>
                 ) : (
                     researchSections.map((section, sIdx) => (
                         <div key={sIdx} className="project-section">

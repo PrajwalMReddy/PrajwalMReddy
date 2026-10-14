@@ -16,9 +16,10 @@ class ComponentErrorBoundary extends React.Component {
     }
     render() {
         if (this.state.hasError) {
+            const errorLabel = this.props.t ? this.props.t('failedToLoadComponent') : 'Failed to load custom component:';
             return (
                 <div className="blog-post-error">
-                    <p>Failed to load custom component: <code>{this.props.componentName}</code></p>
+                    <p>{errorLabel} <code>{this.props.componentName}</code></p>
                     <p style={{ fontSize: '0.85rem', color: '#64748b' }}>{this.state.error?.message}</p>
                 </div>
             );
@@ -62,19 +63,19 @@ const BlogPost = () => {
             try {
                 return lazy(() => import(`./${blogData.component}`));
             } catch (e) {
-                console.error('Failed to import custom component:', e);
+                console.error(t('logs.blogImportError', 'Failed to import custom component:'), e);
                 return null;
             }
         }
         return null;
-    }, [blogData?.type, blogData?.source, blogData?.component]);
+    }, [blogData?.type, blogData?.source, blogData?.component, t]);
 
     if (loading) {
         return (
             <div id="app-root">
                 <SideNav/>
                 <main>
-                    <div className="blog-post-loading">Loading...</div>
+                    <div className="blog-post-loading">{t('loading')}</div>
                 </main>
                 <Footer/>
             </div>
@@ -97,12 +98,12 @@ const BlogPost = () => {
 
     if (CustomComponent && isStandalone) {
         return (
-            <ComponentErrorBoundary componentName={blogData.component}>
+            <ComponentErrorBoundary componentName={blogData.component} t={t}>
                 <Suspense fallback={
                     <div id="app-root">
                         <SideNav/>
                         <main>
-                            <div className="blog-post-loading">Loading...</div>
+                            <div className="blog-post-loading">{t('loading')}</div>
                         </main>
                         <Footer/>
                     </div>
@@ -112,6 +113,12 @@ const BlogPost = () => {
             </ComponentErrorBoundary>
         );
     }
+
+    const renderAuthor = (author) => {
+        if (!author) return null;
+        const authorTemplate = t('byAuthor', 'by {author}');
+        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+    };
 
     return (
         <div id="app-root">
@@ -131,7 +138,7 @@ const BlogPost = () => {
 
                             {blogData.author && (
                                 <span className="blog-post-author">
-                                    by {blogData.author}
+                                    {renderAuthor(blogData.author)}
                                 </span>
                             )}
                         </div>
@@ -146,8 +153,8 @@ const BlogPost = () => {
 
                     {CustomComponent && (
                         <div className="blog-post-content blog-post-custom-component">
-                            <ComponentErrorBoundary componentName={blogData.component}>
-                                <Suspense fallback={<div className="blog-post-loading">Loading component...</div>}>
+                            <ComponentErrorBoundary componentName={blogData.component} t={t}>
+                                <Suspense fallback={<div className="blog-post-loading">{t('loadingComponent')}</div>}>
                                     <CustomComponent post={blogData} customData={blogData.customData || blogData.data} data={blogData.customData || blogData.data} />
                                 </Suspense>
                             </ComponentErrorBoundary>
@@ -161,3 +168,4 @@ const BlogPost = () => {
 };
 
 export default BlogPost;
+

@@ -733,7 +733,8 @@ button.cms-tag:disabled {
 }
 
 .cms-lang-pill-btn,
-.cms-lang-tab {
+.cms-lang-tab,
+.cms-lang-tab-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -754,13 +755,15 @@ button.cms-tag:disabled {
 }
 
 .cms-lang-pill-btn:hover,
-.cms-lang-tab:hover {
+.cms-lang-tab:hover,
+.cms-lang-tab-btn:hover {
     color: #0f172a;
     background: rgba(255, 255, 255, 0.6);
 }
 
 .cms-lang-pill-btn.active,
-.cms-lang-tab.active {
+.cms-lang-tab.active,
+.cms-lang-tab-btn.active {
     background: #ffffff;
     color: #0f172a;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -1357,18 +1360,21 @@ body.dark-mode .cms-lang-tabs {
 }
 
 body.dark-mode .cms-lang-pill-btn,
-body.dark-mode .cms-lang-tab {
+body.dark-mode .cms-lang-tab,
+body.dark-mode .cms-lang-tab-btn {
     color: #94a3b8;
 }
 
 body.dark-mode .cms-lang-pill-btn:hover,
-body.dark-mode .cms-lang-tab:hover {
+body.dark-mode .cms-lang-tab:hover,
+body.dark-mode .cms-lang-tab-btn:hover {
     color: #f1f5f9;
     background: rgba(255, 255, 255, 0.08);
 }
 
 body.dark-mode .cms-lang-pill-btn.active,
-body.dark-mode .cms-lang-tab.active {
+body.dark-mode .cms-lang-tab.active,
+body.dark-mode .cms-lang-tab-btn.active {
     background: #0f172a;
     color: #f8fafc;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);

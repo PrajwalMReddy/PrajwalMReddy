@@ -6,13 +6,13 @@ import '../../konami-admin.css';
 const GRID_HEIGHT = 16;
 const DEFAULT_WIDTH = 40;
 
-const TOOLS = [
-    { id: 'P', label: 'Spawn Point', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a7 7 0 0 1 13 0v2"/></svg>, className: 'konami-cell-spawn' },
-    { id: '#', label: 'Ground Block', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>, className: 'konami-cell-block' },
-    { id: 'C', label: 'Coin', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>, className: 'konami-cell-coin' },
-    { id: 'E', label: 'Enemy', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="14" x="3" y="6" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>, className: 'konami-cell-enemy' },
-    { id: 'F', label: 'Finish Flag', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, className: 'konami-cell-flag' },
-    { id: '.', label: 'Eraser', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/></svg>, className: 'konami-cell-empty' },
+const TOOL_DEFS = [
+    { id: 'P', key: 'spawnPoint', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a7 7 0 0 1 13 0v2"/></svg>, className: 'konami-cell-spawn' },
+    { id: '#', key: 'groundBlock', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>, className: 'konami-cell-block' },
+    { id: 'C', key: 'coin', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>, className: 'konami-cell-coin' },
+    { id: 'E', key: 'enemy', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="14" x="3" y="6" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>, className: 'konami-cell-enemy' },
+    { id: 'F', key: 'finishFlag', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, className: 'konami-cell-flag' },
+    { id: '.', key: 'eraser', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/></svg>, className: 'konami-cell-empty' },
 ];
 
 function createDefaultGrid(width = DEFAULT_WIDTH) {
@@ -37,10 +37,10 @@ function createDefaultGrid(width = DEFAULT_WIDTH) {
 }
 
 const KonamiAdmin = () => {
-    const { t } = useContent();
+    const { t, formatNumber } = useContent();
     const [levels, setLevels] = useState([]);
     const [activeLevelIdx, setActiveLevelIdx] = useState(0);
-    const [activeTool, setActiveTool] = useState(TOOLS[0].id);
+    const [activeTool, setActiveTool] = useState(TOOL_DEFS[0].id);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [toast, setToast] = useState(null);
@@ -85,7 +85,7 @@ const KonamiAdmin = () => {
                             return {
                                 ...lvl,
                                 id: lvl.id || `level-${idx + 1}`,
-                                name: lvl.name || `Level ${idx + 1}`,
+                                name: lvl.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`,
                                 width: w,
                                 height: GRID_HEIGHT,
                                 grid: g
@@ -101,13 +101,13 @@ const KonamiAdmin = () => {
             // If completely uninitialized or error, default to empty or 1 template
             setLevels([]);
         } catch (err) {
-            console.error('Error loading levels:', err);
-            showToast('Failed to load levels from server');
+            console.error(t('logs.konamiLevelsLoadError'), err);
+            showToast(t('editor.failedLoadLevels'));
             setLevels([]);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [t]);
 
 
     useEffect(() => {
@@ -263,7 +263,7 @@ const KonamiAdmin = () => {
     };
 
     const handleClearLevel = () => {
-        if (!window.confirm('Clear all obstacles in this level?')) return;
+        if (!window.confirm(t('editor.confirmClearObstacles'))) return;
         setLevels(prev => {
             const updated = [...prev];
             const level = { ...updated[activeLevelIdx] };
@@ -291,7 +291,7 @@ const KonamiAdmin = () => {
         const nextNum = levels.length + 1;
         const newLevel = {
             id: `level-${Date.now()}`,
-            name: `Level ${nextNum}`,
+            name: `${t('editor.nameLabel', 'Level')} ${nextNum}`,
             width: DEFAULT_WIDTH,
             height: GRID_HEIGHT,
             grid: createDefaultGrid(DEFAULT_WIDTH)
@@ -305,8 +305,8 @@ const KonamiAdmin = () => {
         const levelToDelete = levels[idx] || currentLevel;
         if (!levelToDelete) return;
 
-        const levelName = levelToDelete.name || `Level ${idx + 1}`;
-        if (!window.confirm(`Delete ${levelName}?`)) return;
+        const levelName = levelToDelete.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`;
+        if (!window.confirm((t('editor.confirmDeleteLevel') || 'Delete {name}?').replace('{name}', levelName))) return;
 
         const updatedLocal = levels.filter((_, i) => i !== idx);
         setLevels(updatedLocal);
@@ -352,13 +352,13 @@ const KonamiAdmin = () => {
             }
 
             if (res.ok) {
-                showToast(updatedPersisted.length === 0 ? 'All custom levels deleted (Infinite mode active)' : `${levelName} deleted`);
+                showToast(updatedPersisted.length === 0 ? t('editor.allDeletedInfiniteActive') : (t('editor.levelDeletedToast') || '{name} deleted').replace('{name}', levelName));
             } else {
-                showToast('Failed to save deletion');
+                showToast(t('editor.failedSaveDeletion'));
             }
         } catch (err) {
-            console.error('Error saving deletion:', err);
-            showToast('Network error while deleting level');
+            console.error(t('logs.konamiLevelDeleteError'), err);
+            showToast(t('editor.networkErrorDeleting'));
         } finally {
             setSaving(false);
         }
@@ -413,19 +413,19 @@ const KonamiAdmin = () => {
 
             if (res.ok) {
                 const info = await res.json().catch(() => ({}));
-                const levelName = currentLevel.name || `Level ${activeLevelIdx + 1}`;
+                const levelName = currentLevel.name || `${t('editor.nameLabel', 'Level')} ${activeLevelIdx + 1}`;
                 if (info.storage && info.storage.filesystem && !info.storage.database) {
-                    showToast(`${levelName} saved locally to disk (MongoDB offline)`);
+                    showToast((t('editor.levelSavedDisk') || '{name} saved locally to disk (MongoDB offline)').replace('{name}', levelName));
                 } else {
-                    showToast(`${levelName} saved successfully!`);
+                    showToast((t('editor.levelSavedSuccess') || '{name} saved successfully!').replace('{name}', levelName));
                 }
             } else {
                 const err = await res.json().catch(() => ({}));
-                showToast(`Failed to save: ${err.error || 'Server error'}`);
+                showToast((t('editor.failedSave') || 'Failed to save: {error}').replace('{error}', err.error || 'Server error'));
             }
         } catch (err) {
-            console.error('Error saving level:', err);
-            showToast('Network error while saving level');
+            console.error(t('logs.konamiLevelSaveError'), err);
+            showToast(t('editor.networkErrorSaving'));
         } finally {
             setSaving(false);
         }
@@ -433,16 +433,16 @@ const KonamiAdmin = () => {
 
     if (loading) {
         return (
-            <AdminLayout title="Konami Level Editor">
+            <AdminLayout title={t('editor.title')}>
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                    Loading levels...
+                    {t('editor.loadingLevels')}
                 </div>
             </AdminLayout>
         );
     }
 
     return (
-        <AdminLayout title="Konami Level Editor">
+        <AdminLayout title={t('editor.title')}>
             <div className="konami-admin-shell">
                 {/* Level Navigation Tabs & Actions */}
                 <div className="konami-admin-topbar">
@@ -454,7 +454,7 @@ const KonamiAdmin = () => {
                                     className="konami-level-tab"
                                     onClick={() => setActiveLevelIdx(idx)}
                                 >
-                                    {lvl.name || `Level ${idx + 1}`}
+                                    {lvl.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`}
                                 </button>
                                 <button
                                     type="button"
@@ -463,7 +463,7 @@ const KonamiAdmin = () => {
                                         e.stopPropagation();
                                         handleDeleteLevel(idx);
                                     }}
-                                    title={`Delete ${lvl.name || 'Level ' + (idx + 1)}`}
+                                    title={(t('editor.deleteLevelTitle') || 'Delete {name}').replace('{name}', lvl.name || `Level ${idx + 1}`)}
                                 >
                                     ×
                                 </button>
@@ -473,9 +473,9 @@ const KonamiAdmin = () => {
                             type="button"
                             className="konami-add-level-btn"
                             onClick={handleAddLevel}
-                            title="Add a new custom level"
+                            title={t('editor.addNewLevelTitle')}
                         >
-                            + Add Level
+                            {t('editor.addLevel')}
                         </button>
                     </div>
 
@@ -485,18 +485,18 @@ const KonamiAdmin = () => {
                             className="konami-delete-btn"
                             onClick={() => handleDeleteLevel(activeLevelIdx)}
                             disabled={saving || !currentLevel}
-                            title={currentLevel ? `Delete ${currentLevel.name || 'this level'}` : 'No level selected'}
+                            title={currentLevel ? (t('editor.deleteLevelTitle') || 'Delete {name}').replace('{name}', currentLevel.name || 'this level') : t('editor.noLevelSelected')}
                         >
-                            Delete Level
+                            {t('editor.deleteLevel')}
                         </button>
                         <button
                             type="button"
                             className="konami-save-btn"
                             onClick={handleSave}
                             disabled={saving || !currentLevel}
-                            title={currentLevel ? `Save ${currentLevel.name || 'this level'}` : 'No level selected'}
+                            title={currentLevel ? (t('editor.saveLevelTitle') || 'Save {name}').replace('{name}', currentLevel.name || 'this level') : t('editor.noLevelSelected')}
                         >
-                            {saving ? 'Saving...' : 'Save Level'}
+                            {saving ? t('editor.saving') : t('editor.saveLevel')}
                         </button>
                     </div>
                 </div>
@@ -512,7 +512,7 @@ const KonamiAdmin = () => {
                         {/* Meta Settings */}
                         <div className="konami-meta-controls">
                             <label className="konami-input-group">
-                                <span>Name:</span>
+                                <span>{t('editor.nameLabel')}</span>
                                 <input
                                     type="text"
                                     value={currentLevel.name || ''}
@@ -522,7 +522,7 @@ const KonamiAdmin = () => {
                             </label>
 
                             <label className="konami-input-group">
-                                <span>Width:</span>
+                                <span>{t('editor.widthLabel')}</span>
                                 <input
                                     type="number"
                                     min="1"
@@ -531,14 +531,14 @@ const KonamiAdmin = () => {
                                     onBlur={handleWidthInputBlur}
                                     onKeyDown={handleWidthInputKeyDown}
                                     style={{ width: '85px' }}
-                                    title="Enter any level width"
+                                    title={t('editor.widthTitle')}
                                 />
                             </label>
                         </div>
 
                         {/* Palette Selector */}
                         <div className="konami-palette">
-                            {TOOLS.map((tool) => (
+                            {TOOL_DEFS.map((tool) => (
                                 <button
                                     key={tool.id}
                                     type="button"
@@ -546,7 +546,7 @@ const KonamiAdmin = () => {
                                     onClick={() => setActiveTool(tool.id)}
                                 >
                                     <span>{tool.icon}</span>
-                                    <span>{tool.label}</span>
+                                    <span>{t(`editor.${tool.key}`)}</span>
                                 </button>
                             ))}
                         </div>
@@ -557,17 +557,17 @@ const KonamiAdmin = () => {
                                 type="button"
                                 className="konami-secondary-btn"
                                 onClick={handleFillBottomRow}
-                                title="Fill bottom row with solid blocks"
+                                title={t('editor.fillBottomTitle')}
                             >
-                                Fill Floor
+                                {t('editor.fillFloor')}
                             </button>
                             <button
                                 type="button"
                                 className="konami-secondary-btn"
                                 onClick={handleClearLevel}
-                                title="Clear all blocks in level"
+                                title={t('editor.clearAllTitle')}
                             >
-                                Clear
+                                {t('editor.clear')}
                             </button>
                         </div>
                     </div>
@@ -584,7 +584,7 @@ const KonamiAdmin = () => {
                             <div className="konami-grid-header-row">
                                 {Array.from({ length: currentLevel.width }).map((_, c) => (
                                     <div key={c} className="konami-grid-col-num">
-                                        {c % 5 === 0 ? c : ''}
+                                        {c % 5 === 0 ? formatNumber(c) : ''}
                                     </div>
                                 ))}
                             </div>
@@ -600,13 +600,16 @@ const KonamiAdmin = () => {
                                         else if (cellChar === 'F') cellClass = 'konami-cell-flag';
                                         else if (cellChar === 'P') cellClass = 'konami-cell-spawn';
 
+                                        const toolDef = TOOL_DEFS.find(tDef => tDef.id === cellChar);
+                                        const typeName = toolDef ? t(`editor.${toolDef.key}`) : cellChar;
+
                                         return (
                                             <div
                                                 key={c}
                                                 className={`konami-grid-cell ${cellClass}`}
                                                 onMouseDown={(e) => handleCellMouseDown(r, c, e)}
                                                 onMouseEnter={(e) => handleCellMouseEnter(r, c, e)}
-                                                title={`Row ${r}, Col ${c}: ${cellChar}`}
+                                                title={(t('editor.cellTooltip') || 'Row {row}, Col {col}: {type}').replace('{row}', formatNumber(r)).replace('{col}', formatNumber(c)).replace('{type}', typeName)}
                                             />
                                         );
                                     })}

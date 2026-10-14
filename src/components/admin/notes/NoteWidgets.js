@@ -2,6 +2,7 @@ import React from 'react';
 import { useContent } from '../../../utils/ContentContext';
 import {
     BLOCK_TYPES,
+    CALLOUT_VARIANTS,
     CODE_LANGUAGES,
     getCurrentMonthValue,
     getHabitCalendarDays,
@@ -10,7 +11,53 @@ import {
     getTextEditorHtml,
     highlightCode,
     katex,
+    normalizeBlockSpan,
 } from './noteUtils';
+
+export const CalloutIcon = ({ type = 'info', size = 15, className = '' }) => {
+    switch (type) {
+        case 'tip':
+            return (
+                <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    <path d="M12 8v3" />
+                    <path d="M12 15h.01" />
+                </svg>
+            );
+        case 'warning':
+            return (
+                <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            );
+        case 'danger':
+            return (
+                <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            );
+        case 'idea':
+            return (
+                <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                    <path d="M9 18h6" />
+                    <path d="M10 22h4" />
+                </svg>
+            );
+        default:
+            return (
+                <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                </svg>
+            );
+    }
+};
 
 export const fitTextareaValue = (event) => {
     const textarea = event.currentTarget;
@@ -264,11 +311,19 @@ export const NoteBlock = ({
 
     const getCountdownParts = (dateTime) => {
         if (!dateTime) return null;
-        const seconds = Math.max(0, Math.floor((new Date(dateTime).getTime() - currentTime) / 1000));
+        const target = new Date(dateTime).getTime();
+        if (Number.isNaN(target)) return null;
+        const totalSeconds = Math.max(0, Math.floor((target - currentTime) / 1000));
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
         return {
-            hours: String(Math.floor(seconds / 3600)).padStart(2, '0'),
-            minutes: String(Math.floor((seconds % 3600) / 60)).padStart(2, '0'),
-            seconds: String(seconds % 60).padStart(2, '0'),
+            days,
+            hours: String(hours).padStart(2, '0'),
+            minutes: String(minutes).padStart(2, '0'),
+            seconds: String(seconds).padStart(2, '0'),
+            isExpired: totalSeconds === 0,
         };
     };
 
@@ -380,24 +435,32 @@ export const NoteBlock = ({
         );
     };
 
+    const span = normalizeBlockSpan(block.span, block.type);
+    const col = Math.max(1, Math.min(position.col || 1, 13 - span));
+    const height = Math.max(
+        1,
+        block.height ||
+            type.height ||
+            type.defaultHeight ||
+            4
+    );
+
     return (
         <div
-            className={`admin-note-block admin-note-block-${block.type} admin-note-block-span-${
-                block.span || 1
-            }${statusKey ? ` admin-note-status-${statusKey}` : ''}${
+            className={`admin-note-block admin-note-block-${block.type}${
+                statusKey ? ` admin-note-status-${statusKey}` : ''
+            }${
+                block.type === 'callout'
+                    ? ` admin-note-callout-block-${block.calloutType || 'info'}`
+                    : ''
+            }${
                 draggingBlockId === block.id ? ' is-dragging' : ''
             }`}
             key={block.id}
             style={{
-                order: (position.row || 1) * 20 + (position.col || 1),
-                gridColumn: `${position.col} / span ${(block.span || 1) * 4}`,
-                gridRow: `${position.row} / span ${
-                    block.type === 'chart'
-                        ? Math.max(block.height || 3, 11)
-                        : block.type === 'timeline'
-                        ? Math.max(block.height || 6, 6)
-                        : block.height || 3
-                }`,
+                order: 20 * (position.row || 1) + col,
+                gridColumn: `${col} / span ${span}`,
+                gridRow: `${position.row || 1} / span ${height}`,
             }}
             onPointerDown={(event) => startBlockDrag(event, block.id)}
             onPointerMove={(event) => {
@@ -719,6 +782,7 @@ export const NoteBlock = ({
                     />
                     {getCountdownParts(block.dateTime) ? (
                         <strong className="admin-note-countdown-value">
+                            {getCountdownParts(block.dateTime).days > 0 ? `${formatNumber(getCountdownParts(block.dateTime).days)}d ` : ''}
                             {formatNumber(getCountdownParts(block.dateTime).hours)}:
                             {formatNumber(getCountdownParts(block.dateTime).minutes)}:
                             {formatNumber(getCountdownParts(block.dateTime).seconds)}
@@ -1423,24 +1487,60 @@ export const NoteBlock = ({
                         )}
                     </div>
                 </div>
-            ) : (
-                <>
-                    {block.type === 'todo' && (
+            ) : block.type === 'callout' ? (
+                <div className="admin-note-callout-wrap">
+                    <div className="admin-note-callout-controls" aria-label="Callout controls">
                         <input
-                            type="checkbox"
-                            checked={block.checked}
-                            onChange={(event) => updateBlock(block.id, { checked: event.target.checked })}
-                            aria-label={t('admin.notesSection.blockTypes.todo', 'Checklist')}
+                            className="admin-note-callout-label"
+                            value={block.label || ''}
+                            placeholder={t('admin.notesSection.blockTypes.callout', 'Callout')}
+                            aria-label={t('admin.notesSection.widgetsDetail.calloutLabel', 'Callout title')}
+                            onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                         />
-                    )}
+                        <select
+                            className="admin-note-callout-type"
+                            value={block.calloutType || 'info'}
+                            aria-label="Callout type"
+                            onChange={(event) => updateBlock(block.id, { calloutType: event.target.value })}
+                        >
+                            {Object.entries(CALLOUT_VARIANTS).map(([variantKey, variantConfig]) => (
+                                <option key={variantKey} value={variantKey}>
+                                    {t(`admin.notesSection.calloutTypes.${variantKey}`, variantConfig.label)}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="admin-note-callout-body">
+                        <span className={`admin-note-callout-icon admin-note-callout-icon-${block.calloutType || 'info'}`} aria-hidden="true">
+                            <CalloutIcon type={block.calloutType || 'info'} size={16} />
+                        </span>
+                        <textarea
+                            value={block.text || ''}
+                            placeholder={blockPlaceholder}
+                            aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                            onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
+                        />
+                    </div>
+                </div>
+            ) : block.type === 'heading' ? (
+                <div className="admin-note-heading-wrap">
                     <textarea
-                        value={block.text}
+                        className="admin-note-heading-input"
+                        value={block.text || block.label || ''}
                         onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
                         placeholder={blockPlaceholder}
                         aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
-                        rows={block.type === 'text' ? 3 : 1}
+                        rows={1}
                     />
-                </>
+                </div>
+            ) : (
+                <textarea
+                    value={block.text}
+                    onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
+                    placeholder={blockPlaceholder}
+                    aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                    rows={block.type === 'text' ? 3 : 1}
+                />
             )}
 
             <button

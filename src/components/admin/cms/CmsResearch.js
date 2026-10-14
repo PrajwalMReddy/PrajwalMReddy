@@ -31,10 +31,9 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
     const getLocalized = (obj, fallback = '') => {
         if (!obj) return fallback;
         if (typeof obj === 'string') return obj;
-        if (language === 'kn') {
-            return obj.kn || obj.en || fallback;
-        }
-        return obj.en || obj.kn || fallback;
+        const current = activeLangTab || language;
+        const alt = current === 'kn' ? 'en' : 'kn';
+        return obj[current] || obj[alt] || Object.values(obj).find((v) => typeof v === 'string' && v.trim() !== '') || fallback;
     };
 
     const getItemSection = (item) => {
@@ -72,7 +71,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
     const [editingItem, setEditingItem] = useState(null);
     const [markdownContent, setMarkdownContent] = useState('');
     const [loadingMarkdown, setLoadingMarkdown] = useState(false);
-    const [activeLangTab, setActiveLangTab] = useState('en');
+    const [activeLangTab, setActiveLangTab] = useState(language || 'kn');
 
     useEffect(() => {
         if (!isEditModalOpen) return;
@@ -161,7 +160,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             customDataString: '',
         });
         setMarkdownContent('# Research Article\n\nWrite research content here...\n');
-        setActiveLangTab('en');
+        setActiveLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
@@ -207,7 +206,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         };
 
         setEditingItem(normalized);
-        setActiveLangTab('en');
+        setActiveLangTab(language || 'kn');
         setIsEditModalOpen(true);
 
         if (normalized.content !== undefined && normalized.content !== '') {
@@ -224,7 +223,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                     setMarkdownContent(data.content || '');
                 }
             } catch (err) {
-                console.warn('Could not load research markdown:', err);
+                console.warn(t('logs.researchMarkdownError', 'Could not load research markdown:'), err);
             } finally {
                 setLoadingMarkdown(false);
             }
@@ -237,20 +236,20 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         e.preventDefault();
         const safeSlug = (editingItem.slug || '').trim();
         if (!safeSlug) {
-            alert('Slug is required');
+            alert(t('admin.researchAdmin.slugRequired', 'Slug is required'));
             return;
         }
         const titleEn = (editingItem.en?.title || '').trim();
         const titleKn = (editingItem.kn?.title || '').trim();
         if (!titleEn && !titleKn) {
-            alert('A research title in English or Kannada is required');
+            alert(t('admin.researchAdmin.titleRequired', 'A research title in English or Kannada is required'));
             return;
         }
 
         const isNew = editingItem._index === undefined;
 
         if (items.some((it, idx) => (isNew || idx !== editingItem._index) && it.slug?.toLowerCase() === safeSlug.toLowerCase())) {
-            alert('A research entry with this slug already exists.');
+            alert(t('admin.researchAdmin.slugExists', 'A research entry with this slug already exists.'));
             return;
         }
 
@@ -300,7 +299,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                 try {
                     itemData.customData = JSON.parse(editingItem.customDataString.trim());
                 } catch (jsonErr) {
-                    alert(`Custom Data must be valid JSON: ${jsonErr.message}`);
+                    alert((t('admin.researchAdmin.jsonError') || 'Custom Data must be valid JSON: {error}').replace('{error}', jsonErr.message));
                     return;
                 }
             } else {
@@ -323,12 +322,13 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         }
 
         try {
-            await onSave(updatedItems, `Saved research entry "${itemData.en.title}"`);
+            const savedTitle = (language === 'kn' ? itemData.kn?.title : itemData.en?.title) || itemData.en?.title || itemData.slug;
+            await onSave(updatedItems, (t('admin.researchAdmin.savedResearchEntry') || 'Saved research entry "{title}"').replace('{title}', savedTitle));
             setIsEditModalOpen(false);
             setEditingItem(null);
         } catch (saveErr) {
-            console.error('Save research entry failed:', saveErr);
-            alert(`Failed to save research entry: ${saveErr.message || 'Unknown error'}`);
+            console.error(t('logs.cmsContentSaveError', 'Error saving content'), saveErr);
+            alert(`${t('admin.messages.saveFailed', 'Failed to save changes')}: ${saveErr.message || ''}`);
         }
     };
 
@@ -346,17 +346,18 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             }
             return it;
         });
-        const title = item.en?.title || item.title?.en || item.title || item.slug || 'Publication';
-        await onSave(updated, `Updated visibility to ${newVis} for "${title}"`);
+        const title = (language === 'kn' ? item.kn?.title : item.en?.title) || item.title || item.slug || 'Publication';
+        const localizedVis = newVis === 'public' ? t('admin.filters.public', 'Public') : t('admin.filters.unlisted', 'Unlisted');
+        await onSave(updated, (t('admin.researchAdmin.updatedVisibility') || 'Updated visibility to {visibility} for "{title}"').replace('{visibility}', localizedVis).replace('{title}', title));
     };
 
     const handleDelete = async (index) => {
         const item = items[index];
-        const title = item.en?.title || item.title?.en || item.title || item.slug;
-        if (!window.confirm(`Are you sure you want to delete research item "${title}"?`)) return;
+        const title = (language === 'kn' ? item.kn?.title : item.en?.title) || item.title || item.slug;
+        if (!window.confirm((t('admin.researchAdmin.confirmDeleteResearch') || 'Are you sure you want to delete research item "{title}"?').replace('{title}', title))) return;
 
         const updated = items.filter((_, idx) => idx !== index);
-        await onSave(updated, `Deleted research entry "${title}"`);
+        await onSave(updated, (t('admin.researchAdmin.deletedResearchEntry') || 'Deleted research entry "{title}"').replace('{title}', title));
     };
 
     const handleMoveOrder = async (index, direction) => {
@@ -368,7 +369,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         updated[index] = updated[targetIndex];
         updated[targetIndex] = temp;
 
-        await onSave(updated, 'Research items reordered');
+        await onSave(updated, t('admin.researchAdmin.reorderedResearch', 'Research items reordered'));
     };
 
     return (
@@ -669,7 +670,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             onChange={(e) =>
                                                 setEditingItem({ ...editingItem, slug: e.target.value })
                                             }
-                                            placeholder="e.g. bengaluru-telugu-dictionary"
+                                            placeholder={t('admin.researchAdmin.slugPlaceholder', 'e.g. bengaluru-telugu-dictionary')}
                                             required
                                         />
                                     </div>
@@ -693,7 +694,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                Component Name <span className="required">*</span>
+                                                {t('admin.labels.componentName', 'Component Name')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -702,7 +703,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 onChange={(e) =>
                                                     setEditingItem({ ...editingItem, component: e.target.value })
                                                 }
-                                                placeholder="e.g. BengaluruTeluguDictionary"
+                                                placeholder={t('admin.researchAdmin.componentPlaceholder', 'e.g. BengaluruTeluguDictionary')}
                                                 required
                                             />
                                         </div>
@@ -710,16 +711,16 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         <div className="cms-form-group" style={{ marginTop: '0.85rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                                 <label className="cms-form-label" style={{ margin: 0 }}>
-                                                    Custom Data (Optional JSON)
+                                                    {t('admin.researchAdmin.customDataLabel', 'Custom Data (Optional JSON)')}
                                                 </label>
                                                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                                     {editingItem.customDataString && editingItem.customDataString.trim() && (
                                                         (() => {
                                                             try {
                                                                 JSON.parse(editingItem.customDataString.trim());
-                                                                return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ Valid JSON</span>;
+                                                                return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>{t('admin.researchAdmin.validJson', '✓ Valid JSON')}</span>;
                                                             } catch (err) {
-                                                                return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>⚠ Invalid JSON</span>;
+                                                                return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>{t('admin.researchAdmin.invalidJson', '⚠ Invalid JSON')}</span>;
                                                             }
                                                         })()
                                                     )}
@@ -732,11 +733,11 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                                 const parsed = JSON.parse(editingItem.customDataString);
                                                                 setEditingItem({ ...editingItem, customDataString: JSON.stringify(parsed, null, 2) });
                                                             } catch (err) {
-                                                                alert('Cannot format invalid JSON: ' + err.message);
+                                                                alert((t('admin.researchAdmin.cannotFormatInvalidJson') || 'Cannot format invalid JSON: {error}').replace('{error}', err.message));
                                                             }
                                                         }}
                                                     >
-                                                        Prettify JSON
+                                                        {t('admin.researchAdmin.prettifyJson', 'Prettify JSON')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -747,7 +748,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 onChange={(e) =>
                                                     setEditingItem({ ...editingItem, customDataString: e.target.value })
                                                 }
-                                                placeholder={'// Optional JSON payload passed to component props (e.g. array of entries, config object)'}
+                                                placeholder={t('admin.researchAdmin.customDataHelp', '// Optional JSON payload passed to component props')}
                                             />
                                         </div>
                                     </>
@@ -756,7 +757,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 {editingItem.type === 'external' && (
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            External URL <span className="required">*</span>
+                                            {t('admin.labels.externalUrl', 'External URL')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="url"
@@ -765,7 +766,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             onChange={(e) =>
                                                 setEditingItem({ ...editingItem, url: e.target.value })
                                             }
-                                            placeholder="https://..."
+                                            placeholder={t('admin.researchAdmin.urlPlaceholder', 'https://...')}
                                             required
                                         />
                                     </div>
@@ -791,17 +792,17 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 <div className="cms-lang-pills" style={{ marginTop: '0.85rem' }}>
                                     <button
                                         type="button"
-                                        className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
-                                        onClick={() => setActiveLangTab('en')}
-                                    >
-                                        English
-                                    </button>
-                                    <button
-                                        type="button"
                                         className={`cms-lang-pill-btn ${activeLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setActiveLangTab('kn')}
                                     >
-                                        ಕನ್ನಡ
+                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
+                                        onClick={() => setActiveLangTab('en')}
+                                    >
+                                        {t('admin.labels.english', 'English')}
                                     </button>
                                 </div>
 
@@ -821,7 +822,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), title: e.target.value },
                                                     })
                                                 }
-                                                placeholder="Research Paper Title"
+                                                placeholder={t('admin.researchAdmin.titleEnPlaceholder', 'Research Paper Title')}
                                             />
                                         </div>
 
@@ -840,7 +841,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
-                                                placeholder="e.g. Linguistics / Natural Language Processing"
+                                                placeholder={t('admin.researchAdmin.sectionTitleEnPlaceholder', 'e.g. Linguistics / Natural Language Processing')}
                                             />
                                             <datalist id="research-sections-list-en">
                                                 {sections.map((s) => (
@@ -862,7 +863,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), description: e.target.value },
                                                     })
                                                 }
-                                                placeholder="Summary of research..."
+                                                placeholder={t('admin.researchAdmin.summaryEnPlaceholder', 'Summary of research...')}
                                             />
                                         </div>
                                     </>
@@ -884,7 +885,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), title: e.target.value },
                                                     })
                                                 }
-                                                placeholder="ಸಂಶೋಧನಾ ಶೀರ್ಷಿಕೆ"
+                                                placeholder={t('admin.researchAdmin.titleKnPlaceholder', 'ಸಂಶೋಧನಾ ಶೀರ್ಷಿಕೆ')}
                                             />
                                         </div>
 
@@ -903,7 +904,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
-                                                placeholder="ವಿಭಾಗದ ಶೀರ್ಷಿಕೆ"
+                                                placeholder={t('admin.researchAdmin.sectionTitleKnPlaceholder', 'ವಿಭಾಗದ ಶೀರ್ಷಿಕೆ')}
                                             />
                                             <datalist id="research-sections-list-kn">
                                                 {sections.map((s) => (
@@ -925,7 +926,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), description: e.target.value },
                                                     })
                                                 }
-                                                placeholder="ಸಂಶೋಧನೆಯ ಸಾರಾಂಶ..."
+                                                placeholder={t('admin.researchAdmin.summaryKnPlaceholder', 'ಸಂಶೋಧನೆಯ ಸಾರಾಂಶ...')}
                                             />
                                         </div>
                                     </>
@@ -934,12 +935,12 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 <div className="cms-form-group">
                                     <CmsImageUploader
                                         folder="img"
-                                        label="Thumbnail Image (Optional)"
+                                        label={t('admin.researchAdmin.thumbnailImage', 'Thumbnail Image (Optional)')}
                                         value={editingItem.image || ''}
                                         onChange={(imgVal) =>
                                             setEditingItem({ ...editingItem, image: imgVal })
                                         }
-                                        helpText="Thumbnail image for the research card."
+                                        helpText={t('admin.researchAdmin.thumbnailHelp', 'Thumbnail image for the research card.')}
                                     />
                                 </div>
                             </div>

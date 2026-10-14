@@ -358,13 +358,7 @@ async function fetchOutlookEmails(maxResults = 8) {
     }
 }
 
-const DEFAULT_CALENDAR_ICS_URL =
-    process.env.OUTLOOK_CALENDAR_ICS_URL ||
-    'https://outlook.office365.com/owa/calendar/5ef4458128274155a3e0052c141f4a12@cornell.edu/011c3e16f06340128352b9771f10846d17964027501824703155/calendar.ics';
-
-const DEFAULT_CALENDAR_HTML_URL =
-    process.env.OUTLOOK_CALENDAR_HTML_URL ||
-    'https://outlook.office365.com/owa/calendar/5ef4458128274155a3e0052c141f4a12@cornell.edu/011c3e16f06340128352b9771f10846d17964027501824703155/calendar.html';
+const { getDashboardSettings } = require('./settings');
 
 // In-memory cache for parsed ICS calendar events
 const icsCache = {
@@ -373,6 +367,15 @@ const icsCache = {
     fetchedAt: 0,
     ttlMs: 0, // Always fetch fresh on requests
 };
+
+function clearIcsCache() {
+    icsCache.rawText = null;
+    icsCache.rawEvents = null;
+    icsCache.fetchedAt = 0;
+}
+
+let currentCalendarHtmlUrl = process.env.OUTLOOK_CALENDAR_HTML_URL || '';
+let currentCalendarIcsUrl = process.env.OUTLOOK_CALENDAR_ICS_URL || '';
 
 /**
  * Unescape special characters from raw ICS values
@@ -396,8 +399,127 @@ function extractMeetingLink(text) {
     return match ? match[0] : null;
 }
 
+const WINDOWS_TO_IANA = {
+    'Eastern Standard Time': 'America/New_York',
+    'US Eastern Standard Time': 'America/Indianapolis',
+    'Central Standard Time': 'America/Chicago',
+    'Mountain Standard Time': 'America/Denver',
+    'US Mountain Standard Time': 'America/Phoenix',
+    'Pacific Standard Time': 'America/Los_Angeles',
+    'Alaskan Standard Time': 'America/Anchorage',
+    'Hawaiian Standard Time': 'Pacific/Honolulu',
+    'W. Europe Standard Time': 'Europe/Berlin',
+    'Central Europe Standard Time': 'Europe/Budapest',
+    'Romance Standard Time': 'Europe/Paris',
+    'GMT Standard Time': 'Europe/London',
+    'Greenwich Standard Time': 'Atlantic/Reykjavik',
+    'UTC': 'UTC',
+    'India Standard Time': 'Asia/Kolkata',
+    'Singapore Standard Time': 'Asia/Singapore',
+    'China Standard Time': 'Asia/Shanghai',
+    'Tokyo Standard Time': 'Asia/Tokyo',
+    'AUS Eastern Standard Time': 'Australia/Sydney',
+    'E. Europe Standard Time': 'Europe/Bucharest',
+    'Israel Standard Time': 'Asia/Jerusalem',
+    'Arab Standard Time': 'Asia/Riyadh',
+    'Arabic Standard Time': 'Asia/Baghdad',
+    'FLE Standard Time': 'Europe/Helsinki',
+    'South Africa Standard Time': 'Africa/Johannesburg',
+    'Korea Standard Time': 'Asia/Seoul',
+    'Taipei Standard Time': 'Asia/Taipei',
+    'New Zealand Standard Time': 'Pacific/Auckland',
+    'Atlantic Standard Time': 'America/Halifax',
+    'Newfoundland Standard Time': 'America/St_Johns',
+    'SE Asia Standard Time': 'Asia/Bangkok',
+};
+
+/**
+ * Resolve timezone identifier (Windows name, IANA, or params string) to a valid IANA timezone.
+ */
+function resolveTimezone(tzParam) {
+    if (!tzParam) return 'America/New_York';
+    let clean = String(tzParam).replace(/^TZID=/i, '').replace(/"/g, '').trim();
+    if (WINDOWS_TO_IANA[clean]) return WINDOWS_TO_IANA[clean];
+    try {
+        new Intl.DateTimeFormat(undefined, { timeZone: clean });
+        return clean;
+    } catch {
+        for (const [winTz, ianaTz] of Object.entries(WINDOWS_TO_IANA)) {
+            if (clean.toLowerCase().includes(winTz.toLowerCase()) || winTz.toLowerCase().includes(clean.toLowerCase())) {
+                return ianaTz;
+            }
+        }
+        return 'America/New_York';
+    }
+}
+
+/**
+ * Get UTC Date from given local calendar components in a specific timezone
+ */
+function getUtcDateFromLocal(y, m, d, h, min, s, timeZone) {
+    const nominalUtc = Date.UTC(y, m - 1, d, h, min, s);
+    const dtf = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false,
+    });
+
+    const parts = dtf.formatToParts(new Date(nominalUtc));
+    const p = {};
+    for (const part of parts) {
+        p[part.type] = part.value;
+    }
+    const tzYear = parseInt(p.year, 10);
+    const tzMonth = parseInt(p.month, 10);
+    const tzDay = parseInt(p.day, 10);
+    let tzHour = parseInt(p.hour, 10);
+    if (tzHour === 24) tzHour = 0;
+    const tzMin = parseInt(p.minute, 10);
+    const tzSec = parseInt(p.second, 10);
+
+    const tzNominalUtc = Date.UTC(tzYear, tzMonth - 1, tzDay, tzHour, tzMin, tzSec);
+    const offsetMs = tzNominalUtc - nominalUtc;
+    return new Date(nominalUtc - offsetMs);
+}
+
+/**
+ * Extract date parts in America/New_York
+ */
+function getNyDateParts(d) {
+    const dtf = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false,
+    });
+    const parts = dtf.formatToParts(d);
+    const p = {};
+    for (const part of parts) {
+        p[part.type] = part.value;
+    }
+    const year = parseInt(p.year, 10);
+    const month = parseInt(p.month, 10);
+    const day = parseInt(p.day, 10);
+    let hour = parseInt(p.hour, 10);
+    if (hour === 24) hour = 0;
+    const minute = parseInt(p.minute, 10);
+    const second = parseInt(p.second, 10);
+    const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return { year, month, day, hour, minute, second, dateKey };
+}
+
 /**
  * Parse an ICS datetime string (e.g. 20260922T140000, 20260922T140000Z, or 20260922)
+ * using the proper timezone context (e.g. TZID=W. Europe Standard Time, Eastern Standard Time, etc.)
  */
 function parseIcsDate(dateStr, params = '') {
     if (!dateStr) return null;
@@ -406,60 +528,65 @@ function parseIcsDate(dateStr, params = '') {
     // All-day date: YYYYMMDD
     if (/^\d{8}$/.test(cleanStr)) {
         const y = parseInt(cleanStr.slice(0, 4), 10);
-        const m = parseInt(cleanStr.slice(4, 6), 10) - 1;
+        const m = parseInt(cleanStr.slice(4, 6), 10);
         const d = parseInt(cleanStr.slice(6, 8), 10);
+        const localDate = getUtcDateFromLocal(y, m, d, 0, 0, 0, 'America/New_York');
         return {
-            date: new Date(Date.UTC(y, m, d, 0, 0, 0)),
+            date: localDate,
             isAllDay: true,
+            timeZone: 'America/New_York',
+            rawYear: y,
+            rawMonth: m,
+            rawDay: d,
+            rawHour: 0,
+            rawMin: 0,
+            rawSec: 0,
+            dateKey: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
         };
     }
 
     // UTC formatted: YYYYMMDDTHHMMSSZ
     if (cleanStr.endsWith('Z')) {
         const y = parseInt(cleanStr.slice(0, 4), 10);
-        const m = parseInt(cleanStr.slice(4, 6), 10) - 1;
+        const m = parseInt(cleanStr.slice(4, 6), 10);
         const d = parseInt(cleanStr.slice(6, 8), 10);
         const h = parseInt(cleanStr.slice(9, 11), 10);
         const min = parseInt(cleanStr.slice(11, 13), 10);
         const s = parseInt(cleanStr.slice(13, 15), 10) || 0;
+        const date = new Date(Date.UTC(y, m - 1, d, h, min, s));
         return {
-            date: new Date(Date.UTC(y, m, d, h, min, s)),
+            date,
             isAllDay: false,
+            timeZone: 'UTC',
+            rawYear: y,
+            rawMonth: m,
+            rawDay: d,
+            rawHour: h,
+            rawMin: min,
+            rawSec: s,
+            dateKey: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
         };
     }
 
-    // Standard datetime: YYYYMMDDTHHMMSS with optional timezone
+    // Standard datetime: YYYYMMDDTHHMMSS with optional timezone parameter
     const match = cleanStr.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/);
     if (!match) return null;
 
     const [_, y, m, d, h, min, s] = match.map((v) => parseInt(v, 10));
+    const timeZone = resolveTimezone(params);
+    const date = getUtcDateFromLocal(y, m, d, h, min, s, timeZone);
 
-    // Determine offset in minutes for common timezones
-    let offsetMinutes = -300; // default Eastern Time EST
-    const paramStr = String(params || '');
-    if (paramStr.includes('Eastern') || paramStr.includes('EDT') || paramStr.includes('EST') || !params) {
-        // Approximate US daylight savings (2nd Sun of March to 1st Sun of Nov)
-        const isDst = (m > 3 && m < 11) || (m === 3 && d >= 8) || (m === 11 && d < 7);
-        offsetMinutes = isDst ? -240 : -300;
-    } else if (paramStr.includes('Pacific')) {
-        const isDst = (m > 3 && m < 11) || (m === 3 && d >= 8) || (m === 11 && d < 7);
-        offsetMinutes = isDst ? -420 : -480;
-    } else if (paramStr.includes('Central')) {
-        const isDst = (m > 3 && m < 11) || (m === 3 && d >= 8) || (m === 11 && d < 7);
-        offsetMinutes = isDst ? -300 : -360;
-    } else if (paramStr.includes('Mountain')) {
-        const isDst = (m > 3 && m < 11) || (m === 3 && d >= 8) || (m === 11 && d < 7);
-        offsetMinutes = isDst ? -360 : -420;
-    } else if (paramStr.includes('India')) {
-        offsetMinutes = 330;
-    } else if (paramStr.includes('Singapore')) {
-        offsetMinutes = 480;
-    }
-
-    const utcTimestamp = Date.UTC(y, m - 1, d, h, min, s) - offsetMinutes * 60 * 1000;
     return {
-        date: new Date(utcTimestamp),
+        date,
         isAllDay: false,
+        timeZone,
+        rawYear: y,
+        rawMonth: m,
+        rawDay: d,
+        rawHour: h,
+        rawMin: min,
+        rawSec: s,
+        dateKey: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
     };
 }
 
@@ -526,6 +653,26 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
     const windowStartMs = windowStart.getTime();
     const windowEndMs = windowEnd.getTime();
 
+    // Map UID -> { timestamps: number[], dateKeys: string[] }
+    const recurrenceExceptions = new Map();
+    for (const raw of rawEvents) {
+        const uid = raw.UID?.value;
+        const recurrenceIdProp = raw['RECURRENCE-ID'];
+        if (uid && recurrenceIdProp) {
+            const recIdObj = parseIcsDate(recurrenceIdProp.value, recurrenceIdProp.params);
+            if (recIdObj?.date) {
+                if (!recurrenceExceptions.has(uid)) {
+                    recurrenceExceptions.set(uid, { timestamps: [], dateKeys: [] });
+                }
+                const entry = recurrenceExceptions.get(uid);
+                entry.timestamps.push(recIdObj.date.getTime());
+                if (recIdObj.dateKey) {
+                    entry.dateKeys.push(recIdObj.dateKey);
+                }
+            }
+        }
+    }
+
     for (const raw of rawEvents) {
         if (!raw.DTSTART) continue;
         const summary = unescapeIcs(raw.SUMMARY?.value || '(Untitled Event)');
@@ -538,7 +685,7 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
         const startDate = dtstartObj.date;
         const isAllDay = dtstartObj.isAllDay || raw['X-MICROSOFT-CDO-ALLDAYEVENT']?.value === 'TRUE';
 
-        let durationMs = 60 * 60 * 1000;
+        let durationMs = isAllDay ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000;
         if (raw.DTEND) {
             const dtendObj = parseIcsDate(raw.DTEND.value, raw.DTEND.params);
             if (dtendObj && dtendObj.date) {
@@ -547,22 +694,40 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
         }
 
         const uid = raw.UID?.value || `${summary}_${startDate.toISOString()}`;
-        const location = unescapeIcs(raw.LOCATION?.value || '');
+        let location = unescapeIcs(raw.LOCATION?.value || '');
         const description = unescapeIcs(raw.DESCRIPTION?.value || '');
         const organizer = raw.ORGANIZER?.params ? unescapeIcs(raw.ORGANIZER.params) : (raw.ORGANIZER?.value || 'Organizer');
         const meetingUrl = extractMeetingLink(location) || extractMeetingLink(description) || null;
-        const rawCategory = raw.CATEGORIES?.value || raw.CATEGORY?.value || null;
+
+        if (meetingUrl && location.includes(meetingUrl)) {
+            location = location.replace(meetingUrl, '').replace(/^[,;\s-]+|[,;\s-]+$/g, '').trim();
+        } else if (/^https?:\/\//i.test(location.trim())) {
+            location = '';
+        }
+
+        let rawCategory = '';
+        if (Array.isArray(raw.CATEGORIES)) {
+            rawCategory = raw.CATEGORIES.map((c) => c.value).join(',');
+        } else if (raw.CATEGORIES?.value) {
+            rawCategory = raw.CATEGORIES.value;
+        } else if (raw.CATEGORY?.value) {
+            rawCategory = raw.CATEGORY.value;
+        }
         const category = rawCategory ? unescapeIcs(rawCategory).split(',')[0].trim() : null;
         const rruleStr = raw.RRULE?.value;
 
-        const exdates = [];
+        const exdateTimestamps = [];
+        const exdateKeys = [];
         if (raw.EXDATE) {
             const exArr = Array.isArray(raw.EXDATE) ? raw.EXDATE : [raw.EXDATE];
             for (const ex of exArr) {
                 const parts = ex.value.split(',');
                 for (const p of parts) {
                     const parsedEx = parseIcsDate(p, ex.params);
-                    if (parsedEx?.date) exdates.push(parsedEx.date.getTime());
+                    if (parsedEx?.date) {
+                        exdateTimestamps.push(parsedEx.date.getTime());
+                        if (parsedEx.dateKey) exdateKeys.push(parsedEx.dateKey);
+                    }
                 }
             }
         }
@@ -572,7 +737,7 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
             const endMs = startMs + durationMs;
             if (endMs >= windowStartMs && startMs <= windowEndMs) {
                 expanded.push({
-                    id: uid,
+                    id: raw['RECURRENCE-ID'] ? `${uid}_${startDate.toISOString()}` : uid,
                     subject: summary,
                     start: startDate.toISOString(),
                     end: new Date(endMs).toISOString(),
@@ -580,13 +745,13 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
                     endDate: new Date(endMs),
                     durationMinutes: Math.round(durationMs / 60000),
                     isAllDay,
-                    location: location || (meetingUrl ? 'Online Meeting' : ''),
+                    location,
                     description,
                     organizer,
                     category,
                     onlineMeetingUrl: meetingUrl,
-                    webLink: DEFAULT_CALENDAR_HTML_URL,
-                    isRecurring: false,
+                    webLink: currentCalendarHtmlUrl,
+                    isRecurring: Boolean(raw['RECURRENCE-ID']),
                 });
             }
         } else {
@@ -598,41 +763,76 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
 
             const freq = rruleParts.FREQ;
             const interval = parseInt(rruleParts.INTERVAL || '1', 10);
-            let untilMs = rruleParts.UNTIL ? parseIcsDate(rruleParts.UNTIL)?.date?.getTime() || Infinity : Infinity;
-            const count = rruleParts.COUNT ? parseInt(rruleParts.COUNT, 10) : Infinity;
-            const byDays = rruleParts.BYDAY ? rruleParts.BYDAY.split(',').map((d) => dayMap[d.trim().toUpperCase()]) : null;
 
-            let currentStart = new Date(startDate.getTime());
+            let untilMs = Infinity;
+            if (rruleParts.UNTIL) {
+                const untilObj = parseIcsDate(rruleParts.UNTIL);
+                if (untilObj?.date) {
+                    untilMs = untilObj.date.getTime();
+                    if (untilObj.isAllDay) {
+                        untilMs += 24 * 60 * 60 * 1000 - 1;
+                    }
+                }
+            }
+
+            const count = rruleParts.COUNT ? parseInt(rruleParts.COUNT, 10) : Infinity;
+            const byDays = rruleParts.BYDAY
+                ? rruleParts.BYDAY.split(',').map((d) => dayMap[d.trim().replace(/^[-+]?\d+/, '').toUpperCase()]).filter((d) => d !== undefined)
+                : null;
+
+            const tz = dtstartObj.timeZone || 'America/New_York';
+            const { rawHour, rawMin, rawSec } = dtstartObj;
+
+            let curYear = dtstartObj.rawYear;
+            let curMonth = dtstartObj.rawMonth;
+            let curDay = dtstartObj.rawDay;
+
             let occurrences = 0;
             const maxIterations = 500;
             let iter = 0;
 
-            while (iter++ < maxIterations && occurrences < count && currentStart.getTime() <= untilMs && currentStart.getTime() <= windowEndMs) {
-                const curStartMs = currentStart.getTime();
+            const uidExceptions = (uid && recurrenceExceptions.get(uid)) || { timestamps: [], dateKeys: [] };
+
+            while (iter++ < maxIterations && occurrences < count) {
+                const curOccurrenceDate = getUtcDateFromLocal(curYear, curMonth, curDay, rawHour, rawMin, rawSec, tz);
+                const curStartMs = curOccurrenceDate.getTime();
                 const curEndMs = curStartMs + durationMs;
 
-                let matchesDay = true;
-                if (byDays && freq === 'WEEKLY') {
-                    matchesDay = byDays.includes(currentStart.getUTCDay());
+                if (curStartMs > untilMs || curStartMs > windowEndMs) {
+                    break;
                 }
 
-                if (matchesDay && !exdates.some((ex) => Math.abs(ex - curStartMs) < 60000)) {
+                const dayInTz = new Date(new Date(curStartMs).toLocaleString('en-US', { timeZone: tz })).getDay();
+                let matchesDay = true;
+                if (byDays && freq === 'WEEKLY') {
+                    matchesDay = byDays.includes(dayInTz);
+                }
+
+                const curDateKey = `${curYear}-${String(curMonth).padStart(2, '0')}-${String(curDay).padStart(2, '0')}`;
+
+                const isExcluded =
+                    exdateTimestamps.some((ex) => Math.abs(ex - curStartMs) < 60000) ||
+                    exdateKeys.includes(curDateKey) ||
+                    uidExceptions.timestamps.some((ex) => Math.abs(ex - curStartMs) < 60000) ||
+                    uidExceptions.dateKeys.includes(curDateKey);
+
+                if (matchesDay && !isExcluded) {
                     if (curEndMs >= windowStartMs && curStartMs <= windowEndMs) {
                         expanded.push({
-                            id: `${uid}_${currentStart.toISOString()}`,
+                            id: `${uid}_${curOccurrenceDate.toISOString()}`,
                             subject: summary,
-                            start: new Date(curStartMs).toISOString(),
+                            start: curOccurrenceDate.toISOString(),
                             end: new Date(curEndMs).toISOString(),
-                            startDate: new Date(curStartMs),
+                            startDate: curOccurrenceDate,
                             endDate: new Date(curEndMs),
                             durationMinutes: Math.round(durationMs / 60000),
                             isAllDay,
-                            location: location || (meetingUrl ? 'Online Meeting' : ''),
+                            location,
                             description,
                             organizer,
                             category,
                             onlineMeetingUrl: meetingUrl,
-                            webLink: DEFAULT_CALENDAR_HTML_URL,
+                            webLink: currentCalendarHtmlUrl,
                             isRecurring: true,
                         });
                     }
@@ -640,15 +840,30 @@ function expandIcsEvents(rawEvents, windowStart, windowEnd) {
                 }
 
                 if (freq === 'WEEKLY' && byDays) {
-                    currentStart = new Date(currentStart.getTime() + 24 * 60 * 60 * 1000);
+                    const nextDate = new Date(Date.UTC(curYear, curMonth - 1, curDay + 1));
+                    curYear = nextDate.getUTCFullYear();
+                    curMonth = nextDate.getUTCMonth() + 1;
+                    curDay = nextDate.getUTCDate();
                 } else if (freq === 'WEEKLY') {
-                    currentStart = new Date(currentStart.getTime() + interval * 7 * 24 * 60 * 60 * 1000);
+                    const nextDate = new Date(Date.UTC(curYear, curMonth - 1, curDay + interval * 7));
+                    curYear = nextDate.getUTCFullYear();
+                    curMonth = nextDate.getUTCMonth() + 1;
+                    curDay = nextDate.getUTCDate();
                 } else if (freq === 'DAILY') {
-                    currentStart = new Date(currentStart.getTime() + interval * 24 * 60 * 60 * 1000);
+                    const nextDate = new Date(Date.UTC(curYear, curMonth - 1, curDay + interval));
+                    curYear = nextDate.getUTCFullYear();
+                    curMonth = nextDate.getUTCMonth() + 1;
+                    curDay = nextDate.getUTCDate();
                 } else if (freq === 'MONTHLY') {
-                    currentStart.setUTCMonth(currentStart.getUTCMonth() + interval);
+                    const nextDate = new Date(Date.UTC(curYear, curMonth - 1 + interval, curDay));
+                    curYear = nextDate.getUTCFullYear();
+                    curMonth = nextDate.getUTCMonth() + 1;
+                    curDay = nextDate.getUTCDate();
                 } else {
-                    currentStart = new Date(currentStart.getTime() + 24 * 60 * 60 * 1000);
+                    const nextDate = new Date(Date.UTC(curYear, curMonth - 1, curDay + 1));
+                    curYear = nextDate.getUTCFullYear();
+                    curMonth = nextDate.getUTCMonth() + 1;
+                    curDay = nextDate.getUTCDate();
                 }
             }
         }
@@ -686,22 +901,15 @@ function getEventUrgency(startDate, endDate, now) {
 
     const diffMs = startMs - nowMs;
     const diffMins = Math.round(diffMs / 60000);
-    const diffHours = Math.round(diffMs / 3600000);
 
-    const nowNy = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    const startNy = new Date(startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const nowParts = getNyDateParts(now);
+    const startParts = getNyDateParts(startDate);
 
-    const isToday =
-        nowNy.getFullYear() === startNy.getFullYear() &&
-        nowNy.getMonth() === startNy.getMonth() &&
-        nowNy.getDate() === startNy.getDate();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowParts = getNyDateParts(tomorrow);
 
-    const tomorrowNy = new Date(nowNy);
-    tomorrowNy.setDate(nowNy.getDate() + 1);
-    const isTomorrow =
-        tomorrowNy.getFullYear() === startNy.getFullYear() &&
-        tomorrowNy.getMonth() === startNy.getMonth() &&
-        tomorrowNy.getDate() === startNy.getDate();
+    const isToday = nowParts.dateKey === startParts.dateKey;
+    const isTomorrow = tomorrowParts.dateKey === startParts.dateKey;
 
     if (diffMs > 0 && diffMins <= 60) {
         return { urgency: 'starting_soon', badgeText: `In ${diffMins}m` };
@@ -723,7 +931,40 @@ function getEventUrgency(startDate, endDate, now) {
  */
 async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) {
     const now = new Date();
-    const icsUrl = DEFAULT_CALENDAR_ICS_URL;
+    const settings = await getDashboardSettings(forceFresh);
+    const calendarConfig = settings.calendar || {};
+    const icsUrl = (calendarConfig.icsUrl || currentCalendarIcsUrl).trim();
+    let htmlUrl = (calendarConfig.htmlUrl || currentCalendarHtmlUrl).trim();
+
+    // Auto-derive web view URL if htmlUrl is not set but icsUrl is present
+    if (!htmlUrl && icsUrl) {
+        if (/reach\/calendar\.ics/i.test(icsUrl)) {
+            htmlUrl = icsUrl.replace(/reach\/calendar\.ics/i, 'reach/calendar.html');
+        } else if (/\.ics(\?.*)?$/i.test(icsUrl)) {
+            htmlUrl = icsUrl.replace(/\.ics(\?.*)?$/i, '.html$1');
+        }
+    }
+
+    currentCalendarHtmlUrl = htmlUrl;
+    currentCalendarIcsUrl = icsUrl;
+
+    if (!icsUrl || calendarConfig.enabled === false) {
+        return {
+            configured: Boolean(icsUrl),
+            enabled: calendarConfig.enabled !== false,
+            provider: 'outlook_ics',
+            timeframe,
+            todayCount: 0,
+            upcomingCount: 0,
+            hasEventsToday: false,
+            happeningNow: null,
+            nextEvent: null,
+            calendarHtmlUrl: htmlUrl,
+            calendarIcsUrl: icsUrl,
+            events: [],
+            message: !icsUrl ? 'Calendar subscription URL (.ics) not configured. Add it in Dashboard Settings.' : 'Calendar integration disabled in settings.',
+        };
+    }
 
     try {
         let rawEvents = icsCache.rawEvents;
@@ -760,12 +1001,7 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
         const enrichedEvents = allExpanded.map((evt) => {
             const { urgency, badgeText } = getEventUrgency(evt.startDate, evt.endDate, now);
             const timeFormatted = formatEventTimeRange(evt.startDate, evt.endDate, evt.isAllDay);
-
-            const startNy = new Date(evt.startDate.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-            const year = startNy.getFullYear();
-            const month = String(startNy.getMonth() + 1).padStart(2, '0');
-            const day = String(startNy.getDate()).padStart(2, '0');
-            const dayKey = `${year}-${month}-${day}`;
+            const dayKey = getNyDateParts(evt.startDate).dateKey;
 
             return {
                 ...evt,
@@ -776,65 +1012,34 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
             };
         });
 
-        // Filter based on requested timeframe
         const nowMs = now.getTime();
-        const nowNy = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const nowParts = getNyDateParts(now);
+        const todayKey = nowParts.dateKey;
 
-        const todayStart = new Date(nowNy);
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date(nowNy);
-        todayEnd.setHours(23, 59, 59, 999);
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const tomorrowKey = getNyDateParts(tomorrow).dateKey;
 
-        const weekEnd = new Date(nowNy);
-        weekEnd.setDate(nowNy.getDate() + 7);
-        weekEnd.setHours(23, 59, 59, 999);
+        const weekEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
         let filteredEvents = enrichedEvents;
 
         if (timeframe === 'today') {
-            filteredEvents = enrichedEvents.filter((e) => {
-                const s = new Date(new Date(e.start).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-                const end = new Date(new Date(e.end).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-                return (s >= todayStart.getTime() && s <= todayEnd.getTime()) || (s < todayStart.getTime() && end >= todayStart.getTime());
-            });
+            filteredEvents = enrichedEvents.filter((e) => e.dayKey === todayKey);
         } else if (timeframe === 'tomorrow') {
-            const tomorrowStart = new Date(todayStart);
-            tomorrowStart.setDate(todayStart.getDate() + 1);
-            const tomorrowEnd = new Date(todayEnd);
-            tomorrowEnd.setDate(todayEnd.getDate() + 1);
-            filteredEvents = enrichedEvents.filter((e) => {
-                const s = new Date(new Date(e.start).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-                return s >= tomorrowStart.getTime() && s <= tomorrowEnd.getTime();
-            });
+            filteredEvents = enrichedEvents.filter((e) => e.dayKey === tomorrowKey);
         } else if (timeframe === 'week' || timeframe === 'this_week' || timeframe === 'next_7_days') {
-            filteredEvents = enrichedEvents.filter((e) => {
-                const end = new Date(new Date(e.end).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-                const s = new Date(new Date(e.start).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-                return end >= nowMs && s <= weekEnd.getTime();
-            });
+            filteredEvents = enrichedEvents.filter((e) => e.endDate.getTime() >= nowMs && e.startDate.getTime() <= weekEnd.getTime());
         } else if (timeframe === 'upcoming') {
-            // All future or currently ongoing events
-            filteredEvents = enrichedEvents.filter((e) => {
-                const endMs = new Date(e.end).getTime();
-                return endMs >= nowMs - 15 * 60 * 1000; // include events that ended in the last 15 mins
-            });
+            filteredEvents = enrichedEvents.filter((e) => e.endDate.getTime() >= nowMs - 15 * 60 * 1000);
         }
 
-        const todayEvents = enrichedEvents.filter((e) => {
-            const s = new Date(new Date(e.start).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-            const end = new Date(new Date(e.end).toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime();
-            return (s >= todayStart.getTime() && s <= todayEnd.getTime()) || (s < todayStart.getTime() && end >= todayStart.getTime());
-        });
+        const todayEvents = enrichedEvents.filter((e) => e.dayKey === todayKey);
 
         const nextEvent =
-            enrichedEvents.find((e) => new Date(e.end).getTime() >= nowMs) || enrichedEvents[0] || null;
+            enrichedEvents.find((e) => e.endDate.getTime() >= nowMs) || enrichedEvents[0] || null;
 
         const happeningNowEvent =
-            enrichedEvents.find((e) => {
-                const s = new Date(e.start).getTime();
-                const end = new Date(e.end).getTime();
-                return nowMs >= s && nowMs <= end;
-            }) || null;
+            enrichedEvents.find((e) => nowMs >= e.startDate.getTime() && nowMs <= e.endDate.getTime()) || null;
 
         return {
             configured: true,
@@ -845,8 +1050,8 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
             hasEventsToday: todayEvents.length > 0,
             happeningNow: happeningNowEvent,
             nextEvent,
-            calendarHtmlUrl: DEFAULT_CALENDAR_HTML_URL,
-            calendarIcsUrl: DEFAULT_CALENDAR_ICS_URL,
+            calendarHtmlUrl: currentCalendarHtmlUrl,
+            calendarIcsUrl: currentCalendarIcsUrl,
             lastUpdated: new Date(icsCache.fetchedAt || Date.now()).toISOString(),
             events: filteredEvents,
         };
@@ -862,8 +1067,8 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
             hasEventsToday: false,
             happeningNow: null,
             nextEvent: null,
-            calendarHtmlUrl: DEFAULT_CALENDAR_HTML_URL,
-            calendarIcsUrl: DEFAULT_CALENDAR_ICS_URL,
+            calendarHtmlUrl: currentCalendarHtmlUrl,
+            calendarIcsUrl: currentCalendarIcsUrl,
             events: [],
         };
     }
@@ -879,7 +1084,6 @@ module.exports = {
     exchangeCodeForTokens,
     fetchOutlookEmails,
     fetchOutlookCalendar,
-    DEFAULT_CALENDAR_ICS_URL,
-    DEFAULT_CALENDAR_HTML_URL,
+    clearIcsCache,
 };
 

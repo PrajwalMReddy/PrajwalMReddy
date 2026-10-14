@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import { useContent } from '../../utils/ContentContext';
 import BudgetStats from './BudgetStats';
@@ -7,9 +8,32 @@ import IncomeTable from './IncomeTable';
 import BudgetPlanner from './BudgetPlanner';
 import { budgetApi } from '../../utils/budgetApi';
 
+const VALID_TAB_IDS = ['expenses', 'income', 'statistics', 'planner'];
+
+const normalizeTab = (tab) => {
+    if (!tab) return 'expenses';
+    const lower = tab.toLowerCase();
+    if (lower === 'stats') return 'statistics';
+    if (VALID_TAB_IDS.includes(lower)) return lower;
+    return 'expenses';
+};
+
 const BudgetAdmin = () => {
     const { t } = useContent();
-    const [activeTab, setActiveTab] = useState('expenses');
+    const { tab: urlTab } = useParams();
+    const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState(() => normalizeTab(urlTab));
+
+    useEffect(() => {
+        const resolved = normalizeTab(urlTab);
+        setActiveTab(resolved);
+    }, [urlTab]);
+
+    const handleTabClick = (tabId) => {
+        setActiveTab(tabId);
+        navigate(`/admin/budget/${tabId}`);
+    };
 
     const tabs = [
         { id: 'expenses', label: t('admin.budgetSection.tabs.expenses', 'Expenses') },
@@ -61,7 +85,7 @@ const BudgetAdmin = () => {
                         key={tab.id}
                         type="button"
                         className={activeTab === tab.id ? 'active' : ''}
-                        onClick={() => setActiveTab(tab.id)}
+                        onClick={() => handleTabClick(tab.id)}
                     >
                         {tab.label}
                     </button>
@@ -80,7 +104,7 @@ const BudgetAdmin = () => {
                         <IncomeTable income={income} onRefresh={handleRefresh} />
                     )}
                     {activeTab === 'statistics' && <BudgetStats stats={stats} />}
-                    {activeTab === 'planner' && <BudgetPlanner />}
+                    {activeTab === 'planner' && <BudgetPlanner expenses={expenses} onRefresh={handleRefresh} />}
                 </>
             )}
         </AdminLayout>

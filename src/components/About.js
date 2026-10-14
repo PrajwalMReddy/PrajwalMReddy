@@ -3,47 +3,65 @@ import {Link} from 'react-router-dom';
 import {useContent} from '../utils/ContentContext';
 
 const About = ({showOnMainPage = false}) => {
-    const {t} = useContent();
+    const {t, aboutContent} = useContent();
+
+    const heading = showOnMainPage
+        ? (aboutContent?.homeHeading || t('contactHeadingHome'))
+        : (aboutContent?.heading || t('contactHeading'));
+    const intro = aboutContent?.intro || t('contactIntro');
+    const subheading = aboutContent?.subheading || t('contactSubheading');
+    const notice = aboutContent?.notice || t('contactNotice');
+
+    const links = (aboutContent?.links || []).filter((item) => {
+        if (showOnMainPage) {
+            return item.showOnHome;
+        }
+        return true;
+    });
 
     return (
         <div id="contact-section">
             {showOnMainPage ? (
-                <h2 className="section-heading">{t('contactHeadingHome')}</h2>
+                <h2 className="section-heading">{heading}</h2>
             ) : (
                 <>
-                    <h1 id="contact-heading">{t('contactHeading')}</h1>
-                    {t('contactIntro') && t('contactIntro').trim() ? (
-                        <p id="intro" className="contact-intro">{t('contactIntro')}</p>
+                    <h1 id="contact-heading">{heading}</h1>
+                    {intro && intro.trim() ? (
+                        <p id="intro" className="contact-intro">{intro}</p>
                     ) : null}
-                    <h2 id="subheading" className="contact-subheading">{t('contactSubheading')}</h2>
+                    {subheading && (
+                        <h2 id="subheading" className="contact-subheading">{subheading}</h2>
+                    )}
                 </>
             )}
 
             <ul id="contact-list">
-                <li className="contact-element">{t('contactEmail')}</li>
-                <li className="contact-element">
-                    {t('contactGitHub')}
-                    <a className="contact-link" href="https://github.com/PrajwalMReddy" target="_blank" rel="noopener noreferrer">github.com/PrajwalMReddy</a>
-                </li>
-                <li className="contact-element">
-                    {t('contactLinkedIn')}
-                    <a className="contact-link" href="https://www.linkedin.com/in/prajwalmreddy" target="_blank" rel="noopener noreferrer">linkedin.com/in/prajwalmreddy</a>
-                </li>
-                {!showOnMainPage && (
-                    <>
-                        <li className="contact-element">
-                            {t('contactCalendar')}
-                            <a className="contact-link" href="https://calendly.com/pmr93-cornell" target="_blank" rel="noopener noreferrer">{t('contactCalendarInfo')}</a>
-                        </li>
-                        <li className="contact-element">
-                            {t('contactBlog')}
-                            <Link to="/blog" className="contact-link">{t('contactBlogInfo')}</Link>
-                        </li>
-                    </>
-                )}
+                {links.map((linkItem, idx) => (
+                    <li key={linkItem.id || idx} className="contact-element">
+                        {linkItem.label && <span>{linkItem.label}</span>}
+                        {linkItem.isLink && linkItem.url ? (
+                            linkItem.isInternal ? (
+                                <Link to={linkItem.url} className="contact-link">
+                                    {linkItem.text || linkItem.url}
+                                </Link>
+                            ) : (
+                                <a
+                                    className="contact-link"
+                                    href={linkItem.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {linkItem.text || linkItem.url}
+                                </a>
+                            )
+                        ) : (
+                            <span>{linkItem.text}</span>
+                        )}
+                    </li>
+                ))}
             </ul>
 
-            <p id="notice" className="contact-notice">{t('contactNotice')}</p>
+            {notice && <p id="notice" className="contact-notice">{notice}</p>}
         </div>
     );
 };

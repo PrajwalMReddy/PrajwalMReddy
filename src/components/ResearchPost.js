@@ -16,9 +16,10 @@ class ResearchErrorBoundary extends React.Component {
     }
     render() {
         if (this.state.hasError) {
+            const errorLabel = this.props.t ? this.props.t('failedToLoadResearchComponent') : 'Failed to load custom research component:';
             return (
                 <div className="blog-post-error">
-                    <p>Failed to load custom research component: <code>{this.props.componentName}</code></p>
+                    <p>{errorLabel} <code>{this.props.componentName}</code></p>
                     <p style={{ fontSize: '0.85rem', color: '#64748b' }}>{this.state.error?.message}</p>
                 </div>
             );
@@ -37,7 +38,7 @@ const ResearchPost = () => {
     useEffect(() => {
         const load = async () => {
             if (!slug) {
-                setError('No article specified');
+                setError(t('noArticleSpecified', 'No article specified'));
                 setLoading(false);
                 return;
             }
@@ -49,7 +50,7 @@ const ResearchPost = () => {
                 const baseTitle = t('pageTitles.research') || 'Research';
                 document.title = `${post.title} | ${baseTitle}`;
             } catch (e) {
-                console.error('Error loading research article:', e);
+                console.error(t('logs.researchArticleError', 'Error loading research article:'), e);
                 setError(e.message);
             } finally {
                 setLoading(false);
@@ -63,19 +64,19 @@ const ResearchPost = () => {
             try {
                 return lazy(() => import(`./${postData.component}`));
             } catch (e) {
-                console.error('Failed to import custom research component:', e);
+                console.error(t('logs.researchImportError', 'Failed to import custom research component:'), e);
                 return null;
             }
         }
         return null;
-    }, [postData?.type, postData?.source, postData?.component]);
+    }, [postData?.type, postData?.source, postData?.component, t]);
 
     if (loading) {
         return (
             <div id="app-root">
                 <SideNav/>
                 <main>
-                    <div className="blog-post-loading">Loading...</div>
+                    <div className="blog-post-loading">{t('loading')}</div>
                 </main>
                 <Footer/>
             </div>
@@ -95,12 +96,12 @@ const ResearchPost = () => {
 
     if (CustomComponent && isStandalone) {
         return (
-            <ResearchErrorBoundary componentName={postData.component}>
+            <ResearchErrorBoundary componentName={postData.component} t={t}>
                 <Suspense fallback={
                     <div id="app-root">
                         <SideNav/>
                         <main>
-                            <div className="blog-post-loading">Loading...</div>
+                            <div className="blog-post-loading">{t('loading')}</div>
                         </main>
                         <Footer/>
                     </div>
@@ -110,6 +111,12 @@ const ResearchPost = () => {
             </ResearchErrorBoundary>
         );
     }
+
+    const renderAuthor = (author) => {
+        if (!author) return null;
+        const authorTemplate = t('byAuthor', 'by {author}');
+        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+    };
 
     return (
         <div id="app-root">
@@ -126,7 +133,7 @@ const ResearchPost = () => {
                                 <time className="blog-post-date">{formatNumber(postData.date)}</time>
                             )}
                             {postData.author && (
-                                <span className="blog-post-author">by {postData.author}</span>
+                                <span className="blog-post-author">{renderAuthor(postData.author)}</span>
                             )}
                         </div>
                     </header>
@@ -138,8 +145,8 @@ const ResearchPost = () => {
                     )}
                     {CustomComponent && (
                         <div className="blog-post-content research-article-custom-component">
-                            <ResearchErrorBoundary componentName={postData.component}>
-                                <Suspense fallback={<div className="blog-post-loading">Loading component...</div>}>
+                            <ResearchErrorBoundary componentName={postData.component} t={t}>
+                                <Suspense fallback={<div className="blog-post-loading">{t('loadingComponent')}</div>}>
                                     <CustomComponent post={postData} customData={postData.customData || postData.data} data={postData.customData || postData.data} />
                                 </Suspense>
                             </ResearchErrorBoundary>
@@ -153,3 +160,4 @@ const ResearchPost = () => {
 };
 
 export default ResearchPost;
+

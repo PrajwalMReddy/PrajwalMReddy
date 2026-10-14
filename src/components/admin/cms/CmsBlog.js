@@ -127,7 +127,7 @@ const CmsBlog = ({
                     setMarkdownContent(data.content || '');
                 }
             } catch (err) {
-                console.warn('Could not load blog markdown:', err);
+                console.warn(t('logs.blogMarkdownError', 'Could not load blog markdown:'), err);
             } finally {
                 setLoadingMarkdown(false);
             }

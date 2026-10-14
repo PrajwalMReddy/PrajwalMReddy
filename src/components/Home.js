@@ -10,7 +10,7 @@ import ExperienceCard from './ExperienceCard';
 import {chunkArray, getImage} from '../utils/componentUtils';
 
 const Home = () => {
-    const {t, projects, experiences} = useContent();
+    const {t, projects, experiences, homeContent} = useContent();
     const [isCycling, setIsCycling] = useState(false);
     const [lastColor, setLastColor] = useState('');
     const [lastPct, setLastPct] = useState(0);
@@ -50,6 +50,11 @@ const Home = () => {
     const featuredProjectCards = projects.filter(project => Boolean(project.featured));
     const featuredExperienceCards = experiences.filter(exp => Boolean(exp.featured));
 
+    const skills = homeContent?.skills || [];
+    const midSkills = Math.ceil(skills.length / 2);
+    const skillRow1 = skills.slice(0, midSkills);
+    const skillRow2 = skills.slice(midSkills);
+
     return (
         <div id="app-root">
             <SideNav/>
@@ -64,12 +69,12 @@ const Home = () => {
                         onMouseEnter={handleHeadingMouseEnter}
                         onMouseLeave={handleHeadingMouseLeave}
                     >
-                        {t('homeTitle')}
+                        {homeContent?.title || t('homeTitle')}
                     </h1>
                     <div id="home-info">
-                        <p className="home-text">{t('homeIntro')}</p>
-                        <p className="home-text">{t('homeSubtitle')}</p>
-                        <p className="home-text-sub">{t('homeDescription')}</p>
+                        <p className="home-text">{homeContent?.intro || t('homeIntro')}</p>
+                        <p className="home-text">{homeContent?.subtitle || t('homeSubtitle')}</p>
+                        <p className="home-text-sub">{homeContent?.description || t('homeDescription')}</p>
                     </div>
                 </div>
 
@@ -134,22 +139,23 @@ const Home = () => {
                     </div>
                 )}
 
-                <div id="skill-div">
-                    <h2 id="skill-heading">{t('skillsTitle')}</h2>
-                    <div className="skill-line">
-                        <p className="skill-info">{t('skills.python')}</p>
-                        <p className="skill-info">{t('skills.javaKotlin')}</p>
-                        <p className="skill-info">{t('skills.cpp')}</p>
-                        <p className="skill-info">{t('skills.dartFlutter')}</p>
-                        <p className="skill-info">{t('skills.php')}</p>
+                {skills.length > 0 && (
+                    <div id="skill-div">
+                        <h2 id="skill-heading">{homeContent?.skillsTitle || t('skillsTitle')}</h2>
+                        <div className="skill-line">
+                            {skillRow1.map((skill, idx) => (
+                                <p key={skill.id || idx} className="skill-info">{skill.name}</p>
+                            ))}
+                        </div>
+                        {skillRow2.length > 0 && (
+                            <div className="skill-line">
+                                {skillRow2.map((skill, idx) => (
+                                    <p key={skill.id || idx} className="skill-info">{skill.name}</p>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    <div className="skill-line">
-                        <p className="skill-info">{t('skills.sql')}</p>
-                        <p className="skill-info">{t('skills.web')}</p>
-                        <p className="skill-info">{t('skills.rust')}</p>
-                        <p className="skill-info">{t('skills.arduino')}</p>
-                    </div>
-                </div>
+                )}
 
                 <About showOnMainPage={true}/>
             </main>

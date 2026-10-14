@@ -27,11 +27,15 @@
   ],
   "rewrites": [
     {
+      "source": "/.well-known/:path*",
+      "destination": "/api/index?path=/.well-known/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "/api/index?path=/:path*"
     },
     {
-      "source": "/((?!api(?:/|$)).*)",
+      "source": "/((?!api(?:/|$)|\\.well-known(?:/|$)).*)",
       "destination": "/index.html"
     }
   ]

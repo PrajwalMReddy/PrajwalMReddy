@@ -1,30 +1,9 @@
 import {renderMarkdownWithFootnotes} from './markdownUtils';
-
-const EN_TO_KN_DIGITS = ['\u0CE6', '\u0CE7', '\u0CE8', '\u0CE9', '\u0CEA', '\u0CEB', '\u0CEC', '\u0CED', '\u0CEE', '\u0CEF'];
-
-const convertToKannadaNumerals = (str) => str.replace(/\d/g, d => EN_TO_KN_DIGITS[d]);
+import { tStatic } from '../locales';
+import { formatDate } from './ContentContext';
 
 export const formatDisplayDate = (dateInput, language) => {
-    if (!dateInput) return '';
-
-    const d = new Date(dateInput);
-    if (Number.isNaN(d.getTime())) return dateInput;
-
-    const locale = language === 'kn' ? 'kn-IN' : 'en-US';
-
-    try {
-        let formatted = d.toLocaleDateString(locale, {
-            year: 'numeric', month: 'long', day: 'numeric',
-        });
-
-        if (language === 'kn') {
-            formatted = convertToKannadaNumerals(formatted);
-        }
-
-        return formatted;
-    } catch {
-        return dateInput;
-    }
+    return formatDate(dateInput, language, { month: 'long' });
 };
 
 const getLocalMarkdownIndex = async (basePath) => {
@@ -37,7 +16,7 @@ const getLocalMarkdownIndex = async (basePath) => {
             }
         }
     } catch (err) {
-        console.warn(`[blogUtils] Error fetching ${basePath} index:`, err);
+        console.warn((tStatic('logs.blogIndexError', undefined, '[blogUtils] Error fetching {path} index:') || '').replace('{path}', basePath), err);
     }
     return [];
 };

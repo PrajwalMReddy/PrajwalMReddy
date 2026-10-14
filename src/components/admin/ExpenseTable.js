@@ -7,6 +7,7 @@ import {
     getTodayInputDate,
     toInputDate,
 } from '../../utils/budgetApi';
+import { matchesBudgetEntry } from '../../utils/budgetSearch';
 
 const createEmptyExpense = () => ({
     serialNumber: '',
@@ -16,7 +17,7 @@ const createEmptyExpense = () => ({
     cost: '',
 });
 
-const ExpenseTable = ({ expenses, onRefresh }) => {
+const ExpenseTable = ({ expenses = [], onRefresh }) => {
     const { t, formatNumber, language } = useContent();
     const [form, setForm] = useState(createEmptyExpense);
     const [editingId, setEditingId] = useState(null);
@@ -25,33 +26,9 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredExpenses = useMemo(() => {
-        const q = searchQuery.trim().toLowerCase();
-        if (!q) return expenses;
-
-        return expenses.filter((expense) => {
-            const rawDate = String(expense.date || '').toLowerCase();
-            const formattedDateStr = formatDate(expense.date, language).toLowerCase();
-            const inputDateStr = toInputDate(expense.date).toLowerCase();
-            const dateMatch =
-                rawDate.includes(q) || formattedDateStr.includes(q) || inputDateStr.includes(q);
-
-            const serialStr = String(expense.serialNumber ?? '').toLowerCase();
-            const serialHashStr = `#${serialStr}`;
-            const serialMatch = serialStr.includes(q) || serialHashStr.includes(q);
-
-            const itemStr = String(expense.item || '').toLowerCase();
-            const itemMatch = itemStr.includes(q);
-
-            const categoryStr = String(expense.category || '').toLowerCase();
-            const categoryMatch = categoryStr.includes(q);
-
-            const costRawStr = String(expense.cost ?? '').toLowerCase();
-            const costFormattedStr = formatCurrency(expense.cost).toLowerCase();
-            const costMatch = costRawStr.includes(q) || costFormattedStr.includes(q);
-
-            return dateMatch || serialMatch || itemMatch || categoryMatch || costMatch;
-        });
-    }, [expenses, searchQuery]);
+        if (!searchQuery.trim()) return expenses;
+        return expenses.filter((expense) => matchesBudgetEntry(expense, searchQuery, language));
+    }, [expenses, searchQuery, language]);
 
     const resetForm = () => {
         setForm(createEmptyExpense());
@@ -64,9 +41,10 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
         setSubmitting(true);
         try {
             const payload = {
-                ...form,
+                date: form.date,
+                item: form.item,
+                category: form.category,
                 cost: Number(form.cost),
-                serialNumber: form.serialNumber ? Number(form.serialNumber) : undefined,
             };
             if (editingId) {
                 await budgetApi.updateExpense(editingId, payload);
@@ -138,15 +116,6 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                 </div>
 
                 <div className="admin-budget-form-grid">
-                    <label className="admin-field-group admin-field-serial">
-                        <span className="admin-field-label">{t('admin.budgetSection.serialNumber', 'Serial #')}</span>
-                        <input
-                            type="number"
-                            value={form.serialNumber}
-                            onChange={(e) => setForm({ ...form, serialNumber: e.target.value })}
-                            placeholder={t('admin.budgetSection.auto', 'Auto')}
-                        />
-                    </label>
                     <label className="admin-field-group admin-field-date">
                         <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
                         <input
@@ -321,13 +290,6 @@ const ExpenseTable = ({ expenses, onRefresh }) => {
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
                                         {t('admin.budgetSection.noExpensesMatch', 'No expenses match your search.')}
-                                        <button
-                                            type="button"
-                                            className="admin-table-clear-btn"
-                                            onClick={() => setSearchQuery('')}
-                                        >
-                                            {t('admin.budgetSection.clearSearch', 'Clear search')}
-                                        </button>
                                     </td>
                                 </tr>
                             )}

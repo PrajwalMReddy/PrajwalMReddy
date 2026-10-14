@@ -13,22 +13,36 @@ const DEFAULT_PHOTO = {
     },
 };
 
+export const getPhotoSrc = (filename) => {
+    if (!filename || typeof filename !== 'string') return '';
+    const trimmed = filename.trim();
+    if (!trimmed) return '';
+    if (
+        trimmed.startsWith('http://') ||
+        trimmed.startsWith('https://') ||
+        trimmed.startsWith('data:') ||
+        trimmed.startsWith('/')
+    ) {
+        return trimmed;
+    }
+    return `/${trimmed}`;
+};
+
 const CmsPhotography = ({ data, onSave, saving }) => {
     const { t, language, formatNumber } = useContent();
 
     const getLocalized = (obj, fallback = '') => {
         if (!obj) return fallback;
         if (typeof obj === 'string') return obj;
-        if (language === 'kn') {
-            return obj.kn || obj.en || fallback;
-        }
-        return obj.en || obj.kn || fallback;
+        const current = editLangTab || language;
+        const alt = current === 'kn' ? 'en' : 'kn';
+        return obj[current] || obj[alt] || Object.values(obj).find((v) => typeof v === 'string' && v.trim() !== '') || fallback;
     };
 
     const [search, setSearch] = useState('');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingPhoto, setEditingPhoto] = useState(null);
-    const [editLangTab, setEditLangTab] = useState('en');
+    const [editLangTab, setEditLangTab] = useState(language || 'kn');
     const [fullscreenPhoto, setFullscreenPhoto] = useState(null);
 
     useEffect(() => {
@@ -109,12 +123,10 @@ const CmsPhotography = ({ data, onSave, saving }) => {
         });
     }, [photos, search]);
 
-
-
     const handleDelete = async (index) => {
         const photo = photos[index];
-        const label = photo.title.en || photo.filename;
-        if (!window.confirm(`Are you sure you want to delete photo "${label}"?`)) return;
+        const label = getLocalized(photo.title, photo.filename);
+        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${label})`)) return;
 
         const updated = photos
             .filter((_, idx) => idx !== index)
@@ -135,7 +147,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
             ...DEFAULT_PHOTO,
             date: { en: formattedDate, kn: '' },
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
@@ -144,14 +156,14 @@ const CmsPhotography = ({ data, onSave, saving }) => {
             ...photo,
             _index: index,
         });
-        setEditLangTab('en');
+        setEditLangTab(language || 'kn');
         setIsEditModalOpen(true);
     };
 
     const handleSavePhotoModal = async (e) => {
         e.preventDefault();
         if (!editingPhoto.filename.trim()) {
-            alert('Please enter an image URL / link');
+            alert('Please select a Vercel hosted picture, upload a file, or enter an image URL');
             return;
         }
         if (!editingPhoto.title.en.trim() && !editingPhoto.title.kn.trim()) {
@@ -240,7 +252,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                 <div className="cms-list">
                     {filteredPhotos.map((photo) => {
                         const originalIndex = photo._originalIndex;
-                        const imgUrl = photo.filename || '';
+                        const imgUrl = getPhotoSrc(photo.filename);
 
                         return (
                             <div key={photo.filename || originalIndex} className="cms-item-row">
@@ -350,29 +362,30 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                             <div className="cms-modal-body">
                                 <div className="cms-form-group">
                                     <CmsImageUploader
-                                        label={t('admin.labels.photoUrl', 'Photo Image URL (Link)')}
+                                        folder="photography"
+                                        label={t('admin.labels.photoFile', 'Photo Picture / File')}
                                         value={editingPhoto.filename}
                                         onChange={(newFilename) =>
                                             setEditingPhoto((prev) => ({ ...prev, filename: newFilename }))
                                         }
-                                        helpText="Paste any direct image link or Google Drive share link."
+                                        helpText="Select from Vercel hosted pictures, upload a file, or paste an external image link."
                                     />
                                 </div>
 
                                 <div className="cms-lang-pills">
                                     <button
                                         type="button"
-                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
-                                        onClick={() => setEditLangTab('en')}
-                                    >
-                                        English
-                                    </button>
-                                    <button
-                                        type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        ಕನ್ನಡ
+                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
+                                        onClick={() => setEditLangTab('en')}
+                                    >
+                                        {t('admin.labels.english', 'English')}
                                     </button>
                                 </div>
 
@@ -584,7 +597,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         </button>
                         {fullscreenPhoto.filename ? (
                             <img
-                                src={fullscreenPhoto.filename}
+                                src={getPhotoSrc(fullscreenPhoto.filename)}
                                 alt={fullscreenPhoto.title.en}
                                 className="cms-photo-fullscreen-img"
                             />

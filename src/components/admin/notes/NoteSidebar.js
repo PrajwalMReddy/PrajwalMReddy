@@ -2,6 +2,24 @@ import React from 'react';
 import { useContent } from '../../../utils/ContentContext';
 import { formatUpdatedAt, getNotePreview } from './noteUtils';
 
+const PinIcon = ({ size = 13, className = '' }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        aria-hidden="true"
+    >
+        <line x1="12" y1="17" x2="12" y2="22" />
+        <path d="M5 17h14v-2l-2-2V5h1V3H6v2h1v8l-2 2v2z" />
+    </svg>
+);
+
 const NoteSidebar = ({
     noteView,
     setNoteView,
@@ -71,7 +89,20 @@ const NoteSidebar = ({
                                 }`}
                                 onClick={() => selectNote(note)}
                             >
-                                <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                <strong>
+                                    <span className="admin-note-item-title">
+                                        {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                    </span>
+                                    {note.pinned && (
+                                        <span
+                                            className="admin-note-pin-badge"
+                                            title={t('admin.notesSection.pinned', 'Pinned')}
+                                            aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                        >
+                                            <PinIcon size={13} />
+                                        </span>
+                                    )}
+                                </strong>
                                 <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                 <p>{getNotePreview(note)}</p>
                             </button>
@@ -246,7 +277,20 @@ const NoteSidebar = ({
                                                     }`}
                                                     onClick={() => selectNote(note)}
                                                 >
-                                                    <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                                    <strong>
+                                                        <span className="admin-note-item-title">
+                                                            {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                                        </span>
+                                                        {note.pinned && (
+                                                            <span
+                                                                className="admin-note-pin-badge"
+                                                                title={t('admin.notesSection.pinned', 'Pinned')}
+                                                                aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                                            >
+                                                                <PinIcon size={13} />
+                                                            </span>
+                                                        )}
+                                                    </strong>
                                                     <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                                     <p>{getNotePreview(note)}</p>
                                                 </button>
@@ -276,7 +320,20 @@ const NoteSidebar = ({
                                 }`}
                                 onClick={() => selectNote(note)}
                             >
-                                <strong>{note.title || t('admin.notesSection.untitledNote', 'Untitled note')}</strong>
+                                <strong>
+                                    <span className="admin-note-item-title">
+                                        {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                    </span>
+                                    {note.pinned && (
+                                        <span
+                                            className="admin-note-pin-badge"
+                                            title={t('admin.notesSection.pinned', 'Pinned')}
+                                            aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                        >
+                                            <PinIcon size={13} />
+                                        </span>
+                                    )}
+                                </strong>
                                 <span>{formatUpdatedAt(note.updatedAt, language, formatNumber)}</span>
                                 <p>{getNotePreview(note)}</p>
                             </button>

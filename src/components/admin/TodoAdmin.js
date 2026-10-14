@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { useContent } from '../../utils/ContentContext';
 import TodoCard from './todo/TodoCard';
@@ -8,6 +8,7 @@ import {
     getDayKey,
     getDueDayKey,
     getDueState,
+    getNextNDaysRange,
     getNextThreeDaysRange,
     isRecurringChildVisible,
     isScheduledForFuture,
@@ -15,10 +16,13 @@ import {
     TODO_API,
 } from './todo/todoUtils';
 
+const NEXT_DAYS_STORAGE_KEY = 'admin_todo_next_days_count';
+
 const TodoAdmin = () => {
     const { t, formatNumber } = useContent();
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState('');
+    const [newTags, setNewTags] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [priority, setPriority] = useState('medium');
     const [draggedId, setDraggedId] = useState(null);
@@ -37,7 +41,37 @@ const TodoAdmin = () => {
             return new Set();
         }
     });
+    const [nextDaysCount, setNextDaysCount] = useState(() => {
+        try {
+            const saved = localStorage.getItem(NEXT_DAYS_STORAGE_KEY);
+            const parsed = parseInt(saved, 10);
+            return parsed && parsed >= 1 && parsed <= 30 ? parsed : 3;
+        } catch {
+            return 3;
+        }
+    });
     const [search, setSearch] = useState('');
+    const SELECTED_TAGS_KEY = 'admin_todo_selected_tags';
+    const [selectedTags, setSelectedTags] = useState(() => {
+        try {
+            const saved = localStorage.getItem(SELECTED_TAGS_KEY);
+            return saved ? new Set(JSON.parse(saved)) : new Set();
+        } catch {
+            return new Set();
+        }
+    });
+    const [isTagDropdownOpen, setIsTagDropdownOpen] = useState(false);
+    const [tagFilterSearch, setTagFilterSearch] = useState('');
+    const tagDropdownRef = useRef(null);
+    const [isDaysPickerOpen, setIsDaysPickerOpen] = useState(false);
+    const daysPickerRef = useRef(null);
+
+    const handleNextDaysChange = useCallback((count) => {
+        setNextDaysCount(count);
+        try {
+            localStorage.setItem(NEXT_DAYS_STORAGE_KEY, String(count));
+        } catch {}
+    }, []);
 
     useEffect(() => {
         try {
@@ -49,6 +83,17 @@ const TodoAdmin = () => {
             // ignore
         }
     }, [collapsedColumns]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                SELECTED_TAGS_KEY,
+                JSON.stringify(Array.from(selectedTags))
+            );
+        } catch (e) {
+            // ignore
+        }
+    }, [selectedTags]);
 
     const toggleColumnCollapse = useCallback((columnKey) => {
         setCollapsedColumns((prev) => {
@@ -86,6 +131,97 @@ const TodoAdmin = () => {
         loadTodos();
     }, [loadTodos]);
 
+    useEffect(() => {
+        if (!isTagDropdownOpen) return;
+        const handleClickOutside = (e) => {
+            if (tagDropdownRef.current && !tagDropdownRef.current.contains(e.target)) {
+                setIsTagDropdownOpen(false);
+            }
+        };
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setIsTagDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isTagDropdownOpen]);
+
+    useEffect(() => {
+        if (!isDaysPickerOpen) return;
+        const handleClickOutside = (e) => {
+            if (daysPickerRef.current && !daysPickerRef.current.contains(e.target)) {
+                setIsDaysPickerOpen(false);
+            }
+        };
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setIsDaysPickerOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isDaysPickerOpen]);
+
+    const allAvailableTags = useMemo(() => {
+        const tagMap = new Map();
+        todos.forEach((todo) => {
+            if (!isRecurringChildVisible(todo, todos)) return;
+            if (Array.isArray(todo.tags)) {
+                todo.tags.forEach((tag) => {
+                    const str = String(tag || '').trim();
+                    if (!str) return;
+                    const lower = str.toLowerCase();
+                    if (tagMap.has(lower)) {
+                        tagMap.get(lower).count += 1;
+                    } else {
+                        tagMap.set(lower, {
+                            key: lower,
+                            label: str,
+                            count: 1,
+                        });
+                    }
+                });
+            }
+        });
+        return Array.from(tagMap.values()).sort((a, b) => a.label.localeCompare(b.label));
+    }, [todos]);
+
+    const filteredDropdownTags = useMemo(() => {
+        const q = tagFilterSearch.trim().toLowerCase();
+        if (!q) return allAvailableTags;
+        return allAvailableTags.filter((t) => t.label.toLowerCase().includes(q));
+    }, [allAvailableTags, tagFilterSearch]);
+
+    const toggleTag = useCallback((tagKey) => {
+        setSelectedTags((prev) => {
+            const next = new Set(prev);
+            if (next.has(tagKey)) {
+                next.delete(tagKey);
+            } else {
+                next.add(tagKey);
+            }
+            return next;
+        });
+    }, []);
+
+    const selectAllTags = useCallback(() => {
+        const allKeys = new Set(allAvailableTags.map((t) => t.key));
+        setSelectedTags(allKeys);
+    }, [allAvailableTags]);
+
+    const clearAllTags = useCallback(() => {
+        setSelectedTags(new Set());
+    }, []);
+
     const displayTodos = useMemo(() => {
         const query = search.trim().toLowerCase();
         return todos.filter((todo) => {
@@ -93,23 +229,34 @@ const TodoAdmin = () => {
                 return false;
             }
 
+            if (selectedTags.size > 0) {
+                const todoTags = Array.isArray(todo.tags)
+                    ? todo.tags.map((t) => String(t).trim().toLowerCase()).filter(Boolean)
+                    : [];
+                const hasMatchingTag = todoTags.some((t) => selectedTags.has(t));
+                if (!hasMatchingTag) {
+                    return false;
+                }
+            }
+
             if (query) {
                 const titleMatch = (todo.title || '').toLowerCase().includes(query);
                 const descMatch = (todo.description || '').toLowerCase().includes(query);
+                const linkMatch = (todo.link || '').toLowerCase().includes(query);
                 const tagMatch =
                     Array.isArray(todo.tags) &&
                     todo.tags.some((t) => String(t).toLowerCase().includes(query));
                 const subtaskMatch =
                     Array.isArray(todo.subtasks) &&
                     todo.subtasks.some((st) => (st.title || '').toLowerCase().includes(query));
-                if (!titleMatch && !descMatch && !tagMatch && !subtaskMatch) {
+                if (!titleMatch && !descMatch && !linkMatch && !tagMatch && !subtaskMatch) {
                     return false;
                 }
             }
 
             return true;
         });
-    }, [todos, search]);
+    }, [todos, search, selectedTags]);
 
 
     const pendingCount = useMemo(
@@ -157,7 +304,7 @@ const TodoAdmin = () => {
     );
 
     const nextThreeDaysTodos = useMemo(() => {
-        const { startKey, endKey } = getNextThreeDaysRange();
+        const { startKey, endKey } = getNextNDaysRange(nextDaysCount);
         return displayTodos
             .filter((todo) => {
                 if (todo.completed || isScheduledForFuture(todo)) return false;
@@ -170,10 +317,10 @@ const TodoAdmin = () => {
                 if (priorityDiff !== 0) return priorityDiff;
                 return getDueDayKey(a) - getDueDayKey(b);
             });
-    }, [displayTodos]);
+    }, [displayTodos, nextDaysCount]);
 
     const upcomingTodos = useMemo(() => {
-        const { endKey } = getNextThreeDaysRange();
+        const { endKey } = getNextNDaysRange(nextDaysCount);
         return displayTodos
             .filter((todo) => {
                 if (todo.completed || isScheduledForFuture(todo)) return false;
@@ -186,7 +333,7 @@ const TodoAdmin = () => {
                 if (dateDiff !== 0) return dateDiff;
                 return sortByPriority(a, b);
             });
-    }, [displayTodos]);
+    }, [displayTodos, nextDaysCount]);
 
     const noDueDateTodos = useMemo(
         () =>
@@ -296,6 +443,11 @@ const TodoAdmin = () => {
             return;
         }
 
+        const parsedTags = newTags
+            .split(',')
+            .map((t) => t.trim().replace(/^#/, ''))
+            .filter(Boolean);
+
         try {
             setError('');
             const res = await fetch(TODO_API, {
@@ -307,6 +459,7 @@ const TodoAdmin = () => {
                     completed: false,
                     dueDate: dueDate || null,
                     priority,
+                    tags: parsedTags,
                 }),
             });
             const data = await res.json();
@@ -316,6 +469,7 @@ const TodoAdmin = () => {
 
             setTodos((currentTodos) => [...currentTodos, data]);
             setNewTodo('');
+            setNewTags('');
             setDueDate('');
             setPriority('medium');
         } catch (err) {
@@ -523,13 +677,24 @@ const TodoAdmin = () => {
         };
         const displayTitle = columnTitleMap[titleKey] || titleKey;
         const isCollapsed = collapsedColumns.has(titleKey);
+        const isNextDaysColumn = titleKey === 'Next 3 Days';
+        const hasOpenDropdown = isNextDaysColumn && isDaysPickerOpen;
+        const nextDaysTitleText = `${t('admin.todoSection.columns.nextPrefix', 'Next')} ${formatNumber(nextDaysCount)} ${nextDaysCount === 1 ? t('admin.todoSection.columns.daySuffixSingular', 'Day') : t('admin.todoSection.columns.daySuffixPlural', 'Days')}`;
 
         return (
-            <div className={`admin-todo-column${isCollapsed ? ' is-collapsed' : ''}`} key={titleKey}>
-                <button
-                    type="button"
-                    className={`admin-todo-column-header${isCollapsed ? ' is-collapsed' : ''}`}
+            <div className={`admin-todo-column${isCollapsed ? ' is-collapsed' : ''}${hasOpenDropdown ? ' has-open-dropdown' : ''}`} key={titleKey}>
+                <div
+                    role="button"
+                    tabIndex={0}
+                    className={`admin-todo-column-header${isCollapsed ? ' is-collapsed' : ''}${hasOpenDropdown ? ' has-open-dropdown' : ''}`}
                     onClick={() => toggleColumnCollapse(titleKey)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            if (e.target === e.currentTarget) {
+                                toggleColumnCollapse(titleKey);
+                            }
+                        }
+                    }}
                     aria-expanded={!isCollapsed}
                     title={
                         isCollapsed
@@ -537,23 +702,95 @@ const TodoAdmin = () => {
                             : t('admin.todoSection.hideColumn', 'Hide column')
                     }
                 >
-                    <span className="admin-todo-column-title">{displayTitle}</span>
-                    <span className="admin-todo-column-count">{formatNumber(items.length)}</span>
-                    <span className="admin-todo-column-chevron" aria-hidden="true">
-                        <svg
-                            width="11"
-                            height="11"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                    {isNextDaysColumn ? (
+                        <div
+                            ref={daysPickerRef}
+                            className={`admin-todo-days-header-wrapper${isDaysPickerOpen ? ' is-open' : ''}`}
                         >
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </span>
-                </button>
+                            <button
+                                type="button"
+                                className="admin-todo-days-trigger-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsDaysPickerOpen((prev) => !prev);
+                                }}
+                                aria-haspopup="true"
+                                aria-expanded={isDaysPickerOpen}
+                                title={t('admin.todoSection.changeDaysRange', 'Click to change upcoming days range')}
+                            >
+                                <span className="admin-todo-column-title admin-todo-days-header-title">
+                                    {nextDaysTitleText}
+                                </span>
+                            </button>
+
+                            {isDaysPickerOpen && (
+                                <div
+                                    className="admin-todo-days-dropdown-menu"
+                                    onClick={(e) => e.stopPropagation()}
+                                    role="menu"
+                                    aria-label={t('admin.todoSection.changeDaysRange', 'Change upcoming days range')}
+                                >
+                                    <div className="admin-todo-days-dropdown-header">
+                                        {t('admin.todoSection.upcomingRange', 'Show Upcoming')}
+                                    </div>
+                                    <div className="admin-todo-days-dropdown-list">
+                                        {[1, 2, 3, 4, 5, 6, 7, 10, 14].map((num) => (
+                                            <button
+                                                key={num}
+                                                type="button"
+                                                role="menuitem"
+                                                className={`admin-todo-days-dropdown-item${nextDaysCount === num ? ' is-selected' : ''}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleNextDaysChange(num);
+                                                    setIsDaysPickerOpen(false);
+                                                }}
+                                            >
+                                                <span className="admin-todo-days-dropdown-label">
+                                                    {formatNumber(num)} {num === 1 ? t('admin.todoSection.columns.daySuffixSingular', 'Day') : t('admin.todoSection.columns.daySuffixPlural', 'Days')}
+                                                </span>
+                                                {nextDaysCount === num && (
+                                                    <svg
+                                                        className="admin-todo-days-dropdown-check"
+                                                        width="13"
+                                                        height="13"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <span className="admin-todo-column-title">{displayTitle}</span>
+                    )}
+                    <div className="admin-todo-column-header-right">
+                        <span className="admin-todo-column-count">{formatNumber(items.length)}</span>
+                        <span className="admin-todo-column-chevron" aria-hidden="true">
+                            <svg
+                                width="11"
+                                height="11"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
                 {!isCollapsed && (
                     <div className="admin-todo-column-body">
                         {items.map(renderTodoCard)}
@@ -576,6 +813,17 @@ const TodoAdmin = () => {
                                 value={newTodo}
                                 onChange={(event) => setNewTodo(event.target.value)}
                                 placeholder={t('admin.todoSection.placeholder', 'Write a new item')}
+                            />
+                        </label>
+
+                        <label className="admin-todo-tags-field">
+                            <span>{t('admin.todoSection.tags', 'Tags')}</span>
+                            <input
+                                type="text"
+                                value={newTags}
+                                onChange={(event) => setNewTags(event.target.value)}
+                                placeholder={t('admin.todoSection.tagsPlaceholder', 'e.g. work, urgent')}
+                                autoComplete="off"
                             />
                         </label>
 
@@ -655,41 +903,156 @@ const TodoAdmin = () => {
                         </button>
                     </div>
 
-                    <div className="admin-todo-search-wrap">
-                        <span className="admin-todo-search-icon">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                        </span>
-                        <input
-                            type="text"
-                            placeholder={t('admin.todoSection.searchPlaceholder', 'Search tasks...')}
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape' && search) {
-                                    e.stopPropagation();
-                                    setSearch('');
-                                }
-                            }}
-                            className="admin-todo-search-input"
-                            aria-label={t('admin.todoSection.searchAriaLabel', 'Search tasks')}
-                        />
-                        {search && (
+                    <div className="admin-todo-controls-group">
+                        <div className="admin-todo-search-wrap">
+                            <span className="admin-todo-search-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder={t('admin.todoSection.searchPlaceholder', 'Search tasks...')}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Escape' && search) {
+                                        e.stopPropagation();
+                                        setSearch('');
+                                    }
+                                }}
+                                className="admin-todo-search-input"
+                                aria-label={t('admin.todoSection.searchAriaLabel', 'Search tasks')}
+                            />
+                            {search && (
+                                <button
+                                    type="button"
+                                    className="admin-todo-search-clear"
+                                    onClick={() => setSearch('')}
+                                    aria-label={t('admin.todoSection.clearSearch', 'Clear search')}
+                                    title={t('admin.todoSection.clearSearch', 'Clear search')}
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Tag Filter Dropdown Button & Popover */}
+                        <div className="admin-todo-tag-filter-wrap" ref={tagDropdownRef}>
                             <button
                                 type="button"
-                                className="admin-todo-search-clear"
-                                onClick={() => setSearch('')}
-                                aria-label={t('admin.todoSection.clearSearch', 'Clear search')}
-                                title={t('admin.todoSection.clearSearch', 'Clear search')}
+                                className={`admin-todo-tag-filter-btn ${selectedTags.size > 0 ? 'has-active' : ''} ${isTagDropdownOpen ? 'is-open' : ''}`}
+                                onClick={() => setIsTagDropdownOpen((prev) => !prev)}
+                                aria-expanded={isTagDropdownOpen}
+                                title={t('admin.todoSection.filterByTags', 'Filter by Tags')}
                             >
-                                ✕
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                    <line x1="7" y1="7" x2="7.01" y2="7" />
+                                </svg>
+                                <span>{t('admin.todoSection.tags', 'Tags')}</span>
+                                {selectedTags.size > 0 && (
+                                    <span className="admin-todo-tag-filter-badge">
+                                        {formatNumber(selectedTags.size)}
+                                    </span>
+                                )}
+                                <svg className={`admin-todo-tag-filter-arrow ${isTagDropdownOpen ? 'rotated' : ''}`} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
                             </button>
-                        )}
+
+                            {isTagDropdownOpen && (
+                                <div className="admin-todo-tag-dropdown-menu">
+                                    <div className="admin-todo-tag-dropdown-header">
+                                        <span className="admin-todo-tag-dropdown-title">
+                                            {t('admin.todoSection.filterByTags', 'Filter by Tags')}
+                                        </span>
+                                    </div>
+
+                                    {allAvailableTags.length > 5 && (
+                                        <div className="admin-todo-tag-dropdown-search">
+                                            <input
+                                                type="text"
+                                                placeholder={t('admin.todoSection.searchTagsPlaceholder', 'Search tags...')}
+                                                value={tagFilterSearch}
+                                                onChange={(e) => setTagFilterSearch(e.target.value)}
+                                                className="admin-todo-tag-dropdown-search-input"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="admin-todo-tag-dropdown-list">
+                                        {allAvailableTags.length === 0 ? (
+                                            <div className="admin-todo-tag-dropdown-empty">
+                                                {t('admin.todoSection.noTagsFound', 'No tags created yet')}
+                                            </div>
+                                        ) : filteredDropdownTags.length === 0 ? (
+                                            <div className="admin-todo-tag-dropdown-empty">
+                                                {t('admin.todoSection.noMatchingSearchTasks', 'No matching tags')}
+                                            </div>
+                                        ) : (
+                                            filteredDropdownTags.map((tag) => {
+                                                const isSelected = selectedTags.has(tag.key);
+                                                return (
+                                                    <button
+                                                        key={tag.key}
+                                                        type="button"
+                                                        className={`admin-todo-tag-dropdown-item ${isSelected ? 'is-selected' : ''}`}
+                                                        onClick={() => toggleTag(tag.key)}
+                                                    >
+                                                        <span className={`admin-todo-tag-checkbox ${isSelected ? 'checked' : ''}`}>
+                                                            {isSelected && (
+                                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                        <span className="admin-todo-tag-dropdown-item-name">
+                                                            {tag.label}
+                                                        </span>
+                                                        <span className="admin-todo-tag-dropdown-item-count">
+                                                            {formatNumber(tag.count)}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+
+                                    {allAvailableTags.length > 0 && (
+                                        <div className="admin-todo-tag-dropdown-footer">
+                                            <span className="admin-todo-tag-dropdown-summary">
+                                                {t('admin.todoSection.selectedCount', '{count} selected').replace('{count}', formatNumber(selectedTags.size))}
+                                            </span>
+                                            <div className="admin-todo-tag-dropdown-footer-actions">
+                                                {selectedTags.size < allAvailableTags.length && (
+                                                    <button
+                                                        type="button"
+                                                        className="admin-todo-tag-dropdown-select-all-btn"
+                                                        onClick={selectAllTags}
+                                                    >
+                                                        {t('admin.todoSection.selectAllTags', 'Select All')}
+                                                    </button>
+                                                )}
+                                                {selectedTags.size > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        className="admin-todo-tag-dropdown-clear-btn"
+                                                        onClick={clearAllTags}
+                                                    >
+                                                        {t('admin.todoSection.clearTags', 'Clear')}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-
             </div>
 
             {loading ? (
@@ -697,20 +1060,13 @@ const TodoAdmin = () => {
             ) : todos.length === 0 ? (
                 <p className="admin-empty">{t('admin.todoSection.empty', 'No tasks yet. Add your first one above.')}</p>
             ) : displayTodos.length === 0 ? (
-                <div className="admin-todo-filter-empty">
-                    <p>
-                        {t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
-                    </p>
-                    {search && (
-                        <button
-                            type="button"
-                            className="admin-todo-clear-filter-btn"
-                            onClick={() => setSearch('')}
-                        >
-                            {t('admin.todoSection.clearSearch', 'Clear search')}
-                        </button>
-                    )}
-                </div>
+                <p className="admin-empty">
+                    {selectedTags.size > 0 && search
+                        ? t('admin.todoSection.noMatchingFilterTasks', 'No tasks match your search and tag filters.')
+                        : selectedTags.size > 0
+                        ? t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')
+                        : t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
+                </p>
             ) : (
                 <div className="admin-todo-board">
                     {activeTab === 'other' && (

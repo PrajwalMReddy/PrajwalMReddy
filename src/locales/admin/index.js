@@ -5,28 +5,28 @@ import { adminBudget } from './budget.js';
 import { adminNotes } from './notes.js';
 import { adminNetworking } from './networking.js';
 
-export const admin = {
-    en: {
-        admin: {
-            ...adminCommon.en,
-            ...adminCms.en,
-            ...adminTodo.en,
-            ...adminBudget.en,
-            ...adminNotes.en,
-            ...adminNetworking.en,
-        },
-    },
-    kn: {
-        admin: {
-            ...adminCommon.kn,
-            ...adminCms.kn,
-            ...adminTodo.kn,
-            ...adminBudget.kn,
-            ...adminNotes.kn,
-            ...adminNetworking.kn,
-        },
-    },
-};
+const adminModules = [
+    adminCommon,
+    adminCms,
+    adminTodo,
+    adminBudget,
+    adminNotes,
+    adminNetworking,
+];
+
+// Dynamically combine all admin sections for any arbitrary number of languages
+export const admin = adminModules.reduce((acc, mod) => {
+    if (mod && typeof mod === 'object') {
+        Object.keys(mod).forEach((lang) => {
+            if (!acc[lang]) acc[lang] = { admin: {} };
+            acc[lang].admin = {
+                ...acc[lang].admin,
+                ...(mod[lang] || {}),
+            };
+        });
+    }
+    return acc;
+}, {});
 
 export { adminCommon } from './common.js';
 export { adminCms } from './cms.js';

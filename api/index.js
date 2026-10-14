@@ -11,10 +11,12 @@ const handlers = {
     '/api/cms/content': require('../lib/api-handlers/cms/content'),
     '/api/content': require('../lib/api-handlers/cms/content'),
     '/api/cms/markdown': require('../lib/api-handlers/cms/markdown'),
+    '/api/cms/upload': require('../lib/api-handlers/cms/upload'),
     '/api/konami/levels': require('../lib/api-handlers/konami/levels'),
     '/api/admin/summary': require('../lib/api-handlers/admin/summary'),
     '/api/networking/people': require('../lib/api-handlers/networking'),
     '/api/networking/interactions': require('../lib/api-handlers/networking/interactions'),
+    '/api/mcp': require('../lib/api-handlers/mcp'),
 };
 
 const itemHandlers = {
@@ -56,6 +58,27 @@ function getHandler(pathname, query) {
         return require('../lib/api-handlers/assistant');
     }
 
+    if (
+        pathname.startsWith('/api/mcp/oauth') ||
+        pathname === '/api/mcp/authorize' ||
+        pathname === '/api/mcp/token' ||
+        pathname === '/api/mcp/register' ||
+        pathname === '/api/mcp/tokens' ||
+        pathname.startsWith('/api/mcp/tokens/') ||
+        pathname.startsWith('/.well-known/oauth') ||
+        pathname.includes('oauth-authorization-server') ||
+        pathname.includes('oauth-protected-resource')
+    ) {
+        return require('../lib/api-handlers/oauth');
+    }
+
+    if (
+        pathname.startsWith('/.well-known/mcp') ||
+        pathname.startsWith('/api/mcp')
+    ) {
+        return require('../lib/api-handlers/mcp');
+    }
+
     return handlers[pathname];
 }
 
@@ -71,7 +94,15 @@ module.exports = async (req, res) => {
 
     const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
     const query = { ...Object.fromEntries(url.searchParams) };
-    const pathname = query.path ? `/api/${query.path.replace(/^\/+/, '')}` : url.pathname;
+    let pathname = url.pathname;
+    if (query.path) {
+        const cleanPath = query.path.replace(/^\/+/, '');
+        if (cleanPath.startsWith('.well-known') || cleanPath.startsWith('api/')) {
+            pathname = `/${cleanPath}`;
+        } else {
+            pathname = `/api/${cleanPath}`;
+        }
+    }
     delete query.path;
     const handler = getHandler(pathname, query);
 

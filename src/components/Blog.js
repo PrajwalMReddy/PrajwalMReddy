@@ -126,6 +126,12 @@ const Blog = () => {
                     {blogPosts.map((post) => {
                         const key = post.id || post.slug || post.externalUrl || post.title;
 
+                        const renderAuthor = (author) => {
+                            if (!author) return null;
+                            const authorTemplate = t('byAuthor', 'by {author}');
+                            return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+                        };
+
                         if (post.externalUrl) {
                             return (<a
                                 href={post.externalUrl}
@@ -138,8 +144,8 @@ const Blog = () => {
                                     {post.title}
                                     <span
                                         className="blog-external-icon"
-                                        aria-label="Opens external post"
-                                        title="Opens external post"
+                                        aria-label={t('opensExternalPost')}
+                                        title={t('opensExternalPost')}
                                     >
                                                         ↗
                                                     </span>
@@ -165,8 +171,8 @@ const Blog = () => {
                                 {isCustom && (
                                     <span
                                         className="blog-external-icon"
-                                        aria-label="Interactive React Component"
-                                        title="Interactive React Component"
+                                        aria-label={t('interactiveReactComponent')}
+                                        title={t('interactiveReactComponent')}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
                                             <polyline points="16 18 22 12 16 6" />
@@ -180,7 +186,7 @@ const Blog = () => {
                             <div className="blog-meta">
                                 <time className="blog-date">{formatNumber(post.date)}</time>
                                 {post.author && (<span className="blog-author">
-                                                        by {post.author}
+                                                        {renderAuthor(post.author)}
                                                     </span>)}
                             </div>
                         </Link>);

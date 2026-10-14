@@ -12,12 +12,13 @@ const CmsSectionsModal = ({
     saving = false,
 }) => {
     const { t, language, formatNumber } = useContent();
-    const [activeLangTab, setActiveLangTab] = useState('en');
+    const [activeLangTab, setActiveLangTab] = useState(language || 'kn');
     const [newSection, setNewSection] = useState({ id: '', title: { en: '', kn: '' } });
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (!isOpen) return;
+        setActiveLangTab(language || 'kn');
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
                 onClose();
@@ -25,15 +26,14 @@ const CmsSectionsModal = ({
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, language]);
 
     const getLocalized = (obj, fallback = '') => {
         if (!obj) return fallback;
         if (typeof obj === 'string') return obj;
-        if (language === 'kn') {
-            return obj.kn || obj.en || fallback;
-        }
-        return obj.en || obj.kn || fallback;
+        const current = activeLangTab || language;
+        const alt = current === 'kn' ? 'en' : 'kn';
+        return obj[current] || obj[alt] || Object.values(obj).find((v) => typeof v === 'string' && v.trim() !== '') || fallback;
     };
 
     if (!isOpen) return null;
@@ -44,12 +44,12 @@ const CmsSectionsModal = ({
 
         const id = newSection.id.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
         if (!id) {
-            setError('Section ID is required');
+            setError(t('admin.messages.sectionIdRequired', 'Section ID is required'));
             return;
         }
 
         if (sections.some((s) => s.id === id)) {
-            setError(`A section with ID "${id}" already exists`);
+            setError((t('admin.messages.sectionIdExists') || 'A section with ID "{id}" already exists').replace('{id}', id));
             return;
         }
 
@@ -67,21 +67,22 @@ const CmsSectionsModal = ({
             },
         ];
 
-        await onSaveSections(updated, `Added section "${titleEn}"`);
+        const sectionDisplayName = getLocalized(newSection.title, id);
+        await onSaveSections(updated, (t('admin.messages.addedSection') || 'Added section "{title}"').replace('{title}', sectionDisplayName));
         setNewSection({ id: '', title: { en: '', kn: '' } });
     };
 
     const handleDeleteSection = async (sectionId) => {
         const count = items.filter((item) => item.section === sectionId).length;
         if (count > 0) {
-            alert(`Cannot delete this section because ${count} ${itemLabel} are currently assigned to it.`);
+            alert((t('admin.messages.cannotDeleteSectionWithItems') || 'Cannot delete this section because {count} {itemLabel} are currently assigned to it.').replace('{count}', formatNumber(count)).replace('{itemLabel}', itemLabel));
             return;
         }
 
-        if (!window.confirm(`Are you sure you want to delete section "${sectionId}"?`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${sectionId})`)) return;
 
         const updated = sections.filter((s) => s.id !== sectionId);
-        await onSaveSections(updated, `Deleted section "${sectionId}"`);
+        await onSaveSections(updated, (t('admin.messages.deletedSection') || 'Deleted section "{id}"').replace('{id}', sectionId));
     };
 
     return (
@@ -93,7 +94,7 @@ const CmsSectionsModal = ({
                         type="button"
                         className="cms-modal-close-btn"
                         onClick={onClose}
-                        aria-label="Close"
+                        aria-label={t('admin.actions.close', 'Close')}
                     >
                         ✕
                     </button>
@@ -126,7 +127,7 @@ const CmsSectionsModal = ({
                                             className="cms-btn cms-btn-sm cms-btn-danger"
                                             onClick={() => handleDeleteSection(s.id)}
                                             disabled={count > 0}
-                                            title={count > 0 ? `Cannot delete while ${itemLabel} are in this section` : 'Delete Section'}
+                                            title={count > 0 ? (t('admin.messages.cannotDeleteWhileItemsInSection') || 'Cannot delete while {itemLabel} are in this section').replace('{itemLabel}', itemLabel) : t('admin.actions.delete', 'Delete')}
                                         >
                                             {t('admin.actions.delete', 'Delete')}
                                         </button>
@@ -144,19 +145,19 @@ const CmsSectionsModal = ({
                             <div className="cms-lang-pills">
                                 <button
                                     type="button"
-                                    className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
-                                    onClick={() => setActiveLangTab('en')}
-                                    aria-label="Switch to English"
+                                    className={`cms-lang-pill-btn ${activeLangTab === 'kn' ? 'active' : ''}`}
+                                    onClick={() => setActiveLangTab('kn')}
+                                    aria-label={t('admin.labels.kannada', 'ಕನ್ನಡ')}
                                 >
-                                    English
+                                    {t('admin.labels.kannada', 'ಕನ್ನಡ')}
                                 </button>
                                 <button
                                     type="button"
-                                    className={`cms-lang-pill-btn ${activeLangTab === 'kn' ? 'active' : ''}`}
-                                    onClick={() => setActiveLangTab('kn')}
-                                    aria-label="Switch to Kannada"
+                                    className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
+                                    onClick={() => setActiveLangTab('en')}
+                                    aria-label={t('admin.labels.english', 'English')}
                                 >
-                                    ಕನ್ನಡ
+                                    {t('admin.labels.english', 'English')}
                                 </button>
                             </div>
                         </div>
@@ -177,12 +178,12 @@ const CmsSectionsModal = ({
                             </div>
                             <div className="cms-form-group">
                                 <label className="cms-form-label">
-                                    {t('admin.labels.title', 'Title')} ({activeLangTab === 'kn' ? 'ಕನ್ನಡ' : 'English'}) <span className="required">*</span>
+                                    {t('admin.labels.title', 'Title')} ({activeLangTab === 'kn' ? t('admin.labels.kannada', 'ಕನ್ನಡ') : t('admin.labels.english', 'English')}) <span className="required">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     className="cms-input"
-                                    placeholder={activeLangTab === 'kn' ? 'ಉದಾ: ಮೊಬೈಲ್ ಆ್ಯಪ್‌ಗಳು' : 'e.g. Mobile Apps'}
+                                    placeholder={activeLangTab === 'kn' ? t('admin.placeholders.sectionTitleKn', 'ಉದಾ: ಮೊಬೈಲ್ ಆ್ಯಪ್‌ಗಳು') : t('admin.placeholders.sectionTitleEn', 'e.g. Mobile Apps')}
                                     value={newSection.title[activeLangTab] || ''}
                                     onChange={(e) =>
                                         setNewSection({
@@ -196,7 +197,7 @@ const CmsSectionsModal = ({
 
                         <div className="cms-section-form-actions">
                             <button type="submit" className="cms-btn cms-btn-primary" disabled={saving}>
-                                {saving ? t('admin.actions.adding', 'Adding...') : t('admin.actions.addSection', '+ Add Section')}
+                                {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.addSection', '+ Add Section')}
                             </button>
                         </div>
                     </form>

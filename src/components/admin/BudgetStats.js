@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useContent } from '../../utils/ContentContext';
 import { formatCurrency } from '../../utils/budgetApi';
 
 const StatCard = ({ label, value, negative }) => (
     <div className={`admin-stat-card${negative ? ' negative' : ''}`}>
-        <span className="admin-stat-label">{label}</span>
+        <span className="admin-stat-label" title={label}>{label}</span>
         <span className="admin-stat-value">{value}</span>
     </div>
 );
@@ -38,13 +38,13 @@ const BudgetStats = ({ stats }) => {
     if (!stats) return null;
 
     const {
-        funds,
-        spending,
-        budget,
-        transactionStats,
-        ayana,
-        categories,
-        chartData,
+        funds = {},
+        spending = {},
+        budget = {},
+        transactionStats = {},
+        ayana = {},
+        categories = [],
+        chartData = {},
     } = stats;
 
     const formatVal = (val) => formatNumber(formatCurrency(val));
@@ -65,8 +65,16 @@ const BudgetStats = ({ stats }) => {
         ? Number(budget.meBudgeted)
         : 0;
 
+    const thisMonthBudgeted = Number.isFinite(Number(budget?.thisMonthBudgeted))
+        ? Number(budget.thisMonthBudgeted)
+        : 0;
+
     const aeBudgeted = Number.isFinite(Number(ayana?.aeBudgeted))
         ? Number(ayana.aeBudgeted)
+        : 0;
+
+    const thisAyanaBudgeted = Number.isFinite(Number(ayana?.thisAyanaBudgeted))
+        ? Number(ayana.thisAyanaBudgeted)
         : 0;
 
     const totalCategorySpending = categoryList.reduce(
@@ -79,19 +87,24 @@ const BudgetStats = ({ stats }) => {
             ? Math.max(...categoryList.map((cat) => Number(cat.spending) || 0))
             : 0;
 
-    const [trendFilter, setTrendFilter] = useState('income');
+    const [trendFilter, setTrendFilter] = useState('expenses');
 
     const visibleMonthlyValues = monthlyTrend.flatMap((month) => {
         const vals = [];
         const monthIncome = Number(month.income) || 0;
         const monthExpenses = Number(month.expenses) || 0;
+        const monthOtherIncome = Number(month.otherIncome) || 0;
         const monthNetExpenses = monthExpenses - monthIncome;
+        const monthRealSpent = monthExpenses - monthOtherIncome;
 
+        if (trendFilter === 'all' || trendFilter === 'expenses') {
+            vals.push(monthExpenses);
+        }
         if (trendFilter === 'all' || trendFilter === 'income') {
             vals.push(monthIncome);
         }
-        if (trendFilter === 'all' || trendFilter === 'expenses') {
-            vals.push(monthExpenses);
+        if (trendFilter === 'all' || trendFilter === 'realSpent') {
+            vals.push(Math.max(monthRealSpent, 0));
         }
         if (trendFilter === 'all' || trendFilter === 'netExpenses') {
             vals.push(Math.max(monthNetExpenses, 0));
@@ -103,8 +116,8 @@ const BudgetStats = ({ stats }) => {
     const chartMax = maxMonthly * 1.08;
 
     const comparisonMax = Math.max(
-        Number(incomeVsExpenses.income) || 0,
         Number(incomeVsExpenses.expenses) || 0,
+        Number(incomeVsExpenses.income) || 0,
         1
     );
 
@@ -172,10 +185,20 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.budget', 'Budget')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-3">
+                    <div className="admin-stat-grid admin-stat-grid-5">
                         <StatCard
-                            label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted (to date)')}
+                            label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted')}
                             value={formatVal(meBudgeted)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.thisMonthBudgeted', 'This Month Budgeted')}
+                            value={formatVal(thisMonthBudgeted)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.meSpending', 'ME Spending')}
+                            value={formatVal(budget.thisMonthSpending ?? 0)}
                         />
 
                         <StatCard
@@ -194,7 +217,7 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-4">
+                    <div className="admin-stat-grid admin-stat-grid-6">
                         <StatCard
                             label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
                             value={formatNum(ayana.completedAyanas)}
@@ -206,8 +229,18 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted (to date)')}
+                            label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted')}
                             value={formatVal(aeBudgeted)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.thisAyanaBudgeted', 'This Ayana Budgeted')}
+                            value={formatVal(thisAyanaBudgeted)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.aeSpending', 'AE Spending')}
+                            value={formatVal(ayana.thisAyanaSpending ?? 0)}
                         />
 
                         <StatCard
@@ -243,7 +276,7 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.trimMean', 'Trim Mean')}
+                            label={t('admin.budgetSection.stats.trimMean', 'Trim Mean (10%)')}
                             value={formatVal(transactionStats.trimMean)}
                         />
 
@@ -326,13 +359,6 @@ const BudgetStats = ({ stats }) => {
                     <div className="admin-trend-filter-group" role="group" aria-label="Monthly trend filter">
                         <button
                             type="button"
-                            className={`admin-trend-filter-btn ${trendFilter === 'income' ? 'active' : ''}`}
-                            onClick={() => setTrendFilter('income')}
-                        >
-                            {t('admin.budgetSection.stats.income', 'Income')}
-                        </button>
-                        <button
-                            type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'expenses' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('expenses')}
                         >
@@ -340,8 +366,24 @@ const BudgetStats = ({ stats }) => {
                         </button>
                         <button
                             type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'income' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('income')}
+                        >
+                            {t('admin.budgetSection.stats.income', 'Income')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`admin-trend-filter-btn ${trendFilter === 'realSpent' ? 'active' : ''}`}
+                            onClick={() => setTrendFilter('realSpent')}
+                            title={t('admin.budgetSection.stats.realSpentTooltip', 'Net expenses (income only, no injections)')}
+                        >
+                            {t('admin.budgetSection.stats.realSpent', 'Real Spent')}
+                        </button>
+                        <button
+                            type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'netExpenses' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('netExpenses')}
+                            title={t('admin.budgetSection.stats.netExpensesTooltip', 'Net expenses (all funds including injections)')}
                         >
                             {t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}
                         </button>
@@ -368,6 +410,21 @@ const BudgetStats = ({ stats }) => {
                                 className="admin-monthly-group"
                             >
                                 <div className="admin-monthly-bars">
+                                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
+                                        <div
+                                            className="admin-monthly-bar expenses"
+                                            style={{
+                                                height: `${((Number(month.expenses) || 0) /
+                                                    chartMax) *
+                                                    100
+                                                    }%`,
+                                            }}
+                                            title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
+                                                month.expenses
+                                            )}`}
+                                        />
+                                    )}
+
                                     {(trendFilter === 'all' || trendFilter === 'income') && (
                                         <div
                                             className="admin-monthly-bar income"
@@ -383,17 +440,17 @@ const BudgetStats = ({ stats }) => {
                                         />
                                     )}
 
-                                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
+                                    {(trendFilter === 'all' || trendFilter === 'realSpent') && (
                                         <div
-                                            className="admin-monthly-bar expenses"
+                                            className="admin-monthly-bar real-spent"
                                             style={{
-                                                height: `${((Number(month.expenses) || 0) /
+                                                height: `${((Math.max((Number(month.expenses) || 0) - (Number(month.otherIncome) || 0), 0)) /
                                                     chartMax) *
                                                     100
                                                     }%`,
                                             }}
-                                            title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
-                                                month.expenses
+                                            title={`${t('admin.budgetSection.stats.realSpentLabel', 'Real Spent:')} ${formatVal(
+                                                (Number(month.expenses) || 0) - (Number(month.otherIncome) || 0)
                                             )}`}
                                         />
                                     )}
@@ -430,11 +487,14 @@ const BudgetStats = ({ stats }) => {
                 </div>
 
                 <div className="admin-chart-legend">
+                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
+                        <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                    )}
                     {(trendFilter === 'all' || trendFilter === 'income') && (
                         <span className="legend-income">{t('admin.budgetSection.stats.income', 'Income')}</span>
                     )}
-                    {(trendFilter === 'all' || trendFilter === 'expenses') && (
-                        <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                    {(trendFilter === 'all' || trendFilter === 'realSpent') && (
+                        <span className="legend-real-spent">{t('admin.budgetSection.stats.realSpent', 'Real Spent')}</span>
                     )}
                     {(trendFilter === 'all' || trendFilter === 'netExpenses') && (
                         <span className="legend-net-expenses">{t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}</span>
@@ -442,29 +502,11 @@ const BudgetStats = ({ stats }) => {
                 </div>
             </section>
 
+
             <section className="admin-stats-section">
                 <h2>{t('admin.budgetSection.stats.incomeVsExpenses', 'Income vs Expenses')}</h2>
 
                 <div className="admin-comparison-chart">
-                    <div className="admin-comparison-bar">
-                        <div
-                            className="admin-comparison-fill income"
-                            style={{
-                                width: `${((Number(
-                                    incomeVsExpenses.income
-                                ) || 0) /
-                                    comparisonMax) *
-                                    100
-                                    }%`,
-                            }}
-                        />
-
-                        <span>
-                            {t('admin.budgetSection.stats.incomeLabel', 'Income:')}{' '}
-                            {formatVal(incomeVsExpenses.income)}
-                        </span>
-                    </div>
-
                     <div className="admin-comparison-bar">
                         <div
                             className="admin-comparison-fill expenses"
@@ -481,6 +523,25 @@ const BudgetStats = ({ stats }) => {
                         <span>
                             {t('admin.budgetSection.stats.expensesLabel', 'Expenses:')}{' '}
                             {formatVal(incomeVsExpenses.expenses)}
+                        </span>
+                    </div>
+
+                    <div className="admin-comparison-bar">
+                        <div
+                            className="admin-comparison-fill income"
+                            style={{
+                                width: `${((Number(
+                                    incomeVsExpenses.income
+                                ) || 0) /
+                                    comparisonMax) *
+                                    100
+                                    }%`,
+                            }}
+                        />
+
+                        <span>
+                            {t('admin.budgetSection.stats.incomeLabel', 'Income:')}{' '}
+                            {formatVal(incomeVsExpenses.income)}
                         </span>
                     </div>
                 </div>
