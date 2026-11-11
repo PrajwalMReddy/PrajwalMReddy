@@ -5,6 +5,7 @@ import { useContent } from '../../utils/ContentContext';
 import {
     BLOCK_TYPES,
     MAX_GRID_ROWS,
+    MIN_GRID_ROWS,
     NOTES_API,
     TEXT_STYLES,
     TEXT_LIST_STYLES,
@@ -17,6 +18,8 @@ import {
     FOLDERS_STORAGE_KEY,
     EXPANDED_FOLDERS_KEY,
     getBacklinks,
+    rectanglesOverlap,
+    normalizeFolder,
 } from './notes/noteUtils';
 import { NoteBlock } from './notes/NoteWidgets';
 import NoteSidebar from './notes/NoteSidebar';
@@ -24,7 +27,7 @@ import NoteSidebar from './notes/NoteSidebar';
 const NotesAdmin = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { t } = useContent();
+    const { t, formatNumber } = useContent();
     const [notes, setNotes] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
 
@@ -38,6 +41,7 @@ const NotesAdmin = () => {
         folder: '',
         blocks: [],
         pinned: false,
+        canvasRows: MIN_GRID_ROWS,
     });
     const [search, setSearch] = useState('');
     const [noteView, setNoteView] = useState('active');
@@ -61,8 +65,466 @@ const NotesAdmin = () => {
     const linkClickTimerRef = useRef(null);
     const [draggingBlockId, setDraggingBlockId] = useState(null);
     const [dropPreview, setDropPreview] = useState(null);
+    const [groupedBlockIds, setGroupedBlockIds] = useState(new Set());
+    const [marqueeBox, setMarqueeBox] = useState(null);
+    const [groupDropPreviews, setGroupDropPreviews] = useState(null);
+    const marqueeStartRef = useRef(null);
+    const isMarqueeActiveRef = useRef(false);
+    const marqueeBaseSelectionRef = useRef(new Set());
     const boardRef = useRef(null);
     const resizeSessionRef = useRef(null);
+    const dragBottomHoldStartRef = useRef(0);
+    const lastRowExpandTimeRef = useRef(0);
+
+    // History & Clipboard state and refs
+    const undoStackRef = useRef([]);
+    const redoStackRef = useRef([]);
+    const [, setHistoryVersion] = useState(0);
+    const draftsCacheRef = useRef({});
+    const draftRef = useRef(draft);
+    draftRef.current = draft;
+    const selectedIdRef = useRef(selectedId);
+    selectedIdRef.current = selectedId;
+    const draftBeforeDragRef = useRef(null);
+    const draftBeforeResizeRef = useRef(null);
+    const typingBeforeDraftRef = useRef(null);
+    const typingTimerRef = useRef(null);
+    const titleBeforeDraftRef = useRef(null);
+    const titleTimerRef = useRef(null);
+    const arrowMoveBeforeDraftRef = useRef(null);
+    const arrowMoveTimerRef = useRef(null);
+    const [toastMessage, setToastMessage] = useState('');
+    const toastTimerRef = useRef(null);
+    const [hasClipboard, setHasClipboard] = useState(() => {
+        try {
+            return Boolean(localStorage.getItem('admin_notes_clipboard'));
+        } catch {
+            return false;
+        }
+    });
+
+    const showToast = useCallback((msg) => {
+        if (!msg) return;
+        setToastMessage(msg);
+        if (toastTimerRef.current) {
+            clearTimeout(toastTimerRef.current);
+        }
+        toastTimerRef.current = setTimeout(() => {
+            setToastMessage('');
+            toastTimerRef.current = null;
+        }, 2200);
+    }, []);
+
+    const recordHistory = useCallback((beforeDraft, afterDraft, description, noteId = selectedIdRef.current, noteTitle = draftRef.current.title) => {
+        if (!beforeDraft || !afterDraft) return;
+        if (JSON.stringify(beforeDraft) === JSON.stringify(afterDraft)) return;
+
+        undoStackRef.current.push({
+            id: `hist-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            noteId: noteId || null,
+            noteTitle: noteTitle || t('admin.notesSection.untitledNote', 'Untitled note'),
+            beforeDraft: JSON.parse(JSON.stringify(beforeDraft)),
+            afterDraft: JSON.parse(JSON.stringify(afterDraft)),
+            description,
+            timestamp: Date.now(),
+        });
+
+        if (undoStackRef.current.length > 100) {
+            undoStackRef.current.shift();
+        }
+
+        redoStackRef.current = [];
+        setHistoryVersion((v) => v + 1);
+    }, [t]);
+
+    const flushPendingHistory = useCallback(() => {
+        if (typingTimerRef.current) {
+            clearTimeout(typingTimerRef.current);
+            typingTimerRef.current = null;
+        }
+        if (typingBeforeDraftRef.current) {
+            if (JSON.stringify(typingBeforeDraftRef.current) !== JSON.stringify(draftRef.current)) {
+                recordHistory(
+                    typingBeforeDraftRef.current,
+                    draftRef.current,
+                    'Edit text',
+                    selectedIdRef.current,
+                    draftRef.current.title
+                );
+            }
+            typingBeforeDraftRef.current = null;
+        }
+        if (titleTimerRef.current) {
+            clearTimeout(titleTimerRef.current);
+            titleTimerRef.current = null;
+        }
+        if (titleBeforeDraftRef.current) {
+            if (JSON.stringify(titleBeforeDraftRef.current) !== JSON.stringify(draftRef.current)) {
+                recordHistory(
+                    titleBeforeDraftRef.current,
+                    draftRef.current,
+                    'Change title',
+                    selectedIdRef.current,
+                    draftRef.current.title
+                );
+            }
+            titleBeforeDraftRef.current = null;
+        }
+        if (arrowMoveTimerRef.current) {
+            clearTimeout(arrowMoveTimerRef.current);
+            arrowMoveTimerRef.current = null;
+        }
+        if (arrowMoveBeforeDraftRef.current) {
+            if (JSON.stringify(arrowMoveBeforeDraftRef.current) !== JSON.stringify(draftRef.current)) {
+                recordHistory(
+                    arrowMoveBeforeDraftRef.current,
+                    draftRef.current,
+                    'Move widget',
+                    selectedIdRef.current,
+                    draftRef.current.title
+                );
+            }
+            arrowMoveBeforeDraftRef.current = null;
+        }
+    }, [recordHistory]);
+
+    const handleUndo = useCallback(() => {
+        flushPendingHistory();
+
+        if (undoStackRef.current.length === 0) {
+            showToast(t('admin.notesSection.nothingToUndo', 'Nothing to undo'));
+            return;
+        }
+
+        const entry = undoStackRef.current.pop();
+        redoStackRef.current.push(entry);
+        setHistoryVersion((v) => v + 1);
+
+        const currentIdStr = String(selectedIdRef.current || '');
+        const targetIdStr = String(entry.noteId || '');
+        const isCurrentNote = currentIdStr === targetIdStr;
+
+        if (isCurrentNote) {
+            setDraft(entry.beforeDraft);
+            if (entry.noteId) {
+                draftsCacheRef.current[entry.noteId] = entry.beforeDraft;
+            }
+            showToast(`${t('admin.notesSection.undone', 'Undone')}: ${entry.description}`);
+        } else {
+            if (selectedIdRef.current) {
+                draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
+            }
+
+            if (entry.noteId) {
+                const targetNote = notes.find((n) => String(n.id) === String(entry.noteId));
+                setSelectedId(entry.noteId);
+                setDraft(entry.beforeDraft);
+                draftsCacheRef.current[entry.noteId] = entry.beforeDraft;
+                if (targetNote?.folder) {
+                    setExpandedFolders((curr) => new Set([...curr, targetNote.folder]));
+                }
+                navigate(`/admin/notes/${entry.noteId}`, { replace: true });
+            } else {
+                setSelectedId(null);
+                setDraft(entry.beforeDraft);
+                navigate('/admin/notes', { replace: true });
+            }
+
+            const title = entry.noteTitle || t('admin.notesSection.untitledNote', 'Untitled note');
+            showToast(`${t('admin.notesSection.undone', 'Undone')} (${title}): ${entry.description}`);
+        }
+    }, [flushPendingHistory, notes, navigate, t, showToast]);
+
+    const handleRedo = useCallback(() => {
+        flushPendingHistory();
+
+        if (redoStackRef.current.length === 0) {
+            showToast(t('admin.notesSection.nothingToRedo', 'Nothing to redo'));
+            return;
+        }
+
+        const entry = redoStackRef.current.pop();
+        undoStackRef.current.push(entry);
+        setHistoryVersion((v) => v + 1);
+
+        const currentIdStr = String(selectedIdRef.current || '');
+        const targetIdStr = String(entry.noteId || '');
+        const isCurrentNote = currentIdStr === targetIdStr;
+
+        if (isCurrentNote) {
+            setDraft(entry.afterDraft);
+            if (entry.noteId) {
+                draftsCacheRef.current[entry.noteId] = entry.afterDraft;
+            }
+            showToast(`${t('admin.notesSection.redone', 'Redone')}: ${entry.description}`);
+        } else {
+            if (selectedIdRef.current) {
+                draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
+            }
+
+            if (entry.noteId) {
+                const targetNote = notes.find((n) => String(n.id) === String(entry.noteId));
+                setSelectedId(entry.noteId);
+                setDraft(entry.afterDraft);
+                draftsCacheRef.current[entry.noteId] = entry.afterDraft;
+                if (targetNote?.folder) {
+                    setExpandedFolders((curr) => new Set([...curr, targetNote.folder]));
+                }
+                navigate(`/admin/notes/${entry.noteId}`, { replace: true });
+            } else {
+                setSelectedId(null);
+                setDraft(entry.afterDraft);
+                navigate('/admin/notes', { replace: true });
+            }
+
+            const title = entry.noteTitle || t('admin.notesSection.untitledNote', 'Untitled note');
+            showToast(`${t('admin.notesSection.redone', 'Redone')} (${title}): ${entry.description}`);
+        }
+    }, [flushPendingHistory, notes, navigate, t, showToast]);
+
+    const handleCut = useCallback(async () => {
+        if (groupedBlockIds.size === 0) return;
+        const current = draftRef.current;
+        const blocksToCut = current.blocks.filter((b) => groupedBlockIds.has(b.id));
+        if (blocksToCut.length === 0) return;
+
+        const clipData = {
+            type: 'notes/blocks',
+            version: 1,
+            sourceNoteId: selectedIdRef.current,
+            blocks: JSON.parse(JSON.stringify(blocksToCut)),
+        };
+
+        try {
+            localStorage.setItem('admin_notes_clipboard', JSON.stringify(clipData));
+            setHasClipboard(true);
+            if (navigator?.clipboard?.writeText) {
+                navigator.clipboard.writeText(JSON.stringify(clipData, null, 2)).catch(() => {});
+            }
+        } catch (e) { }
+
+        const nextBlocks = current.blocks.filter((b) => !groupedBlockIds.has(b.id));
+        const nextDraft = { ...current, blocks: nextBlocks };
+
+        const count = blocksToCut.length;
+        const desc = `Cut ${count} widget${count > 1 ? 's' : ''}`;
+        recordHistory(current, nextDraft, desc, selectedIdRef.current, current.title);
+
+        setDraft(nextDraft);
+        setGroupedBlockIds(new Set());
+        showToast(desc);
+    }, [groupedBlockIds, recordHistory, showToast]);
+
+    const handleCopy = useCallback(async () => {
+        if (groupedBlockIds.size === 0) return;
+        const current = draftRef.current;
+        const blocksToCopy = current.blocks.filter((b) => groupedBlockIds.has(b.id));
+        if (blocksToCopy.length === 0) return;
+
+        const clipData = {
+            type: 'notes/blocks',
+            version: 1,
+            sourceNoteId: selectedIdRef.current,
+            blocks: JSON.parse(JSON.stringify(blocksToCopy)),
+        };
+
+        try {
+            localStorage.setItem('admin_notes_clipboard', JSON.stringify(clipData));
+            setHasClipboard(true);
+            if (navigator?.clipboard?.writeText) {
+                navigator.clipboard.writeText(JSON.stringify(clipData, null, 2)).catch(() => {});
+            }
+        } catch (e) { }
+
+        const count = blocksToCopy.length;
+        showToast(`Copied ${count} widget${count > 1 ? 's' : ''}`);
+    }, [groupedBlockIds, showToast]);
+
+    const handlePaste = useCallback(async () => {
+        let clipBlocks = null;
+        let sourceNoteId = null;
+
+        try {
+            if (navigator?.clipboard?.readText) {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    try {
+                        const parsed = JSON.parse(text);
+                        if (parsed?.type === 'notes/blocks' && Array.isArray(parsed.blocks)) {
+                            clipBlocks = parsed.blocks;
+                            sourceNoteId = parsed.sourceNoteId;
+                        }
+                    } catch { }
+                }
+            }
+        } catch (e) { }
+
+        if (!clipBlocks) {
+            try {
+                const saved = localStorage.getItem('admin_notes_clipboard');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        clipBlocks = parsed;
+                    } else if (parsed?.type === 'notes/blocks' && Array.isArray(parsed.blocks)) {
+                        clipBlocks = parsed.blocks;
+                        sourceNoteId = parsed.sourceNoteId;
+                    }
+                }
+            } catch (e) { }
+        }
+
+        if (!clipBlocks || clipBlocks.length === 0) {
+            showToast(t('admin.notesSection.clipboardEmpty', 'Clipboard is empty'));
+            return;
+        }
+
+        const current = draftRef.current;
+        const isSameNote = String(sourceNoteId || '') === String(selectedIdRef.current || '');
+        const currentRows = current.canvasRows || MIN_GRID_ROWS;
+        const currentBlocks = current.blocks || [];
+
+        const minCol = Math.min(...clipBlocks.map((b) => b.position?.col || 1));
+        const minRow = Math.min(...clipBlocks.map((b) => b.position?.row || 1));
+
+        let offsetCol = 0;
+        let offsetRow = 0;
+
+        if (isSameNote) {
+            const lowestRow = currentBlocks.reduce((max, b) => {
+                const r = b?.position?.row || 1;
+                const h = b?.height || BLOCK_TYPES[b?.type]?.height || 4;
+                return Math.max(max, r + h);
+            }, 1);
+            offsetRow = Math.max(2, lowestRow - minRow + 1);
+        } else {
+            const wouldOverlap = clipBlocks.some((cb) => {
+                const cbWidth = Math.min(normalizeBlockSpan(cb.span, cb.type), 12);
+                const cbHeight = cb.height || BLOCK_TYPES[cb.type]?.height || 4;
+                const cand = {
+                    col: cb.position?.col || 1,
+                    row: cb.position?.row || 1,
+                    width: cbWidth,
+                    height: cbHeight,
+                };
+                return currentBlocks.some((eb) => {
+                    const ebWidth = Math.min(normalizeBlockSpan(eb.span, eb.type), 12);
+                    const ebHeight = eb.height || BLOCK_TYPES[eb.type]?.height || 4;
+                    return rectanglesOverlap(cand, {
+                        col: eb.position?.col || 1,
+                        row: eb.position?.row || 1,
+                        width: ebWidth,
+                        height: ebHeight,
+                    });
+                });
+            });
+
+            if (wouldOverlap) {
+                const lowestRow = currentBlocks.reduce((max, b) => {
+                    const r = b?.position?.row || 1;
+                    const h = b?.height || BLOCK_TYPES[b?.type]?.height || 4;
+                    return Math.max(max, r + h);
+                }, 1);
+                offsetRow = Math.max(0, lowestRow - minRow + 1);
+            }
+        }
+
+        const newBlockIds = [];
+        const clonedBlocks = clipBlocks.map((b) => {
+            const newId = `${b.type}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+            const cloned = JSON.parse(JSON.stringify(b));
+            cloned.id = newId;
+
+            const span = Math.min(normalizeBlockSpan(cloned.span, cloned.type), 12);
+            const rawCol = (b.position?.col || 1) + offsetCol;
+            const col = Math.max(1, Math.min(13 - span, rawCol));
+            const height = cloned.height || BLOCK_TYPES[cloned.type]?.height || 4;
+            const rawRow = (b.position?.row || 1) + offsetRow;
+            const row = Math.max(1, Math.min(MAX_GRID_ROWS - height + 1, rawRow));
+
+            cloned.position = { col, row };
+
+            if (Array.isArray(cloned.todos)) {
+                cloned.todos = cloned.todos.map((item, idx) => ({
+                    ...item,
+                    id: `todo-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 5)}`,
+                }));
+            }
+            if (Array.isArray(cloned.timelineEvents)) {
+                cloned.timelineEvents = cloned.timelineEvents.map((ev, idx) => ({
+                    ...ev,
+                    id: `timeline-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 5)}`,
+                }));
+            }
+            newBlockIds.push(newId);
+            return cloned;
+        });
+
+        const pastedLowest = clonedBlocks.reduce((max, b) => {
+            const r = b?.position?.row || 1;
+            const h = b?.height || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, r + h - 1);
+        }, 0);
+        const neededRows = Math.min(MAX_GRID_ROWS, Math.max(currentRows, pastedLowest));
+
+        const nextDraft = {
+            ...current,
+            canvasRows: neededRows,
+            blocks: [...current.blocks, ...clonedBlocks],
+        };
+
+        const count = clonedBlocks.length;
+        const desc = `Paste ${count} widget${count > 1 ? 's' : ''}`;
+        recordHistory(current, nextDraft, desc, selectedIdRef.current, current.title);
+
+        setDraft(nextDraft);
+        setGroupedBlockIds(new Set(newBlockIds));
+        showToast(desc);
+    }, [recordHistory, showToast, t]);
+
+    const handleDeleteSelectedBlocks = useCallback(() => {
+        if (groupedBlockIds.size === 0) return;
+        const current = draftRef.current;
+        const blocksToDelete = current.blocks.filter((b) => groupedBlockIds.has(b.id));
+        if (blocksToDelete.length === 0) return;
+
+        const nextBlocks = current.blocks.filter((b) => !groupedBlockIds.has(b.id));
+        const nextDraft = { ...current, blocks: nextBlocks };
+
+        const count = blocksToDelete.length;
+        const desc = `Delete ${count} widget${count > 1 ? 's' : ''}`;
+        recordHistory(current, nextDraft, desc, selectedIdRef.current, current.title);
+
+        setDraft(nextDraft);
+        setGroupedBlockIds(new Set());
+        showToast(desc);
+    }, [groupedBlockIds, recordHistory, showToast]);
+
+    const handleTitleChange = useCallback((event) => {
+        const newTitle = event.target.value;
+        const current = draftRef.current;
+        if (!titleBeforeDraftRef.current) {
+            titleBeforeDraftRef.current = current;
+        }
+        if (titleTimerRef.current) {
+            clearTimeout(titleTimerRef.current);
+        }
+        titleTimerRef.current = setTimeout(() => {
+            if (titleBeforeDraftRef.current && draftRef.current) {
+                recordHistory(
+                    titleBeforeDraftRef.current,
+                    draftRef.current,
+                    'Change title',
+                    selectedIdRef.current,
+                    draftRef.current.title
+                );
+            }
+            titleBeforeDraftRef.current = null;
+            titleTimerRef.current = null;
+        }, 600);
+
+        setDraft((prev) => ({ ...prev, title: newTitle }));
+    }, [recordHistory]);
 
     const [customFolders, setCustomFolders] = useState(() => {
         try {
@@ -137,28 +599,28 @@ const NotesAdmin = () => {
     const widgetOrder = [
         'text',
         'heading',
-        'table',
-        'link',
-        'list',
-        'callout',
-        'quote',
-        'image',
-        'code',
-        'divider',
-        'todo',
-        'note_link',
-        'timeline',
         'date',
+        'link',
+        'callout',
+        'list',
+        'todo',
+        'divider',
+        'table',
+        'code',
+        'note_link',
+        'image',
+        'quote',
+        'habit',
         'status',
-        'counter',
         'progress',
+        'counter',
         'countdown',
-        'rating',
+        'timeline',
         'flashcards',
-        'picker',
         'chart',
         'equation',
-        'habit',
+        'picker',
+        'rating',
     ];
     const primaryWidgetTypes = widgetOrder.slice(0, 10);
     const secondaryWidgetTypes = widgetOrder.slice(primaryWidgetTypes.length);
@@ -267,9 +729,12 @@ const NotesAdmin = () => {
     const allFolders = useMemo(() => {
         const fromNotes = notes
             .filter((n) => !n.archived)
-            .map((n) => n.folder)
+            .map((n) => normalizeFolder(n.folder))
             .filter(Boolean);
-        const combined = Array.from(new Set([...customFolders, ...fromNotes]));
+        const normalizedCustom = customFolders
+            .map(normalizeFolder)
+            .filter(Boolean);
+        const combined = Array.from(new Set([...normalizedCustom, ...fromNotes]));
         return combined.sort((a, b) => a.localeCompare(b));
     }, [customFolders, notes]);
 
@@ -278,20 +743,21 @@ const NotesAdmin = () => {
         if (!term) return visibleNotes;
         return visibleNotes.filter((note) => {
             const preview = note.content || '';
-            return `${note.title} ${note.folder || ''} ${note.content || ''} ${preview}`
+            const folderText = normalizeFolder(note.folder);
+            return `${note.title} ${folderText} ${note.content || ''} ${preview}`
                 .toLowerCase()
                 .includes(term);
         });
     }, [search, visibleNotes]);
 
     const rootNotes = useMemo(() => {
-        return filteredNotes.filter((note) => !note.folder || note.folder === '/');
+        return filteredNotes.filter((note) => !normalizeFolder(note.folder));
     }, [filteredNotes]);
 
     const folderNotesMap = useMemo(() => {
         const map = {};
         allFolders.forEach((f) => {
-            map[f] = filteredNotes.filter((note) => note.folder === f);
+            map[f] = filteredNotes.filter((note) => normalizeFolder(note.folder) === f);
         });
         return map;
     }, [allFolders, filteredNotes]);
@@ -300,7 +766,8 @@ const NotesAdmin = () => {
         if (search.trim()) {
             const matchingFolders = new Set();
             filteredNotes.forEach((n) => {
-                if (n.folder) matchingFolders.add(n.folder);
+                const folderName = normalizeFolder(n.folder);
+                if (folderName) matchingFolders.add(folderName);
             });
             if (matchingFolders.size > 0) {
                 setExpandedFolders((current) => new Set([...current, ...matchingFolders]));
@@ -406,30 +873,37 @@ const NotesAdmin = () => {
     };
 
     const handleFolderChange = async (targetFolder) => {
-        const trimmed = targetFolder
-            ? String(targetFolder).trim().replace(/^\/+|\/+$/g, '')
-            : '';
+        const trimmed = normalizeFolder(targetFolder);
         setDraft((current) => ({ ...current, folder: trimmed }));
         if (trimmed) {
             setExpandedFolders((current) => new Set([...current, trimmed]));
         }
-        if (selectedId) {
+        const activeId = selectedId || id || selectedIdRef.current;
+        if (activeId && draftsCacheRef.current[activeId]) {
+            draftsCacheRef.current[activeId] = {
+                ...draftsCacheRef.current[activeId],
+                folder: trimmed,
+            };
+        }
+        if (activeId) {
             setSaving(true);
             try {
-                const updated = await request(`${NOTES_API}/${selectedId}`, {
+                const updated = await request(`${NOTES_API}/${activeId}`, {
                     method: 'PUT',
                     body: JSON.stringify({ folder: trimmed }),
                 });
+                const updatedFolder = normalizeFolder(
+                    updated && updated.folder !== undefined ? updated.folder : trimmed
+                );
                 const updatedNote = {
                     ...updated,
-                    folder:
-                        updated && updated.folder !== undefined
-                            ? updated.folder || ''
-                            : trimmed,
+                    folder: updatedFolder,
                 };
                 setNotes((current) =>
                     current.map((n) =>
-                        n.id === selectedId ? { ...n, ...updatedNote, folder: trimmed } : n
+                        String(n.id) === String(activeId)
+                            ? { ...n, ...updatedNote, folder: updatedFolder }
+                            : n
                     )
                 );
             } catch (err) {
@@ -443,23 +917,60 @@ const NotesAdmin = () => {
 
     const selectNote = useCallback((note) => {
         if (note) {
+            flushPendingHistory();
+
+            if (selectedIdRef.current) {
+                draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
+            }
+
+            const noteFolder = normalizeFolder(note.folder);
+            const cached = draftsCacheRef.current[note.id];
+            if (cached) {
+                setSelectedId(note.id);
+                selectedIdRef.current = note.id;
+                setDraft(cached);
+                setGroupedBlockIds(new Set());
+                if (noteFolder) {
+                    setExpandedFolders((current) => new Set([...current, noteFolder]));
+                }
+                if (note.archived) {
+                    setNoteView('archived');
+                }
+                setError('');
+                return;
+            }
+
+            const blocks = blocksFromNote(note);
+            const lowest = (blocks || []).reduce((max, b) => {
+                const row = Number(b?.position?.row) || 1;
+                const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+                return Math.max(max, row + height - 1);
+            }, 0);
+            const initialCanvasRows = Math.max(
+                MIN_GRID_ROWS,
+                typeof note.canvasRows === 'number' ? note.canvasRows : MIN_GRID_ROWS,
+                lowest
+            );
             setSelectedId(note.id);
+            selectedIdRef.current = note.id;
             setDraft({
                 title: note.title,
                 content: note.content,
-                folder: note.folder || '',
+                folder: noteFolder,
                 pinned: Boolean(note.pinned),
-                blocks: blocksFromNote(note),
+                blocks,
+                canvasRows: initialCanvasRows,
             });
-            if (note.folder) {
-                setExpandedFolders((current) => new Set([...current, note.folder]));
+            setGroupedBlockIds(new Set());
+            if (noteFolder) {
+                setExpandedFolders((current) => new Set([...current, noteFolder]));
             }
             if (note.archived) {
                 setNoteView('archived');
             }
             setError('');
         }
-    }, []);
+    }, [flushPendingHistory]);
 
     const selectNoteAndNavigate = useCallback((note) => {
         if (note) {
@@ -471,17 +982,22 @@ const NotesAdmin = () => {
     }, [selectNote, id, navigate]);
 
     const startNewNote = useCallback((folder = '') => {
-        const cleanFolder = folder
-            ? String(folder).trim().replace(/^\/+|\/+$/g, '')
-            : '';
+        flushPendingHistory();
+        if (selectedIdRef.current) {
+            draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
+        }
+        const cleanFolder = normalizeFolder(folder);
         setSelectedId(null);
+        selectedIdRef.current = null;
         setDraft({
             title: '',
             content: '',
             folder: cleanFolder,
             pinned: false,
             blocks: [],
+            canvasRows: MIN_GRID_ROWS,
         });
+        setGroupedBlockIds(new Set());
         if (cleanFolder) {
             setExpandedFolders((current) => new Set([...current, cleanFolder]));
         }
@@ -489,7 +1005,7 @@ const NotesAdmin = () => {
         if (id) {
             navigate('/admin/notes');
         }
-    }, [id, navigate]);
+    }, [id, navigate, flushPendingHistory]);
 
     useEffect(() => {
         if (!loading) {
@@ -521,50 +1037,65 @@ const NotesAdmin = () => {
         setError('');
         try {
             const content = generateNoteContent(draft.blocks);
-            const folderValue = draft.folder
-                ? String(draft.folder).trim().replace(/^\/+|\/+$/g, '')
-                : '';
+            const folderValue = normalizeFolder(draft.folder);
+            const lowest = (draft.blocks || []).reduce((max, b) => {
+                const row = Number(b?.position?.row) || 1;
+                const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+                return Math.max(max, row + height - 1);
+            }, 0);
+            const currentEffectiveRows = Math.max(
+                MIN_GRID_ROWS,
+                typeof draft.canvasRows === 'number' ? draft.canvasRows : MIN_GRID_ROWS,
+                lowest
+            );
             const bodyData = {
                 ...draft,
+                canvasRows: currentEffectiveRows,
                 pinned: Boolean(draft.pinned),
                 folder: folderValue,
                 content,
             };
+            const targetId = selectedId || id || selectedIdRef.current;
             const saved = await request(
-                selectedId ? `${NOTES_API}/${selectedId}` : NOTES_API,
+                targetId ? `${NOTES_API}/${targetId}` : NOTES_API,
                 {
-                    method: selectedId ? 'PUT' : 'POST',
+                    method: targetId ? 'PUT' : 'POST',
                     body: JSON.stringify(bodyData),
                 }
             );
+            const savedId = String(saved?.id || targetId || '');
             const savedNote = {
                 ...saved,
+                id: savedId,
                 pinned:
                     saved && saved.pinned !== undefined
                         ? saved.pinned
                         : Boolean(draft.pinned),
                 folder:
                     saved && saved.folder !== undefined
-                        ? saved.folder || ''
+                        ? normalizeFolder(saved.folder)
                         : folderValue,
             };
             setNotes((current) => {
-                const withoutSaved = current.filter((note) => note.id !== savedNote.id);
+                const withoutSaved = current.filter((note) => String(note.id) !== savedId);
                 return [savedNote, ...withoutSaved];
             });
-            setSelectedId(savedNote.id);
+            setSelectedId(savedId);
+            selectedIdRef.current = savedId;
+            delete draftsCacheRef.current[savedId];
             setDraft({
                 title: savedNote.title,
                 content: savedNote.content,
                 folder: savedNote.folder || '',
                 pinned: Boolean(savedNote.pinned),
                 blocks: blocksFromNote(savedNote),
+                canvasRows: savedNote.canvasRows || currentEffectiveRows,
             });
             if (savedNote.folder) {
                 setExpandedFolders((current) => new Set([...current, savedNote.folder]));
             }
-            if (String(id) !== String(savedNote.id)) {
-                navigate(`/admin/notes/${savedNote.id}`, { replace: true });
+            if (String(id) !== savedId) {
+                navigate(`/admin/notes/${savedId}`, { replace: true });
             }
         } catch (err) {
             setError(err.message);
@@ -572,17 +1103,6 @@ const NotesAdmin = () => {
             setSaving(false);
         }
     }, [draft, selectedId, request, id, navigate]);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                handleSave();
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleSave]);
 
     const handleDelete = async () => {
         if (
@@ -661,13 +1181,41 @@ const NotesAdmin = () => {
         }
     };
 
-    const updateBlock = (blockId, changes) =>
-        setDraft((current) => ({
-            ...current,
-            blocks: current.blocks.map((block) =>
-                block.id === blockId ? { ...block, ...changes } : block
-            ),
-        }));
+    const updateBlock = useCallback((blockId, changes) => {
+        const current = draftRef.current;
+        const nextBlocks = current.blocks.map((block) =>
+            block.id === blockId ? { ...block, ...changes } : block
+        );
+        const nextDraft = { ...current, blocks: nextBlocks };
+
+        const isTextEdit = 'text' in changes || 'label' in changes;
+        if (isTextEdit) {
+            if (!typingBeforeDraftRef.current) {
+                typingBeforeDraftRef.current = current;
+            }
+            if (typingTimerRef.current) {
+                clearTimeout(typingTimerRef.current);
+            }
+            typingTimerRef.current = setTimeout(() => {
+                if (typingBeforeDraftRef.current && draftRef.current) {
+                    recordHistory(
+                        typingBeforeDraftRef.current,
+                        draftRef.current,
+                        'Edit text',
+                        selectedIdRef.current,
+                        draftRef.current.title
+                    );
+                }
+                typingBeforeDraftRef.current = null;
+                typingTimerRef.current = null;
+            }, 600);
+        } else {
+            flushPendingHistory();
+            recordHistory(current, nextDraft, 'Update widget', selectedIdRef.current, current.title);
+        }
+
+        setDraft(nextDraft);
+    }, [recordHistory, flushPendingHistory]);
 
     const saveTextSelection = (blockId = activeTextBlockId) => {
         const selection = window.getSelection();
@@ -729,35 +1277,72 @@ const NotesAdmin = () => {
         updateBlock(editor.dataset.textEditorId, { text: editor.innerHTML });
     };
 
-    const addBlock = (type, afterId = null) =>
-        setDraft((current) => {
-            const next = createBlock(type);
-            next.position = findFreePosition(current.blocks, next);
-            const index = afterId
-                ? current.blocks.findIndex((block) => block.id === afterId) + 1
-                : current.blocks.length;
-            if (type === 'link') setEditingLinkId(next.id);
-            if (type === 'note_link') setEditingNoteLinkId(next.id);
-            if (type === 'flashcards') setEditingFlashcardId(next.id);
-            if (type === 'image') setEditingImageId(next.id);
-            return {
-                ...current,
-                blocks: [
-                    ...current.blocks.slice(0, index),
-                    next,
-                    ...current.blocks.slice(index),
-                ],
-            };
-        });
+    const addBlock = (type, afterId = null) => {
+        const current = draftRef.current;
+        const next = createBlock(type);
+        const currentRows = current.canvasRows || MIN_GRID_ROWS;
+        next.position = findFreePosition(current.blocks, next, currentRows);
+        const nextHeight = next.height || BLOCK_TYPES[next.type]?.height || 4;
+        const neededRows = (next.position?.row || 1) + nextHeight - 1;
+        const updatedCanvasRows = Math.min(
+            MAX_GRID_ROWS,
+            Math.max(currentRows, neededRows)
+        );
+        const index = afterId
+            ? current.blocks.findIndex((block) => block.id === afterId) + 1
+            : current.blocks.length;
+        if (type === 'link') setEditingLinkId(next.id);
+        if (type === 'note_link') setEditingNoteLinkId(next.id);
+        if (type === 'flashcards') setEditingFlashcardId(next.id);
+        if (type === 'image') setEditingImageId(next.id);
+        const nextDraft = {
+            ...current,
+            canvasRows: updatedCanvasRows,
+            blocks: [
+                ...current.blocks.slice(0, index),
+                next,
+                ...current.blocks.slice(index),
+            ],
+        };
+        recordHistory(current, nextDraft, `Add ${BLOCK_TYPES[type]?.label || type}`);
+        setDraft(nextDraft);
+    };
 
-    const removeBlock = (blockId) =>
-        setDraft((current) => ({
+    const removeBlock = (blockId) => {
+        const current = draftRef.current;
+        const blockToRemove = current.blocks.find((b) => b.id === blockId);
+        const nextDraft = {
             ...current,
             blocks: current.blocks.filter((block) => block.id !== blockId),
-        }));
+        };
+        const label = blockToRemove ? (BLOCK_TYPES[blockToRemove.type]?.label || 'widget') : 'widget';
+        recordHistory(current, nextDraft, `Remove ${label}`);
+        setDraft(nextDraft);
+        setGroupedBlockIds((prev) => {
+            if (prev.has(blockId)) {
+                const next = new Set(prev);
+                next.delete(blockId);
+                return next;
+            }
+            return prev;
+        });
+    };
 
     const placeBlock = (blockId, col, row) =>
-        updateBlock(blockId, { position: { col, row } });
+        setDraft((current) => {
+            const block = (current.blocks || []).find((b) => b.id === blockId);
+            const height = block?.height || BLOCK_TYPES[block?.type]?.height || 4;
+            const targetBottom = row + height - 1;
+            const currentRows = current.canvasRows || MIN_GRID_ROWS;
+            const nextRows = targetBottom > currentRows ? Math.min(MAX_GRID_ROWS, targetBottom) : currentRows;
+            return {
+                ...current,
+                canvasRows: nextRows,
+                blocks: (current.blocks || []).map((b) =>
+                    b.id === blockId ? { ...b, position: { col, row } } : b
+                ),
+            };
+        });
 
     const getBoardMetrics = () => {
         if (!boardRef.current) return null;
@@ -787,6 +1372,7 @@ const NotesAdmin = () => {
         if (window.innerWidth <= 768) return;
         event.stopPropagation();
         event.preventDefault();
+        draftBeforeResizeRef.current = draftRef.current;
         try {
             event.currentTarget.setPointerCapture(event.pointerId);
         } catch (e) { }
@@ -832,13 +1418,33 @@ const NotesAdmin = () => {
         const newSpan = Math.round((currentX + session.columnGap) / (session.cellWidth + session.columnGap));
         const newHeight = Math.round((currentY + session.rowGap) / (session.rowHeight + session.rowGap));
         const clampedSpan = Math.max(session.minSpan, Math.min(session.maxSpan, newSpan));
-        const clampedHeight = Math.max(session.minHeight, Math.min(30, newHeight));
+        const currentRows = draft.canvasRows || MIN_GRID_ROWS;
+        const maxAllowedHeight = Math.min(30, Math.max(session.minHeight, currentRows - (block.position?.row || 1) + 2));
+        const clampedHeight = Math.max(session.minHeight, Math.min(maxAllowedHeight, newHeight));
         if (clampedSpan !== block.span || clampedHeight !== block.height) {
-            updateBlock(block.id, { span: clampedSpan, height: clampedHeight });
+            const blockBottom = (block.position?.row || 1) + clampedHeight - 1;
+            const now = Date.now();
+            if (blockBottom > currentRows && currentRows < MAX_GRID_ROWS && now - lastRowExpandTimeRef.current >= 450) {
+                lastRowExpandTimeRef.current = now;
+                setDraft((current) => ({
+                    ...current,
+                    canvasRows: Math.min(MAX_GRID_ROWS, blockBottom),
+                    blocks: current.blocks.map((b) =>
+                        b.id === block.id ? { ...b, span: clampedSpan, height: clampedHeight } : b
+                    ),
+                }));
+            } else if (blockBottom <= currentRows) {
+                updateBlock(block.id, { span: clampedSpan, height: clampedHeight });
+            }
         }
     };
 
     const finishBlockResize = (event) => {
+        if (draftBeforeResizeRef.current && JSON.stringify(draftBeforeResizeRef.current) !== JSON.stringify(draftRef.current)) {
+            recordHistory(draftBeforeResizeRef.current, draftRef.current, 'Resize widget');
+        }
+        draftBeforeResizeRef.current = null;
+
         if (event?.currentTarget) {
             try {
                 if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -859,8 +1465,33 @@ const NotesAdmin = () => {
         ) {
             return;
         }
+
+        // Shift or Ctrl click toggles grouping of this element
+        if (event.shiftKey || event.ctrlKey || event.metaKey) {
+            event.stopPropagation();
+            setGroupedBlockIds((prev) => {
+                const next = new Set(prev);
+                if (next.has(blockId)) {
+                    next.delete(blockId);
+                } else {
+                    next.add(blockId);
+                }
+                return next;
+            });
+            return;
+        }
+
         event.currentTarget.setPointerCapture(event.pointerId);
         setDraggingBlockId(blockId);
+        draftBeforeDragRef.current = draftRef.current;
+        dragBottomHoldStartRef.current = 0;
+        lastRowExpandTimeRef.current = 0;
+
+        // If block is NOT in current group, make it the sole grouped/selected block
+        if (!groupedBlockIds.has(blockId)) {
+            setGroupedBlockIds(new Set([blockId]));
+        }
+
         const block = draft.blocks.find((b) => b.id === blockId);
         if (block) {
             setDropPreview(block.position || { col: 1, row: 1 });
@@ -869,34 +1500,566 @@ const NotesAdmin = () => {
 
     const finishBlockDrag = (event, blockId) => {
         if (draggingBlockId === blockId) {
-            if (dropPreview) {
-                placeBlock(blockId, dropPreview.col, dropPreview.row);
+            const isGroup = groupedBlockIds.has(blockId) && groupedBlockIds.size > 1;
+            const current = draftRef.current;
+            let nextDraft = current;
+
+            if (isGroup && groupDropPreviews) {
+                const currentRows = current.canvasRows || MIN_GRID_ROWS;
+                let neededRows = currentRows;
+
+                const updatedBlocks = (current.blocks || []).map((b) => {
+                    const preview = groupDropPreviews[b.id];
+                    if (preview) {
+                        const bottom = preview.row + preview.height - 1;
+                        if (bottom > neededRows) neededRows = bottom;
+                        return {
+                            ...b,
+                            position: { col: preview.col, row: preview.row },
+                        };
+                    }
+                    return b;
+                });
+
+                nextDraft = {
+                    ...current,
+                    canvasRows: Math.min(MAX_GRID_ROWS, neededRows),
+                    blocks: updatedBlocks,
+                };
+            } else if (dropPreview) {
+                const block = (current.blocks || []).find((b) => b.id === blockId);
+                const height = block?.height || BLOCK_TYPES[block?.type]?.height || 4;
+                const targetBottom = dropPreview.row + height - 1;
+                const currentRows = current.canvasRows || MIN_GRID_ROWS;
+                const nextRows = targetBottom > currentRows ? Math.min(MAX_GRID_ROWS, targetBottom) : currentRows;
+                nextDraft = {
+                    ...current,
+                    canvasRows: nextRows,
+                    blocks: (current.blocks || []).map((b) =>
+                        b.id === blockId ? { ...b, position: { col: dropPreview.col, row: dropPreview.row } } : b
+                    ),
+                };
             }
-            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-                event.currentTarget.releasePointerCapture(event.pointerId);
+
+            if (draftBeforeDragRef.current && JSON.stringify(draftBeforeDragRef.current) !== JSON.stringify(nextDraft)) {
+                recordHistory(draftBeforeDragRef.current, nextDraft, 'Move widget');
+            }
+            draftBeforeDragRef.current = null;
+            setDraft(nextDraft);
+
+            if (event.currentTarget && event.currentTarget.hasPointerCapture(event.pointerId)) {
+                try {
+                    event.currentTarget.releasePointerCapture(event.pointerId);
+                } catch (e) { }
             }
             setDraggingBlockId(null);
             setDropPreview(null);
+            setGroupDropPreviews(null);
+            dragBottomHoldStartRef.current = 0;
+            lastRowExpandTimeRef.current = 0;
         }
     };
 
     const updateDropPreview = (event) => {
         if (!draggingBlockId || !boardRef.current) return;
-        const block = draft.blocks.find((b) => b.id === draggingBlockId);
-        if (!block) return;
+        const anchorBlock = draft.blocks.find((b) => b.id === draggingBlockId);
+        if (!anchorBlock) return;
         const metrics = getBoardMetrics();
         if (!metrics) return;
-        const { bounds, paddingX, paddingY, gap, cellWidth, rowHeight } = metrics;
-        const width = Math.min(normalizeBlockSpan(block.span, block.type), 12);
-        const height = Math.min(block.height || BLOCK_TYPES[block.type]?.height || 4, 30);
-        const rawCol = Math.floor((event.clientX - bounds.left - paddingX) / (cellWidth + gap)) + 1;
-        const rawRow = Math.floor((event.clientY - bounds.top - paddingY) / rowHeight) + 1;
-        const col = Math.max(1, Math.min(rawCol, 13 - width));
-        const row = Math.max(1, Math.min(rawRow, MAX_GRID_ROWS - height + 1));
-        setDropPreview((current) =>
-            current && current.col === col && current.row === row ? current : { col, row }
-        );
+        const { bounds, paddingX, paddingY, gap, cellWidth, rowHeight, scrollLeft, scrollTop } = metrics;
+
+        const isGroup = groupedBlockIds.has(draggingBlockId) && groupedBlockIds.size > 1;
+        const rawCol = Math.floor((event.clientX - bounds.left + scrollLeft - paddingX) / (cellWidth + gap)) + 1;
+        const rawRow = Math.floor((event.clientY - bounds.top + scrollTop - paddingY) / rowHeight) + 1;
+        const currentRows = draft.canvasRows || MIN_GRID_ROWS;
+
+        if (!isGroup) {
+            const width = Math.min(normalizeBlockSpan(anchorBlock.span, anchorBlock.type), 12);
+            const height = Math.min(anchorBlock.height || BLOCK_TYPES[anchorBlock.type]?.height || 4, 30);
+            const col = Math.max(1, Math.min(rawCol, 13 - width));
+            const maxAllowedRow = Math.min(MAX_GRID_ROWS - height + 1, Math.max(1, currentRows - height + 2));
+            const row = Math.max(1, Math.min(rawRow, maxAllowedRow));
+
+            const isAtBottom = rawRow + height - 1 >= currentRows;
+            const now = Date.now();
+
+            if (isAtBottom && currentRows < MAX_GRID_ROWS) {
+                if (dragBottomHoldStartRef.current === 0) {
+                    dragBottomHoldStartRef.current = now;
+                } else {
+                    const holdDuration = now - dragBottomHoldStartRef.current;
+                    const timeSinceLastExpand = now - lastRowExpandTimeRef.current;
+                    if (holdDuration >= 400 && timeSinceLastExpand >= 550) {
+                        lastRowExpandTimeRef.current = now;
+                        const nextRows = Math.min(MAX_GRID_ROWS, currentRows + 1);
+                        setDraft((current) => ({
+                            ...current,
+                            canvasRows: nextRows,
+                        }));
+                    }
+                }
+            } else {
+                dragBottomHoldStartRef.current = 0;
+            }
+
+            setGroupDropPreviews(null);
+            setDropPreview((current) =>
+                current && current.col === col && current.row === row ? current : { col, row }
+            );
+        } else {
+            // Group drag calculation
+            const anchorOrigCol = anchorBlock.position?.col || 1;
+            const anchorOrigRow = anchorBlock.position?.row || 1;
+            const desiredDeltaCol = rawCol - anchorOrigCol;
+            const desiredDeltaRow = rawRow - anchorOrigRow;
+
+            const activeGroupedBlocks = draft.blocks.filter((b) => groupedBlockIds.has(b.id));
+
+            let minDeltaCol = -Infinity;
+            let maxDeltaCol = Infinity;
+            let minDeltaRow = -Infinity;
+            let maxDeltaRow = Infinity;
+
+            activeGroupedBlocks.forEach((b) => {
+                const bCol = b.position?.col || 1;
+                const bSpan = Math.min(normalizeBlockSpan(b.span, b.type), 12);
+                const bRow = b.position?.row || 1;
+                const bHeight = Math.min(b.height || BLOCK_TYPES[b.type]?.height || 4, 30);
+
+                minDeltaCol = Math.max(minDeltaCol, 1 - bCol);
+                maxDeltaCol = Math.min(maxDeltaCol, 13 - bSpan - bCol);
+                minDeltaRow = Math.max(minDeltaRow, 1 - bRow);
+                maxDeltaRow = Math.min(MAX_GRID_ROWS - bHeight + 1 - bRow, maxDeltaRow);
+            });
+
+            const deltaCol = Math.max(minDeltaCol, Math.min(maxDeltaCol, desiredDeltaCol));
+            const deltaRow = Math.max(minDeltaRow, Math.min(maxDeltaRow, desiredDeltaRow));
+
+            const maxBottom = Math.max(
+                ...activeGroupedBlocks.map((b) => (b.position?.row || 1) + deltaRow + (b.height || BLOCK_TYPES[b.type]?.height || 4) - 1)
+            );
+            const isAtBottom = maxBottom >= currentRows;
+            const now = Date.now();
+            if (isAtBottom && currentRows < MAX_GRID_ROWS) {
+                if (dragBottomHoldStartRef.current === 0) {
+                    dragBottomHoldStartRef.current = now;
+                } else {
+                    const holdDuration = now - dragBottomHoldStartRef.current;
+                    const timeSinceLastExpand = now - lastRowExpandTimeRef.current;
+                    if (holdDuration >= 400 && timeSinceLastExpand >= 550) {
+                        lastRowExpandTimeRef.current = now;
+                        const nextRows = Math.min(MAX_GRID_ROWS, currentRows + 1);
+                        setDraft((current) => ({
+                            ...current,
+                            canvasRows: nextRows,
+                        }));
+                    }
+                }
+            } else {
+                dragBottomHoldStartRef.current = 0;
+            }
+
+            const previews = {};
+            activeGroupedBlocks.forEach((b) => {
+                const bSpan = Math.min(normalizeBlockSpan(b.span, b.type), 12);
+                const bHeight = Math.min(b.height || BLOCK_TYPES[b.type]?.height || 4, 30);
+                previews[b.id] = {
+                    col: (b.position?.col || 1) + deltaCol,
+                    row: (b.position?.row || 1) + deltaRow,
+                    span: bSpan,
+                    height: bHeight,
+                };
+            });
+
+            setGroupDropPreviews(previews);
+            setDropPreview({
+                col: (anchorBlock.position?.col || 1) + deltaCol,
+                row: (anchorBlock.position?.row || 1) + deltaRow,
+            });
+        }
     };
+
+    const handleBoardPointerDown = (event) => {
+        if (event.pointerType === 'touch') return;
+        if (window.innerWidth <= 768) return;
+
+        const isBlock = event.target.closest('.admin-note-block');
+        const isInteractive = event.target.closest(
+            'a, input, textarea, select, button, label, .admin-note-todo-check-btn, .admin-note-todo-custom-check, .admin-note-flashcard, .admin-note-image-display, .admin-note-text-editor, .admin-note-table-wrap, .admin-note-block-resize'
+        );
+        if (isInteractive) return;
+
+        // If clicking directly on a block without Shift and without marquee mode, let block drag handle it
+        if (isBlock && !event.shiftKey && !event.altKey) {
+            return;
+        }
+
+        event.preventDefault();
+        try {
+            event.currentTarget.setPointerCapture(event.pointerId);
+        } catch (e) { }
+
+        marqueeStartRef.current = { x: event.clientX, y: event.clientY };
+        isMarqueeActiveRef.current = true;
+        marqueeBaseSelectionRef.current = event.shiftKey ? new Set(groupedBlockIds) : new Set();
+    };
+
+    const handleBoardPointerMove = (event) => {
+        if (!isMarqueeActiveRef.current || !marqueeStartRef.current) return;
+        const start = marqueeStartRef.current;
+        const current = { x: event.clientX, y: event.clientY };
+        const dist = Math.hypot(current.x - start.x, current.y - start.y);
+
+        if (dist >= 4) {
+            const left = Math.min(start.x, current.x);
+            const top = Math.min(start.y, current.y);
+            const width = Math.abs(current.x - start.x);
+            const height = Math.abs(current.y - start.y);
+            const right = left + width;
+            const bottom = top + height;
+
+            setMarqueeBox({ left, top, width, height });
+
+            const nextSelected = new Set(marqueeBaseSelectionRef.current);
+            if (boardRef.current) {
+                const blockElements = boardRef.current.querySelectorAll('.admin-note-block');
+                blockElements.forEach((el) => {
+                    const id = el.getAttribute('data-block-id');
+                    if (!id) return;
+                    const bRect = el.getBoundingClientRect();
+                    const overlaps = !(
+                        bRect.right < left ||
+                        bRect.left > right ||
+                        bRect.bottom < top ||
+                        bRect.top > bottom
+                    );
+                    if (overlaps) {
+                        nextSelected.add(id);
+                    }
+                });
+            }
+            setGroupedBlockIds(nextSelected);
+        }
+    };
+
+    const handleBoardPointerUp = (event) => {
+        if (event.currentTarget && event.currentTarget.hasPointerCapture(event.pointerId)) {
+            try {
+                event.currentTarget.releasePointerCapture(event.pointerId);
+            } catch (e) { }
+        }
+        if (isMarqueeActiveRef.current && marqueeStartRef.current) {
+            const dist = Math.hypot(
+                event.clientX - marqueeStartRef.current.x,
+                event.clientY - marqueeStartRef.current.y
+            );
+            if (dist < 4 && !event.target.closest('.admin-note-block')) {
+                setGroupedBlockIds(new Set());
+            }
+        }
+        isMarqueeActiveRef.current = false;
+        marqueeStartRef.current = null;
+        setMarqueeBox(null);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+            const targetTag = e.target.tagName ? e.target.tagName.toLowerCase() : '';
+            const isInput = targetTag === 'input' || targetTag === 'textarea' || e.target.isContentEditable;
+
+            const hasTextSelection = () => {
+                if (isInput && (targetTag === 'input' || targetTag === 'textarea')) {
+                    return e.target.selectionStart !== e.target.selectionEnd;
+                }
+                const sel = window.getSelection();
+                return sel && !sel.isCollapsed && sel.toString().length > 0;
+            };
+
+            // Save: Ctrl+S
+            if (isCtrlOrCmd && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                handleSave();
+                return;
+            }
+
+            // Select All: Ctrl+A / Cmd+A (Select all widgets on the notes interface)
+            if (isCtrlOrCmd && (e.key === 'a' || e.key === 'A')) {
+                if (!e.target.closest('.admin-notes-list')) {
+                    const blocks = draftRef.current?.blocks || [];
+                    if (blocks.length > 0) {
+                        let shouldSelectAllBlocks = !isInput;
+
+                        if (isInput) {
+                            if (targetTag === 'input' || targetTag === 'textarea') {
+                                const isAllInputTextSelected =
+                                    e.target.selectionStart === 0 &&
+                                    e.target.selectionEnd === (e.target.value || '').length;
+                                if (isAllInputTextSelected) {
+                                    shouldSelectAllBlocks = true;
+                                }
+                            } else if (e.target.isContentEditable) {
+                                const sel = window.getSelection();
+                                if (sel && sel.rangeCount > 0) {
+                                    const range = sel.getRangeAt(0);
+                                    const textLen = (e.target.textContent || '').length;
+                                    const isAllContentSelected =
+                                        textLen === 0 ||
+                                        (range.toString().length >= textLen &&
+                                            (range.commonAncestorContainer === e.target ||
+                                                e.target.contains(range.commonAncestorContainer)));
+                                    if (isAllContentSelected) {
+                                        shouldSelectAllBlocks = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (shouldSelectAllBlocks) {
+                            e.preventDefault();
+                            if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                                document.activeElement.blur();
+                            }
+                            const allIds = new Set(blocks.map((b) => b.id));
+                            setGroupedBlockIds(allIds);
+                            const count = allIds.size;
+                            const msg = count === 1
+                                ? t('admin.notesSection.singleWidgetSelected', '1 widget selected')
+                                : t('admin.notesSection.groupSelected', '{count} elements grouped').replace('{count}', formatNumber ? formatNumber(count) : count);
+                            showToast(msg);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Undo: Ctrl+Z (without shift)
+            if (isCtrlOrCmd && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+                if (!isInput) {
+                    e.preventDefault();
+                    handleUndo();
+                    return;
+                }
+            }
+
+            // Redo: Ctrl+Y OR Ctrl+Shift+Z
+            if (
+                (isCtrlOrCmd && (e.key === 'y' || e.key === 'Y')) ||
+                (isCtrlOrCmd && e.shiftKey && (e.key === 'z' || e.key === 'Z'))
+            ) {
+                if (!isInput) {
+                    e.preventDefault();
+                    handleRedo();
+                    return;
+                }
+            }
+
+            // Cut: Ctrl+X
+            if (isCtrlOrCmd && (e.key === 'x' || e.key === 'X')) {
+                if (!isInput || !hasTextSelection()) {
+                    if (groupedBlockIds.size > 0) {
+                        e.preventDefault();
+                        handleCut();
+                        return;
+                    }
+                }
+            }
+
+            // Copy: Ctrl+C
+            if (isCtrlOrCmd && (e.key === 'c' || e.key === 'C')) {
+                if (!isInput || !hasTextSelection()) {
+                    if (groupedBlockIds.size > 0) {
+                        e.preventDefault();
+                        handleCopy();
+                        return;
+                    }
+                }
+            }
+
+            // Paste: Ctrl+V
+            if (isCtrlOrCmd && (e.key === 'v' || e.key === 'V')) {
+                if (!isInput) {
+                    e.preventDefault();
+                    handlePaste();
+                    return;
+                }
+            }
+
+            // Delete / Backspace
+            if ((e.key === 'Delete' || e.key === 'Backspace') && !isInput) {
+                if (groupedBlockIds.size > 0) {
+                    e.preventDefault();
+                    handleDeleteSelectedBlocks();
+                    return;
+                }
+            }
+
+            // Escape
+            if (e.key === 'Escape') {
+                if (groupedBlockIds.size > 0) {
+                    setGroupedBlockIds(new Set());
+                    return;
+                }
+            }
+
+            // Arrow key block nudging
+            if (!isInput && groupedBlockIds.size > 0) {
+                let deltaCol = 0;
+                let deltaRow = 0;
+                if (e.key === 'ArrowLeft') deltaCol = -1;
+                else if (e.key === 'ArrowRight') deltaCol = 1;
+                else if (e.key === 'ArrowUp') deltaRow = -1;
+                else if (e.key === 'ArrowDown') deltaRow = 1;
+
+                if (deltaCol !== 0 || deltaRow !== 0) {
+                    e.preventDefault();
+                    const current = draftRef.current;
+                    const activeBlocks = (current.blocks || []).filter((b) => groupedBlockIds.has(b.id));
+                    if (activeBlocks.length === 0) return;
+
+                    let canMove = true;
+                    activeBlocks.forEach((b) => {
+                        const nextCol = (b.position?.col || 1) + deltaCol;
+                        const span = Math.min(normalizeBlockSpan(b.span, b.type), 12);
+                        const nextRow = (b.position?.row || 1) + deltaRow;
+                        const height = b.height || BLOCK_TYPES[b.type]?.height || 4;
+                        if (nextCol < 1 || nextCol + span - 1 > 12) canMove = false;
+                        if (nextRow < 1 || nextRow + height - 1 > MAX_GRID_ROWS) canMove = false;
+                    });
+
+                    if (!canMove) return;
+
+                    if (!arrowMoveBeforeDraftRef.current) {
+                        arrowMoveBeforeDraftRef.current = current;
+                    }
+
+                    let neededRows = current.canvasRows || MIN_GRID_ROWS;
+                    const updated = (current.blocks || []).map((b) => {
+                        if (groupedBlockIds.has(b.id)) {
+                            const newCol = (b.position?.col || 1) + deltaCol;
+                            const newRow = (b.position?.row || 1) + deltaRow;
+                            const height = b.height || BLOCK_TYPES[b.type]?.height || 4;
+                            if (newRow + height - 1 > neededRows) {
+                                neededRows = newRow + height - 1;
+                            }
+                            return { ...b, position: { col: newCol, row: newRow } };
+                        }
+                        return b;
+                    });
+
+                    const nextDraft = {
+                        ...current,
+                        canvasRows: Math.min(MAX_GRID_ROWS, neededRows),
+                        blocks: updated,
+                    };
+
+                    if (arrowMoveTimerRef.current) {
+                        clearTimeout(arrowMoveTimerRef.current);
+                    }
+                    arrowMoveTimerRef.current = setTimeout(() => {
+                        if (arrowMoveBeforeDraftRef.current && draftRef.current) {
+                            recordHistory(
+                                arrowMoveBeforeDraftRef.current,
+                                draftRef.current,
+                                'Move widget',
+                                selectedIdRef.current,
+                                draftRef.current.title
+                            );
+                        }
+                        arrowMoveBeforeDraftRef.current = null;
+                        arrowMoveTimerRef.current = null;
+                    }, 400);
+
+                    setDraft(nextDraft);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [
+        groupedBlockIds,
+        handleSave,
+        handleUndo,
+        handleRedo,
+        handleCut,
+        handleCopy,
+        handlePaste,
+        handleDeleteSelectedBlocks,
+        recordHistory,
+        showToast,
+        t,
+        formatNumber,
+    ]);
+
+    const lowestBlockRow = useMemo(() => {
+        return (draft.blocks || []).reduce((max, b) => {
+            const row = Number(b?.position?.row) || 1;
+            const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, row + height - 1);
+        }, 0);
+    }, [draft.blocks]);
+
+    const minAllowedRows = Math.max(MIN_GRID_ROWS, lowestBlockRow);
+    const effectiveRows = Math.max(
+        typeof draft.canvasRows === 'number' ? draft.canvasRows : MIN_GRID_ROWS,
+        minAllowedRows
+    );
+
+    const addRows = useCallback((count = 5) => {
+        const curr = draftRef.current;
+        const lowest = (curr.blocks || []).reduce((max, b) => {
+            const row = Number(b?.position?.row) || 1;
+            const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, row + height - 1);
+        }, 0);
+        const currentRows = Math.max(
+            MIN_GRID_ROWS,
+            typeof curr.canvasRows === 'number' ? curr.canvasRows : MIN_GRID_ROWS,
+            lowest
+        );
+        const nextRows = Math.min(MAX_GRID_ROWS, currentRows + count);
+        if (nextRows !== curr.canvasRows) {
+            const nextDraft = { ...curr, canvasRows: nextRows };
+            recordHistory(curr, nextDraft, `Add ${count} rows`);
+            setDraft(nextDraft);
+        }
+    }, [recordHistory]);
+
+    const deleteRows = useCallback((count = 5) => {
+        const curr = draftRef.current;
+        const lowest = (curr.blocks || []).reduce((max, b) => {
+            const row = Number(b?.position?.row) || 1;
+            const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, row + height - 1);
+        }, 0);
+        const minRows = Math.max(MIN_GRID_ROWS, lowest);
+        const currentRows = Math.max(
+            minRows,
+            typeof curr.canvasRows === 'number' ? curr.canvasRows : MIN_GRID_ROWS
+        );
+        const nextRows = Math.max(minRows, currentRows - count);
+        if (nextRows !== curr.canvasRows) {
+            const nextDraft = { ...curr, canvasRows: nextRows };
+            recordHistory(curr, nextDraft, 'Delete rows');
+            setDraft(nextDraft);
+        }
+    }, [recordHistory]);
+
+    const trimRows = useCallback(() => {
+        const curr = draftRef.current;
+        const lowest = (curr.blocks || []).reduce((max, b) => {
+            const row = Number(b?.position?.row) || 1;
+            const height = Number(b?.height) || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, row + height - 1);
+        }, 0);
+        const targetRows = Math.max(MIN_GRID_ROWS, lowest);
+        if (targetRows !== curr.canvasRows) {
+            const nextDraft = { ...curr, canvasRows: targetRows };
+            recordHistory(curr, nextDraft, 'Trim empty rows');
+            setDraft(nextDraft);
+        }
+    }, [recordHistory]);
 
     const unlockCountdownAudio = () => {
         try {
@@ -1059,9 +2222,7 @@ const NotesAdmin = () => {
                                         <input
                                             className="admin-note-title"
                                             value={draft.title}
-                                            onChange={(event) =>
-                                                setDraft({ ...draft, title: event.target.value })
-                                            }
+                                            onChange={handleTitleChange}
                                             placeholder={t('admin.notesSection.untitledNote', 'Untitled note')}
                                             aria-label={t('admin.labels.title', 'Note title')}
                                         />
@@ -1476,7 +2637,8 @@ const NotesAdmin = () => {
                                             )}
                                         </div>
                                         {showMoreWidgets && (
-                                            <div className="admin-note-text-tools">
+                                            <>
+                                                <div className="admin-note-text-tools">
                                                 <span>{t('admin.notesSection.textStyling', 'Text styling')}</span>
                                                 {TEXT_STYLES.map((style) => (
                                                     <button
@@ -1570,7 +2732,53 @@ const NotesAdmin = () => {
                                                         +
                                                     </button>
                                                 </div>
-                                            </div>
+                                                </div>
+                                                <div className="admin-note-text-tools admin-note-options-tools" aria-label="Options">
+                                                    <span>{t('admin.notesSection.options', 'Options')}</span>
+                                                    <button
+                                                        type="button"
+                                                        className="admin-note-history-btn"
+                                                        onClick={handleUndo}
+                                                        disabled={undoStackRef.current.length === 0}
+                                                        title={t('admin.notesSection.undoShortcut', 'Undo (Ctrl+Z)')}
+                                                        aria-label={t('admin.notesSection.undoShortcut', 'Undo (Ctrl+Z)')}
+                                                    >
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                            <polyline points="9 14 4 9 9 4" />
+                                                            <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                                                        </svg>
+                                                        <span>{t('admin.notesSection.undo', 'Undo')}</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="admin-note-history-btn"
+                                                        onClick={handleRedo}
+                                                        disabled={redoStackRef.current.length === 0}
+                                                        title={t('admin.notesSection.redoShortcut', 'Redo (Ctrl+Y)')}
+                                                        aria-label={t('admin.notesSection.redoShortcut', 'Redo (Ctrl+Y)')}
+                                                    >
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                            <polyline points="15 14 20 9 15 4" />
+                                                            <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+                                                        </svg>
+                                                        <span>{t('admin.notesSection.redo', 'Redo')}</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="admin-note-history-btn"
+                                                        onClick={handlePaste}
+                                                        disabled={!hasClipboard}
+                                                        title={t('admin.notesSection.pasteShortcut', 'Paste (Ctrl+V)')}
+                                                        aria-label={t('admin.notesSection.pasteShortcut', 'Paste (Ctrl+V)')}
+                                                    >
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                                                        </svg>
+                                                        <span>{t('admin.notesSection.paste', 'Paste')}</span>
+                                                    </button>
+                                                </div>
+                                            </>
                                         )}
                                     </div>
                                     {selectedId && activeBacklinks.length > 0 && (
@@ -1600,8 +2808,29 @@ const NotesAdmin = () => {
                                             </div>
                                         </div>
                                     )}
-                                    <div className="admin-note-blocks" ref={boardRef}>
-                                        {draggingBlockId && (() => {
+                                    <div
+                                        className="admin-note-blocks"
+                                        ref={boardRef}
+                                        style={{
+                                            gridTemplateRows: `repeat(${effectiveRows}, 38px)`,
+                                        }}
+                                        onPointerDown={handleBoardPointerDown}
+                                        onPointerMove={handleBoardPointerMove}
+                                        onPointerUp={handleBoardPointerUp}
+                                    >
+                                        {groupDropPreviews ? (
+                                            Object.entries(groupDropPreviews).map(([bId, p]) => (
+                                                <div
+                                                    key={`group-drop-${bId}`}
+                                                    className="admin-note-drop-preview is-group"
+                                                    style={{
+                                                        gridColumn: `${p.col} / span ${p.span}`,
+                                                        gridRow: `${p.row} / span ${p.height}`,
+                                                    }}
+                                                    aria-hidden="true"
+                                                />
+                                            ))
+                                        ) : draggingBlockId && dropPreview ? (() => {
                                             const draggingBlock = draft.blocks.find((b) => b.id === draggingBlockId);
                                             if (!dropPreview || !draggingBlock) return null;
                                             const width = Math.min(normalizeBlockSpan(draggingBlock.span, draggingBlock.type), 12);
@@ -1616,7 +2845,7 @@ const NotesAdmin = () => {
                                                     aria-label={`Drop position: column ${dropPreview.col}, row ${dropPreview.row}`}
                                                 />
                                             );
-                                        })()}
+                                        })() : null}
                                         {draft.blocks.map((block, index) => (
                                             <NoteBlock
                                                 key={block.id}
@@ -1631,6 +2860,7 @@ const NotesAdmin = () => {
                                                 updateBlockResize={updateBlockResize}
                                                 finishBlockResize={finishBlockResize}
                                                 draggingBlockId={draggingBlockId}
+                                                isGrouped={groupedBlockIds.has(block.id)}
                                                 notes={notes}
                                                 selectedId={selectedId}
                                                 selectNote={selectNoteAndNavigate}
@@ -1663,12 +2893,197 @@ const NotesAdmin = () => {
                                             </div>
                                         )}
                                     </div>
+                                    {groupedBlockIds.size >= 1 && (
+                                        <div className="admin-note-group-bar" role="status" aria-live="polite">
+                                            <span className="admin-note-group-bar-icon" aria-hidden="true">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                                            </span>
+                                            <span className="admin-note-group-bar-text">
+                                                {groupedBlockIds.size === 1
+                                                    ? t('admin.notesSection.singleWidgetSelected', '1 widget selected')
+                                                    : t('admin.notesSection.groupSelected', '{count} elements grouped').replace('{count}', formatNumber ? formatNumber(groupedBlockIds.size) : groupedBlockIds.size)}
+                                            </span>
+                                            <div className="admin-note-group-bar-actions">
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-group-bar-btn"
+                                                    onClick={handleCut}
+                                                    title={t('admin.notesSection.cutShortcut', 'Cut (Ctrl+X)')}
+                                                >
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <circle cx="6" cy="6" r="3" />
+                                                        <circle cx="6" cy="18" r="3" />
+                                                        <line x1="20" y1="4" x2="8.12" y2="15.88" />
+                                                        <line x1="14.47" y1="14.48" x2="20" y2="20" />
+                                                        <line x1="8.12" y1="8.12" x2="12" y2="12" />
+                                                    </svg>
+                                                    <span>{t('admin.notesSection.cut', 'Cut')}</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-group-bar-btn"
+                                                    onClick={handleCopy}
+                                                    title={t('admin.notesSection.copyShortcut', 'Copy (Ctrl+C)')}
+                                                >
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                                    </svg>
+                                                    <span>{t('admin.notesSection.copy', 'Copy')}</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="admin-note-group-bar-btn admin-note-group-bar-btn-delete"
+                                                    onClick={handleDeleteSelectedBlocks}
+                                                    title={t('admin.notesSection.deleteShortcut', 'Delete (Del)')}
+                                                >
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                    </svg>
+                                                    <span>{t('admin.notesSection.delete', 'Delete')}</span>
+                                                </button>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="admin-note-group-bar-ungroup-btn"
+                                                onClick={() => setGroupedBlockIds(new Set())}
+                                                title={t('admin.notesSection.deselect', 'Deselect (Esc)')}
+                                            >
+                                                ✕ {groupedBlockIds.size > 1 ? t('admin.notesSection.ungroup', 'Ungroup') : t('admin.notesSection.deselect', 'Deselect')}
+                                            </button>
+                                        </div>
+                                    )}
+                                    {marqueeBox && (
+                                        <div
+                                            className="admin-note-marquee-box"
+                                            style={{
+                                                left: `${marqueeBox.left}px`,
+                                                top: `${marqueeBox.top}px`,
+                                                width: `${marqueeBox.width}px`,
+                                                height: `${marqueeBox.height}px`,
+                                            }}
+                                            aria-hidden="true"
+                                        />
+                                    )}
+                                    <div
+                                        className="admin-note-canvas-footer"
+                                        aria-label={t('admin.notesSection.canvasHeight', 'Canvas Height')}
+                                    >
+                                        <div className="admin-note-canvas-controls">
+                                            <button
+                                                type="button"
+                                                className="admin-note-canvas-btn"
+                                                onClick={() => deleteRows(5)}
+                                                disabled={effectiveRows <= minAllowedRows}
+                                                title={
+                                                    effectiveRows <= minAllowedRows
+                                                        ? t(
+                                                            'admin.notesSection.cannotReduceRows',
+                                                            'Cannot reduce rows below active widgets or minimum (20)'
+                                                        )
+                                                        : t('admin.notesSection.delete5Rows', '-5 rows')
+                                                }
+                                                aria-label={t('admin.notesSection.delete5Rows', '-5 rows')}
+                                            >
+                                                <svg
+                                                    width="12"
+                                                    height="12"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2.8"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden="true"
+                                                >
+                                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                                </svg>
+                                                <span>5 {t('admin.notesSection.rowsUnit', 'rows')}</span>
+                                            </button>
+                                            <span className="admin-note-canvas-count" aria-live="polite">
+                                                <strong>
+                                                    {formatNumber ? formatNumber(effectiveRows) : effectiveRows}
+                                                </strong>{' '}
+                                                {t('admin.notesSection.rowsUnit', 'rows')}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="admin-note-canvas-btn"
+                                                onClick={() => addRows(5)}
+                                                disabled={effectiveRows >= MAX_GRID_ROWS}
+                                                title={t(
+                                                    'admin.notesSection.add5RowsTitle',
+                                                    t('admin.notesSection.add5Rows', '+5 rows')
+                                                )}
+                                                aria-label={t('admin.notesSection.add5Rows', '+5 rows')}
+                                            >
+                                                <svg
+                                                    width="12"
+                                                    height="12"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2.8"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden="true"
+                                                >
+                                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                                </svg>
+                                                <span>5 {t('admin.notesSection.rowsUnit', 'rows')}</span>
+                                            </button>
+                                            {effectiveRows > minAllowedRows && (
+                                                <>
+                                                    <span className="admin-note-canvas-divider" aria-hidden="true" />
+                                                    <button
+                                                        type="button"
+                                                        className="admin-note-canvas-btn admin-note-canvas-btn-trim"
+                                                        onClick={trimRows}
+                                                        title={t(
+                                                            'admin.notesSection.trimEmptyRowsTitle',
+                                                            'Remove trailing empty rows below widgets'
+                                                        )}
+                                                        aria-label={t(
+                                                            'admin.notesSection.trimEmptyRows',
+                                                            'Trim empty rows'
+                                                        )}
+                                                    >
+                                                        <svg
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2.2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            aria-hidden="true"
+                                                        >
+                                                            <polyline points="4 14 10 14 10 20" />
+                                                            <polyline points="20 10 14 10 14 4" />
+                                                            <line x1="14" y1="10" x2="21" y2="3" />
+                                                            <line x1="3" y1="21" x2="10" y2="14" />
+                                                        </svg>
+                                                        <span>{t('admin.notesSection.trim', 'Trim')}</span>
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </section>
                     </div>
                 )}
             </div>
+            {toastMessage && (
+                <div className="admin-note-toast" role="status" aria-live="polite">
+                    <span className="admin-note-toast-icon">✓</span>
+                    <span>{toastMessage}</span>
+                </div>
+            )}
         </AdminLayout>
     );
 };

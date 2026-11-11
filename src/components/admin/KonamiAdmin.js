@@ -45,17 +45,196 @@ const KonamiAdmin = () => {
     const [saving, setSaving] = useState(false);
     const [toast, setToast] = useState(null);
     const [widthInput, setWidthInput] = useState('');
+    const [selectedGroup, setSelectedGroup] = useState(null);
+    const [marqueeSelection, setMarqueeSelection] = useState(null);
+    const [groupDragPreview, setGroupDragPreview] = useState(null);
 
+    const currentLevel = levels.length > 0 ? (levels[activeLevelIdx] || levels[0] || null) : null;
+
+    const marqueeStartCell = useRef(null);
+    const isMarqueeActive = useRef(false);
+    const groupDragAnchor = useRef(null);
+    const isDraggingGroup = useRef(false);
+    const selectedGroupRef = useRef(null);
+    const groupDragPreviewRef = useRef(null);
     const isMouseDown = useRef(false);
 
-    // Global mouseup to stop drag painting
+    useEffect(() => {
+        selectedGroupRef.current = selectedGroup;
+    }, [selectedGroup]);
+
+    // Reset selection when switching levels
+    useEffect(() => {
+        setSelectedGroup(null);
+        selectedGroupRef.current = null;
+        setMarqueeSelection(null);
+        setGroupDragPreview(null);
+        groupDragPreviewRef.current = null;
+    }, [activeLevelIdx]);
+
+    const moveGroup = useCallback((group, deltaR, deltaC) => {
+        if (!group || (deltaR === 0 && deltaC === 0)) return;
+
+        setLevels((prevLevels) => {
+            const updatedLevels = [...prevLevels];
+            const level = { ...updatedLevels[activeLevelIdx] };
+            if (!level) return prevLevels;
+            const newGrid = level.grid.map((row) => [...row]);
+
+            const elements = [];
+            for (let r = group.rMin; r <= group.rMax; r++) {
+                for (let c = group.cMin; c <= group.cMax; c++) {
+                    const char = newGrid[r][c];
+                    if (char && char !== '.') {
+                        elements.push({ r, c, char });
+                        newGrid[r][c] = '.';
+                    }
+                }
+            }
+
+            elements.forEach(({ r, c, char }) => {
+                const targetR = r + deltaR;
+                const targetC = c + deltaC;
+                if (targetR >= 0 && targetR < GRID_HEIGHT && targetC >= 0 && targetC < level.width) {
+                    newGrid[targetR][targetC] = char;
+                }
+            });
+
+            level.grid = newGrid;
+            updatedLevels[activeLevelIdx] = level;
+            return updatedLevels;
+        });
+
+        const maxW = (levels[activeLevelIdx] ? levels[activeLevelIdx].width : DEFAULT_WIDTH);
+        const minDeltaR = -group.rMin;
+        const maxDeltaR = GRID_HEIGHT - 1 - group.rMax;
+        const minDeltaC = -group.cMin;
+        const maxDeltaC = maxW - 1 - group.cMax;
+
+        const clampedDeltaR = Math.max(minDeltaR, Math.min(maxDeltaR, deltaR));
+        const clampedDeltaC = Math.max(minDeltaC, Math.min(maxDeltaC, deltaC));
+
+        const newGroup = {
+            rMin: group.rMin + clampedDeltaR,
+            rMax: group.rMax + clampedDeltaR,
+            cMin: group.cMin + clampedDeltaC,
+            cMax: group.cMax + clampedDeltaC,
+        };
+        setSelectedGroup(newGroup);
+        selectedGroupRef.current = newGroup;
+    }, [activeLevelIdx, levels]);
+
+    const handleFillSelection = useCallback((fillChar = '#') => {
+        const currGroup = selectedGroupRef.current || selectedGroup;
+        if (!currentLevel || !currGroup) return;
+        const tool = (activeTool && activeTool !== 'SELECT') ? activeTool : fillChar;
+        setLevels(prevLevels => {
+            const updated = [...prevLevels];
+            const level = { ...updated[activeLevelIdx] };
+            if (!level) return prevLevels;
+            const newGrid = level.grid.map(row => [...row]);
+            for (let r = currGroup.rMin; r <= currGroup.rMax; r++) {
+                for (let c = currGroup.cMin; c <= currGroup.cMax; c++) {
+                    if (tool === 'P' || tool === 'F') {
+                        for (let gr = 0; gr < GRID_HEIGHT; gr++) {
+                            for (let gc = 0; gc < level.width; gc++) {
+                                if (newGrid[gr][gc] === tool) newGrid[gr][gc] = '.';
+                            }
+                        }
+                    }
+                    newGrid[r][c] = tool;
+                }
+            }
+            level.grid = newGrid;
+            updated[activeLevelIdx] = level;
+            return updated;
+        });
+    }, [currentLevel, selectedGroup, activeTool, activeLevelIdx]);
+
+    const handleClearSelection = useCallback(() => {
+        const currGroup = selectedGroupRef.current || selectedGroup;
+        if (!currentLevel || !currGroup) return;
+        setLevels(prevLevels => {
+            const updated = [...prevLevels];
+            const level = { ...updated[activeLevelIdx] };
+            if (!level) return prevLevels;
+            const newGrid = level.grid.map(row => [...row]);
+            for (let r = currGroup.rMin; r <= currGroup.rMax; r++) {
+                for (let c = currGroup.cMin; c <= currGroup.cMax; c++) {
+                    newGrid[r][c] = '.';
+                }
+            }
+            level.grid = newGrid;
+            updated[activeLevelIdx] = level;
+            return updated;
+        });
+    }, [currentLevel, selectedGroup, activeLevelIdx]);
+
+    // Global mouseup to commit marquee or group drag
     useEffect(() => {
         const handleMouseUp = () => {
             isMouseDown.current = false;
+            if (isMarqueeActive.current) {
+                isMarqueeActive.current = false;
+                marqueeStartCell.current = null;
+                setMarqueeSelection((curr) => {
+                    if (curr) {
+                        setSelectedGroup(curr);
+                        selectedGroupRef.current = curr;
+                    }
+                    return null;
+                });
+            } else if (isDraggingGroup.current) {
+                isDraggingGroup.current = false;
+                groupDragAnchor.current = null;
+                const preview = groupDragPreviewRef.current;
+                const currGroup = selectedGroupRef.current;
+                if (preview && currGroup && (preview.deltaR !== 0 || preview.deltaC !== 0)) {
+                    moveGroup(currGroup, preview.deltaR, preview.deltaC);
+                }
+                groupDragPreviewRef.current = null;
+                setGroupDragPreview(null);
+            }
         };
         window.addEventListener('mouseup', handleMouseUp);
         return () => window.removeEventListener('mouseup', handleMouseUp);
-    }, []);
+    }, [moveGroup]);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const currGroup = selectedGroupRef.current;
+            if (!currGroup) return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.key === 'Escape') {
+                setSelectedGroup(null);
+                selectedGroupRef.current = null;
+                setMarqueeSelection(null);
+                return;
+            }
+
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                handleClearSelection();
+                return;
+            }
+
+            let deltaR = 0;
+            let deltaC = 0;
+            if (e.key === 'ArrowUp') deltaR = -1;
+            else if (e.key === 'ArrowDown') deltaR = 1;
+            else if (e.key === 'ArrowLeft') deltaC = -1;
+            else if (e.key === 'ArrowRight') deltaC = 1;
+
+            if (deltaR !== 0 || deltaC !== 0) {
+                e.preventDefault();
+                moveGroup(currGroup, deltaR, deltaC);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [moveGroup, handleClearSelection]);
 
     const showToast = (message) => {
         setToast(message);
@@ -98,7 +277,6 @@ const KonamiAdmin = () => {
                     return;
                 }
             }
-            // If completely uninitialized or error, default to empty or 1 template
             setLevels([]);
         } catch (err) {
             console.error(t('logs.konamiLevelsLoadError'), err);
@@ -109,12 +287,9 @@ const KonamiAdmin = () => {
         }
     }, [t]);
 
-
     useEffect(() => {
         fetchLevels();
     }, [fetchLevels]);
-
-    const currentLevel = levels.length > 0 ? (levels[activeLevelIdx] || levels[0] || null) : null;
 
     // Sync input value when switching levels or on initial load
     useEffect(() => {
@@ -132,7 +307,6 @@ const KonamiAdmin = () => {
             const level = { ...updatedLevels[activeLevelIdx] };
             const newGrid = level.grid.map(row => [...row]);
 
-            // If placing spawn 'P' or flag 'F', remove existing one to keep unique
             if (toolId === 'P' || toolId === 'F') {
                 for (let r = 0; r < GRID_HEIGHT; r++) {
                     for (let c = 0; c < level.width; c++) {
@@ -154,12 +328,82 @@ const KonamiAdmin = () => {
     const handleCellMouseDown = (r, c, e) => {
         e.preventDefault();
         isMouseDown.current = true;
+
+        const currGroup = selectedGroupRef.current;
+
+        // 1. If clicking inside existing selection, ALWAYS initiate group drag
+        if (
+            currGroup &&
+            r >= currGroup.rMin &&
+            r <= currGroup.rMax &&
+            c >= currGroup.cMin &&
+            c <= currGroup.cMax
+        ) {
+            isDraggingGroup.current = true;
+            groupDragAnchor.current = { r, c };
+            const initialPreview = { deltaR: 0, deltaC: 0 };
+            groupDragPreviewRef.current = initialPreview;
+            setGroupDragPreview(initialPreview);
+            return;
+        }
+
+        // 2. If SELECT tool or shiftKey, start new marquee selection box
+        if (activeTool === 'SELECT' || e.shiftKey) {
+            isMarqueeActive.current = true;
+            marqueeStartCell.current = { r, c };
+            setMarqueeSelection({ rMin: r, rMax: r, cMin: c, cMax: c });
+            setSelectedGroup(null);
+            selectedGroupRef.current = null;
+            return;
+        }
+
+        // 3. Otherwise normal painting: deselect group if any, and set cell
+        if (currGroup) {
+            setSelectedGroup(null);
+            selectedGroupRef.current = null;
+        }
         const tool = e.button === 2 ? '.' : activeTool; // Right-click erases
         setCell(r, c, tool);
     };
 
     const handleCellMouseEnter = (r, c, e) => {
         if (!isMouseDown.current) return;
+
+        if (isDraggingGroup.current && groupDragAnchor.current) {
+            const currGroup = selectedGroupRef.current;
+            if (currGroup) {
+                const maxW = (currentLevel ? currentLevel.width : DEFAULT_WIDTH);
+                const desiredDeltaR = r - groupDragAnchor.current.r;
+                const desiredDeltaC = c - groupDragAnchor.current.c;
+
+                const minDeltaR = -currGroup.rMin;
+                const maxDeltaR = GRID_HEIGHT - 1 - currGroup.rMax;
+                const minDeltaC = -currGroup.cMin;
+                const maxDeltaC = maxW - 1 - currGroup.cMax;
+
+                const deltaR = Math.max(minDeltaR, Math.min(maxDeltaR, desiredDeltaR));
+                const deltaC = Math.max(minDeltaC, Math.min(maxDeltaC, desiredDeltaC));
+
+                const nextPreview = { deltaR, deltaC };
+                groupDragPreviewRef.current = nextPreview;
+                setGroupDragPreview(nextPreview);
+            }
+            return;
+        }
+
+        if (isMarqueeActive.current && marqueeStartCell.current) {
+            const rMin = Math.min(marqueeStartCell.current.r, r);
+            const rMax = Math.max(marqueeStartCell.current.r, r);
+            const cMin = Math.min(marqueeStartCell.current.c, c);
+            const cMax = Math.max(marqueeStartCell.current.c, c);
+            setMarqueeSelection({ rMin, rMax, cMin, cMax });
+            return;
+        }
+
+        if (activeTool === 'SELECT') {
+            return;
+        }
+
         const tool = e.buttons === 2 ? '.' : activeTool;
         setCell(r, c, tool);
     };
@@ -551,32 +795,149 @@ const KonamiAdmin = () => {
                             ))}
                         </div>
 
-                        {/* Quick Helper Actions */}
-                        <div className="konami-quick-actions">
-                            <button
-                                type="button"
-                                className="konami-secondary-btn"
-                                onClick={handleFillBottomRow}
-                                title={t('editor.fillBottomTitle')}
-                            >
-                                {t('editor.fillFloor')}
-                            </button>
-                            <button
-                                type="button"
-                                className="konami-secondary-btn"
-                                onClick={handleClearLevel}
-                                title={t('editor.clearAllTitle')}
-                            >
-                                {t('editor.clear')}
-                            </button>
+                        {/* Bulk Edit Actions Group */}
+                        <div className="konami-bulk-group" role="group" aria-label={t('editor.bulkActions', 'Bulk Edit')}>
+                            <span className="konami-bulk-label">{t('editor.bulkActions', 'Bulk Edit')}</span>
+                            <div className="konami-bulk-actions">
+                                <button
+                                    type="button"
+                                    className={`konami-bulk-btn ${activeTool === 'SELECT' ? 'active' : ''}`}
+                                    onClick={() => setActiveTool(prev => prev === 'SELECT' ? '#' : 'SELECT')}
+                                    title={t('editor.selectGroupTitle', 'Click and drag to group elements together, then drag group to move')}
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3"/>
+                                        <path d="m14 14 5-5m-4 0h4v4"/>
+                                    </svg>
+                                    <span>{t('editor.selectGroup', 'Select & Move')}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="konami-bulk-btn"
+                                    onClick={handleFillBottomRow}
+                                    title={t('editor.fillBottomTitle')}
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M4 19h16M4 15h16M4 11h16"/>
+                                    </svg>
+                                    <span>{t('editor.fillFloor', 'Fill Floor')}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="konami-bulk-btn konami-bulk-btn-danger"
+                                    onClick={handleClearLevel}
+                                    title={t('editor.clearAllTitle')}
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                    <span>{t('editor.clear', 'Clear')}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* Interactive 16-Row Grid */}
                 {currentLevel && (
+                    <>
+                        {selectedGroup && (
+                            <div className="konami-group-floating-container">
+                                <div className="konami-group-floating-bar" role="status">
+                                    <span className="konami-group-pill-badge">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '4px' }}>
+                                            <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3"/>
+                                        </svg>
+                                        <span>
+                                            {t('editor.groupSelectedCount', '{w}×{h} elements grouped')
+                                                .replace('{w}', formatNumber ? formatNumber(selectedGroup.cMax - selectedGroup.cMin + 1) : (selectedGroup.cMax - selectedGroup.cMin + 1))
+                                                .replace('{h}', formatNumber ? formatNumber(selectedGroup.rMax - selectedGroup.rMin + 1) : (selectedGroup.rMax - selectedGroup.rMin + 1))}
+                                        </span>
+                                    </span>
+                                    <div className="konami-group-nudge-cluster" aria-label={t('editor.nudgeGroup', 'Nudge group')}>
+                                        <button
+                                            type="button"
+                                            className="konami-group-nudge-btn"
+                                            onClick={() => moveGroup(selectedGroup, 0, -1)}
+                                            disabled={selectedGroup.cMin <= 0}
+                                            title={t('editor.nudgeLeft', 'Nudge Left (Left Arrow)')}
+                                        >
+                                            ◀
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="konami-group-nudge-btn"
+                                            onClick={() => moveGroup(selectedGroup, -1, 0)}
+                                            disabled={selectedGroup.rMin <= 0}
+                                            title={t('editor.nudgeUp', 'Nudge Up (Up Arrow)')}
+                                        >
+                                            ▲
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="konami-group-nudge-btn"
+                                            onClick={() => moveGroup(selectedGroup, 1, 0)}
+                                            disabled={selectedGroup.rMax >= GRID_HEIGHT - 1}
+                                            title={t('editor.nudgeDown', 'Nudge Down (Down Arrow)')}
+                                        >
+                                            ▼
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="konami-group-nudge-btn"
+                                            onClick={() => moveGroup(selectedGroup, 0, 1)}
+                                            disabled={selectedGroup.cMax >= (currentLevel ? currentLevel.width - 1 : DEFAULT_WIDTH - 1)}
+                                            title={t('editor.nudgeRight', 'Nudge Right (Right Arrow)')}
+                                        >
+                                            ▶
+                                        </button>
+                                    </div>
+                                    <span className="konami-group-pill-hint">
+                                        {t('editor.groupMoveHint', 'Drag group to move • Arrow keys nudge')}
+                                    </span>
+                                    <div className="konami-group-pill-divider" aria-hidden="true" />
+                                    <div className="konami-group-pill-actions">
+                                        <button
+                                            type="button"
+                                            className="konami-group-action-btn"
+                                            onClick={() => handleFillSelection('#')}
+                                            title={t('editor.fillSelectionTitle', 'Fill selected area with ground blocks')}
+                                        >
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                            </svg>
+                                            <span>{t('editor.fillGroup', 'Fill')}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="konami-group-action-btn konami-group-action-danger"
+                                            onClick={handleClearSelection}
+                                            title={t('editor.clearSelectionTitle', 'Erase elements in selected area (Delete)')}
+                                        >
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                                                <path d="M22 21H7"/>
+                                            </svg>
+                                            <span>{t('editor.clearGroup', 'Clear')}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="konami-group-action-btn konami-group-action-close"
+                                            onClick={() => {
+                                                setSelectedGroup(null);
+                                                setMarqueeSelection(null);
+                                                setGroupDragPreview(null);
+                                            }}
+                                            title={t('editor.deselectGroup', 'Deselect group (Esc)')}
+                                        >
+                                            ✕ <span>{t('editor.deselect', 'Deselect')}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     <div
-                        className="konami-grid-viewport"
+                        className={`konami-grid-viewport${groupDragPreview ? ' is-dragging-group' : ''}`}
                         onContextMenu={(e) => e.preventDefault()}
                     >
                         <div className="konami-grid-table">
@@ -600,13 +961,21 @@ const KonamiAdmin = () => {
                                         else if (cellChar === 'F') cellClass = 'konami-cell-flag';
                                         else if (cellChar === 'P') cellClass = 'konami-cell-spawn';
 
+                                        const activeBox = marqueeSelection || selectedGroup;
+                                        const isInGroup = activeBox && r >= activeBox.rMin && r <= activeBox.rMax && c >= activeBox.cMin && c <= activeBox.cMax;
+                                        const isPreviewTarget = groupDragPreview && selectedGroup &&
+                                            r >= selectedGroup.rMin + groupDragPreview.deltaR &&
+                                            r <= selectedGroup.rMax + groupDragPreview.deltaR &&
+                                            c >= selectedGroup.cMin + groupDragPreview.deltaC &&
+                                            c <= selectedGroup.cMax + groupDragPreview.deltaC;
+
                                         const toolDef = TOOL_DEFS.find(tDef => tDef.id === cellChar);
                                         const typeName = toolDef ? t(`editor.${toolDef.key}`) : cellChar;
 
                                         return (
                                             <div
                                                 key={c}
-                                                className={`konami-grid-cell ${cellClass}`}
+                                                className={`konami-grid-cell ${cellClass}${isInGroup ? ' is-group-selected' : ''}${isPreviewTarget ? ' is-preview-target' : ''}`}
                                                 onMouseDown={(e) => handleCellMouseDown(r, c, e)}
                                                 onMouseEnter={(e) => handleCellMouseEnter(r, c, e)}
                                                 title={(t('editor.cellTooltip') || 'Row {row}, Col {col}: {type}').replace('{row}', formatNumber(r)).replace('{col}', formatNumber(c)).replace('{type}', typeName)}
@@ -617,6 +986,7 @@ const KonamiAdmin = () => {
                             ))}
                         </div>
                     </div>
+                    </>
                 )}
 
                 {/* Toast Message */}

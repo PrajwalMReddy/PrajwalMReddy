@@ -689,7 +689,7 @@ const NetworkingAdmin = () => {
 
                 {/* Error Banner */}
                 {error && (
-                    <div style={{ color: '#dc2626', background: 'rgba(239,68,68,0.1)', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+                    <div className="admin-error-banner">
                         {error}
                     </div>
                 )}

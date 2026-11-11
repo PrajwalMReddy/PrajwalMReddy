@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { assistantApi } from '../../../utils/assistantApi';
 import { useContent } from '../../../utils/ContentContext';
+import DataSettingsTab from './DataSettingsTab';
 
-const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSettingsSaved }) => {
+const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettingsSaved }) => {
     const { t } = useContent();
     const [activeTab, setActiveTab] = useState(initialTab);
     const [settings, setSettings] = useState(null);
@@ -36,6 +37,15 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
     useEffect(() => {
         if (!isOpen) return;
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [isOpen, onClose]);
+
+    useEffect(() => {
+        if (!isOpen) return;
 
         let isMounted = true;
         setLoading(true);
@@ -54,7 +64,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                 if (isMounted) {
                     console.error('Failed to load dashboard settings:', err);
                     setSaveStatus('error');
-                    setSaveMessage(err.message || 'Failed to load settings');
+                    setSaveMessage(err.message || t('admin.settings.loadFailed', 'Failed to load settings'));
                     setLoading(false);
                 }
             });
@@ -72,6 +82,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
         setSaveStatus(null);
 
         try {
+            const cleanTags = getEffectiveTags();
             const settingsToSave = {
                 ...settings,
                 calendar: {
@@ -80,6 +91,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                 },
                 news: {
                     ...settings.news,
+                    tags: cleanTags,
                     enabled: true,
                 },
             };
@@ -97,7 +109,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
             }, 3000);
         } catch (err) {
             setSaveStatus('error');
-            setSaveMessage(err.message || 'Failed to save settings.');
+            setSaveMessage(err.message || t('admin.settings.saveFailed', 'Failed to save settings.'));
         } finally {
             setSaving(false);
         }
@@ -107,7 +119,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
     const handleTestCalendar = async () => {
         const icsUrl = settings?.calendar?.icsUrl;
         if (!icsUrl) {
-            setCalendarTestResult({ success: false, error: 'Please enter an ICS URL first.' });
+            setCalendarTestResult({ success: false, error: t('admin.settings.calendar.icsRequired', 'Please enter an ICS URL first.') });
             return;
         }
 
@@ -129,7 +141,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
         setCustomFeedError('');
 
         if (!newFeed.name.trim() || !newFeed.url.trim()) {
-            setCustomFeedError('Feed Name and URL are required.');
+            setCustomFeedError(t('admin.settings.news.customFeedRequired', 'Feed Name and URL are required.'));
             return;
         }
 
@@ -165,7 +177,15 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
     };
 
     const getEffectiveTags = () => {
-        return Array.isArray(settings?.news?.tags) ? settings.news.tags : [];
+        const raw = Array.isArray(settings?.news?.tags) ? settings.news.tags : [];
+        return raw.map((tag) => {
+            const cleanLabel = (tag.label || tag.name || '').replace(/^#+/, '').trim();
+            const cleanQuery = (tag.query || cleanLabel).replace(/^#+/, '').trim();
+            if (tag.label !== cleanLabel || tag.query !== cleanQuery) {
+                return { ...tag, label: cleanLabel, query: cleanQuery };
+            }
+            return tag;
+        });
     };
 
     const handleToggleTag = (tagId) => {
@@ -190,14 +210,14 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
         e.preventDefault();
         setTagError('');
 
-        const trimmed = newTagName.trim();
-        if (!trimmed) {
+        const cleanName = newTagName.trim().replace(/^#+/, '').trim();
+        if (!cleanName) {
             setTagError(t('admin.settings.news.tagRequired', 'Tag name is required.'));
             return;
         }
 
         const currentTags = [...getEffectiveTags()];
-        if (currentTags.some((t) => (t.label || t.name || '').toLowerCase() === trimmed.toLowerCase())) {
+        if (currentTags.some((tag) => (tag.label || tag.name || '').replace(/^#+/, '').trim().toLowerCase() === cleanName.toLowerCase())) {
             setTagError(t('admin.settings.news.tagExists', 'A tag with this name already exists.'));
             return;
         }
@@ -205,9 +225,9 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
         const id = `tag_${Date.now()}`;
         currentTags.push({
             id,
-            label: trimmed,
+            label: cleanName,
             enabled: true,
-            query: trimmed,
+            query: cleanName,
         });
 
         setSettings({
@@ -290,7 +310,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
             } else {
                 setLocationTestResult({
                     success: false,
-                    error: res?.error || t('admin.settings.weather.locationNotFound', `Could not find any location matching "${locToTest}". Check the spelling or try adding a state/country.`),
+                    error: res?.error || t('admin.settings.weather.locationNotFound', 'Could not find any location matching "{location}". Check the spelling or try adding a state/country.', { location: locToTest }),
                 });
             }
         } catch (err) {
@@ -318,7 +338,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
     const handleDetectGps = () => {
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser.');
+            alert(t('admin.settings.weather.geolocationUnsupported', 'Geolocation is not supported by your browser.'));
             return;
         }
 
@@ -355,7 +375,9 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
                 setLocationTestResult({
                     success: true,
-                    location: detectedCity ? `${detectedCity} (Detected from browser)` : `GPS Coordinates: ${roundedLat}, ${roundedLon}`,
+                    location: detectedCity
+                        ? t('admin.settings.weather.gpsDetected', '{city} (Detected from browser)', { city: detectedCity })
+                        : t('admin.settings.weather.gpsCoordinates', 'GPS Coordinates: {lat}, {lon}', { lat: roundedLat, lon: roundedLon }),
                     latitude: roundedLat,
                     longitude: roundedLon,
                 });
@@ -363,7 +385,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
             },
             (err) => {
                 setDetectingGps(false);
-                alert(`Could not detect location: ${err.message}`);
+                alert(t('admin.settings.weather.geolocationError', 'Could not detect location: {message}', { message: err.message }));
             },
             { timeout: 10000 }
         );
@@ -379,10 +401,14 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                 <header className="admin-settings-modal-header">
                     <div>
                         <h2 className="admin-settings-modal-title">
-                            {t('admin.settings.title', 'Data Sources Settings')}
+                            {activeTab === 'data'
+                                ? t('admin.settings.data.title', 'Database & Storage Settings')
+                                : t('admin.settings.title', 'Data Sources Settings')}
                         </h2>
                         <p className="admin-settings-modal-subtitle">
-                            {t('admin.settings.subtitle', 'Customize live Calendar, News feeds, and Weather sources without code changes.')}
+                            {activeTab === 'data'
+                                ? t('admin.settings.data.subtitle', 'Monitor MongoDB cloud usage, export full database backups, and restore site data.')
+                                : t('admin.settings.subtitle', 'Customize live Calendar, News feeds, and Weather sources without code changes.')}
                         </p>
                     </div>
                     <button
@@ -397,6 +423,15 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
                 {/* Tabs Navigation */}
                 <div className="admin-settings-tabs-row" role="tablist">
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'data'}
+                        className={`admin-settings-tab-btn ${activeTab === 'data' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('data')}
+                    >
+                        <span>{t('admin.settings.tabs.data', 'Data')}</span>
+                    </button>
                     <button
                         type="button"
                         role="tab"
@@ -435,10 +470,12 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
                 {/* Body Content */}
                 <div className="admin-settings-modal-body">
-                    {loading ? (
-                        <div style={{ padding: '3rem 0', textAlign: 'center', color: '#64748b' }}>
-                            <div style={{ display: 'inline-block', width: 28, height: 28, border: '3px solid #e2e8f0', borderTopColor: '#0284c7', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '0.5rem' }} />
-                            <div>Loading settings...</div>
+                    {activeTab === 'data' ? (
+                        <DataSettingsTab />
+                    ) : loading ? (
+                        <div className="admin-settings-loading">
+                            <div className="admin-settings-loading-spinner" />
+                            <div>{t('admin.settings.loading', 'Loading settings...')}</div>
                         </div>
                     ) : settings ? (
                         <>
@@ -455,13 +492,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                         <div className="admin-settings-field-group">
                                             <label className="admin-settings-label">
                                                 {t('admin.settings.calendar.icsUrlLabel', 'Calendar Subscription URL (.ics)')}
-                                                <span style={{ color: '#ef4444' }}> *</span>
+                                                <span className="admin-settings-required"> *</span>
                                             </label>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <div className="admin-settings-input-action-row">
                                                 <input
                                                     type="url"
                                                     className="admin-settings-input"
-                                                    placeholder="https://outlook.office365.com/.../calendar.ics or Google Calendar secret address"
+                                                    placeholder={t('admin.settings.calendar.icsUrlPlaceholder', 'https://outlook.office365.com/.../calendar.ics or Google Calendar secret address')}
                                                     value={settings.calendar?.icsUrl || ''}
                                                     onChange={(e) =>
                                                         setSettings({
@@ -485,20 +522,25 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                         {calendarTestResult && (
                                             <div className={`admin-settings-test-pill ${calendarTestResult.success ? 'is-success' : 'is-error'}`}>
                                                 {calendarTestResult.success ? (
-                                                    <span>✓ {calendarTestResult.message || `Feed verified (${calendarTestResult.eventCount} events found)`}</span>
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+                                                        <span>{calendarTestResult.message || t('admin.settings.calendar.feedVerified', 'Feed verified ({count} events found)', { count: calendarTestResult.eventCount })}</span>
+                                                    </span>
                                                 ) : (
-                                                    <span>✕ {calendarTestResult.error || 'Failed to load feed'}</span>
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                                        <span>{calendarTestResult.error || t('admin.settings.calendar.testFailed', 'Failed to load feed')}</span>
+                                                    </span>
                                                 )}
                                             </div>
                                         )}
 
                                         {/* Advanced Option Toggle (collapsible for web URL override) */}
-                                        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
+                                        <div className="admin-settings-advanced-block">
                                             <button
                                                 type="button"
                                                 className="admin-settings-advanced-link"
                                                 onClick={() => setShowAdvancedCalendar(!showAdvancedCalendar)}
-                                                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.82rem', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 550 }}
                                             >
                                                 <span>{showAdvancedCalendar ? '▾' : '▸'}</span>
                                                 <span>{showAdvancedCalendar ? t('admin.settings.calendar.advancedToggleHide', 'Hide advanced options') : t('admin.settings.calendar.advancedToggleShow', 'Show advanced web link options (optional)')}</span>
@@ -512,7 +554,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                     <input
                                                         type="url"
                                                         className="admin-settings-input"
-                                                        placeholder="Leave blank to auto-detect from .ics URL"
+                                                        placeholder={t('admin.settings.calendar.htmlUrlPlaceholder', 'Leave blank to auto-detect from .ics URL')}
                                                         value={settings.calendar?.htmlUrl || ''}
                                                         onChange={(e) =>
                                                             setSettings({
@@ -534,13 +576,14 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                             {/* TAB 2: NEWS */}
                             {activeTab === 'news' && (() => {
                                 const effectiveTags = getEffectiveTags();
-                                const activeCount = effectiveTags.filter((t) => t.enabled !== false).length;
+                                const activeCount = effectiveTags.filter((tag) => tag.enabled !== false).length;
 
                                 // Filter tags by search term
                                 const filteredTags = effectiveTags.filter((tag) => {
                                     if (!tagSearchTerm.trim()) return true;
-                                    const term = tagSearchTerm.toLowerCase().trim();
-                                    return (tag.label || tag.name || '').toLowerCase().includes(term);
+                                    const term = tagSearchTerm.toLowerCase().trim().replace(/^#+/, '');
+                                    const tagText = (tag.label || tag.name || '').replace(/^#+/, '').toLowerCase();
+                                    return tagText.includes(term);
                                 });
 
                                 return (
@@ -582,7 +625,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                             type="button"
                                                             className="admin-settings-tag-search-clear"
                                                             onClick={() => setTagSearchTerm('')}
-                                                            aria-label="Clear search"
+                                                            aria-label={t('admin.settings.news.clearSearch', 'Clear search')}
                                                         >
                                                             &times;
                                                         </button>
@@ -645,6 +688,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                             <div className="admin-settings-tag-cloud">
                                                 {filteredTags.map((tag) => {
                                                     const isEnabled = tag.enabled !== false;
+                                                    const tagTitle = (tag.label || tag.name || '').replace(/^#+/, '').trim();
                                                     return (
                                                         <button
                                                             type="button"
@@ -667,7 +711,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                                 )}
                                                             </span>
                                                             <span className="admin-settings-tag-chip-label">
-                                                                #{tag.label || tag.name}
+                                                                {tagTitle}
                                                             </span>
                                                             <span
                                                                 role="button"
@@ -683,8 +727,8 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                                         handleRemoveTag(tag.id);
                                                                     }
                                                                 }}
-                                                                title={`Remove #${tag.label || tag.name}`}
-                                                                aria-label={`Remove #${tag.label || tag.name}`}
+                                                                title={t('admin.settings.news.removeTag', 'Remove {name}', { name: tagTitle })}
+                                                                aria-label={t('admin.settings.news.removeTag', 'Remove {name}', { name: tagTitle })}
                                                             >
                                                                 &times;
                                                             </span>
@@ -694,13 +738,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
 
                                                 {filteredTags.length === 0 && tagSearchTerm && (
                                                     <div className="admin-settings-tag-empty">
-                                                        {t('admin.settings.news.noTagsMatch', 'No tags matching "{term}".').replace('{term}', tagSearchTerm)}
+                                                        {t('admin.settings.news.noTagsMatch', 'No tags matching "{term}".', { term: tagSearchTerm })}
                                                         <button
                                                             type="button"
                                                             className="admin-settings-tag-clear-filter-link"
                                                             onClick={() => setTagSearchTerm('')}
                                                         >
-                                                            Clear search
+                                                            {t('admin.settings.news.clearSearch', 'Clear search')}
                                                         </button>
                                                     </div>
                                                 )}
@@ -710,7 +754,12 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                         {/* Add Custom Tag Bar */}
                                         <form className="admin-settings-add-tag-bar" onSubmit={handleAddTag}>
                                             <div className="admin-settings-add-tag-input-wrap">
-                                                <span className="admin-settings-add-tag-hash">#</span>
+                                                <span className="admin-settings-add-tag-hash" aria-hidden="true">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                                        <line x1="7" y1="7" x2="7.01" y2="7" />
+                                                    </svg>
+                                                </span>
                                                 <input
                                                     type="text"
                                                     className="admin-settings-add-tag-input"
@@ -768,7 +817,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                                 type="button"
                                                                 className="admin-settings-feed-del-btn"
                                                                 onClick={() => handleRemoveCustomFeed(feed.id)}
-                                                                title={`Remove ${feed.name}`}
+                                                                title={t('admin.settings.news.removeFeed', 'Remove {name}', { name: feed.name })}
                                                             >
                                                                 &times;
                                                             </button>
@@ -844,7 +893,6 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                         <div className="admin-settings-card-header">
                                             <h4 className="admin-settings-card-title">
                                                 {t('admin.settings.weather.locationLabel', 'Weather Location')}
-                                                <span style={{ color: '#ef4444' }}> *</span>
                                             </h4>
                                             {settings.weather?.defaultLocation && (
                                                 <span className="admin-settings-field-tag">
@@ -856,7 +904,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                             {t('admin.settings.weather.locationHelp', 'City, region or country used when opening the dashboard.')}
                                         </p>
 
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <div className="admin-settings-input-action-row">
                                             <input
                                                 type="text"
                                                 className="admin-settings-input"
@@ -893,9 +941,15 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                 style={{ marginTop: '0.65rem' }}
                                             >
                                                 {locationTestResult.success ? (
-                                                    <span>✓ {t('admin.settings.weather.locationVerified', 'Location verified')}: {locationTestResult.location}</span>
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+                                                        <span>{t('admin.settings.weather.locationVerified', 'Location verified')}: {locationTestResult.location}</span>
+                                                    </span>
                                                 ) : (
-                                                    <span>✕ {locationTestResult.error || t('admin.settings.weather.locationNotFound', 'Location not found')}</span>
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                                        <span>{locationTestResult.error || t('admin.settings.weather.locationNotFound', 'Location not found')}</span>
+                                                    </span>
                                                 )}
                                             </div>
                                         )}
@@ -912,7 +966,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                     {t('admin.settings.weather.unitHelp', 'Display temperatures in Fahrenheit (°F) or Celsius (°C).')}
                                                 </p>
                                             </div>
-                                            <div className="admin-settings-unit-toggle-compact" role="radiogroup" aria-label="Temperature Unit">
+                                            <div className="admin-settings-unit-toggle-compact" role="radiogroup" aria-label={t('admin.settings.weather.unitAria', 'Temperature Unit')}>
                                                 <button
                                                     type="button"
                                                     role="radio"
@@ -967,7 +1021,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                                         type="button"
                                                         className="admin-settings-btn-link-danger"
                                                         onClick={handleClearCoordinates}
-                                                        title="Clear manual GPS coordinates"
+                                                        title={t('admin.settings.weather.clearCoordsTitle', 'Clear manual GPS coordinates')}
                                                     >
                                                         {t('admin.settings.weather.clearCoords', 'Clear')}
                                                     </button>
@@ -1011,7 +1065,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                             <div className="admin-settings-coord-group">
                                                 <label className="admin-settings-coord-label">
                                                     <span>{t('admin.settings.weather.lat', 'Latitude')}</span>
-                                                    <span className="admin-settings-coord-hint">(-90 to 90)</span>
+                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.latHint', '(-90 to 90)')}</span>
                                                 </label>
                                                 <div className="admin-settings-input-wrapper">
                                                     <input
@@ -1036,7 +1090,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                                             <div className="admin-settings-coord-group">
                                                 <label className="admin-settings-coord-label">
                                                     <span>{t('admin.settings.weather.lon', 'Longitude')}</span>
-                                                    <span className="admin-settings-coord-hint">(-180 to 180)</span>
+                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.lonHint', '(-180 to 180)')}</span>
                                                 </label>
                                                 <div className="admin-settings-input-wrapper">
                                                     <input
@@ -1100,14 +1154,16 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'calendar', onSe
                         >
                             {t('admin.settings.close', 'Close')}
                         </button>
-                        <button
-                            type="button"
-                            className="admin-settings-btn-primary"
-                            onClick={handleSave}
-                            disabled={saving || loading}
-                        >
-                            {saving ? t('admin.settings.saving', 'Saving...') : t('admin.settings.save', 'Save Changes')}
-                        </button>
+                        {activeTab !== 'data' && (
+                            <button
+                                type="button"
+                                className="admin-settings-btn-primary"
+                                onClick={handleSave}
+                                disabled={saving || loading}
+                            >
+                                {saving ? t('admin.settings.saving', 'Saving...') : t('admin.settings.save', 'Save Changes')}
+                            </button>
+                        )}
                     </div>
                 </footer>
             </div>

@@ -41,7 +41,8 @@ export const highlightCode = (code = '', language = 'plain') => {
 };
 
 export const NOTES_API = '/api/notes';
-export const MAX_GRID_ROWS = 60;
+export const MAX_GRID_ROWS = 300;
+export const MIN_GRID_ROWS = 20;
 
 export const BLOCK_TYPES = {
     text: { label: 'Text', icon: 'T', placeholder: 'Write something...', span: 6, height: 3 },
@@ -634,7 +635,7 @@ export const rectanglesOverlap = (first, second) =>
     first.row < second.row + second.height &&
     first.row + first.height > second.row;
 
-export const findFreePosition = (blocks, block) => {
+export const findFreePosition = (blocks, block, maxRows = 30) => {
     const width = Math.max(1, Math.min(normalizeBlockSpan(block?.span, block?.type), 12));
     const height = Math.min(block?.height || BLOCK_TYPES[block?.type]?.height || 4, MAX_GRID_ROWS);
     const occupied = (blocks || []).map((item) => ({
@@ -644,14 +645,26 @@ export const findFreePosition = (blocks, block) => {
         height: Math.min(item?.height || BLOCK_TYPES[item?.type]?.height || 4, MAX_GRID_ROWS),
     }));
 
-    for (let row = 1; row <= MAX_GRID_ROWS - height + 1; row += 1) {
+    // First search for space within the current canvas rows
+    const searchLimit = Math.max(1, Math.min(maxRows || 30, MAX_GRID_ROWS));
+    for (let row = 1; row <= searchLimit - height + 1; row += 1) {
         for (let col = 1; col <= 13 - width; col += 1) {
             const candidate = { col, row, width, height };
             if (!occupied.some((item) => rectanglesOverlap(candidate, item))) return { col, row };
         }
     }
 
-    return { col: 1, row: 1 };
+    // If no space within current canvas rows, search beyond up to MAX_GRID_ROWS
+    for (let row = Math.max(1, searchLimit - height + 2); row <= MAX_GRID_ROWS - height + 1; row += 1) {
+        for (let col = 1; col <= 13 - width; col += 1) {
+            const candidate = { col, row, width, height };
+            if (!occupied.some((item) => rectanglesOverlap(candidate, item))) return { col, row };
+        }
+    }
+
+    // Fallback: place right below the lowest occupied row
+    const lowestRow = occupied.reduce((max, item) => Math.max(max, item.row + item.height), 1);
+    return { col: 1, row: Math.min(lowestRow, MAX_GRID_ROWS - height + 1) };
 };
 
 export const formatUpdatedAt = (value, language = 'en', formatNumber = (x) => x) => {
@@ -688,6 +701,11 @@ export const getHabitCalendarDays = (monthValue) => {
 
 export const FOLDERS_STORAGE_KEY = 'admin_notes_custom_folders';
 export const EXPANDED_FOLDERS_KEY = 'admin_notes_expanded_folders';
+
+export const normalizeFolder = (folder) => {
+    if (!folder) return '';
+    return String(folder).trim().replace(/^\/+|\/+$/g, '');
+};
 
 export const getBacklinks = (targetNoteId, allNotes = []) => {
     if (!targetNoteId || !Array.isArray(allNotes)) return [];

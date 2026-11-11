@@ -119,6 +119,8 @@ const WeatherWidget = () => {
             const res = await assistantApi.getWeather(params);
             if (res && res.weather) {
                 setWeather(res.weather);
+            } else if (res && (res.configured === false || !res.weather)) {
+                setWeather(null);
             } else {
                 throw new Error(res?.status || t('admin.weather.error', 'Unable to load weather forecast.'));
             }
@@ -168,11 +170,35 @@ const WeatherWidget = () => {
                         </h2>
                     </div>
                 </header>
-                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ display: 'inline-block', width: 22, height: 22, border: '2px solid #cbd5e1', borderTopColor: '#475569', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '0.65rem' }} />
-                    <div style={{ fontSize: '0.86rem', color: '#64748b' }}>
+                <div className="weather-loading-box">
+                    <div className="weather-loading-spinner" />
+                    <div className="weather-loading-text">
                         {t('admin.weather.loading', 'Loading weather...')}
                     </div>
+                </div>
+            </article>
+        );
+    }
+
+    if (!weather) {
+        return (
+            <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title', "Today's Weather")}>
+                <header className="memo-masthead weather-memo-masthead">
+                    <div className="memo-header-top">
+                        <div className="weather-title-group">
+                            <h2 className="memo-title">
+                                {t('admin.weather.title', "Today's Weather")}
+                            </h2>
+                        </div>
+                    </div>
+                </header>
+                <div className="weather-empty-box" style={{ padding: '28px 16px', textAlign: 'center' }}>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '0.88rem', fontWeight: 600, color: 'inherit' }}>
+                        {t('admin.weather.noLocationTitle', 'No Weather Location Set')}
+                    </p>
+                    <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.75 }}>
+                        {t('admin.weather.noLocationHelp', 'Configure your location in Settings to display live weather forecasts.')}
+                    </p>
                 </div>
             </article>
         );
@@ -203,12 +229,12 @@ const WeatherWidget = () => {
 
             {/* Error Notification */}
             {error && (
-                <div style={{ padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '6px', color: '#991b1b', fontSize: '0.82rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div className="weather-error-banner">
                     <span>{error}</span>
                     <button
                         type="button"
                         onClick={handleRefresh}
-                        style={{ padding: '0.25rem 0.6rem', background: '#ffffff', border: '1px solid #fca5a5', borderRadius: '4px', color: '#991b1b', fontWeight: 600, fontSize: '0.75rem', cursor: 'pointer' }}
+                        className="weather-retry-btn"
                     >
                         {t('admin.weather.retry', 'Retry')}
                     </button>

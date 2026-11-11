@@ -264,6 +264,7 @@ export const NoteBlock = ({
     updateBlockResize,
     finishBlockResize,
     draggingBlockId,
+    isGrouped = false,
     notes,
     selectedId,
     selectNote,
@@ -284,6 +285,7 @@ export const NoteBlock = ({
     unlockCountdownAudio,
     setActiveTextBlockId,
     saveTextSelection,
+    readOnly = false,
 }) => {
     const { t, formatNumber } = useContent();
     const type = BLOCK_TYPES[block.type] || BLOCK_TYPES.text;
@@ -377,6 +379,28 @@ export const NoteBlock = ({
 
     const renderListWidget = () => {
         const numbered = block.listStyle === 'numbered';
+        if (readOnly) {
+            return (
+                <div className={`admin-note-list-wrap is-readonly${numbered ? ' is-numbered' : ''}`}>
+                    {block.label && (
+                        <div className="admin-note-list-label-display">{block.label}</div>
+                    )}
+                    <div className="admin-note-list-items">
+                        {getListItems().map((item, itemIndex) => (
+                            <div
+                                className="admin-note-bullet-item is-readonly"
+                                key={`${block.id}-item-${itemIndex}`}
+                            >
+                                <span className="admin-note-list-marker" aria-hidden="true">
+                                    {numbered ? `${formatNumber(itemIndex + 1)}.` : '•'}
+                                </span>
+                                <span className="admin-note-list-item-text">{item}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
         return (
             <div className={`admin-note-list-wrap${numbered ? ' is-numbered' : ''}`}>
                 <div className="admin-note-list-controls" aria-label="List controls">
@@ -385,13 +409,13 @@ export const NoteBlock = ({
                         value={block.label}
                         placeholder={t('admin.notesSection.widgetsDetail.listLabel', 'List label')}
                         aria-label={t('admin.notesSection.widgetsDetail.listLabel', 'List label')}
-                        onChange={(event) => updateBlock(block.id, { label: event.target.value })}
+                        onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
                     />
                     <select
                         className="admin-note-list-style"
                         value={block.listStyle || 'bulleted'}
                         aria-label="List style"
-                        onChange={(event) => updateBlock(block.id, { listStyle: event.target.value })}
+                        onChange={(event) => updateBlock?.(block.id, { listStyle: event.target.value })}
                     >
                         <option value="bulleted">{t('admin.notesSection.widgetsDetail.bulleted', 'Bulleted')}</option>
                         <option value="numbered">{t('admin.notesSection.widgetsDetail.numbered', 'Numbered')}</option>
@@ -455,86 +479,100 @@ export const NoteBlock = ({
                     : ''
             }${
                 draggingBlockId === block.id ? ' is-dragging' : ''
-            }`}
+            }${isGrouped ? ' is-grouped' : ''
+            }${readOnly ? ' is-readonly' : ''}`}
             key={block.id}
+            data-block-id={block.id}
             style={{
                 order: 20 * (position.row || 1) + col,
                 gridColumn: `${col} / span ${span}`,
                 gridRow: `${position.row || 1} / span ${height}`,
             }}
-            onPointerDown={(event) => startBlockDrag(event, block.id)}
-            onPointerMove={(event) => {
-                if (draggingBlockId === block.id) updateDropPreview(event);
+            onPointerDown={readOnly ? undefined : (event) => startBlockDrag?.(event, block.id)}
+            onPointerMove={readOnly ? undefined : (event) => {
+                if (draggingBlockId === block.id) updateDropPreview?.(event);
             }}
-            onPointerUp={(event) => finishBlockDrag(event, block.id)}
+            onPointerUp={readOnly ? undefined : (event) => finishBlockDrag?.(event, block.id)}
         >
-            <span className="admin-note-block-grip" title={t('admin.notesSection.widgetsDetail.dragToReorder', 'Drag to reorder')} aria-hidden="true">
-                ::
-            </span>
+            {!readOnly && (
+                <span className="admin-note-block-grip" title={t('admin.notesSection.widgetsDetail.dragToReorder', 'Drag to reorder')} aria-hidden="true">
+                    ::
+                </span>
+            )}
 
             {block.type === 'divider' ? (
                 <hr />
             ) : block.type === 'counter' ? (
                 <div className="admin-note-counter-wrap">
-                    <input
-                        value={block.label}
-                        placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.counter', 'Counter label')}
-                        onChange={(event) => updateBlock(block.id, { label: event.target.value })}
-                    />
+                    {readOnly ? (
+                        block.label && <div className="admin-note-widget-label-static">{block.label}</div>
+                    ) : (
+                        <input
+                            value={block.label}
+                            placeholder={blockPlaceholder}
+                            aria-label={t('admin.notesSection.placeholders.counter', 'Counter label')}
+                            onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
+                        />
+                    )}
                     <div className="admin-note-counter-main" aria-label="Counter controls">
-                        <button
-                            type="button"
-                            onClick={() =>
-                                updateBlock(block.id, {
-                                    counterValue: (block.counterValue || 0) - (block.counterStep || 1),
-                                })
-                            }
-                            aria-label="Decrease counter"
-                        >
-                            -
-                        </button>
+                        {!readOnly && (
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    updateBlock?.(block.id, {
+                                        counterValue: (block.counterValue || 0) - (block.counterStep || 1),
+                                    })
+                                }
+                                aria-label="Decrease counter"
+                            >
+                                -
+                            </button>
+                        )}
                         <div className="admin-note-counter-value" aria-live="polite">
                             {formatNumber(block.counterValue ?? 0)}
                         </div>
-                        <button
-                            type="button"
-                            onClick={() =>
-                                updateBlock(block.id, {
-                                    counterValue: (block.counterValue || 0) + (block.counterStep || 1),
-                                })
-                            }
-                            aria-label="Increase counter"
-                        >
-                            +
-                        </button>
+                        {!readOnly && (
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    updateBlock?.(block.id, {
+                                        counterValue: (block.counterValue || 0) + (block.counterStep || 1),
+                                    })
+                                }
+                                aria-label="Increase counter"
+                            >
+                                +
+                            </button>
+                        )}
                     </div>
-                    <div className="admin-note-counter-controls">
-                        <div className="admin-note-counter-adjust">
-                            <label className="admin-note-counter-step">
-                                <span>{t('admin.notesSection.widgetsDetail.stepSize', 'Step size')}</span>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={block.counterStep || 1}
-                                    aria-label="Counter step size"
-                                    onChange={(event) =>
-                                        updateBlock(block.id, {
-                                            counterStep: Math.max(1, Number(event.target.value) || 1),
-                                        })
-                                    }
-                                />
-                            </label>
+                    {!readOnly && (
+                        <div className="admin-note-counter-controls">
+                            <div className="admin-note-counter-adjust">
+                                <label className="admin-note-counter-step">
+                                    <span>{t('admin.notesSection.widgetsDetail.stepSize', 'Step size')}</span>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={block.counterStep || 1}
+                                        aria-label="Counter step size"
+                                        onChange={(event) =>
+                                            updateBlock?.(block.id, {
+                                                counterStep: Math.max(1, Number(event.target.value) || 1),
+                                            })
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            <button
+                                type="button"
+                                className="admin-note-counter-reset"
+                                onClick={() => updateBlock?.(block.id, { counterValue: 0 })}
+                                aria-label={t('admin.notesSection.widgetsDetail.reset', 'Reset counter')}
+                            >
+                                {t('admin.notesSection.widgetsDetail.reset', 'Reset')}
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            className="admin-note-counter-reset"
-                            onClick={() => updateBlock(block.id, { counterValue: 0 })}
-                            aria-label={t('admin.notesSection.widgetsDetail.reset', 'Reset counter')}
-                        >
-                            {t('admin.notesSection.widgetsDetail.reset', 'Reset')}
-                        </button>
-                    </div>
+                    )}
                 </div>
             ) : block.type === 'picker' ? (
                 <div className="admin-note-picker-wrap">
@@ -579,26 +617,36 @@ export const NoteBlock = ({
             ) : block.type === 'progress' ? (
                 <div className="admin-note-progress-wrap">
                     <div className="admin-note-progress-header">
-                        <input
-                            value={block.label}
-                            placeholder={blockPlaceholder}
-                            aria-label={t('admin.notesSection.placeholders.progress', 'Progress label')}
-                            onChange={(event) => updateBlock(block.id, { label: event.target.value })}
-                        />
-                        <input
-                            className="admin-note-progress-value"
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={block.value}
-                            aria-label="Progress percentage"
-                            onChange={(event) =>
-                                updateBlock(block.id, {
-                                    value: Math.max(0, Math.min(100, Number(event.target.value) || 0)),
-                                })
-                            }
-                        />
-                        <span>%</span>
+                        {readOnly ? (
+                            <span className="admin-note-widget-label-static">{block.label || t('admin.notesSection.blockTypes.progress', 'Progress')}</span>
+                        ) : (
+                            <input
+                                value={block.label}
+                                placeholder={blockPlaceholder}
+                                aria-label={t('admin.notesSection.placeholders.progress', 'Progress label')}
+                                onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
+                            />
+                        )}
+                        {readOnly ? (
+                            <span className="admin-note-progress-val">{formatNumber(block.value || 0)}%</span>
+                        ) : (
+                            <>
+                                <input
+                                    className="admin-note-progress-value"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={block.value}
+                                    aria-label="Progress percentage"
+                                    onChange={(event) =>
+                                        updateBlock?.(block.id, {
+                                            value: Math.max(0, Math.min(100, Number(event.target.value) || 0)),
+                                        })
+                                    }
+                                />
+                                <span>%</span>
+                            </>
+                        )}
                     </div>
                     <progress
                         max="100"
@@ -1098,25 +1146,25 @@ export const NoteBlock = ({
             ) : block.type === 'text' ? (
                 <div className="admin-note-text-wrap">
                     <div
-                        className="admin-note-text-editor"
-                        contentEditable
+                        className={`admin-note-text-editor${readOnly ? ' is-readonly' : ''}`}
+                        contentEditable={!readOnly}
                         suppressContentEditableWarning
                         ref={(element) => {
-                            if (!element || document.activeElement === element) return;
+                            if (!element || (!readOnly && document.activeElement === element)) return;
                             const html = getTextEditorHtml(block.text);
                             if (element.innerHTML !== html) element.innerHTML = html;
                         }}
                         data-text-editor-id={block.id}
-                        onFocus={() => {
-                            setActiveTextBlockId(block.id);
-                            saveTextSelection(block.id);
+                        onFocus={readOnly ? undefined : () => {
+                            setActiveTextBlockId?.(block.id);
+                            saveTextSelection?.(block.id);
                         }}
-                        onKeyUp={saveTextSelection}
-                        onMouseUp={saveTextSelection}
-                        onInput={(event) => updateBlock(block.id, { text: event.currentTarget.innerHTML })}
+                        onKeyUp={readOnly ? undefined : saveTextSelection}
+                        onMouseUp={readOnly ? undefined : saveTextSelection}
+                        onInput={readOnly ? undefined : (event) => updateBlock?.(block.id, { text: event.currentTarget.innerHTML })}
                         role="textbox"
                         aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
-                        data-placeholder={blockPlaceholder}
+                        data-placeholder={readOnly ? '' : blockPlaceholder}
                     />
                 </div>
             ) : block.type === 'quote' ? (
@@ -1217,110 +1265,120 @@ export const NoteBlock = ({
                 </div>
             ) : block.type === 'code' ? (
                 <div className="admin-note-code-wrap">
-                    <div className="admin-note-code-controls" aria-label="Code block controls">
-                        <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.code', 'Code')}</span>
-                        <select
-                            value={block.language || 'plain'}
-                            aria-label="Code language"
-                            onChange={(event) => updateBlock(block.id, { language: event.target.value })}
-                        >
-                            {CODE_LANGUAGES.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {!readOnly && (
+                        <div className="admin-note-code-controls" aria-label="Code block controls">
+                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.code', 'Code')}</span>
+                            <select
+                                value={block.language || 'plain'}
+                                aria-label="Code language"
+                                onChange={(event) => updateBlock?.(block.id, { language: event.target.value })}
+                            >
+                                {CODE_LANGUAGES.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="admin-note-code-editor">
-                        <pre className="admin-note-code-highlight" aria-hidden="true">
+                        <pre className="admin-note-code-highlight" aria-hidden={!readOnly}>
                             <code
                                 dangerouslySetInnerHTML={{
                                     __html: `${highlightCode(block.text, block.language || 'plain')}\n`,
                                 }}
                             />
                         </pre>
-                        <textarea
-                            value={block.text}
-                            placeholder={blockPlaceholder}
-                            aria-label={t('admin.notesSection.blockTypes.code', 'Code block')}
-                            spellCheck="false"
-                            onChange={(event) => updateBlock(block.id, { text: event.target.value })}
-                            onScroll={(event) => {
-                                const highlight = event.currentTarget.previousElementSibling;
-                                if (!highlight) return;
-                                highlight.scrollTop = event.currentTarget.scrollTop;
-                                highlight.scrollLeft = event.currentTarget.scrollLeft;
-                            }}
-                        />
+                        {!readOnly && (
+                            <textarea
+                                value={block.text}
+                                placeholder={blockPlaceholder}
+                                aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                                spellCheck="false"
+                                onChange={(event) => updateBlock?.(block.id, { text: event.target.value })}
+                                onScroll={(event) => {
+                                    const highlight = event.currentTarget.previousElementSibling;
+                                    if (!highlight) return;
+                                    highlight.scrollTop = event.currentTarget.scrollTop;
+                                    highlight.scrollLeft = event.currentTarget.scrollLeft;
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
             ) : block.type === 'table' ? (
                 <div className="admin-note-table-wrap">
-                    <div className="admin-note-table-controls" aria-label="Table controls">
-                        <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.table', 'Table')}</span>
-                        <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.columns', 'Columns')}</span>
-                        <button
-                            type="button"
-                            onClick={() =>
-                                resizeTableColumns(block, getTableColumnCount(block) - 1, updateBlock)
-                            }
-                            disabled={getTableColumnCount(block) === 1}
-                            aria-label={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
-                            title={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
-                        >
-                            -
-                        </button>
-                        <strong>{formatNumber(getTableColumnCount(block))}</strong>
-                        <button
-                            type="button"
-                            onClick={() =>
-                                resizeTableColumns(block, getTableColumnCount(block) + 1, updateBlock)
-                            }
-                            disabled={getTableColumnCount(block) === 8}
-                            aria-label={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
-                            title={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
-                        >
-                            +
-                        </button>
-                        <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.rows', 'Rows')}</span>
-                        <button
-                            type="button"
-                            onClick={() => resizeTableRows(block, block.rows.length - 1, updateBlock)}
-                            disabled={block.rows.length === 2}
-                            aria-label={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
-                            title={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
-                        >
-                            -
-                        </button>
-                        <strong>{formatNumber(block.rows.length)}</strong>
-                        <button
-                            type="button"
-                            onClick={() => resizeTableRows(block, block.rows.length + 1, updateBlock)}
-                            disabled={block.rows.length === getTableRowCapacity(block)}
-                            aria-label={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
-                            title={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
-                        >
-                            +
-                        </button>
-                    </div>
+                    {!readOnly && (
+                        <div className="admin-note-table-controls" aria-label="Table controls">
+                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.table', 'Table')}</span>
+                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.columns', 'Columns')}</span>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    resizeTableColumns(block, getTableColumnCount(block) - 1, updateBlock)
+                                }
+                                disabled={getTableColumnCount(block) === 1}
+                                aria-label={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
+                                title={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
+                            >
+                                -
+                            </button>
+                            <strong>{formatNumber(getTableColumnCount(block))}</strong>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    resizeTableColumns(block, getTableColumnCount(block) + 1, updateBlock)
+                                }
+                                disabled={getTableColumnCount(block) === 8}
+                                aria-label={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
+                                title={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
+                            >
+                                +
+                            </button>
+                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.rows', 'Rows')}</span>
+                            <button
+                                type="button"
+                                onClick={() => resizeTableRows(block, block.rows.length - 1, updateBlock)}
+                                disabled={block.rows.length === 2}
+                                aria-label={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
+                                title={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
+                            >
+                                -
+                            </button>
+                            <strong>{formatNumber(block.rows.length)}</strong>
+                            <button
+                                type="button"
+                                onClick={() => resizeTableRows(block, block.rows.length + 1, updateBlock)}
+                                disabled={block.rows.length === getTableRowCapacity(block)}
+                                aria-label={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
+                                title={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
+                            >
+                                +
+                            </button>
+                        </div>
+                    )}
                     <table>
                         <tbody>
                             {block.rows.map((row, rowIndex) => (
                                 <tr key={`${block.id}-${rowIndex}`}>
                                     {row.map((cell, cellIndex) => (
                                         <td key={`${block.id}-${rowIndex}-${cellIndex}`}>
-                                            <input
-                                                value={cell}
-                                                aria-label={`${t('admin.notesSection.widgetsDetail.rows', 'Row')} ${formatNumber(rowIndex + 1)}, ${t('admin.notesSection.widgetsDetail.columns', 'Column')} ${formatNumber(cellIndex + 1)}`}
-                                                placeholder={blockPlaceholder}
-                                                onChange={(event) => {
-                                                    const rows = block.rows.map((currentRow) => [
-                                                        ...currentRow,
-                                                    ]);
-                                                    rows[rowIndex][cellIndex] = event.target.value;
-                                                    updateBlock(block.id, { rows });
-                                                }}
-                                            />
+                                            {readOnly ? (
+                                                <span className="admin-note-table-cell-static">{cell}</span>
+                                            ) : (
+                                                <input
+                                                    value={cell}
+                                                    aria-label={`${t('admin.notesSection.widgetsDetail.rows', 'Row')} ${formatNumber(rowIndex + 1)}, ${t('admin.notesSection.widgetsDetail.columns', 'Column')} ${formatNumber(cellIndex + 1)}`}
+                                                    placeholder={blockPlaceholder}
+                                                    onChange={(event) => {
+                                                        const rows = block.rows.map((currentRow) => [
+                                                            ...currentRow,
+                                                        ]);
+                                                        rows[rowIndex][cellIndex] = event.target.value;
+                                                        updateBlock?.(block.id, { rows });
+                                                    }}
+                                                />
+                                            )}
                                         </td>
                                     ))}
                                 </tr>
@@ -1328,238 +1386,126 @@ export const NoteBlock = ({
                         </tbody>
                     </table>
                 </div>
-            ) : block.type === 'timeline' ? (
-                <div className="admin-note-timeline-wrap">
-                    <div className="admin-note-timeline-header">
-                        <div className="admin-note-timeline-header-left">
-                            <span className="admin-note-timeline-header-icon" aria-hidden="true">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-                            </span>
-                            <input
-                                className="admin-note-timeline-title-input"
-                                value={block.label || ''}
-                                placeholder={blockPlaceholder || t('admin.notesSection.placeholders.timeline', 'Timeline title...')}
-                                aria-label={t('admin.notesSection.blockTypes.timeline', 'Timeline')}
-                                onChange={(event) => updateBlock(block.id, { label: event.target.value })}
-                            />
-                        </div>
-                    </div>
-                    <div className="admin-note-timeline-body">
-                        {Array.isArray(block.timelineEvents) && block.timelineEvents.length > 0 ? (
-                            <div className="admin-note-timeline-track">
-                                {block.timelineEvents.map((eventItem, evIdx) => {
-                                    const status = eventItem.status || 'pending';
-                                    const isFirst = evIdx === 0;
-                                    const prevStatus = evIdx > 0 ? block.timelineEvents[evIdx - 1]?.status : null;
-                                    const isPrevCompleted = prevStatus === 'completed';
-                                    return (
-                                        <div key={eventItem.id || evIdx} className={`admin-note-timeline-step is-${status}`}>
-                                            <div className="admin-note-timeline-wire">
-                                                <div className={`admin-note-timeline-wire-line wire-left${isFirst ? ' is-empty' : ''}${isPrevCompleted ? ' is-prev-completed' : ''}`} />
-                                                <button
-                                                    type="button"
-                                                    className={`admin-note-timeline-node status-${status}`}
-                                                    onClick={() => {
-                                                        const cycle = {
-                                                            pending: 'in-progress',
-                                                            'in-progress': 'completed',
-                                                            completed: 'pending',
-                                                        };
-                                                        const nextStatus = cycle[status] || 'pending';
-                                                        const currentEvents = [...(block.timelineEvents || [])];
-                                                        currentEvents[evIdx] = { ...eventItem, status: nextStatus };
-                                                        updateBlock(block.id, { timelineEvents: currentEvents });
-                                                    }}
-                                                    title={`Status: ${status} (click to toggle)`}
-                                                    aria-label={`Toggle milestone status: currently ${status}`}
-                                                >
-                                                    {status === 'completed' ? '✓' : status === 'in-progress' ? '◐' : formatNumber(evIdx + 1)}
-                                                </button>
-                                                <div className="admin-note-timeline-wire-line wire-right" />
-                                            </div>
-                                            <div className="admin-note-timeline-card">
-                                                <div className="admin-note-timeline-card-header">
-                                                    <input
-                                                        className="admin-note-timeline-card-title"
-                                                        value={eventItem.title || ''}
-                                                        placeholder={t('admin.notesSection.widgetsDetail.timelineTitle', 'Milestone title...')}
-                                                        aria-label="Milestone title"
-                                                        onChange={(e) => {
-                                                            const currentEvents = [...(block.timelineEvents || [])];
-                                                            currentEvents[evIdx] = { ...eventItem, title: e.target.value };
-                                                            updateBlock(block.id, { timelineEvents: currentEvents });
-                                                        }}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        className="admin-note-timeline-delete-btn"
-                                                        onClick={() => {
-                                                            const currentEvents = (block.timelineEvents || []).filter((_, i) => i !== evIdx);
-                                                            updateBlock(block.id, { timelineEvents: currentEvents });
-                                                        }}
-                                                        title={t('admin.notesSection.widgetsDetail.removeMilestone', 'Remove milestone')}
-                                                        aria-label={t('admin.notesSection.widgetsDetail.removeMilestone', 'Remove milestone')}
-                                                    >
-                                                        ✕
-                                                    </button>
-                                                </div>
-                                                <input
-                                                    className="admin-note-timeline-card-date"
-                                                    value={eventItem.date || ''}
-                                                    placeholder={t('admin.notesSection.widgetsDetail.timelineDate', 'Date / Phase')}
-                                                    aria-label="Milestone date or phase"
-                                                    onChange={(e) => {
-                                                        const currentEvents = [...(block.timelineEvents || [])];
-                                                        currentEvents[evIdx] = { ...eventItem, date: e.target.value };
-                                                        updateBlock(block.id, { timelineEvents: currentEvents });
-                                                    }}
-                                                />
-                                                <textarea
-                                                    className="admin-note-timeline-card-desc"
-                                                    value={eventItem.desc || ''}
-                                                    placeholder={t('admin.notesSection.widgetsDetail.timelineDescription', 'Description / notes...')}
-                                                    aria-label="Milestone description"
-                                                    rows={1}
-                                                    ref={(el) => {
-                                                        if (el) {
-                                                            el.style.height = 'auto';
-                                                            el.style.height = `${Math.max(28, el.scrollHeight)}px`;
-                                                        }
-                                                    }}
-                                                    onInput={(e) => {
-                                                        e.target.style.height = 'auto';
-                                                        e.target.style.height = `${Math.max(28, e.target.scrollHeight)}px`;
-                                                    }}
-                                                    onChange={(e) => {
-                                                        const currentEvents = [...(block.timelineEvents || [])];
-                                                        currentEvents[evIdx] = { ...eventItem, desc: e.target.value };
-                                                        updateBlock(block.id, { timelineEvents: currentEvents });
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                <div className="admin-note-timeline-add-step">
-                                    <div className="admin-note-timeline-wire">
-                                        <div className={`admin-note-timeline-wire-line wire-left${block.timelineEvents[block.timelineEvents.length - 1]?.status === 'completed' ? ' is-prev-completed' : ''}`} />
-                                        <button
-                                            type="button"
-                                            className="admin-note-timeline-add-node"
-                                            onClick={() => {
-                                                const currentEvents = Array.isArray(block.timelineEvents) ? block.timelineEvents : [];
-                                                const newEvent = {
-                                                    id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                                                    date: '',
-                                                    title: '',
-                                                    desc: '',
-                                                    status: 'pending',
-                                                };
-                                                updateBlock(block.id, { timelineEvents: [...currentEvents, newEvent] });
-                                            }}
-                                            title={t('admin.notesSection.widgetsDetail.addMilestone', 'Add milestone')}
-                                            aria-label={t('admin.notesSection.widgetsDetail.addMilestone', 'Add milestone')}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="admin-note-timeline-empty">
-                                <button
-                                    type="button"
-                                    className="admin-note-timeline-add-btn"
-                                    onClick={() => {
-                                        const newEvent = {
-                                            id: `m-${Date.now()}-0`,
-                                            date: '',
-                                            title: '',
-                                            desc: '',
-                                            status: 'pending',
-                                        };
-                                        updateBlock(block.id, { timelineEvents: [newEvent] });
-                                    }}
-                                >
-                                    + {t('admin.notesSection.widgetsDetail.addMilestone', 'Add milestone')}
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
             ) : block.type === 'callout' ? (
                 <div className="admin-note-callout-wrap">
-                    <div className="admin-note-callout-controls" aria-label="Callout controls">
-                        <input
-                            className="admin-note-callout-label"
-                            value={block.label || ''}
-                            placeholder={t('admin.notesSection.blockTypes.callout', 'Callout')}
-                            aria-label={t('admin.notesSection.widgetsDetail.calloutLabel', 'Callout title')}
-                            onChange={(event) => updateBlock(block.id, { label: event.target.value })}
-                        />
-                        <select
-                            className="admin-note-callout-type"
-                            value={block.calloutType || 'info'}
-                            aria-label="Callout type"
-                            onChange={(event) => updateBlock(block.id, { calloutType: event.target.value })}
-                        >
-                            {Object.entries(CALLOUT_VARIANTS).map(([variantKey, variantConfig]) => (
-                                <option key={variantKey} value={variantKey}>
-                                    {t(`admin.notesSection.calloutTypes.${variantKey}`, variantConfig.label)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {readOnly ? (
+                        block.label ? (
+                            <div className="admin-note-callout-controls is-readonly">
+                                <span className="admin-note-widget-label-static">{block.label}</span>
+                            </div>
+                        ) : null
+                    ) : (
+                        <div className="admin-note-callout-controls" aria-label="Callout controls">
+                            <input
+                                className="admin-note-callout-label"
+                                value={block.label || ''}
+                                placeholder={t('admin.notesSection.blockTypes.callout', 'Callout')}
+                                aria-label={t('admin.notesSection.widgetsDetail.calloutLabel', 'Callout title')}
+                                onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
+                            />
+                            <select
+                                className="admin-note-callout-type"
+                                value={block.calloutType || 'info'}
+                                aria-label="Callout type"
+                                onChange={(event) => updateBlock?.(block.id, { calloutType: event.target.value })}
+                            >
+                                {Object.entries(CALLOUT_VARIANTS).map(([variantKey, variantConfig]) => (
+                                    <option key={variantKey} value={variantKey}>
+                                        {t(`admin.notesSection.calloutTypes.${variantKey}`, variantConfig.label)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="admin-note-callout-body">
                         <span className={`admin-note-callout-icon admin-note-callout-icon-${block.calloutType || 'info'}`} aria-hidden="true">
                             <CalloutIcon type={block.calloutType || 'info'} size={16} />
                         </span>
-                        <textarea
-                            value={block.text || ''}
-                            placeholder={blockPlaceholder}
-                            aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
-                            onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
-                        />
+                        {readOnly ? (
+                            <div className="admin-note-callout-text">{block.text || ''}</div>
+                        ) : (
+                            <textarea
+                                value={block.text || ''}
+                                placeholder={blockPlaceholder}
+                                aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                                onChange={(event) => updateBlock?.(block.id, { text: fitTextareaValue(event) })}
+                            />
+                        )}
                     </div>
                 </div>
             ) : block.type === 'heading' ? (
                 <div className="admin-note-heading-wrap">
-                    <textarea
-                        className="admin-note-heading-input"
-                        value={block.text || block.label || ''}
-                        onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
-                        placeholder={blockPlaceholder}
-                        aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
-                        rows={1}
-                    />
+                    {readOnly ? (
+                        <h2 className="admin-note-heading-display">
+                            {block.text || block.label || ''}
+                        </h2>
+                    ) : (
+                        <textarea
+                            className="admin-note-heading-input"
+                            value={block.text || block.label || ''}
+                            onChange={(event) => updateBlock?.(block.id, { text: fitTextareaValue(event) })}
+                            placeholder={blockPlaceholder}
+                            aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                            rows={1}
+                        />
+                    )}
+                </div>
+            ) : block.type === 'todo' ? (
+                <div className="admin-note-todo-wrap">
+                    {block.label && <div className="admin-note-todo-label">{block.label}</div>}
+                    <div className="admin-note-todo-items">
+                        {(Array.isArray(block.todos) ? block.todos : [{ text: block.text, checked: block.checked }]).map((item, idx) => (
+                            <div key={item.id || idx} className={`admin-note-todo-row${item.checked ? ' is-checked' : ''}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={Boolean(item.checked)}
+                                    disabled={readOnly}
+                                    onChange={readOnly ? undefined : (e) => {
+                                        const newTodos = [...(block.todos || [])];
+                                        newTodos[idx] = { ...item, checked: e.target.checked };
+                                        updateBlock?.(block.id, { todos: newTodos });
+                                    }}
+                                />
+                                <span className="admin-note-todo-text">{item.text}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             ) : (
-                <textarea
-                    value={block.text}
-                    onChange={(event) => updateBlock(block.id, { text: fitTextareaValue(event) })}
-                    placeholder={blockPlaceholder}
-                    aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
-                    rows={block.type === 'text' ? 3 : 1}
-                />
+                readOnly ? (
+                    <div className="admin-note-static-fallback">
+                        {block.text}
+                    </div>
+                ) : (
+                    <textarea
+                        value={block.text}
+                        onChange={(event) => updateBlock?.(block.id, { text: fitTextareaValue(event) })}
+                        placeholder={blockPlaceholder}
+                        aria-label={t(`admin.notesSection.blockTypes.${block.type}`, type.label)}
+                        rows={block.type === 'text' ? 3 : 1}
+                    />
+                )
             )}
 
-            <button
-                type="button"
-                className="admin-note-block-remove"
-                onClick={() => removeBlock(block.id)}
-                aria-label={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
-                title={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
-            >
-                x
-            </button>
-            {block.type !== 'divider' && (
+            {!readOnly && (
+                <button
+                    type="button"
+                    className="admin-note-block-remove"
+                    onClick={() => removeBlock?.(block.id)}
+                    aria-label={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
+                    title={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
+                >
+                    x
+                </button>
+            )}
+            {!readOnly && block.type !== 'divider' && (
                 <button
                     type="button"
                     className="admin-note-block-resize"
                     aria-label={t('admin.notesSection.widgetsDetail.resizeWidget', 'Resize widget')}
                     title={t('admin.notesSection.widgetsDetail.resizeWidget', 'Resize widget')}
-                    onPointerDown={(event) => startBlockResize(event, block)}
-                    onPointerMove={(event) => updateBlockResize(event, block)}
+                    onPointerDown={(event) => startBlockResize?.(event, block)}
+                    onPointerMove={(event) => updateBlockResize?.(event, block)}
                     onPointerUp={finishBlockResize}
                     onPointerCancel={finishBlockResize}
                 >

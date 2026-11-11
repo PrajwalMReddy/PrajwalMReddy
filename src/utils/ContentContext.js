@@ -102,6 +102,22 @@ const resolveLocalizedField = (field, lang = DEFAULT_LANGUAGE) => {
     );
 };
 
+const readStoredDarkMode = () => {
+    if (typeof window === 'undefined') return false;
+    try {
+        const stored = window.localStorage.getItem('darkMode');
+        if (stored !== null) return stored === 'true';
+        return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    } catch {
+        return false;
+    }
+};
+
+const applyDarkModeClass = (enabled) => {
+    if (typeof document === 'undefined') return;
+    document.body.classList.toggle('dark-mode', Boolean(enabled));
+};
+
 export const ContentProvider = ({ children }) => {
     const [language, setLanguage] = useState(() => {
         if (typeof window !== 'undefined' && window.localStorage) {
@@ -110,6 +126,8 @@ export const ContentProvider = ({ children }) => {
         }
         return DEFAULT_LANGUAGE;
     });
+
+    const [darkMode, setDarkMode] = useState(() => readStoredDarkMode());
 
     const [rawContent, setRawContent] = useState({
         home: null,
@@ -194,7 +212,15 @@ export const ContentProvider = ({ children }) => {
 
     useEffect(() => {
         localStorage.setItem('language', language);
+        if (typeof document !== 'undefined') {
+            document.documentElement.lang = translations[language] ? language : DEFAULT_LANGUAGE;
+        }
     }, [language]);
+
+    useEffect(() => {
+        applyDarkModeClass(darkMode);
+        localStorage.setItem('darkMode', String(darkMode));
+    }, [darkMode]);
 
     const toggleLanguage = (targetLang) => {
         if (targetLang && SUPPORTED_LANGUAGES.includes(targetLang)) {
@@ -466,6 +492,8 @@ export const ContentProvider = ({ children }) => {
         language,
         setLanguage,
         toggleLanguage,
+        darkMode,
+        setDarkMode,
         supportedLanguages: SUPPORTED_LANGUAGES,
         defaultLanguage: DEFAULT_LANGUAGE,
         t,

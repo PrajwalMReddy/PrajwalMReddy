@@ -682,13 +682,24 @@ async function fetchWeatherContext(options = {}) {
     const now = Date.now();
     const settings = await getDashboardSettings(forceFresh);
     const weatherConfig = settings.weather || {};
-    const location = (customLocation || weatherConfig.defaultLocation || process.env.WEATHER_LOCATION || 'Ithaca, NY').trim();
+    const location = (customLocation || weatherConfig.defaultLocation || '').trim();
     const configLat = weatherConfig.latitude !== undefined && weatherConfig.latitude !== null && weatherConfig.latitude !== '' ? Number(weatherConfig.latitude) : undefined;
     const configLon = weatherConfig.longitude !== undefined && weatherConfig.longitude !== null && weatherConfig.longitude !== '' ? Number(weatherConfig.longitude) : undefined;
     
-    // When a custom location string is passed, do NOT use config coordinates from Ithaca!
+    // When a custom location string is passed, do NOT use config coordinates
     const effectiveLat = customLat !== undefined ? customLat : (customLocation ? undefined : configLat);
     const effectiveLon = customLon !== undefined ? customLon : (customLocation ? undefined : configLon);
+
+    // If weather is disabled in settings, or no location or coordinates are configured, do not fetch or default to any city
+    if (weatherConfig.enabled === false || (!location && effectiveLat === undefined && effectiveLon === undefined)) {
+        return {
+            configured: false,
+            cached: false,
+            weather: null,
+            message: 'No weather location configured.',
+            updatedAt: new Date().toISOString(),
+        };
+    }
 
     const cacheKey = customLat !== undefined && customLon !== undefined
         ? `geo_${Number(customLat).toFixed(2)}_${Number(customLon).toFixed(2)}`
@@ -779,10 +790,13 @@ async function fetchWeatherContext(options = {}) {
                     longitude = resolved.longitude;
                     resolvedLocationName = resolved.name;
                 } else {
-                    // Fallback to Ithaca, NY coordinates only if completely unresolvable
-                    latitude = 42.4406;
-                    longitude = -76.4966;
-                    resolvedLocationName = location || 'Ithaca, NY';
+                    return {
+                        configured: false,
+                        cached: false,
+                        weather: null,
+                        message: `Unable to resolve weather coordinates for location: "${location}".`,
+                        updatedAt: new Date().toISOString(),
+                    };
                 }
             }
 

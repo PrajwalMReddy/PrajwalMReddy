@@ -6,11 +6,16 @@ import {
     getDisplayUrl,
     getDueDateLabel,
     getDueState,
+    getMasterDueState,
+    getMasterTaskDateLabel,
+    isMasterTask as isMasterTaskFn,
     PRIORITY_LABEL,
 } from './todoUtils';
 
 const TodoCard = ({
                       todo,
+                      isMasterTask = false,
+                      isRecurringTask = false,
                       draggedId,
                       dragOverId,
                       onDragStart,
@@ -27,20 +32,30 @@ const TodoCard = ({
                       onToggleSubtasksExpanded,
                   }) => {
     const {t, formatNumber, language} = useContent();
-    const dueState = getDueState(todo);
-    const dueDateLabel = getDueDateLabel(todo, language, formatNumber);
+    const isMaster = Boolean(isMasterTask || isMasterTaskFn(todo));
+    const dueState = isMaster ? getMasterDueState(todo) : getDueState(todo);
+    const dueDateLabel = isMaster
+        ? getMasterTaskDateLabel(todo, language, t)
+        : getDueDateLabel(todo, language, formatNumber);
+    const isRecurring = isRecurringTask || isMaster;
+    const isRecurringInstance = Boolean((todo.recurrence && todo.recurrence !== 'none') || todo.recurrenceSeriesId);
+    const isRecurringAny = Boolean(isRecurring || isRecurringInstance);
 
     const tone = todo.completed
         ? 'done'
-        : dueState === 'overdue' || todo.priority === 'high'
-            ? 'urgent'
-            : 'normal';
+        : isRecurring
+            ? todo.priority === 'high'
+                ? 'urgent'
+                : 'normal'
+            : dueState === 'overdue' || todo.priority === 'high'
+                ? 'urgent'
+                : 'normal';
 
     const hasSubtasks = todo.subtasks && todo.subtasks.length > 0;
     const hasBottomContent = Boolean(
         dueDateLabel ||
         todo.estimatedTime ||
-        (todo.recurrence && todo.recurrence !== 'none') ||
+        isRecurringAny ||
         todo.personId ||
         (Array.isArray(todo.tags) && todo.tags.length > 0) ||
         hasSubtasks
@@ -50,7 +65,7 @@ const TodoCard = ({
         <div
             className={`admin-todo-card tone-${tone} ${
                 todo.completed ? 'complete' : ''
-            } ${draggedId === todo.id ? 'dragging' : ''} ${
+            } ${isRecurring ? 'is-master-task is-recurring-task' : ''} ${draggedId === todo.id ? 'dragging' : ''} ${
                 dragOverId === todo.id ? 'drag-over' : ''
             }`}
             draggable
@@ -79,7 +94,6 @@ const TodoCard = ({
                     <span className="admin-todo-card-title">{todo.title}</span>
                 </div>
 
-
                 <button
                     type="button"
                     className="admin-todo-card-edit"
@@ -107,7 +121,10 @@ const TodoCard = ({
                     {(dueDateLabel || todo.estimatedTime) && (
                         <div className="admin-todo-card-primary-info">
                             {dueDateLabel && (
-                                <span className={`admin-todo-card-due due-${dueState}`}>
+                                <span
+                                    className={`admin-todo-card-due due-${dueState}`}
+                                    title={isMaster ? `${t('admin.todoSection.repeatUntil', 'Repeat until')}: ${dueDateLabel}` : dueDateLabel}
+                                >
                                     <span className="admin-todo-card-due-date">
                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" strokeWidth="2" strokeLinecap="round"
@@ -138,7 +155,7 @@ const TodoCard = ({
                         </div>
                     )}
 
-                    {((todo.recurrence && todo.recurrence !== 'none') || todo.personId || (Array.isArray(todo.tags) && todo.tags.length > 0)) && (
+                    {(isRecurringAny || todo.personId || (Array.isArray(todo.tags) && todo.tags.length > 0)) && (
                         <div className="admin-todo-card-secondary-info">
                             {Boolean(todo.personId || (Array.isArray(todo.tags) && todo.tags.some((t) => String(t).toLowerCase() === 'networking'))) && (
                                 <span
@@ -154,10 +171,28 @@ const TodoCard = ({
                                 </span>
                             )}
 
-                            {todo.recurrence && todo.recurrence !== 'none' && (
-                                <span className="admin-todo-card-recurrence"
-                                      title={t('admin.todoSection.recurrence', 'Recurrence')}>
-                                    {formatRecurrence(todo, t)}
+                            {isRecurringAny && (
+                                <span
+                                    className="admin-todo-card-recurrence admin-todo-card-recurrence-icon"
+                                    title={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint', 'Recurring Task')}
+                                    aria-label={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint', 'Recurring Task')}
+                                >
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <polyline points="17 1 21 5 17 9" />
+                                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                        <polyline points="7 23 3 19 7 15" />
+                                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                                    </svg>
                                 </span>
                             )}
 

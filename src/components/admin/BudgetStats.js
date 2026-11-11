@@ -69,6 +69,15 @@ const BudgetStats = ({ stats }) => {
         ? Number(budget.thisMonthBudgeted)
         : 0;
 
+    const thisMonthSpending = Number.isFinite(Number(budget?.thisMonthSpending))
+        ? Number(budget.thisMonthSpending)
+        : 0;
+
+    const thisMonthSurplus =
+        budget?.thisMonthSurplus !== undefined
+            ? Number(budget.thisMonthSurplus)
+            : thisMonthBudgeted - thisMonthSpending;
+
     const aeBudgeted = Number.isFinite(Number(ayana?.aeBudgeted))
         ? Number(ayana.aeBudgeted)
         : 0;
@@ -76,6 +85,15 @@ const BudgetStats = ({ stats }) => {
     const thisAyanaBudgeted = Number.isFinite(Number(ayana?.thisAyanaBudgeted))
         ? Number(ayana.thisAyanaBudgeted)
         : 0;
+
+    const thisAyanaSpending = Number.isFinite(Number(ayana?.thisAyanaSpending))
+        ? Number(ayana.thisAyanaSpending)
+        : 0;
+
+    const thisAyanaSurplus =
+        ayana?.thisAyanaSurplus !== undefined
+            ? Number(ayana.thisAyanaSurplus)
+            : thisAyanaBudgeted - thisAyanaSpending;
 
     const totalCategorySpending = categoryList.reduce(
         (sum, cat) => sum + (Number(cat.spending) || 0),
@@ -93,9 +111,15 @@ const BudgetStats = ({ stats }) => {
         const vals = [];
         const monthIncome = Number(month.income) || 0;
         const monthExpenses = Number(month.expenses) || 0;
-        const monthOtherIncome = Number(month.otherIncome) || 0;
-        const monthNetExpenses = monthExpenses - monthIncome;
-        const monthRealSpent = monthExpenses - monthOtherIncome;
+        const monthRepayment = Number(month.repayment ?? month.repayments ?? month.otherIncome) || 0;
+        const monthNetExpenses =
+            month.netExpenses !== undefined
+                ? Number(month.netExpenses)
+                : monthExpenses - monthIncome;
+        const monthRealSpent =
+            month.realSpent !== undefined
+                ? Number(month.realSpent)
+                : monthExpenses - monthRepayment;
 
         if (trendFilter === 'all' || trendFilter === 'expenses') {
             vals.push(monthExpenses);
@@ -121,11 +145,11 @@ const BudgetStats = ({ stats }) => {
         1
     );
 
-    const netExpenses =
-        spending?.netExpenses !== undefined
-            ? Number(spending.netExpenses)
-            : (Number(spending?.expenses ?? incomeVsExpenses?.expenses) || 0) -
-              (Number(funds?.totalFunds ?? incomeVsExpenses?.income) || 0);
+    const netBalance =
+        budget?.netBalance !== undefined
+            ? Number(budget.netBalance)
+            : (Number(funds?.totalFunds ?? incomeVsExpenses?.income) || 0) -
+              (Number(spending?.expenses ?? incomeVsExpenses?.expenses) || 0);
 
     return (
         <div className="admin-stats">
@@ -133,20 +157,31 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.funds', 'Funds')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-3">
+                    <div className="admin-stat-grid admin-stat-grid-5">
                         <StatCard
                             label={t('admin.budgetSection.stats.injections', 'Injections')}
                             value={formatVal(funds.injections)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.otherIncome', 'Other Income')}
-                            value={formatVal(funds.otherIncome)}
+                            label={t('admin.budgetSection.stats.income', 'Income')}
+                            value={formatVal(funds.income)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.repayment', 'Repayment')}
+                            value={formatVal(funds.repayment ?? funds.repayments ?? funds.otherIncome)}
                         />
 
                         <StatCard
                             label={t('admin.budgetSection.stats.totalFunds', 'Total Funds')}
                             value={formatVal(funds.totalFunds)}
+                        />
+
+                        <StatCard
+                            label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
+                            value={formatVal(netBalance)}
+                            negative={netBalance < 0}
                         />
                     </div>
                 </section>
@@ -154,15 +189,10 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.spending', 'Spending')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-5">
+                    <div className="admin-stat-grid admin-stat-grid-4">
                         <StatCard
                             label={t('admin.budgetSection.stats.expenses', 'Expenses')}
                             value={formatVal(spending.expenses)}
-                        />
-
-                        <StatCard
-                            label={t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}
-                            value={formatVal(netExpenses)}
                         />
 
                         <StatCard
@@ -185,69 +215,100 @@ const BudgetStats = ({ stats }) => {
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.budget', 'Budget')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-5">
-                        <StatCard
-                            label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted')}
-                            value={formatVal(meBudgeted)}
-                        />
+                    <div className="admin-stat-subgroup">
+                        <span className="admin-stat-subgroup-title">
+                            {t('admin.budgetSection.stats.thisMonth', 'This Month')}
+                        </span>
+                        <div className="admin-stat-grid admin-stat-grid-3">
+                            <StatCard
+                                label={t('admin.budgetSection.stats.thisMonthBudgeted', 'Month Budgeted')}
+                                value={formatVal(thisMonthBudgeted)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.thisMonthBudgeted', 'This Month Budgeted')}
-                            value={formatVal(thisMonthBudgeted)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.monthSpending', 'Month Spending')}
+                                value={formatVal(thisMonthSpending)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.meSpending', 'ME Spending')}
-                            value={formatVal(budget.thisMonthSpending ?? 0)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.monthSurplus', 'Month Surplus')}
+                                value={formatVal(thisMonthSurplus)}
+                                negative={thisMonthSurplus < 0}
+                            />
+                        </div>
+                    </div>
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
-                            value={formatVal(budget.meSurplus)}
-                            negative={budget.meSurplus < 0}
-                        />
+                    <div className="admin-stat-subgroup">
+                        <span className="admin-stat-subgroup-title">
+                            {t('admin.budgetSection.stats.cumulativeToDate', 'Cumulative (To Date)')}
+                        </span>
+                        <div className="admin-stat-grid admin-stat-grid-2">
+                            <StatCard
+                                label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted')}
+                                value={formatVal(meBudgeted)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
-                            value={formatVal(budget.netBalance)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
+                                value={formatVal(budget.meSurplus)}
+                                negative={budget.meSurplus < 0}
+                            />
+                        </div>
                     </div>
                 </section>
 
                 <section className="admin-stats-section">
                     <h2>{t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
 
-                    <div className="admin-stat-grid admin-stat-grid-6">
-                        <StatCard
-                            label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
-                            value={formatNum(ayana.completedAyanas)}
-                        />
+                    <div className="admin-stat-subgroup">
+                        <span className="admin-stat-subgroup-title">
+                            {t('admin.budgetSection.stats.currentAyana', 'Current Ayana')}
+                        </span>
+                        <div className="admin-stat-grid admin-stat-grid-3">
+                            <StatCard
+                                label={t('admin.budgetSection.stats.thisAyanaBudgeted', 'Ayana Budgeted')}
+                                value={formatVal(thisAyanaBudgeted)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
-                            value={formatVal(ayana.realAvgPerAyana)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.ayanaSpending', 'Ayana Spending')}
+                                value={formatVal(thisAyanaSpending)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted')}
-                            value={formatVal(aeBudgeted)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.ayanaSurplus', 'Ayana Surplus')}
+                                value={formatVal(thisAyanaSurplus)}
+                                negative={thisAyanaSurplus < 0}
+                            />
+                        </div>
+                    </div>
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.thisAyanaBudgeted', 'This Ayana Budgeted')}
-                            value={formatVal(thisAyanaBudgeted)}
-                        />
+                    <div className="admin-stat-subgroup">
+                        <span className="admin-stat-subgroup-title">
+                            {t('admin.budgetSection.stats.horizonToDate', 'Horizon & To Date')}
+                        </span>
+                        <div className="admin-stat-grid admin-stat-grid-4">
+                            <StatCard
+                                label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
+                                value={formatNum(ayana.completedAyanas)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.aeSpending', 'AE Spending')}
-                            value={formatVal(ayana.thisAyanaSpending ?? 0)}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
+                                value={formatVal(ayana.realAvgPerAyana)}
+                            />
 
-                        <StatCard
-                            label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
-                            value={formatVal(ayana.aeSurplus)}
-                            negative={ayana.aeSurplus < 0}
-                        />
+                            <StatCard
+                                label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted')}
+                                value={formatVal(aeBudgeted)}
+                            />
+
+                            <StatCard
+                                label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
+                                value={formatVal(ayana.aeSurplus)}
+                                negative={ayana.aeSurplus < 0}
+                            />
+                        </div>
                     </div>
                 </section>
 
@@ -397,12 +458,24 @@ const BudgetStats = ({ stats }) => {
                     </div>
                 </div>
 
-                <div className="admin-monthly-chart">
+                <div className={`admin-monthly-chart trend-mode-${trendFilter}`}>
                     {monthlyTrend.map((month) => {
                         const monthStr = String(month.month || '');
                         const monthPart = monthStr.slice(5);
                         const yearPart = monthStr.slice(0, 4);
                         const isOne = parseInt(monthPart, 10) === 1;
+
+                        const monthIncome = Number(month.income) || 0;
+                        const monthExpenses = Number(month.expenses) || 0;
+                        const monthRepayment = Number(month.repayment ?? month.repayments ?? month.otherIncome) || 0;
+                        const monthRealSpent =
+                            month.realSpent !== undefined
+                                ? Number(month.realSpent)
+                                : monthExpenses - monthRepayment;
+                        const monthNetExpenses =
+                            month.netExpenses !== undefined
+                                ? Number(month.netExpenses)
+                                : monthExpenses - monthIncome;
 
                         return (
                             <div
@@ -414,13 +487,10 @@ const BudgetStats = ({ stats }) => {
                                         <div
                                             className="admin-monthly-bar expenses"
                                             style={{
-                                                height: `${((Number(month.expenses) || 0) /
-                                                    chartMax) *
-                                                    100
-                                                    }%`,
+                                                height: `${(monthExpenses / chartMax) * 100}%`,
                                             }}
                                             title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
-                                                month.expenses
+                                                monthExpenses
                                             )}`}
                                         />
                                     )}
@@ -429,13 +499,10 @@ const BudgetStats = ({ stats }) => {
                                         <div
                                             className="admin-monthly-bar income"
                                             style={{
-                                                height: `${((Number(month.income) || 0) /
-                                                    chartMax) *
-                                                    100
-                                                    }%`,
+                                                height: `${(monthIncome / chartMax) * 100}%`,
                                             }}
                                             title={`${t('admin.budgetSection.stats.incomeLabel', 'Income:')} ${formatVal(
-                                                month.income
+                                                monthIncome
                                             )}`}
                                         />
                                     )}
@@ -444,13 +511,10 @@ const BudgetStats = ({ stats }) => {
                                         <div
                                             className="admin-monthly-bar real-spent"
                                             style={{
-                                                height: `${((Math.max((Number(month.expenses) || 0) - (Number(month.otherIncome) || 0), 0)) /
-                                                    chartMax) *
-                                                    100
-                                                    }%`,
+                                                height: `${(Math.max(monthRealSpent, 0) / chartMax) * 100}%`,
                                             }}
                                             title={`${t('admin.budgetSection.stats.realSpentLabel', 'Real Spent:')} ${formatVal(
-                                                (Number(month.expenses) || 0) - (Number(month.otherIncome) || 0)
+                                                monthRealSpent
                                             )}`}
                                         />
                                     )}
@@ -459,13 +523,10 @@ const BudgetStats = ({ stats }) => {
                                         <div
                                             className="admin-monthly-bar net-expenses"
                                             style={{
-                                                height: `${((Math.max((Number(month.expenses) || 0) - (Number(month.income) || 0), 0)) /
-                                                    chartMax) *
-                                                    100
-                                                    }%`,
+                                                height: `${(Math.max(monthNetExpenses, 0) / chartMax) * 100}%`,
                                             }}
                                             title={`${t('admin.budgetSection.stats.netExpensesLabel', 'Net Expenses:')} ${formatVal(
-                                                (Number(month.expenses) || 0) - (Number(month.income) || 0)
+                                                monthNetExpenses
                                             )}`}
                                         />
                                     )}

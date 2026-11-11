@@ -22,6 +22,19 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 </head>
 <body>
+<script>
+(function () {
+    try {
+        var storedDark = localStorage.getItem('darkMode');
+        var isDark = storedDark !== null
+            ? storedDark === 'true'
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.body.classList.add('dark-mode');
+        var lang = localStorage.getItem('language');
+        if (lang === 'kn' || lang === 'en') document.documentElement.lang = lang;
+    } catch (e) {}
+})();
+</script>
 <div id="root"></div>
 </body>
 </html>

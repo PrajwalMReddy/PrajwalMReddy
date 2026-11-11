@@ -884,6 +884,7 @@ function formatEventTimeRange(startDate, endDate, isAllDay = false) {
     const startStr = startDate.toLocaleTimeString('en-US', formatOpts);
     if (!endDate || Number.isNaN(endDate.getTime())) return startStr;
     const endStr = endDate.toLocaleTimeString('en-US', formatOpts);
+
     return `${startStr} – ${endStr}`;
 }
 
@@ -1001,7 +1002,12 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
         const enrichedEvents = allExpanded.map((evt) => {
             const { urgency, badgeText } = getEventUrgency(evt.startDate, evt.endDate, now);
             const timeFormatted = formatEventTimeRange(evt.startDate, evt.endDate, evt.isAllDay);
-            const dayKey = getNyDateParts(evt.startDate).dateKey;
+            const startParts = getNyDateParts(evt.startDate);
+            const endParts = getNyDateParts(evt.endDate);
+            const dayKey = startParts.dateKey;
+            const spillsOverMidnight =
+                startParts.dateKey !== endParts.dateKey &&
+                (endParts.hour > 0 || endParts.minute > 0);
 
             return {
                 ...evt,
@@ -1009,12 +1015,14 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
                 urgency,
                 badgeText,
                 dayKey,
+                spillsOverMidnight,
             };
         });
 
         const nowMs = now.getTime();
         const nowParts = getNyDateParts(now);
         const todayKey = nowParts.dateKey;
+        const todayStartMs = nowMs - (nowParts.hour * 3600 + nowParts.minute * 60 + nowParts.second) * 1000;
 
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
         const tomorrowKey = getNyDateParts(tomorrow).dateKey;
@@ -1024,7 +1032,9 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
         let filteredEvents = enrichedEvents;
 
         if (timeframe === 'today') {
-            filteredEvents = enrichedEvents.filter((e) => e.dayKey === todayKey);
+            filteredEvents = enrichedEvents.filter(
+                (e) => e.dayKey === todayKey || (e.startDate.getTime() < todayStartMs && e.endDate.getTime() > todayStartMs)
+            );
         } else if (timeframe === 'tomorrow') {
             filteredEvents = enrichedEvents.filter((e) => e.dayKey === tomorrowKey);
         } else if (timeframe === 'week' || timeframe === 'this_week' || timeframe === 'next_7_days') {
@@ -1033,7 +1043,9 @@ async function fetchOutlookCalendar(timeframe = 'upcoming', forceFresh = false) 
             filteredEvents = enrichedEvents.filter((e) => e.endDate.getTime() >= nowMs - 15 * 60 * 1000);
         }
 
-        const todayEvents = enrichedEvents.filter((e) => e.dayKey === todayKey);
+        const todayEvents = enrichedEvents.filter(
+            (e) => e.dayKey === todayKey || (e.startDate.getTime() < todayStartMs && e.endDate.getTime() > todayStartMs)
+        );
 
         const nextEvent =
             enrichedEvents.find((e) => e.endDate.getTime() >= nowMs) || enrichedEvents[0] || null;

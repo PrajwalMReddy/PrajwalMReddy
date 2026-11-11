@@ -339,7 +339,13 @@ export function matchesBudgetEntry(entry, queryStr, language = 'en') {
     const itemStr = String(entry.item || '').toLowerCase();
     const categoryStr = String(entry.category || '').toLowerCase();
     const typeStr = String(entry.type || '').toLowerCase();
-    const typeLabel = (entry.type === 'injection' ? 'injection' : 'other income').toLowerCase();
+    const rawType = String(entry.type || '').toLowerCase();
+    const typeLabel =
+        rawType === 'injection'
+            ? 'injection'
+            : rawType === 'income'
+            ? 'income'
+            : 'repayment';
     const amountRawStr = String(amount).toLowerCase();
     const amountFormattedStr = formatCurrency(amount).toLowerCase();
 

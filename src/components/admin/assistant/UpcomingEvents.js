@@ -35,21 +35,75 @@ function formatDuration(minutes) {
 }
 
 function formatHourLabel(hour) {
-    if (hour === 0 || hour === 24) return '12 AM';
-    if (hour < 12) return `${hour} AM`;
-    if (hour === 12) return '12 PM';
-    return `${hour - 12} PM`;
+    const h = hour % 24;
+    if (h === 0) return '12 AM';
+    if (h < 12) return `${h} AM`;
+    if (h === 12) return '12 PM';
+    return `${h - 12} PM`;
 }
 
-function getNyMinutes(dateStr) {
-    if (!dateStr) return 0;
+function formatEventTime(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return '';
+        return d.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'America/New_York',
+        });
+    } catch {
+        return '';
+    }
+}
+
+function getNyTimeParts(dateStr) {
+    if (!dateStr) return { minutes: 0, dateKey: '', hour: 0, minute: 0 };
     const d = new Date(dateStr);
-    const nyDate = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    return nyDate.getHours() * 60 + nyDate.getMinutes();
+    if (Number.isNaN(d.getTime())) return { minutes: 0, dateKey: '', hour: 0, minute: 0 };
+
+    try {
+        const dtf = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/New_York',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: false,
+        });
+        const parts = dtf.formatToParts(d);
+        const p = {};
+        for (const part of parts) {
+            p[part.type] = part.value;
+        }
+        let hour = parseInt(p.hour, 10);
+        if (hour === 24) hour = 0;
+        const minute = parseInt(p.minute, 10);
+        const dateKey = `${p.year}-${p.month}-${p.day}`;
+        return {
+            minutes: hour * 60 + minute,
+            dateKey,
+            hour,
+            minute,
+        };
+    } catch {
+        const h = d.getHours();
+        const m = d.getMinutes();
+        return {
+            minutes: h * 60 + m,
+            dateKey: '',
+            hour: h,
+            minute: m,
+        };
+    }
 }
 
 function computeTimetableLayout(events) {
     if (!events || events.length === 0) return { timedEvents: [], minHour: 8, maxHour: 20 };
+
+    const todayNyParts = getNyTimeParts(new Date().toISOString());
+    const todayKey = todayNyParts.dateKey;
 
     const timed = [];
     let minMin = 24 * 60;
@@ -57,14 +111,52 @@ function computeTimetableLayout(events) {
 
     for (const evt of events) {
         if (evt.isAllDay) continue;
-        const startMin = getNyMinutes(evt.start);
-        let endMin = getNyMinutes(evt.end);
-        if (endMin <= startMin) {
-            endMin = startMin + (evt.durationMinutes || 60);
+
+        const startParts = getNyTimeParts(evt.start);
+        const endParts = getNyTimeParts(evt.end);
+
+        let durationMins = evt.durationMinutes;
+        if (!durationMins || durationMins <= 0) {
+            const startMs = new Date(evt.start).getTime();
+            const endMs = new Date(evt.end).getTime();
+            if (!Number.isNaN(startMs) && !Number.isNaN(endMs) && endMs > startMs) {
+                durationMins = Math.round((endMs - startMs) / 60000);
+            } else {
+                durationMins = 60;
+            }
         }
+
+        // Determine if event started on a previous day and is spilling into today
+        const isFromYesterday = Boolean(
+            (evt.dayKey && todayKey && evt.dayKey < todayKey) ||
+            (startParts.dateKey && todayKey && startParts.dateKey < todayKey)
+        );
+
+        let startMin = isFromYesterday ? 0 : startParts.minutes;
+        let endMin = endParts.minutes;
+
+        // Check if event spills over after midnight
+        const isSpillover = Boolean(
+            evt.spillsOverMidnight ||
+            (startParts.dateKey && endParts.dateKey && startParts.dateKey !== endParts.dateKey && (endParts.hour > 0 || endParts.minute > 0)) ||
+            (!isFromYesterday && endMin <= startMin && durationMins > 0)
+        );
+
+        if (!isFromYesterday && (isSpillover || endMin <= startMin)) {
+            endMin = startMin + durationMins;
+        }
+
         minMin = Math.min(minMin, startMin);
         maxMin = Math.max(maxMin, endMin);
-        timed.push({ ...evt, startMin, endMin });
+
+        timed.push({
+            ...evt,
+            startMin,
+            endMin,
+            durationMinutes: durationMins,
+            spillsOverMidnight: isSpillover,
+            spillsFromYesterday: isFromYesterday,
+        });
     }
 
     if (timed.length === 0) {
@@ -72,12 +164,16 @@ function computeTimetableLayout(events) {
     }
 
     // Determine minHour and maxHour bounds
+    // Daily calendar grid terminates at midnight (hour 24 = 12 AM)
     let minHour = Math.max(0, Math.floor(minMin / 60));
     let maxHour = Math.min(24, Math.ceil(maxMin / 60) + 1);
 
     // Make sure we have at least a 6-hour range
     if (maxHour - minHour < 6) {
         maxHour = Math.min(24, minHour + 6);
+        if (maxHour - minHour < 6) {
+            minHour = Math.max(0, maxHour - 6);
+        }
     }
 
     // Sort by startMin ascending, then duration descending
@@ -102,6 +198,8 @@ function computeTimetableLayout(events) {
     }
     if (currentCluster.length > 0) clusters.push(currentCluster);
 
+    const totalGridHeight = (maxHour - minHour) * HOUR_HEIGHT;
+    const maxGridMin = maxHour * 60;
     const positioned = [];
 
     for (const cluster of clusters) {
@@ -129,8 +227,14 @@ function computeTimetableLayout(events) {
             const leftPercent = (item.col / totalCols) * 100;
             const widthPercent = (1 / totalCols) * 100;
 
-            const top = (item.evt.startMin - minHour * 60) * (HOUR_HEIGHT / 60);
-            const height = Math.max(28, (item.evt.endMin - item.evt.startMin) * (HOUR_HEIGHT / 60) - 4);
+            const top = Math.max(0, (item.evt.startMin - minHour * 60) * (HOUR_HEIGHT / 60));
+
+            // Clamp displayed end time to midnight (maxGridMin) so the event card cuts at midnight
+            const displayEndMin = Math.min(maxGridMin, item.evt.endMin);
+
+            const remainingGridHeight = Math.max(0, totalGridHeight - top);
+            const rawHeight = (displayEndMin - item.evt.startMin) * (HOUR_HEIGHT / 60) - 4;
+            const height = Math.min(Math.max(28, rawHeight), remainingGridHeight);
 
             positioned.push({
                 ...item.evt,
@@ -215,9 +319,8 @@ const UpcomingEvents = ({ onOpenSettings }) => {
 
     // Current time indicator position
     const currentNyTime = useMemo(() => {
-        const now = new Date();
-        const nyDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-        return nyDate.getHours() * 60 + nyDate.getMinutes();
+        const parts = getNyTimeParts(new Date().toISOString());
+        return parts.minutes;
     }, [events, refreshing]);
 
     // Timetable calculations
@@ -257,12 +360,12 @@ const UpcomingEvents = ({ onOpenSettings }) => {
 
     if (loading) {
         return (
-            <article className="briefing-memo-document admin-events-card" style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748b' }}>
-                <div style={{ display: 'inline-block', width: 28, height: 28, border: '3px solid #e2e8f0', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '0.85rem' }} />
-                <div style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem' }}>
+            <article className="briefing-memo-document admin-events-card events-loading-card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+                <div className="events-loading-spinner" />
+                <div className="events-loading-title">
                     {t('admin.events.loading', "Loading Today's Events...")}
                 </div>
-                <div style={{ fontSize: '0.84rem' }}>
+                <div className="events-loading-sub">
                     {t('admin.events.fetchingLatest', 'Syncing with Cornell Office 365 calendar')}
                 </div>
             </article>
@@ -353,12 +456,12 @@ const UpcomingEvents = ({ onOpenSettings }) => {
 
             {/* Error Notification */}
             {error && (
-                <div style={{ padding: '0.85rem 1rem', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', color: '#991b1b', fontSize: '0.85rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div className="events-error-banner">
                     <span>{error}</span>
                     <button
                         type="button"
                         onClick={handleRefresh}
-                        style={{ padding: '0.35rem 0.75rem', background: '#ffffff', border: '1px solid #fca5a5', borderRadius: '6px', color: '#991b1b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                        className="events-retry-btn"
                     >
                         {t('admin.events.retry', 'Retry')}
                     </button>
@@ -537,7 +640,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                     <div
                                         key={`line-${hour}`}
                                         className="admin-timetable-grid-line"
-                                        style={{ top: idx * HOUR_HEIGHT }}
+                                        style={{ top: Math.min(idx * HOUR_HEIGHT, totalGridHeight - 1) }}
                                     />
                                 ))}
 
@@ -570,12 +673,12 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                                 <div className="admin-timetable-event-subject">
                                                     {evt.subject}
                                                 </div>
-                                                {evt.location && (
+                                                {evt.location && evt.height > 34 && (
                                                     <div className="admin-timetable-event-location">
                                                         {evt.location}
                                                     </div>
                                                 )}
-                                                {evt.category && evt.height > 50 && (
+                                                {evt.category && evt.height > 52 && (
                                                     <div className="admin-timetable-event-cat">
                                                         {evt.category}
                                                     </div>

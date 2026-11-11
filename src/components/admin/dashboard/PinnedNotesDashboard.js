@@ -6,7 +6,10 @@ import {
     NOTES_API,
     formatUpdatedAt,
     generateNoteContent,
+    blocksFromNote,
+    BLOCK_TYPES,
 } from '../notes/noteUtils';
+import { NoteBlock } from '../notes/NoteWidgets';
 
 const PinnedNotesDashboard = () => {
     const { t, formatNumber, language } = useContent();
@@ -45,6 +48,19 @@ const PinnedNotesDashboard = () => {
         return pinnedNotes[Math.min(activeIndex, pinnedNotes.length - 1)];
     }, [pinnedNotes, activeIndex]);
 
+    const blocks = useMemo(() => {
+        if (!activeNote) return [];
+        return blocksFromNote(activeNote);
+    }, [activeNote]);
+
+    const lowestRow = useMemo(() => {
+        return (blocks || []).reduce((max, b) => {
+            const row = b?.position?.row || 1;
+            const height = b?.height || BLOCK_TYPES[b?.type]?.height || 4;
+            return Math.max(max, row + height - 1);
+        }, 1);
+    }, [blocks]);
+
     const noteMarkdown = useMemo(() => {
         if (!activeNote) return '';
         if (Array.isArray(activeNote.blocks) && activeNote.blocks.length > 0) {
@@ -58,7 +74,7 @@ const PinnedNotesDashboard = () => {
         if (!el) return;
 
         const checkOverflow = () => {
-            const hasOverflow = el.scrollHeight > 185;
+            const hasOverflow = el.scrollHeight > 240;
             setCanExpand(hasOverflow);
         };
 
@@ -79,7 +95,7 @@ const PinnedNotesDashboard = () => {
             if (resizeObserver) resizeObserver.disconnect();
             window.removeEventListener('resize', checkOverflow);
         };
-    }, [noteMarkdown, activeIndex]);
+    }, [blocks, noteMarkdown, activeIndex]);
 
     if (loading || !pinnedNotes.length || !activeNote) {
         return null;
@@ -151,7 +167,26 @@ const PinnedNotesDashboard = () => {
             <div className="admin-pinned-note-body">
                 <div className={`admin-pinned-note-content-container ${canExpand ? (isExpanded ? 'is-expanded' : 'is-collapsed') : 'is-auto-fit'}`}>
                     <div className="admin-pinned-note-content" ref={contentRef}>
-                        {noteMarkdown.trim() ? (
+                        {blocks.length > 0 ? (
+                            <div
+                                className="admin-note-blocks admin-pinned-blocks"
+                                style={{
+                                    gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
+                                    gridTemplateRows: `repeat(${lowestRow}, minmax(28px, auto))`,
+                                    gridAutoRows: 'minmax(28px, auto)',
+                                }}
+                            >
+                                {blocks.map((block, index) => (
+                                    <NoteBlock
+                                        key={block.id || index}
+                                        block={block}
+                                        index={index}
+                                        readOnly={true}
+                                        currentTime={Date.now()}
+                                    />
+                                ))}
+                            </div>
+                        ) : noteMarkdown.trim() ? (
                             <div
                                 className="admin-pinned-rendered-markdown"
                                 dangerouslySetInnerHTML={{

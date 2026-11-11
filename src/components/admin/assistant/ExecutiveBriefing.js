@@ -122,12 +122,12 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
 
     if (loading) {
         return (
-            <div className="briefing-memo-document" style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748b' }}>
-                <div style={{ display: 'inline-block', width: 28, height: 28, border: '3px solid #e2e8f0', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '0.85rem' }} />
-                <div style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem' }}>
+            <div className="briefing-memo-document memo-news-loading-card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+                <div className="memo-news-loading-spinner" />
+                <div className="memo-news-loading-title">
                     {t('admin.news.loading', 'Loading Recent News...')}
                 </div>
-                <div style={{ fontSize: '0.84rem' }}>
+                <div className="memo-news-loading-sub">
                     {t('admin.news.fetchingLatest', 'Fetching the latest articles')}
                 </div>
             </div>
@@ -147,12 +147,12 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
 
             {/* Error Notification */}
             {error && (
-                <div style={{ padding: '0.85rem 1rem', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', color: '#991b1b', fontSize: '0.85rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div className="memo-news-error">
                     <span>{error}</span>
                     <button
                         type="button"
                         onClick={handleRefresh}
-                        style={{ padding: '0.35rem 0.75rem', background: '#ffffff', border: '1px solid #fca5a5', borderRadius: '6px', color: '#991b1b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                        className="memo-news-retry-btn"
                     >
                         {t('admin.news.retry', 'Retry')}
                     </button>
@@ -214,7 +214,7 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                     </>
                 ) : (
                     !error && (
-                        <div style={{ color: '#64748b', fontStyle: 'italic', fontSize: '0.88rem', padding: '1.5rem 0', textAlign: 'center' }}>
+                        <div className="memo-news-empty">
                             {t('admin.news.empty', 'No news articles published in the last 24 hours.')}
                         </div>
                     )

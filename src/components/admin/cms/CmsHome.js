@@ -224,12 +224,12 @@ const CmsHome = ({ data, onSave, saving }) => {
             </div>
 
             {/* SECTION 1: HERO & INTRODUCTION */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+            <div className="cms-form-card">
+                <div className="cms-form-card-header">
                     <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
                         {t('admin.home.heroHeading', 'Hero & Introduction')} ({langTab === 'en' ? t('admin.labels.english', 'English') : t('admin.labels.kannada', 'Kannada')})
                     </h3>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    <p className="cms-form-card-sub">
                         {t('admin.home.heroDesc', 'Configure the greeting, tagline, role, and bio displayed at the top of your homepage')}
                     </p>
                 </div>
@@ -281,8 +281,8 @@ const CmsHome = ({ data, onSave, saving }) => {
             </div>
 
             {/* SECTION 2: PROGRAMMING SKILLS */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="cms-form-card" style={{ marginBottom: 0 }}>
+                <div className="cms-form-card-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                     {/* Section Heading Input */}
                     <div className="cms-form-group" style={{ margin: 0, flex: '1 1 360px', maxWidth: '520px' }}>
                         <label className="cms-form-label">

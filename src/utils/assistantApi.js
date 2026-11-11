@@ -192,4 +192,38 @@ export const assistantApi = {
             method: 'POST',
             body: JSON.stringify({ location }),
         }),
+
+    // Database & Storage Management
+    getDatabaseStats: () => request(`${API_BASE}/data/stats`),
+    downloadDatabaseBackup: async (includeSensitive = true) => {
+        const url = `${API_BASE}/data/backup?includeSensitive=${includeSensitive ? 'true' : 'false'}`;
+        const res = await fetch(url, {
+            credentials: 'include',
+        });
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || `Backup download failed (${res.status})`);
+        }
+        const blob = await res.blob();
+        let filename = 'personal-dashboard-backup.json';
+        const disposition = res.headers.get('content-disposition');
+        if (disposition && disposition.includes('filename=')) {
+            const match = disposition.match(/filename="?([^";]+)"?/);
+            if (match && match[1]) filename = match[1];
+        }
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
+        return { success: true, filename, sizeBytes: blob.size };
+    },
+    restoreDatabase: ({ backup, mode = 'merge', selectedCollections = null }) =>
+        request(`${API_BASE}/data/restore`, {
+            method: 'POST',
+            body: JSON.stringify({ backup, mode, selectedCollections }),
+        }),
 };

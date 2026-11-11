@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContent } from '../../../utils/ContentContext';
-import { formatUpdatedAt, getNotePreview } from './noteUtils';
+import { formatUpdatedAt, getNotePreview, normalizeFolder } from './noteUtils';
 
 const PinIcon = ({ size = 13, className = '' }) => (
     <svg
@@ -159,7 +159,7 @@ const NoteSidebar = ({
                         {/* Folders */}
                         {allFolders.map((folderName) => {
                             const folderNotes = folderNotesMap[folderName] || [];
-                            const totalInFolder = visibleNotes.filter((n) => n.folder === folderName).length;
+                            const totalInFolder = visibleNotes.filter((n) => normalizeFolder(n.folder) === folderName).length;
                             const isExpanded = expandedFolders.has(folderName);
                             const isRenaming = renamingFolder === folderName;
 
@@ -208,7 +208,7 @@ const NoteSidebar = ({
                                     ) : (
                                         <div
                                             className={`admin-note-folder-header${
-                                                currentFolder === folderName ? ' is-current-folder' : ''
+                                                normalizeFolder(currentFolder) === folderName ? ' is-current-folder' : ''
                                             }`}
                                             onClick={() => toggleFolder(folderName)}
                                             role="button"

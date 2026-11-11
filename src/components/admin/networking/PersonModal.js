@@ -272,7 +272,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                 <div className="admin-todo-modal-body">
                     <form className="admin-todo-modal-form" onSubmit={handleSave}>
                         {error && (
-                            <div style={{ color: '#dc2626', background: 'rgba(239,68,68,0.1)', padding: '0.65rem 0.85rem', borderRadius: '6px', fontSize: '0.85rem' }}>
+                            <div className="admin-error-banner" style={{ padding: '0.65rem 0.85rem', fontSize: '0.85rem' }}>
                                 {error}
                             </div>
                         )}
@@ -516,7 +516,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         </div>
 
                         {error && (
-                            <p className="admin-error" style={{ color: '#dc2626', margin: 0 }}>{error}</p>
+                            <p className="admin-error" style={{ margin: 0 }}>{error}</p>
                         )}
                     </form>
                 </div>

@@ -24,7 +24,7 @@ const INITIAL_DEFAULT_SETTINGS = {
     },
     weather: {
         enabled: true,
-        defaultLocation: process.env.WEATHER_LOCATION || '',
+        defaultLocation: '',
         defaultUnit: 'F',
         latitude: null,
         longitude: null,
@@ -34,6 +34,14 @@ const INITIAL_DEFAULT_SETTINGS = {
 let cachedSettings = null;
 let lastFetchTime = 0;
 const SETTINGS_CACHE_TTL_MS = 60 * 1000; // 1 minute in-memory cache
+
+/**
+ * Clear settings memory cache so updates/restorations take effect immediately
+ */
+function clearSettingsCache() {
+    cachedSettings = null;
+    lastFetchTime = 0;
+}
 
 /**
  * Retrieve current external data source settings from MongoDB
@@ -60,16 +68,26 @@ async function getDashboardSettings(forceFresh = false) {
             doc = initialDoc;
         }
 
+        const calDoc = doc.calendar || {};
+        const newsDoc = doc.news || {};
+        const weatherDoc = doc.weather || {};
+
         // Merge with defaults to ensure all required fields exist
         cachedSettings = {
-            calendar: { ...INITIAL_DEFAULT_SETTINGS.calendar, ...(doc.calendar || {}) },
+            calendar: {
+                ...INITIAL_DEFAULT_SETTINGS.calendar,
+                ...calDoc,
+            },
             news: {
                 ...INITIAL_DEFAULT_SETTINGS.news,
-                ...(doc.news || {}),
-                tags: Array.isArray(doc.news?.tags) ? doc.news.tags : [],
-                customFeeds: Array.isArray(doc.news?.customFeeds) ? doc.news.customFeeds : [],
+                ...newsDoc,
+                tags: Array.isArray(newsDoc.tags) ? newsDoc.tags : [],
+                customFeeds: Array.isArray(newsDoc.customFeeds) ? newsDoc.customFeeds : [],
             },
-            weather: { ...INITIAL_DEFAULT_SETTINGS.weather, ...(doc.weather || {}) },
+            weather: {
+                ...INITIAL_DEFAULT_SETTINGS.weather,
+                ...weatherDoc,
+            },
             updatedAt: doc.updatedAt || new Date().toISOString(),
         };
         lastFetchTime = now;
@@ -194,5 +212,6 @@ module.exports = {
     getDashboardSettings,
     updateDashboardSettings,
     testIcsFeed,
+    clearSettingsCache,
     INITIAL_DEFAULT_SETTINGS,
 };

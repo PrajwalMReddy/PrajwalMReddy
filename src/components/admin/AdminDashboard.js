@@ -10,10 +10,10 @@ import { useContent } from '../../utils/ContentContext';
 const AdminDashboard = () => {
     const { t } = useContent();
     const [settingsOpen, setSettingsOpen] = useState(false);
-    const [settingsTab, setSettingsTab] = useState('calendar');
+    const [settingsTab, setSettingsTab] = useState('data');
     const [refreshKey, setRefreshKey] = useState(0);
 
-    const handleOpenSettings = useCallback((tab = 'calendar') => {
+    const handleOpenSettings = useCallback((tab = 'data') => {
         setSettingsTab(tab);
         setSettingsOpen(true);
     }, []);
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
         <button
             type="button"
             className="admin-dashboard-settings-btn"
-            onClick={() => handleOpenSettings('calendar')}
+            onClick={() => handleOpenSettings('data')}
             title={t('admin.settings.title', 'Data Sources Settings')}
             aria-label={t('admin.settings.title', 'Data Sources Settings')}
         >

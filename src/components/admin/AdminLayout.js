@@ -79,7 +79,7 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                         type="button"
                         className="admin-hamburger-btn"
                         onClick={() => setMobileMenuOpen((prev) => !prev)}
-                        aria-label="Toggle admin navigation menu"
+                        aria-label={t('admin.nav.toggleMenu', 'Toggle admin navigation menu')}
                         aria-expanded={mobileMenuOpen}
                     >
                         <span></span>
@@ -89,7 +89,7 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
 
                     {/* Mobile Header Title */}
                     <div className="admin-mobile-header-brand">
-                        <span>{getLocalizedTitle(title) || 'Admin'}</span>
+                        <span>{getLocalizedTitle(title) || t('admin.nav.admin', 'Admin')}</span>
                     </div>
 
                     {/* Desktop Navigation */}
@@ -164,14 +164,14 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
             />
 
             {/* Mobile Side Drawer Navigation */}
-            <aside className={`admin-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} aria-label="Mobile admin navigation">
+            <aside className={`admin-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} aria-label={t('admin.nav.navigation', 'Admin Navigation')}>
                 <div className="admin-mobile-drawer-header">
-                    <span className="admin-mobile-drawer-title">Admin Navigation</span>
+                    <span className="admin-mobile-drawer-title">{t('admin.nav.navigation', 'Admin Navigation')}</span>
                     <button
                         type="button"
                         className="admin-mobile-drawer-close"
                         onClick={() => setMobileMenuOpen(false)}
-                        aria-label="Close menu"
+                        aria-label={t('admin.nav.closeMenu', 'Close menu')}
                     >
                         ✕
                     </button>

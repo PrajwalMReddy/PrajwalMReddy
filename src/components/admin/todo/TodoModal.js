@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useContent } from '../../../utils/ContentContext';
 import { RECURRENCE_DAYS } from './todoUtils';
 
-const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
+const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false }) => {
     const { t, formatNumber } = useContent();
     const [draft, setDraft] = useState({});
     const [tagInput, setTagInput] = useState('');
+    const isMaster = Boolean(isRecurringColumn || todo?.isRecurringMaster);
 
     useEffect(() => {
         if (todo) {
@@ -31,12 +32,20 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
 
     if (!isOpen) return null;
 
+    const isRecurring = Boolean(
+        (draft.recurrence && draft.recurrence !== 'none') ||
+        draft.recurrenceSeriesId
+    );
+
     const handleSave = async () => {
         if (!draft.title?.trim()) {
             alert(t('admin.todoSection.modal.alertTitleRequired', 'Please enter a task title.'));
             return;
         }
-        await onSave(draft);
+        await onSave({
+            ...draft,
+            applyToSeries: isMaster,
+        });
         onClose();
     };
 
@@ -83,10 +92,24 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
         <div className="admin-todo-modal-overlay" onClick={onClose}>
             <div className="admin-todo-modal-card" onClick={(e) => e.stopPropagation()}>
                 <div className="admin-todo-modal-header">
-                    <h3 className="admin-todo-modal-title">{t('admin.todoSection.modal.editTask', 'Edit Task')}</h3>
+                    <h3 className="admin-todo-modal-title">
+                        {isMaster
+                            ? t('admin.todoSection.modal.editRecurringTask', t('admin.todoSection.modal.editMasterTask', 'Edit Recurring Task'))
+                            : t('admin.todoSection.modal.editTask', 'Edit Task')}
+                    </h3>
                     <button className="admin-todo-modal-close" onClick={onClose}>✕</button>
                 </div>
                 <div className="admin-todo-modal-body">
+                    {isMaster && (
+                        <div className="admin-todo-modal-master-notice">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px', flexShrink: 0 }}>
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                            <span>{t('admin.todoSection.modal.seriesMasterNotice', 'Changes to this master task apply across all current and future tasks in this series.')}</span>
+                        </div>
+                    )}
                     <form className="admin-todo-modal-form" onSubmit={(e) => e.preventDefault()}>
                         <div className="admin-todo-modal-field">
                             <label>{t('admin.todoSection.modal.title', 'Title')}</label>
@@ -146,6 +169,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
                                 <label>{t('admin.todoSection.modal.recurrence', 'Recurrence')}</label>
                                 <select
                                     value={draft.recurrence || 'none'}
+                                    disabled={Boolean(draft.recurrenceSeriesId)}
                                     onChange={(e) => setDraft({
                                         ...draft,
                                         recurrence: e.target.value,
@@ -157,9 +181,12 @@ const TodoModal = ({ todo, isOpen, onClose, onSave }) => {
                                     <option value="weekly">{t('admin.todoSection.modal.recurrenceOptions.weekly', 'Weekly')}</option>
                                     <option value="monthly">{t('admin.todoSection.modal.recurrenceOptions.monthly', 'Monthly')}</option>
                                 </select>
+                                {draft.recurrenceSeriesId && (
+                                    <span className="admin-todo-field-help">{t('admin.todoSection.modal.childRecurrenceHelp', 'Recurrence is set on the master task in the Recurring Tasks column.')}</span>
+                                )}
                             </div>
                         </div>
-                        {draft.recurrence && draft.recurrence !== 'none' && (
+                        {draft.recurrence && draft.recurrence !== 'none' && !draft.recurrenceSeriesId && (
                             <div className="admin-todo-recurrence-options">
                                 {draft.recurrence === 'weekly' && (
                                     <div className="admin-todo-modal-field">

@@ -3,21 +3,49 @@ import { useContent } from '../../utils/ContentContext';
 import { budgetApi, formatCurrency, formatDate, getTodayInputDate, toInputDate } from '../../utils/budgetApi';
 import { matchesBudgetEntry } from '../../utils/budgetSearch';
 
+export const normalizeIncomeType = (type) => {
+    if (!type) return 'repayment';
+    const lower = String(type).toLowerCase();
+    if (lower === 'injection') return 'injection';
+    if (lower === 'income') return 'income';
+    return 'repayment';
+};
+
+const getIncomeTypeLabel = (type, t) => {
+    const normalized = normalizeIncomeType(type);
+    if (normalized === 'injection') {
+        return t('admin.budgetSection.injection', 'Injection');
+    }
+    if (normalized === 'income') {
+        return t('admin.budgetSection.income', 'Income');
+    }
+    return t('admin.budgetSection.repayment', 'Repayment');
+};
+
 const createEmptyIncome = () => ({
     no: '',
     date: getTodayInputDate(),
     item: '',
     value: '',
-    type: 'injection',
+    type: 'repayment',
 });
 
 const IncomeTable = ({ income = [], onRefresh }) => {
     const { t, formatNumber, language } = useContent();
     const [form, setForm] = useState(createEmptyIncome);
-    const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const [editingId, setEditingId] = useState(null);
+    const [editForm, setEditForm] = useState({
+        date: '',
+        item: '',
+        type: 'repayment',
+        value: '',
+    });
+    const [inlineSubmitting, setInlineSubmitting] = useState(false);
+    const [inlineError, setInlineError] = useState('');
 
     const filteredIncome = useMemo(() => {
         if (!searchQuery.trim()) return income;
@@ -26,7 +54,6 @@ const IncomeTable = ({ income = [], onRefresh }) => {
 
     const resetForm = () => {
         setForm(createEmptyIncome());
-        setEditingId(null);
     };
 
     const handleSubmit = async (e) => {
@@ -38,13 +65,9 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                 date: form.date,
                 item: form.item,
                 value: Number(form.value),
-                type: form.type,
+                type: normalizeIncomeType(form.type),
             };
-            if (editingId) {
-                await budgetApi.updateIncome(editingId, payload);
-            } else {
-                await budgetApi.createIncome(payload);
-            }
+            await budgetApi.createIncome(payload);
             resetForm();
             onRefresh();
         } catch (err) {
@@ -54,22 +77,71 @@ const IncomeTable = ({ income = [], onRefresh }) => {
         }
     };
 
-    const handleEdit = (entry) => {
+    const handleStartEdit = (entry) => {
         setEditingId(entry.id);
-        setForm({
-            no: entry.no,
+        setEditForm({
             date: toInputDate(entry.date),
-            item: entry.item,
-            value: entry.value,
-            type: entry.type || 'other',
+            item: entry.item || '',
+            type: normalizeIncomeType(entry.type),
+            value: entry.value !== undefined && entry.value !== null ? String(entry.value) : '',
         });
+        setInlineError('');
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setInlineError('');
+    };
+
+    const handleSaveInline = async (entryId) => {
+        if (!editForm.date) {
+            setInlineError(t('admin.budgetSection.dateRequired', 'Date is required'));
+            return;
+        }
+        if (!editForm.item || !editForm.item.trim()) {
+            setInlineError(t('admin.budgetSection.itemRequired', 'Item description is required'));
+            return;
+        }
+        const val = Number(editForm.value);
+        if (editForm.value === '' || isNaN(val) || val < 0) {
+            setInlineError(t('admin.budgetSection.validValueRequired', 'A valid non-negative value is required'));
+            return;
+        }
+
+        setInlineError('');
+        setInlineSubmitting(true);
+        try {
+            const payload = {
+                date: editForm.date,
+                item: editForm.item.trim(),
+                value: val,
+                type: normalizeIncomeType(editForm.type),
+            };
+            await budgetApi.updateIncome(entryId, payload);
+            setEditingId(null);
+            onRefresh();
+        } catch (err) {
+            setInlineError(err.message);
+        } finally {
+            setInlineSubmitting(false);
+        }
+    };
+
+    const handleInlineKeyDown = (e, entryId) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSaveInline(entryId);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            handleCancelEdit();
+        }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm(t('admin.budgetSection.deleteConfirmIncome', 'Delete this income entry?'))) return;
         try {
             await budgetApi.deleteIncome(id);
-            if (editingId === id) resetForm();
+            if (editingId === id) handleCancelEdit();
             onRefresh();
         } catch (err) {
             setError(err.message);
@@ -87,26 +159,13 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                     <div className="admin-budget-form-title-wrap">
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {editingId
-                                    ? t('admin.budgetSection.editIncome', 'Edit Income')
-                                    : t('admin.budgetSection.addIncome', 'Add Income')}
+                                {t('admin.budgetSection.addIncome', 'Add Income')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
-                                {editingId
-                                    ? `${t('admin.budgetSection.updatingEntry', 'Updating entry')} #${formatNumber(form.no || editingId)}`
-                                    : t('admin.budgetSection.recordNewIncome', 'Record incoming funds or capital injections')}
+                                {t('admin.budgetSection.recordNewIncome', 'Record incoming funds or capital injections')}
                             </p>
                         </div>
                     </div>
-                    {editingId && (
-                        <button
-                            type="button"
-                            className="admin-budget-cancel-btn"
-                            onClick={resetForm}
-                        >
-                            {t('admin.budgetSection.cancelEdit', 'Cancel Edit')}
-                        </button>
-                    )}
                 </div>
 
                 <div className="admin-budget-form-grid">
@@ -132,11 +191,12 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                     <label className="admin-field-group admin-field-category">
                         <span className="admin-field-label">{t('admin.budgetSection.incomeType', 'Income Type')}</span>
                         <select
-                            value={form.type}
+                            value={normalizeIncomeType(form.type)}
                             onChange={(e) => setForm({ ...form, type: e.target.value })}
                         >
+                            <option value="repayment">{t('admin.budgetSection.repayment', 'Repayment')}</option>
+                            <option value="income">{t('admin.budgetSection.income', 'Income')}</option>
                             <option value="injection">{t('admin.budgetSection.injection', 'Injection')}</option>
-                            <option value="other">{t('admin.budgetSection.otherIncome', 'Other Income')}</option>
                         </select>
                     </label>
                     <label className="admin-field-group admin-field-cost">
@@ -162,8 +222,6 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                         >
                             {submitting
                                 ? t('admin.actions.saving', 'Saving...')
-                                : editingId
-                                ? t('admin.budgetSection.updateIncomeBtn', 'Update Income')
                                 : t('admin.budgetSection.addIncomeBtn', '+ Add Income')}
                         </button>
                     </div>
@@ -226,44 +284,144 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredIncome.map((entry) => (
-                                <tr key={entry.id}>
-                                    <td>
-                                        <span className="admin-serial-tag">
-                                            #{formatNumber(entry.no)}
-                                        </span>
-                                    </td>
-                                    <td>{formatNumber(formatDate(entry.date, language))}</td>
-                                    <td className="admin-item-cell">{entry.item}</td>
-                                    <td>
-                                        <span className="admin-category-tag">
-                                            {entry.type === 'injection'
-                                                ? t('admin.budgetSection.injection', 'Injection')
-                                                : t('admin.budgetSection.otherIncome', 'Other Income')}
-                                        </span>
-                                    </td>
-                                    <td className="admin-cost-cell">
-                                        {formatNumber(formatCurrency(entry.value))}
-                                    </td>
-                                    <td className="admin-table-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleEdit(entry)}
-                                            title={t('admin.actions.edit', 'Edit')}
-                                        >
-                                            {t('admin.actions.edit', 'Edit')}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="danger"
-                                            onClick={() => handleDelete(entry.id)}
-                                            title={t('admin.actions.delete', 'Delete')}
-                                        >
-                                            {t('admin.actions.delete', 'Delete')}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {filteredIncome.map((entry) => {
+                                const isEditing = editingId === entry.id;
+                                if (isEditing) {
+                                    return (
+                                        <React.Fragment key={entry.id}>
+                                            <tr className="admin-inline-edit-row">
+                                                <td>
+                                                    <span className="admin-serial-tag">
+                                                        #{formatNumber(entry.no)}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="date"
+                                                        className="admin-inline-input admin-inline-date"
+                                                        value={editForm.date}
+                                                        onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
+                                                        required
+                                                        aria-label={t('admin.budgetSection.headers.date', 'Date')}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        className="admin-inline-input admin-inline-item"
+                                                        value={editForm.item}
+                                                        onChange={(e) => setEditForm({ ...editForm, item: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
+                                                        placeholder={t('admin.budgetSection.incomeItemPlaceholder', 'Item')}
+                                                        required
+                                                        autoFocus
+                                                        aria-label={t('admin.budgetSection.headers.item', 'Item')}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <select
+                                                        className="admin-inline-select admin-inline-type"
+                                                        value={normalizeIncomeType(editForm.type)}
+                                                        onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
+                                                        aria-label={t('admin.budgetSection.headers.type', 'Type')}
+                                                    >
+                                                        <option value="repayment">{t('admin.budgetSection.repayment', 'Repayment')}</option>
+                                                        <option value="income">{t('admin.budgetSection.income', 'Income')}</option>
+                                                        <option value="injection">{t('admin.budgetSection.injection', 'Injection')}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div className="admin-inline-cost-wrap">
+                                                        <span className="admin-inline-currency" aria-hidden="true">$</span>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            min="0"
+                                                            className="admin-inline-input admin-inline-cost"
+                                                            value={editForm.value}
+                                                            onChange={(e) => setEditForm({ ...editForm, value: e.target.value })}
+                                                            onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
+                                                            placeholder="0.00"
+                                                            required
+                                                            aria-label={t('admin.budgetSection.headers.value', 'Value')}
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="admin-table-actions-cell">
+                                                    <div className="admin-table-actions admin-inline-actions">
+                                                        <button
+                                                            type="button"
+                                                            className="admin-inline-save-btn"
+                                                            onClick={() => handleSaveInline(entry.id)}
+                                                            disabled={inlineSubmitting}
+                                                            title={t('admin.budgetSection.save', 'Save')}
+                                                        >
+                                                            {inlineSubmitting ? t('admin.actions.saving', 'Saving...') : t('admin.budgetSection.save', 'Save')}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="admin-inline-cancel-btn"
+                                                            onClick={handleCancelEdit}
+                                                            disabled={inlineSubmitting}
+                                                            title={t('admin.budgetSection.cancel', 'Cancel')}
+                                                        >
+                                                            {t('admin.budgetSection.cancel', 'Cancel')}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {inlineError && (
+                                                <tr className="admin-inline-error-row">
+                                                    <td colSpan="6">
+                                                        <span className="admin-inline-error-text">{inlineError}</span>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                }
+
+                                return (
+                                    <tr key={entry.id}>
+                                        <td>
+                                            <span className="admin-serial-tag">
+                                                #{formatNumber(entry.no)}
+                                            </span>
+                                        </td>
+                                        <td>{formatNumber(formatDate(entry.date, language))}</td>
+                                        <td className="admin-item-cell">{entry.item}</td>
+                                        <td>
+                                            <span className="admin-category-tag">
+                                                {getIncomeTypeLabel(entry.type, t)}
+                                            </span>
+                                        </td>
+                                        <td className="admin-cost-cell">
+                                            {formatNumber(formatCurrency(entry.value))}
+                                        </td>
+                                        <td className="admin-table-actions-cell">
+                                            <div className="admin-table-actions">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleStartEdit(entry)}
+                                                    title={t('admin.actions.edit', 'Edit')}
+                                                >
+                                                    {t('admin.actions.edit', 'Edit')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="danger"
+                                                    onClick={() => handleDelete(entry.id)}
+                                                    title={t('admin.actions.delete', 'Delete')}
+                                                >
+                                                    {t('admin.actions.delete', 'Delete')}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                             {filteredIncome.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">

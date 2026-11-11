@@ -323,12 +323,12 @@ const CmsAbout = ({ data, onSave, saving }) => {
             </div>
 
             {/* SECTION 1: PAGE HEADINGS & NOTICE */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+            <div className="cms-form-card">
+                <div className="cms-form-card-header">
                     <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
                         {t('admin.about.headingsTitle', 'Page Headings & Notice')} ({langTab === 'en' ? t('admin.labels.english', 'English') : t('admin.labels.kannada', 'Kannada')})
                     </h3>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    <p className="cms-form-card-sub">
                         {t('admin.about.headingsDesc', 'Configure headings and closing message for the dedicated /about page and homepage contact block')}
                     </p>
                 </div>
@@ -392,13 +392,13 @@ const CmsAbout = ({ data, onSave, saving }) => {
             </div>
 
             {/* SECTION 2: CONTACT & SOCIAL LINKS */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div className="cms-form-card" style={{ marginBottom: 0 }}>
+                <div className="cms-form-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
                         <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
                             {t('admin.about.linksHeading', 'Contact & Social Channels')} ({formatNumber(formState.links.length)})
                         </h3>
-                        <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                        <p className="cms-form-card-sub">
                             {t('admin.about.linksDesc', 'Manage contact channels and toggle "Display on Home" for what appears on the homepage vs. dedicated about page')}
                         </p>
                     </div>

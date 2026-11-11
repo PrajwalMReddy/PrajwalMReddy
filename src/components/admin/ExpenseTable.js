@@ -20,10 +20,19 @@ const createEmptyExpense = () => ({
 const ExpenseTable = ({ expenses = [], onRefresh }) => {
     const { t, formatNumber, language } = useContent();
     const [form, setForm] = useState(createEmptyExpense);
-    const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const [editingId, setEditingId] = useState(null);
+    const [editForm, setEditForm] = useState({
+        date: '',
+        item: '',
+        category: '',
+        cost: '',
+    });
+    const [inlineSubmitting, setInlineSubmitting] = useState(false);
+    const [inlineError, setInlineError] = useState('');
 
     const filteredExpenses = useMemo(() => {
         if (!searchQuery.trim()) return expenses;
@@ -32,7 +41,6 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
 
     const resetForm = () => {
         setForm(createEmptyExpense());
-        setEditingId(null);
     };
 
     const handleSubmit = async (e) => {
@@ -46,11 +54,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                 category: form.category,
                 cost: Number(form.cost),
             };
-            if (editingId) {
-                await budgetApi.updateExpense(editingId, payload);
-            } else {
-                await budgetApi.createExpense(payload);
-            }
+            await budgetApi.createExpense(payload);
             resetForm();
             onRefresh();
         } catch (err) {
@@ -60,22 +64,75 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
         }
     };
 
-    const handleEdit = (expense) => {
+    const handleStartEdit = (expense) => {
         setEditingId(expense.id);
-        setForm({
-            serialNumber: expense.serialNumber,
+        setEditForm({
             date: toInputDate(expense.date),
-            item: expense.item,
-            category: expense.category,
-            cost: expense.cost,
+            item: expense.item || '',
+            category: expense.category || '',
+            cost: expense.cost !== undefined && expense.cost !== null ? String(expense.cost) : '',
         });
+        setInlineError('');
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setInlineError('');
+    };
+
+    const handleSaveInline = async (expenseId) => {
+        if (!editForm.date) {
+            setInlineError(t('admin.budgetSection.dateRequired', 'Date is required'));
+            return;
+        }
+        if (!editForm.item || !editForm.item.trim()) {
+            setInlineError(t('admin.budgetSection.itemRequired', 'Item description is required'));
+            return;
+        }
+        if (!editForm.category || !editForm.category.trim()) {
+            setInlineError(t('admin.budgetSection.categoryRequired', 'Category is required'));
+            return;
+        }
+        const costNum = Number(editForm.cost);
+        if (editForm.cost === '' || isNaN(costNum) || costNum < 0) {
+            setInlineError(t('admin.budgetSection.validCostRequired', 'A valid non-negative cost is required'));
+            return;
+        }
+
+        setInlineError('');
+        setInlineSubmitting(true);
+        try {
+            const payload = {
+                date: editForm.date,
+                item: editForm.item.trim(),
+                category: editForm.category.trim(),
+                cost: costNum,
+            };
+            await budgetApi.updateExpense(expenseId, payload);
+            setEditingId(null);
+            onRefresh();
+        } catch (err) {
+            setInlineError(err.message);
+        } finally {
+            setInlineSubmitting(false);
+        }
+    };
+
+    const handleInlineKeyDown = (e, expenseId) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSaveInline(expenseId);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            handleCancelEdit();
+        }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm(t('admin.budgetSection.deleteConfirmExpense', 'Delete this expense?'))) return;
         try {
             await budgetApi.deleteExpense(id);
-            if (editingId === id) resetForm();
+            if (editingId === id) handleCancelEdit();
             onRefresh();
         } catch (err) {
             setError(err.message);
@@ -93,26 +150,13 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                     <div className="admin-budget-form-title-wrap">
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {editingId
-                                    ? t('admin.budgetSection.editExpense', 'Edit Expense')
-                                    : t('admin.budgetSection.addExpense', 'Add Expense')}
+                                {t('admin.budgetSection.addExpense', 'Add Expense')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
-                                {editingId
-                                    ? `${t('admin.budgetSection.updatingRecord', 'Updating record')} #${formatNumber(form.serialNumber || editingId)}`
-                                    : t('admin.budgetSection.recordNewExpense', 'Record a new transaction to track spending')}
+                                {t('admin.budgetSection.recordNewExpense', 'Record a new transaction to track spending')}
                             </p>
                         </div>
                     </div>
-                    {editingId && (
-                        <button
-                            type="button"
-                            className="admin-budget-cancel-btn"
-                            onClick={resetForm}
-                        >
-                            {t('admin.budgetSection.cancelEdit', 'Cancel Edit')}
-                        </button>
-                    )}
                 </div>
 
                 <div className="admin-budget-form-grid">
@@ -168,8 +212,6 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                         >
                             {submitting
                                 ? t('admin.actions.saving', 'Saving...')
-                                : editingId
-                                ? t('admin.budgetSection.updateExpenseBtn', 'Update Expense')
                                 : t('admin.budgetSection.addExpenseBtn', '+ Add Expense')}
                         </button>
                     </div>
@@ -232,42 +274,143 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredExpenses.map((expense) => (
-                                <tr key={expense.id}>
-                                    <td>
-                                        <span className="admin-serial-tag">
-                                            #{formatNumber(expense.serialNumber)}
-                                        </span>
-                                    </td>
-                                    <td>{formatNumber(formatDate(expense.date, language))}</td>
-                                    <td className="admin-item-cell">{expense.item}</td>
-                                    <td>
-                                        <span className="admin-category-tag">
-                                            {expense.category}
-                                        </span>
-                                    </td>
-                                    <td className="admin-cost-cell">
-                                        {formatNumber(formatCurrency(expense.cost))}
-                                    </td>
-                                    <td className="admin-table-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleEdit(expense)}
-                                            title={t('admin.actions.edit', 'Edit')}
-                                        >
-                                            {t('admin.actions.edit', 'Edit')}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="danger"
-                                            onClick={() => handleDelete(expense.id)}
-                                            title={t('admin.actions.delete', 'Delete')}
-                                        >
-                                            {t('admin.actions.delete', 'Delete')}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {filteredExpenses.map((expense) => {
+                                const isEditing = editingId === expense.id;
+                                if (isEditing) {
+                                    return (
+                                        <React.Fragment key={expense.id}>
+                                            <tr className="admin-inline-edit-row">
+                                                <td>
+                                                    <span className="admin-serial-tag">
+                                                        #{formatNumber(expense.serialNumber)}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="date"
+                                                        className="admin-inline-input admin-inline-date"
+                                                        value={editForm.date}
+                                                        onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
+                                                        required
+                                                        aria-label={t('admin.budgetSection.headers.date', 'Date')}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        className="admin-inline-input admin-inline-item"
+                                                        value={editForm.item}
+                                                        onChange={(e) => setEditForm({ ...editForm, item: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
+                                                        placeholder={t('admin.budgetSection.expenseItemPlaceholder', 'Item')}
+                                                        required
+                                                        autoFocus
+                                                        aria-label={t('admin.budgetSection.headers.item', 'Item')}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        className="admin-inline-input admin-inline-category"
+                                                        value={editForm.category}
+                                                        onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                                                        onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
+                                                        placeholder={t('admin.budgetSection.category', 'Category')}
+                                                        required
+                                                        aria-label={t('admin.budgetSection.headers.category', 'Category')}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <div className="admin-inline-cost-wrap">
+                                                        <span className="admin-inline-currency" aria-hidden="true">$</span>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            min="0"
+                                                            className="admin-inline-input admin-inline-cost"
+                                                            value={editForm.cost}
+                                                            onChange={(e) => setEditForm({ ...editForm, cost: e.target.value })}
+                                                            onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
+                                                            placeholder="0.00"
+                                                            required
+                                                            aria-label={t('admin.budgetSection.headers.cost', 'Cost')}
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="admin-table-actions-cell">
+                                                    <div className="admin-table-actions admin-inline-actions">
+                                                        <button
+                                                            type="button"
+                                                            className="admin-inline-save-btn"
+                                                            onClick={() => handleSaveInline(expense.id)}
+                                                            disabled={inlineSubmitting}
+                                                            title={t('admin.budgetSection.save', 'Save')}
+                                                        >
+                                                            {inlineSubmitting ? t('admin.actions.saving', 'Saving...') : t('admin.budgetSection.save', 'Save')}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="admin-inline-cancel-btn"
+                                                            onClick={handleCancelEdit}
+                                                            disabled={inlineSubmitting}
+                                                            title={t('admin.budgetSection.cancel', 'Cancel')}
+                                                        >
+                                                            {t('admin.budgetSection.cancel', 'Cancel')}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {inlineError && (
+                                                <tr className="admin-inline-error-row">
+                                                    <td colSpan="6">
+                                                        <span className="admin-inline-error-text">{inlineError}</span>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                }
+
+                                return (
+                                    <tr key={expense.id}>
+                                        <td>
+                                            <span className="admin-serial-tag">
+                                                #{formatNumber(expense.serialNumber)}
+                                            </span>
+                                        </td>
+                                        <td>{formatNumber(formatDate(expense.date, language))}</td>
+                                        <td className="admin-item-cell">{expense.item}</td>
+                                        <td>
+                                            <span className="admin-category-tag">
+                                                {expense.category}
+                                            </span>
+                                        </td>
+                                        <td className="admin-cost-cell">
+                                            {formatNumber(formatCurrency(expense.cost))}
+                                        </td>
+                                        <td className="admin-table-actions-cell">
+                                            <div className="admin-table-actions">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleStartEdit(expense)}
+                                                    title={t('admin.actions.edit', 'Edit')}
+                                                >
+                                                    {t('admin.actions.edit', 'Edit')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="danger"
+                                                    onClick={() => handleDelete(expense.id)}
+                                                    title={t('admin.actions.delete', 'Delete')}
+                                                >
+                                                    {t('admin.actions.delete', 'Delete')}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                             {filteredExpenses.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">

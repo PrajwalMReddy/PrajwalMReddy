@@ -3,20 +3,26 @@ import AdminLayout from './AdminLayout';
 import { useContent } from '../../utils/ContentContext';
 import TodoCard from './todo/TodoCard';
 import TodoModal from './todo/TodoModal';
+import TodoDayPlanner from './todo/TodoDayPlanner';
 import {
     COLLAPSED_COLUMNS_KEY,
+    EXPANDED_SUBTASKS_KEY,
     getDayKey,
     getDueDayKey,
     getDueState,
     getNextNDaysRange,
     getNextThreeDaysRange,
+    isChildTask,
+    isMasterTask,
     isRecurringChildVisible,
+    isCompletedToday,
     isScheduledForFuture,
     parseDateOnly,
     TODO_API,
 } from './todo/todoUtils';
 
 const NEXT_DAYS_STORAGE_KEY = 'admin_todo_next_days_count';
+const PLANNER_OPEN_STORAGE_KEY = 'admin_todo_planner_open';
 
 const TodoAdmin = () => {
     const { t, formatNumber } = useContent();
@@ -32,7 +38,15 @@ const TodoAdmin = () => {
     const [activeTab, setActiveTab] = useState('all');
     const [activeTodo, setActiveTodo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [expandedSubtasks, setExpandedSubtasks] = useState(new Set());
+    const [isRecurringColumnEdit, setIsRecurringColumnEdit] = useState(false);
+    const [expandedSubtasks, setExpandedSubtasks] = useState(() => {
+        try {
+            const saved = localStorage.getItem(EXPANDED_SUBTASKS_KEY);
+            return saved ? new Set(JSON.parse(saved).map(String)) : new Set();
+        } catch {
+            return new Set();
+        }
+    });
     const [collapsedColumns, setCollapsedColumns] = useState(() => {
         try {
             const saved = localStorage.getItem(COLLAPSED_COLUMNS_KEY);
@@ -65,6 +79,20 @@ const TodoAdmin = () => {
     const tagDropdownRef = useRef(null);
     const [isDaysPickerOpen, setIsDaysPickerOpen] = useState(false);
     const daysPickerRef = useRef(null);
+    const [isPlannerOpen, setIsPlannerOpen] = useState(() => {
+        try {
+            const saved = localStorage.getItem(PLANNER_OPEN_STORAGE_KEY);
+            return saved !== null ? saved === 'true' : false;
+        } catch {
+            return false;
+        }
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(PLANNER_OPEN_STORAGE_KEY, String(isPlannerOpen));
+        } catch {}
+    }, [isPlannerOpen]);
 
     const handleNextDaysChange = useCallback((count) => {
         setNextDaysCount(count);
@@ -94,6 +122,17 @@ const TodoAdmin = () => {
             // ignore
         }
     }, [selectedTags]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                EXPANDED_SUBTASKS_KEY,
+                JSON.stringify(Array.from(expandedSubtasks))
+            );
+        } catch (e) {
+            // ignore
+        }
+    }, [expandedSubtasks]);
 
     const toggleColumnCollapse = useCallback((columnKey) => {
         setCollapsedColumns((prev) => {
@@ -174,6 +213,7 @@ const TodoAdmin = () => {
     const allAvailableTags = useMemo(() => {
         const tagMap = new Map();
         todos.forEach((todo) => {
+            if (isMasterTask(todo)) return;
             if (!isRecurringChildVisible(todo, todos)) return;
             if (Array.isArray(todo.tags)) {
                 todo.tags.forEach((tag) => {
@@ -225,6 +265,11 @@ const TodoAdmin = () => {
     const displayTodos = useMemo(() => {
         const query = search.trim().toLowerCase();
         return todos.filter((todo) => {
+            // Master tasks represent recurring template series and do not appear directly on the main dashboard
+            if (isMasterTask(todo)) {
+                return false;
+            }
+
             if (!isRecurringChildVisible(todo, todos)) {
                 return false;
             }
@@ -264,8 +309,8 @@ const TodoAdmin = () => {
         [displayTodos]
     );
 
-    const doneCount = useMemo(
-        () => displayTodos.filter((todo) => todo.completed).length,
+    const completedTodayCount = useMemo(
+        () => displayTodos.filter(isCompletedToday).length,
         [displayTodos]
     );
 
@@ -363,11 +408,7 @@ const TodoAdmin = () => {
     const completedTodos = useMemo(
         () =>
             displayTodos
-                .filter(
-                    (todo) =>
-                        todo.completed &&
-                        (!todo.recurrence || todo.recurrence === 'none' || todo.recurrenceSeriesId)
-                )
+                .filter((todo) => todo.completed)
                 .sort((a, b) => {
                     if (a.updatedAt && b.updatedAt) {
                         return new Date(b.updatedAt) - new Date(a.updatedAt);
@@ -380,30 +421,49 @@ const TodoAdmin = () => {
         [displayTodos]
     );
 
-    const completedMasterTodos = useMemo(
+    const recurringTodos = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        return todos
+            .filter((todo) => {
+                // The Recurring Tasks manager column specifically lists master series tasks
+                if (!isMasterTask(todo)) return false;
+
+                if (selectedTags.size > 0) {
+                    const todoTags = Array.isArray(todo.tags)
+                        ? todo.tags.map((t) => String(t).trim().toLowerCase()).filter(Boolean)
+                        : [];
+                    const hasMatchingTag = todoTags.some((t) => selectedTags.has(t));
+                    if (!hasMatchingTag) return false;
+                }
+
+                if (query) {
+                    const titleMatch = (todo.title || '').toLowerCase().includes(query);
+                    const descMatch = (todo.description || '').toLowerCase().includes(query);
+                    const linkMatch = (todo.link || '').toLowerCase().includes(query);
+                    const tagMatch =
+                        Array.isArray(todo.tags) &&
+                        todo.tags.some((t) => String(t).toLowerCase().includes(query));
+                    const subtaskMatch =
+                        Array.isArray(todo.subtasks) &&
+                        todo.subtasks.some((st) => (st.title || '').toLowerCase().includes(query));
+                    if (!titleMatch && !descMatch && !linkMatch && !tagMatch && !subtaskMatch) {
+                        return false;
+                    }
+                }
+
+                return true;
+            })
+            .sort((a, b) => (a.order ?? a.serialNumber ?? 0) - (b.order ?? b.serialNumber ?? 0));
+    }, [todos, search, selectedTags]);
+
+    const urgentTodos = useMemo(
         () =>
-            displayTodos
-                .filter(
-                    (todo) =>
-                        todo.completed &&
-                        todo.recurrence &&
-                        todo.recurrence !== 'none' &&
-                        !todo.recurrenceSeriesId
-                )
-                .sort((a, b) => {
-                    if (a.updatedAt && b.updatedAt) {
-                        return new Date(b.updatedAt) - new Date(a.updatedAt);
-                    }
-                    return (
-                        (a.order ?? a.serialNumber ?? 0) -
-                        (b.order ?? b.serialNumber ?? 0)
-                    );
-                }),
-        [displayTodos]
-    );
-
-    const highPriorityTodos = useMemo(
-        () => displayTodos.filter((todo) => !todo.completed && todo.priority === 'high'),
+            displayTodos.filter(
+                (todo) =>
+                    !todo.completed &&
+                    !isScheduledForFuture(todo) &&
+                    (getDueState(todo) === 'overdue' || todo.priority === 'high')
+            ),
         [displayTodos]
     );
 
@@ -425,11 +485,19 @@ const TodoAdmin = () => {
         if (!activeTodo) return;
         try {
             const updatedTodo = await persistTodoUpdate(activeTodo.id, updates);
-            setTodos((currentTodos) =>
-                currentTodos.map((todo) =>
-                    todo.id === activeTodo.id ? updatedTodo : todo
-                )
+            const shouldReloadAll = Boolean(
+                updates.applyToSeries ||
+                (updates.recurrence && updates.recurrence !== 'none' && (!activeTodo.recurrence || activeTodo.recurrence === 'none'))
             );
+            if (shouldReloadAll) {
+                await loadTodos();
+            } else {
+                setTodos((currentTodos) =>
+                    currentTodos.map((todo) =>
+                        todo.id === activeTodo.id ? updatedTodo : todo
+                    )
+                );
+            }
         } catch (err) {
             setError(err.message);
         }
@@ -480,20 +548,34 @@ const TodoAdmin = () => {
     const handleToggleTodo = async (todoId, completed) => {
         const previousTodos = todos;
         const nextCompleted = !completed;
+        const nowIso = new Date().toISOString();
 
         setTodos((currentTodos) =>
             currentTodos.map((todo) =>
-                todo.id === todoId ? { ...todo, completed: nextCompleted } : todo
+                String(todo.id) === String(todoId)
+                    ? {
+                          ...todo,
+                          completed: nextCompleted,
+                          completedAt: nextCompleted ? nowIso : null,
+                          updatedAt: nowIso,
+                      }
+                    : todo
             )
         );
 
         try {
             const updatedTodo = await persistTodoUpdate(todoId, { completed: nextCompleted });
-            setTodos((currentTodos) =>
-                currentTodos.map((todo) =>
-                    todo.id === todoId ? updatedTodo : todo
-                )
-            );
+            const current = todos.find((t) => String(t.id) === String(todoId));
+            const isRecurring = current && ((current.recurrence && current.recurrence !== 'none') || current.recurrenceSeriesId);
+            if (isRecurring) {
+                await loadTodos();
+            } else {
+                setTodos((currentTodos) =>
+                    currentTodos.map((todo) =>
+                        String(todo.id) === String(todoId) ? updatedTodo : todo
+                    )
+                );
+            }
         } catch (err) {
             setTodos(previousTodos);
             setError(err.message);
@@ -549,7 +631,7 @@ const TodoAdmin = () => {
         }
     };
 
-    const handleDeleteTodo = async (todoId) => {
+    const handleDeleteTodo = async (todoId, isRecurringColumn = false) => {
         try {
             const res = await fetch(`${TODO_API}/${todoId}`, {
                 method: 'DELETE',
@@ -559,7 +641,33 @@ const TodoAdmin = () => {
             if (!res.ok) {
                 throw new Error(data.error || 'Failed to delete todo');
             }
-            setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== todoId));
+            if (isRecurringColumn) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowIso = tomorrow.toISOString().slice(0, 10);
+                setTodos((currentTodos) =>
+                    currentTodos.filter((todo) => {
+                        if (todo.id === todoId) return false;
+                        if (String(todo.recurrenceSeriesId) === String(todoId)) {
+                            const isUpcoming = (todo.dueDate && todo.dueDate.slice(0, 10) >= tomorrowIso) ||
+                                (!todo.dueDate && todo.scheduledAt && todo.scheduledAt.slice(0, 10) >= tomorrowIso);
+                            return !(!todo.completed && isUpcoming);
+                        }
+                        return true;
+                    })
+                );
+            } else {
+                setTodos((currentTodos) =>
+                    currentTodos.filter((todo) => todo.id !== todoId)
+                );
+            }
+            setExpandedSubtasks((prev) => {
+                const idStr = String(todoId);
+                if (!prev.has(idStr)) return prev;
+                const next = new Set(prev);
+                next.delete(idStr);
+                return next;
+            });
         } catch (err) {
             setError(err.message);
         }
@@ -600,15 +708,18 @@ const TodoAdmin = () => {
         }
     };
 
-    const toggleSubtasksExpanded = (todoId) => {
-        const newExpanded = new Set(expandedSubtasks);
-        if (newExpanded.has(todoId)) {
-            newExpanded.delete(todoId);
-        } else {
-            newExpanded.add(todoId);
-        }
-        setExpandedSubtasks(newExpanded);
-    };
+    const toggleSubtasksExpanded = useCallback((todoId) => {
+        const idStr = String(todoId);
+        setExpandedSubtasks((prev) => {
+            const next = new Set(prev);
+            if (next.has(idStr)) {
+                next.delete(idStr);
+            } else {
+                next.add(idStr);
+            }
+            return next;
+        });
+    }, []);
 
     const handleDrop = async (event, targetId) => {
         event.preventDefault();
@@ -619,15 +730,27 @@ const TodoAdmin = () => {
         }
     };
 
-    const renderTodoCard = (todo) => (
+    const renderTodoCard = (todo, isRecurringTask = false) => (
         <TodoCard
             key={todo.id}
             todo={todo}
+            isRecurringTask={isRecurringTask}
+            isMasterTask={isRecurringTask}
             draggedId={draggedId}
             dragOverId={dragOverId}
             onDragStart={(event, id) => {
-                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.effectAllowed = 'copyMove';
                 event.dataTransfer.setData('text/plain', String(id));
+                event.dataTransfer.setData('text', String(id));
+                try {
+                    event.dataTransfer.setData('application/json', JSON.stringify({
+                        id: todo.id,
+                        title: todo.title,
+                        priority: todo.priority,
+                        estimatedTime: todo.estimatedTime,
+                        completed: todo.completed,
+                    }));
+                } catch {}
                 setDraggedId(id);
             }}
             onDragEnd={() => {
@@ -647,19 +770,23 @@ const TodoAdmin = () => {
             onToggle={handleToggleTodo}
             onEdit={(t) => {
                 setActiveTodo(t);
+                setIsRecurringColumnEdit(Boolean(isRecurringTask));
                 setIsModalOpen(true);
             }}
             onDelete={(taskItem) => {
+                const isRecurring = isRecurringTask;
                 const confirmed = window.confirm(
-                    t('admin.todoSection.deleteConfirm', 'Are you sure you want to delete this task?')
+                    isRecurring
+                        ? t('admin.todoSection.deleteSeriesConfirm', 'Are you sure you want to delete this recurring task and its upcoming instances?')
+                        : t('admin.todoSection.deleteConfirm', 'Are you sure you want to delete this task?')
                 );
                 if (confirmed) {
-                    handleDeleteTodo(taskItem.id);
+                    handleDeleteTodo(taskItem.id, isRecurring);
                 }
             }}
             onChangePriority={handleChangePriority}
             onToggleSubtask={handleToggleSubtask}
-            isExpanded={expandedSubtasks.has(todo.id)}
+            isExpanded={expandedSubtasks.has(String(todo.id))}
             onToggleSubtasksExpanded={toggleSubtasksExpanded}
         />
     );
@@ -671,8 +798,9 @@ const TodoAdmin = () => {
             'Next 3 Days': t('admin.todoSection.columns.next3Days', 'Next 3 Days'),
             'Upcoming': t('admin.todoSection.columns.upcoming', 'Upcoming'),
             'No Due Date': t('admin.todoSection.columns.noDueDate', 'No Due Date'),
+            'Recurring Tasks': t('admin.todoSection.columns.recurringTasks', t('admin.todoSection.columns.masterTasks', 'Recurring Tasks')),
+            'Master Tasks': t('admin.todoSection.columns.recurringTasks', t('admin.todoSection.columns.masterTasks', 'Recurring Tasks')),
             'Scheduled': t('admin.todoSection.columns.scheduled', 'Scheduled'),
-            'Completed Master Tasks': t('admin.todoSection.columns.masterTasks', 'Completed Master Tasks'),
             'Completed': t('admin.todoSection.columns.completed', 'Completed'),
         };
         const displayTitle = columnTitleMap[titleKey] || titleKey;
@@ -793,7 +921,7 @@ const TodoAdmin = () => {
                 </div>
                 {!isCollapsed && (
                     <div className="admin-todo-column-body">
-                        {items.map(renderTodoCard)}
+                        {items.map((todo) => renderTodoCard(todo, titleKey === 'Recurring Tasks' || titleKey === 'Master Tasks'))}
                     </div>
                 )}
             </div>
@@ -862,23 +990,23 @@ const TodoAdmin = () => {
 
                 <div className="admin-todo-overview">
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.pending', 'Pending')}</span>
-                        <strong>{formatNumber(pendingCount)}</strong>
+                        <span>{t('admin.todoSection.dueToday', 'Due Today')}</span>
+                        <strong>{formatNumber(todayTodos.length)}</strong>
                     </div>
 
                     <div className="admin-todo-stat admin-todo-stat-urgent">
                         <span>{t('admin.todoSection.urgent', 'Urgent')}</span>
-                        <strong>{formatNumber(highPriorityTodos.length)}</strong>
+                        <strong>{formatNumber(urgentTodos.length)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.completed', 'Completed')}</span>
-                        <strong>{formatNumber(doneCount)}</strong>
+                        <span>{t('admin.todoSection.pending', 'Pending')}</span>
+                        <strong>{formatNumber(pendingCount)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.total', 'Total')}</span>
-                        <strong>{formatNumber(displayTodos.length)}</strong>
+                        <span>{t('admin.todoSection.completedToday', 'Completed Today')}</span>
+                        <strong>{formatNumber(completedTodayCount)}</strong>
                     </div>
                 </div>
             </div>
@@ -1051,50 +1179,90 @@ const TodoAdmin = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Day Planner Toggle Button */}
+                        <button
+                            type="button"
+                            className={`admin-todo-planner-toggle-btn ${isPlannerOpen ? 'is-active' : ''}`}
+                            onClick={() => setIsPlannerOpen((prev) => !prev)}
+                            title={isPlannerOpen ? t('admin.todoSection.hidePlanner', 'Hide Day Planner') : t('admin.todoSection.showPlanner', 'Show Day Planner')}
+                            aria-label={t('admin.todoSection.dayPlanner', 'Day Planner')}
+                        >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <span>{t('admin.todoSection.dayPlanner', 'Day Planner')}</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {loading ? (
-                <p className="admin-loading-text">{t('admin.todoSection.loading', 'Loading tasks...')}</p>
-            ) : todos.length === 0 ? (
-                <p className="admin-empty">{t('admin.todoSection.empty', 'No tasks yet. Add your first one above.')}</p>
-            ) : displayTodos.length === 0 ? (
-                <p className="admin-empty">
-                    {selectedTags.size > 0 && search
-                        ? t('admin.todoSection.noMatchingFilterTasks', 'No tasks match your search and tag filters.')
-                        : selectedTags.size > 0
-                        ? t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')
-                        : t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
-                </p>
-            ) : (
-                <div className="admin-todo-board">
-                    {activeTab === 'other' && (
-                        <>
-                            {renderColumn('Scheduled', scheduledTodos)}
-                            {renderColumn('Completed Master Tasks', completedMasterTodos)}
-                            {renderColumn('Completed', completedTodos)}
-                        </>
-                    )}
-
-                    {activeTab === 'all' && (
-                        <>
-                            {renderColumn('Overdue', overdueTodos)}
-                            {renderColumn('Today', todayTodos)}
-                            {renderColumn('Next 3 Days', nextThreeDaysTodos)}
-                            {renderColumn('Upcoming', upcomingTodos)}
-                            {renderColumn('No Due Date', noDueDateTodos)}
-                        </>
-                    )}
+            {/* Horizontal Day Planner (Docked below search bar & controls) */}
+            {isPlannerOpen && (
+                <div className="admin-todo-horizontal-planner-wrap">
+                    <TodoDayPlanner
+                        todos={todos}
+                        draggedId={draggedId}
+                        onClose={() => setIsPlannerOpen(false)}
+                        onToggleTodo={handleToggleTodo}
+                        onEditTodo={(todo) => {
+                            setActiveTodo(todo);
+                            setIsRecurringColumnEdit(false);
+                            setIsModalOpen(true);
+                        }}
+                    />
                 </div>
             )}
+
+            <div className="admin-todo-layout-wrap">
+                <div className="admin-todo-board-pane">
+                    {loading ? (
+                        <p className="admin-loading-text">{t('admin.todoSection.loading', 'Loading tasks...')}</p>
+                    ) : todos.length === 0 ? (
+                        <p className="admin-empty">{t('admin.todoSection.empty', 'No tasks yet. Add your first one above.')}</p>
+                    ) : (activeTab === 'all' && displayTodos.length === 0) || (activeTab === 'other' && recurringTodos.length === 0 && scheduledTodos.length === 0 && completedTodos.length === 0) ? (
+                        <p className="admin-empty">
+                            {selectedTags.size > 0 && search
+                                ? t('admin.todoSection.noMatchingFilterTasks', 'No tasks match your search and tag filters.')
+                                : selectedTags.size > 0
+                                ? t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')
+                                : t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
+                        </p>
+                    ) : (
+                        <div className="admin-todo-board">
+                            {activeTab === 'other' && (
+                                <>
+                                    {renderColumn('Recurring Tasks', recurringTodos)}
+                                    {renderColumn('Scheduled', scheduledTodos)}
+                                    {renderColumn('Completed', completedTodos)}
+                                </>
+                            )}
+
+                            {activeTab === 'all' && (
+                                <>
+                                    {renderColumn('Overdue', overdueTodos)}
+                                    {renderColumn('Today', todayTodos)}
+                                    {renderColumn('Next 3 Days', nextThreeDaysTodos)}
+                                    {renderColumn('Upcoming', upcomingTodos)}
+                                    {renderColumn('No Due Date', noDueDateTodos)}
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
 
             <TodoModal
                 todo={activeTodo}
                 isOpen={isModalOpen}
+                isRecurringColumn={isRecurringColumnEdit}
                 onClose={() => {
                     setIsModalOpen(false);
                     setActiveTodo(null);
+                    setIsRecurringColumnEdit(false);
                 }}
                 onSave={handleSaveTodo}
             />
