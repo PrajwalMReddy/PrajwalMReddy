@@ -1,4 +1,4 @@
-import { parseLocalDate, formatDate, formatCurrency, toInputDate } from './budgetApi.js';
+import { formatDate, formatCurrency, toInputDate } from './budgetApi.js';
 
 const MONTH_NAMES = {
     jan: 1, january: 1,

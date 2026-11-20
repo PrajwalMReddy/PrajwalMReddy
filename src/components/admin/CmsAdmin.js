@@ -82,15 +82,15 @@ const CmsAdmin = () => {
                 photography,
             });
         } catch (err) {
-            console.error(t('logs.cmsLoadError', 'Error loading CMS data:'), err);
-            setError(`Could not load CMS content: ${err.message}`);
+            console.error(t('logs.cmsLoadError'), err);
+            setError(t('admin.ui.cmsAdmin.couldNotLoadCmsContent', { p0: err.message }));
         } finally {
             setLoading(false);
         }
     }, [t]);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminCms', 'CMS | Admin | Prajwal Reddy');
+        document.title = t('pageTitles.adminCms');
     }, [t]);
 
     useEffect(() => {
@@ -147,9 +147,9 @@ const CmsAdmin = () => {
 
             showToast(successMessage || 'Changes saved successfully', 'success');
         } catch (err) {
-            console.error((t('logs.cmsSaveError', 'Error saving {type}:') || '').replace('{type}', targetType), err);
+            console.error((t('logs.cmsSaveError') || '').replace('{type}', targetType), err);
             setError(err.message || 'Failed to save changes');
-            showToast(`Save failed: ${err.message}`, 'error');
+            showToast(t('admin.ui.cmsAdmin.saveFailed', { p0: err.message }), 'error');
             throw err;
         } finally {
             setSaving(false);
@@ -189,7 +189,7 @@ const CmsAdmin = () => {
     };
 
     return (
-        <AdminLayout title={t('admin.titles.cms', 'Content Management System')}>
+        <AdminLayout title={t('admin.titles.cms')}>
             {/* Subtabs Bar matching Budget & Todo */}
             <div className="admin-tabs">
                 {TABS.map((tab) => {
@@ -232,7 +232,7 @@ const CmsAdmin = () => {
                 </div>
             )}
 
-            {loading && <p className="admin-loading-text">{t('admin.messages.loading', 'Loading content from metadata files...')}</p>}
+            {loading && <p className="admin-loading-text">{t('admin.messages.loading')}</p>}
             {error && (
                 <div style={{ margin: '0.5rem 0' }}>
                     <p className="admin-error">{error}</p>
@@ -241,7 +241,7 @@ const CmsAdmin = () => {
                         className="cms-btn cms-btn-sm cms-btn-secondary"
                         onClick={loadAllContent}
                     >
-                        {t('admin.actions.retry', 'Retry Loading')}
+                        {t('admin.actions.retry')}
                     </button>
                 </div>
             )}

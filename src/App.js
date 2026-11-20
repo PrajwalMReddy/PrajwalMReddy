@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter as Router, Navigate, Route, Routes, useParams} from 'react-router-dom';
-import {LanguageProvider} from './utils/LanguageContext';
+import { ContentProvider } from './utils/ContentContext';
 import {KonamiProvider} from './utils/KonamiContext';
 import {AuthProvider} from './utils/AuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
@@ -30,6 +30,7 @@ import './research.css';
 import './admin.css';
 import './cms.css';
 import './konami-admin.css';
+import './admin-theme.css';
 import Experience from './components/Experience';
 import {useKonami} from './utils/KonamiContext';
 import { Analytics } from '@vercel/analytics/react';
@@ -60,13 +61,13 @@ class ErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error(tStatic('logs.errorBoundary', undefined, 'Error caught by boundary:'), error, errorInfo);
+        console.error(tStatic('logs.errorBoundary', undefined), error, errorInfo);
     }
 
     render() {
         if (this.state.hasError) {
             return (<div style={{padding: '20px', color: 'red'}}>
-                <h1>{tStatic('somethingWentWrong', undefined, 'Something went wrong.')}</h1>
+                <h1>{tStatic('somethingWentWrong', undefined)}</h1>
                 <pre>{this.state.error?.toString()}</pre>
             </div>);
         }
@@ -76,7 +77,7 @@ class ErrorBoundary extends React.Component {
 
 function App() {
     return (<ErrorBoundary>
-        <LanguageProvider>
+        <ContentProvider>
             <KonamiProvider>
                 <AuthProvider>
                 <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -139,7 +140,7 @@ function App() {
                 </Router>
                 </AuthProvider>
             </KonamiProvider>
-        </LanguageProvider>
+        </ContentProvider>
     </ErrorBoundary>);
 }
 

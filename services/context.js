@@ -532,38 +532,51 @@ function generateDayPlanRecommendations({ highF, lowF, chanceOfRain, rainAmount,
 
     // Peak rain timing from next 12 hours
     let peakRainHour = null;
+    let peakRainTime = null;
     let maxHourRain = 0;
     if (Array.isArray(hourlyNext12)) {
         for (const h of hourlyNext12) {
             if (h.rainChance > maxHourRain) {
                 maxHourRain = h.rainChance;
                 peakRainHour = h.timeLabel;
+                peakRainTime = h.time || null;
             }
         }
     }
+    // Language-neutral description of the rain timing for localized clients
+    const rainTiming = peakRainHour && maxHourRain >= 25
+        ? { kind: 'peak', time: peakRainTime, chance: maxHourRain }
+        : (chanceOfRain >= 25 ? { kind: 'possible', chance: chanceOfRain } : { kind: 'dry' });
     const rainTimingAdvice = peakRainHour && maxHourRain >= 25
         ? `Peak rain chance around ${peakRainHour} (${maxHourRain}%).`
         : (chanceOfRain >= 25 ? `Rain possible today (${chanceOfRain}%).` : 'Dry conditions expected.');
 
     // 2. Outfit / Layering Planning
+    let outfitKey = 'comfortableLayers';
     let outfitType = 'Comfortable Layers';
     let outfitAdvice = 'Comfortable layers recommended.';
     if (highF <= 32) {
+        outfitKey = 'heavyWinterCoat';
         outfitType = 'Heavy Winter Coat';
         outfitAdvice = 'Freezing temperatures — heavy winter coat, scarf, gloves, and warm boots essential.';
     } else if (highF <= 48) {
+        outfitKey = 'winterJacket';
         outfitType = 'Winter Jacket';
         outfitAdvice = 'Cold day — winter jacket, sweater, and warm layers recommended.';
     } else if (highF <= 62) {
+        outfitKey = 'lightJacket';
         outfitType = 'Light Jacket / Sweater';
         outfitAdvice = 'Crisp and cool — a light jacket or sweater will keep you comfortable.';
     } else if (highF <= 74) {
+        outfitKey = 'lightLayers';
         outfitType = 'Light Layers / Long Sleeves';
         outfitAdvice = 'Mild and pleasant — comfortable light layers or long sleeves recommended.';
     } else if (highF <= 85) {
+        outfitKey = 'lightClothing';
         outfitType = 'T-Shirt / Light Clothing';
         outfitAdvice = 'Warm day — breathable light clothing and stay hydrated.';
     } else {
+        outfitKey = 'summerClothing';
         outfitType = 'Summer Heat Clothing';
         outfitAdvice = 'Hot temperatures — lightweight breathable fabrics, sunglasses, and plenty of water.';
     }
@@ -594,6 +607,8 @@ function generateDayPlanRecommendations({ highF, lowF, chanceOfRain, rainAmount,
         umbrellaStatus,
         umbrellaAdvice,
         rainTimingAdvice,
+        rainTiming,
+        outfitKey,
         outfitType,
         outfitAdvice,
         uvAdvice,
@@ -917,6 +932,7 @@ async function fetchWeatherContext(options = {}) {
                         hourlyFormatted.push({
                             time: timeStr,
                             timeLabel,
+                            conditionCode: isFirst ? cur.weather_code : hWmo,
                             tempF: hTempF,
                             tempC: hTempC,
                             rainChance: hRain,
@@ -943,6 +959,7 @@ async function fetchWeatherContext(options = {}) {
                     temperatureC: tempC,
                     temperatureF: tempF,
                     condition: conditionInfo.text,
+                    conditionCode: cur.weather_code,
                     conditionIcon: conditionInfo.icon,
                     feelsLikeC,
                     feelsLikeF,
@@ -959,6 +976,8 @@ async function fetchWeatherContext(options = {}) {
                     isDay: cur.is_day === 1,
                     sunrise: sunriseFormatted,
                     sunset: sunsetFormatted,
+                    sunriseTime: daily.sunrise && daily.sunrise[0] ? String(daily.sunrise[0]) : null,
+                    sunsetTime: daily.sunset && daily.sunset[0] ? String(daily.sunset[0]) : null,
                     hourly: hourlyFormatted,
                     recommendations,
                     unit: settings.weather?.defaultUnit || 'F',

@@ -223,7 +223,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                     setMarkdownContent(data.content || '');
                 }
             } catch (err) {
-                console.warn(t('logs.researchMarkdownError', 'Could not load research markdown:'), err);
+                console.warn(t('logs.researchMarkdownError'), err);
             } finally {
                 setLoadingMarkdown(false);
             }
@@ -236,20 +236,20 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         e.preventDefault();
         const safeSlug = (editingItem.slug || '').trim();
         if (!safeSlug) {
-            alert(t('admin.researchAdmin.slugRequired', 'Slug is required'));
+            alert(t('admin.researchAdmin.slugRequired'));
             return;
         }
         const titleEn = (editingItem.en?.title || '').trim();
         const titleKn = (editingItem.kn?.title || '').trim();
         if (!titleEn && !titleKn) {
-            alert(t('admin.researchAdmin.titleRequired', 'A research title in English or Kannada is required'));
+            alert(t('admin.researchAdmin.titleRequired'));
             return;
         }
 
         const isNew = editingItem._index === undefined;
 
         if (items.some((it, idx) => (isNew || idx !== editingItem._index) && it.slug?.toLowerCase() === safeSlug.toLowerCase())) {
-            alert(t('admin.researchAdmin.slugExists', 'A research entry with this slug already exists.'));
+            alert(t('admin.researchAdmin.slugExists'));
             return;
         }
 
@@ -327,8 +327,8 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             setIsEditModalOpen(false);
             setEditingItem(null);
         } catch (saveErr) {
-            console.error(t('logs.cmsContentSaveError', 'Error saving content'), saveErr);
-            alert(`${t('admin.messages.saveFailed', 'Failed to save changes')}: ${saveErr.message || ''}`);
+            console.error(t('logs.researchSaveError'), saveErr);
+            alert(`${t('admin.messages.saveFailed')}: ${saveErr.message || ''}`);
         }
     };
 
@@ -347,7 +347,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             return it;
         });
         const title = (language === 'kn' ? item.kn?.title : item.en?.title) || item.title || item.slug || 'Publication';
-        const localizedVis = newVis === 'public' ? t('admin.filters.public', 'Public') : t('admin.filters.unlisted', 'Unlisted');
+        const localizedVis = newVis === 'public' ? t('admin.filters.public') : t('admin.filters.unlisted');
         await onSave(updated, (t('admin.researchAdmin.updatedVisibility') || 'Updated visibility to {visibility} for "{title}"').replace('{visibility}', localizedVis).replace('{title}', title));
     };
 
@@ -369,7 +369,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
         updated[index] = updated[targetIndex];
         updated[targetIndex] = temp;
 
-        await onSave(updated, t('admin.researchAdmin.reorderedResearch', 'Research items reordered'));
+        await onSave(updated, t('admin.researchAdmin.reorderedResearch'));
     };
 
     return (
@@ -386,7 +386,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchResearch', 'Search research publications...')}
+                            placeholder={t('admin.placeholders.searchResearch')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -399,7 +399,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         className="cms-select"
                     >
                         <option value="all">
-                            {t('admin.filters.allSections', 'All Sections')} ({formatNumber(sections.length)})
+                            {t('admin.filters.allSections')} ({formatNumber(sections.length)})
                         </option>
                         {sections.map((s) => (
                             <option key={s.id} value={s.id}>
@@ -408,7 +408,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         ))}
                         {hasUngrouped && (
                             <option value="__none__">
-                                {t('admin.filters.noSection', 'No Section / Ungrouped')}
+                                {t('admin.filters.noSection')}
                             </option>
                         )}
                     </select>
@@ -418,10 +418,10 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         onChange={(e) => setFilterType(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allTypes', 'All Types')}</option>
-                        <option value="article">{t('admin.filters.articleMarkdown', 'Article (Markdown)')}</option>
-                        <option value="custom">{t('admin.filters.customComponent', 'Custom Component')}</option>
-                        <option value="external">{t('admin.filters.external', 'External Link')}</option>
+                        <option value="all">{t('admin.filters.allTypes')}</option>
+                        <option value="article">{t('admin.filters.articleMarkdown')}</option>
+                        <option value="custom">{t('admin.filters.customComponent')}</option>
+                        <option value="external">{t('admin.filters.external')}</option>
                     </select>
 
                     <select
@@ -429,13 +429,13 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         onChange={(e) => setFilterVis(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allVisibility', 'All Visibility')}</option>
-                        <option value="public">{t('admin.filters.public', 'Public')}</option>
-                        <option value="unlisted">{t('admin.filters.unlisted', 'Unlisted')}</option>
+                        <option value="all">{t('admin.filters.allVisibility')}</option>
+                        <option value="public">{t('admin.filters.public')}</option>
+                        <option value="unlisted">{t('admin.filters.unlisted')}</option>
                     </select>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredItems.length)} {t('admin.messages.of', 'of')} {formatNumber(items.length)}
+                        {formatNumber(filteredItems.length)} {t('admin.messages.of')} {formatNumber(items.length)}
                     </span>
                 </div>
 
@@ -445,7 +445,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.newPublication', '+ New Publication')}
+                        {t('admin.actions.newPublication')}
                     </button>
                 </div>
             </div>
@@ -453,8 +453,8 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
             {/* Research List */}
             {filteredItems.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noResearch', 'No research publications found')}</p>
-                    <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new item.')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noResearch')}</p>
+                    <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                 </div>
             ) : (
                 <div className="cms-list">
@@ -499,7 +499,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 <button
                                                     type="button"
                                                     className="cms-tag cms-tag-section cms-tag-interactive"
-                                                    title={t('admin.actions.filterBySection', 'Filter by this section')}
+                                                    title={t('admin.actions.filterBySection')}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setSelectedSection(secInfo.id || 'all');
@@ -511,7 +511,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             <button
                                                 type="button"
                                                 className={`cms-tag ${item.visibility === 'public' ? 'cms-tag-public' : 'cms-tag-unlisted'} cms-tag-interactive`}
-                                                title={t('admin.actions.toggleVisibility', 'Click to toggle visibility (public/unlisted)')}
+                                                title={t('admin.actions.toggleVisibility')}
                                                 disabled={saving}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -519,7 +519,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 }}
                                             >
                                                 <span className={`cms-status-indicator ${item.visibility === 'public' ? 'public' : 'unlisted'}`} />
-                                                {item.visibility === 'public' ? t('admin.filters.public', 'Public') : t('admin.filters.unlisted', 'Unlisted')}
+                                                {item.visibility === 'public' ? t('admin.filters.public') : t('admin.filters.unlisted')}
                                             </button>
                                             {item.slug && item.type !== 'external' && (
                                                 <span className="cms-item-slug" title={`/${item.slug.replace(/^\/+/, '')}`}>
@@ -549,7 +549,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 )}
                                                 {item.date && externalHost && <span className="cms-meta-dot">•</span>}
                                                 {externalHost && (
-                                                    <span style={{ fontSize: '0.735rem', color: '#94a3b8' }}>
+                                                    <span style={{ fontSize: '0.735rem', color: 'var(--ui-text-muted, #5e748d)' }}>
                                                         {externalHost}
                                                     </span>
                                                 )}
@@ -562,7 +562,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveUp', 'Move Up')}
+                                        title={t('admin.actions.moveUp')}
                                         disabled={originalIndex === 0 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, -1)}
                                     >
@@ -573,7 +573,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveDown', 'Move Down')}
+                                        title={t('admin.actions.moveDown')}
                                         disabled={originalIndex === items.length - 1 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, 1)}
                                     >
@@ -586,29 +586,29 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="cms-btn cms-btn-sm cms-btn-view"
-                                        title={t('admin.actions.viewInNewTab', 'View in new tab')}
-                                        aria-label={t('admin.actions.viewInNewTab', 'View in new tab')}
+                                        title={t('admin.actions.viewInNewTab')}
+                                        aria-label={t('admin.actions.viewInNewTab')}
                                     >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                             <polyline points="15 3 21 3 21 9" />
                                             <line x1="10" y1="14" x2="21" y2="3" />
                                         </svg>
-                                        <span>{t('admin.actions.view', 'View')}</span>
+                                        <span>{t('admin.actions.view')}</span>
                                     </a>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEditModal(item, originalIndex)}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -624,8 +624,8 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
                                 {editingItem._index !== undefined
-                                    ? t('admin.modals.editPublication', 'Edit Publication')
-                                    : t('admin.modals.newPublication', 'New Publication')}
+                                    ? t('admin.modals.editPublication')
+                                    : t('admin.modals.newPublication')}
                             </h3>
                             <button
                                 type="button"
@@ -641,7 +641,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 {/* Always visible base configuration */}
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.type', 'Type')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.type')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingItem.type}
@@ -653,15 +653,15 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 }
                                             }}
                                         >
-                                            <option value="article">{t('admin.labels.articleMarkdownContent', 'Article (Markdown content)')}</option>
-                                            <option value="custom">{t('admin.labels.customReactComponent', 'Custom React Component')}</option>
-                                            <option value="external">{t('admin.filters.external', 'External Link')}</option>
+                                            <option value="article">{t('admin.labels.articleMarkdownContent')}</option>
+                                            <option value="custom">{t('admin.labels.customReactComponent')}</option>
+                                            <option value="external">{t('admin.filters.external')}</option>
                                         </select>
                                     </div>
 
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            {t('admin.labels.slug', 'Slug')} <span className="required">*</span>
+                                            {t('admin.labels.slug')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -670,13 +670,13 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             onChange={(e) =>
                                                 setEditingItem({ ...editingItem, slug: e.target.value })
                                             }
-                                            placeholder={t('admin.researchAdmin.slugPlaceholder', 'e.g. bengaluru-telugu-dictionary')}
+                                            placeholder={t('admin.researchAdmin.slugPlaceholder')}
                                             required
                                         />
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.visibility', 'Visibility')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.visibility')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingItem.visibility}
@@ -684,8 +684,8 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 setEditingItem({ ...editingItem, visibility: e.target.value })
                                             }
                                         >
-                                            <option value="public">{t('admin.filters.public', 'Public')}</option>
-                                            <option value="unlisted">{t('admin.filters.unlisted', 'Unlisted')}</option>
+                                            <option value="public">{t('admin.filters.public')}</option>
+                                            <option value="unlisted">{t('admin.filters.unlisted')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -694,7 +694,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.componentName', 'Component Name')} <span className="required">*</span>
+                                                {t('admin.labels.componentName')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -703,7 +703,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 onChange={(e) =>
                                                     setEditingItem({ ...editingItem, component: e.target.value })
                                                 }
-                                                placeholder={t('admin.researchAdmin.componentPlaceholder', 'e.g. BengaluruTeluguDictionary')}
+                                                placeholder={t('admin.researchAdmin.componentPlaceholder')}
                                                 required
                                             />
                                         </div>
@@ -711,16 +711,16 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         <div className="cms-form-group" style={{ marginTop: '0.85rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                                 <label className="cms-form-label" style={{ margin: 0 }}>
-                                                    {t('admin.researchAdmin.customDataLabel', 'Custom Data (Optional JSON)')}
+                                                    {t('admin.researchAdmin.customDataLabel')}
                                                 </label>
                                                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                                     {editingItem.customDataString && editingItem.customDataString.trim() && (
                                                         (() => {
                                                             try {
                                                                 JSON.parse(editingItem.customDataString.trim());
-                                                                return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>{t('admin.researchAdmin.validJson', '✓ Valid JSON')}</span>;
+                                                                return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>{t('admin.researchAdmin.validJson')}</span>;
                                                             } catch (err) {
-                                                                return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>{t('admin.researchAdmin.invalidJson', '⚠ Invalid JSON')}</span>;
+                                                                return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>{t('admin.researchAdmin.invalidJson')}</span>;
                                                             }
                                                         })()
                                                     )}
@@ -737,7 +737,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                             }
                                                         }}
                                                     >
-                                                        {t('admin.researchAdmin.prettifyJson', 'Prettify JSON')}
+                                                        {t('admin.researchAdmin.prettifyJson')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -748,7 +748,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                 onChange={(e) =>
                                                     setEditingItem({ ...editingItem, customDataString: e.target.value })
                                                 }
-                                                placeholder={t('admin.researchAdmin.customDataHelp', '// Optional JSON payload passed to component props')}
+                                                placeholder={t('admin.researchAdmin.customDataHelp')}
                                             />
                                         </div>
                                     </>
@@ -757,7 +757,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 {editingItem.type === 'external' && (
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            {t('admin.labels.externalUrl', 'External URL')} <span className="required">*</span>
+                                            {t('admin.labels.externalUrl')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="url"
@@ -766,7 +766,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                             onChange={(e) =>
                                                 setEditingItem({ ...editingItem, url: e.target.value })
                                             }
-                                            placeholder={t('admin.researchAdmin.urlPlaceholder', 'https://...')}
+                                            placeholder={t('admin.researchAdmin.urlPlaceholder')}
                                             required
                                         />
                                     </div>
@@ -775,15 +775,15 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 {editingItem.type === 'article' && (
                                     <div className="cms-form-group" style={{ marginTop: '0.85rem' }}>
                                         <label className="cms-form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
-                                            {t('admin.labels.contentMarkdown', 'Article Markdown Content')} <span className="required">*</span>
+                                            {t('admin.labels.contentMarkdown')} <span className="required">*</span>
                                         </label>
                                         {loadingMarkdown ? (
-                                            <p className="admin-loading-text">{t('admin.messages.loadingMarkdown', 'Loading markdown...')}</p>
+                                            <p className="admin-loading-text">{t('admin.messages.loadingMarkdown')}</p>
                                         ) : (
                                             <CmsMarkdownEditor
                                                 value={markdownContent}
                                                 onChange={setMarkdownContent}
-                                                placeholder={t('admin.placeholders.writeArticleMarkdown', 'Write research article markdown here...')}
+                                                placeholder={t('admin.placeholders.writeArticleMarkdown')}
                                             />
                                         )}
                                     </div>
@@ -795,14 +795,14 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${activeLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setActiveLangTab('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
                                         onClick={() => setActiveLangTab('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                 </div>
 
@@ -810,7 +810,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.title', 'Title')}
+                                                {t('admin.labels.title')}
                                             </label>
                                             <input
                                                 type="text"
@@ -822,13 +822,13 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), title: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.titleEnPlaceholder', 'Research Paper Title')}
+                                                placeholder={t('admin.researchAdmin.titleEnPlaceholder')}
                                             />
                                         </div>
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.sectionTitleGroup', 'Section Title / Group')}
+                                                {t('admin.labels.sectionTitleGroup')}
                                             </label>
                                             <input
                                                 type="text"
@@ -841,7 +841,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.sectionTitleEnPlaceholder', 'e.g. Linguistics / Natural Language Processing')}
+                                                placeholder={t('admin.researchAdmin.sectionTitleEnPlaceholder')}
                                             />
                                             <datalist id="research-sections-list-en">
                                                 {sections.map((s) => (
@@ -852,7 +852,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.description', 'Description')}
+                                                {t('admin.labels.description')}
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
@@ -863,7 +863,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         en: { ...(editingItem.en || {}), description: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.summaryEnPlaceholder', 'Summary of research...')}
+                                                placeholder={t('admin.researchAdmin.summaryEnPlaceholder')}
                                             />
                                         </div>
                                     </>
@@ -873,7 +873,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.title', 'Title')}
+                                                {t('admin.labels.title')}
                                             </label>
                                             <input
                                                 type="text"
@@ -885,13 +885,13 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), title: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.titleKnPlaceholder', 'ಸಂಶೋಧನಾ ಶೀರ್ಷಿಕೆ')}
+                                                placeholder={t('admin.researchAdmin.titleKnPlaceholder')}
                                             />
                                         </div>
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.sectionTitleGroup', 'Section Title / Group')}
+                                                {t('admin.labels.sectionTitleGroup')}
                                             </label>
                                             <input
                                                 type="text"
@@ -904,7 +904,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), sectionTitle: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.sectionTitleKnPlaceholder', 'ವಿಭಾಗದ ಶೀರ್ಷಿಕೆ')}
+                                                placeholder={t('admin.researchAdmin.sectionTitleKnPlaceholder')}
                                             />
                                             <datalist id="research-sections-list-kn">
                                                 {sections.map((s) => (
@@ -915,7 +915,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.description', 'Description')}
+                                                {t('admin.labels.description')}
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
@@ -926,7 +926,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                                         kn: { ...(editingItem.kn || {}), description: e.target.value },
                                                     })
                                                 }
-                                                placeholder={t('admin.researchAdmin.summaryKnPlaceholder', 'ಸಂಶೋಧನೆಯ ಸಾರಾಂಶ...')}
+                                                placeholder={t('admin.researchAdmin.summaryKnPlaceholder')}
                                             />
                                         </div>
                                     </>
@@ -935,12 +935,12 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                 <div className="cms-form-group">
                                     <CmsImageUploader
                                         folder="img"
-                                        label={t('admin.researchAdmin.thumbnailImage', 'Thumbnail Image (Optional)')}
+                                        label={t('admin.researchAdmin.thumbnailImage')}
                                         value={editingItem.image || ''}
                                         onChange={(imgVal) =>
                                             setEditingItem({ ...editingItem, image: imgVal })
                                         }
-                                        helpText={t('admin.researchAdmin.thumbnailHelp', 'Thumbnail image for the research card.')}
+                                        helpText={t('admin.researchAdmin.thumbnailHelp')}
                                     />
                                 </div>
                             </div>
@@ -951,7 +951,7 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsEditModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -959,10 +959,10 @@ const CmsResearch = ({ data = [], onSave, saving }) => {
                                     disabled={saving}
                                 >
                                     {saving
-                                        ? t('admin.actions.saving', 'Saving...')
+                                        ? t('admin.actions.saving')
                                         : (editingItem._index !== undefined
-                                            ? t('admin.actions.save', 'Save Research Item')
-                                            : t('admin.actions.newPublication', 'Add Research Item'))}
+                                            ? t('admin.actions.save')
+                                            : t('admin.actions.newPublication'))}
                                 </button>
                             </div>
                         </form>

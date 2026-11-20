@@ -2,11 +2,11 @@ import React, {useEffect, useState} from 'react';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import ResearchCard from './ResearchCard';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import {getAllResearchPosts, getTranslatedResearch} from '../utils/researchUtils';
 
 const Research = () => {
-    const {t, language} = useLanguage();
+    const {t, language} = useContent();
     const [researchSections, setResearchSections] = useState([]);
     const [loading, setLoading] = useState(true);
 

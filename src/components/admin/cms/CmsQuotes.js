@@ -94,7 +94,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
     const handleDelete = async (index) => {
         const item = quotes[index];
         const preview = item?.text || 'this quote';
-        if (!window.confirm(`Are you sure you want to delete quote: "${preview.slice(0, 40)}..."?`)) {
+        if (!window.confirm(t('admin.ui.cmsQuotes.areYouSureYouWantTo', { p0: preview.slice(0, 40) }))) {
             return;
         }
         const updated = quotes.filter((_, i) => i !== index);
@@ -114,7 +114,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
     const handleSaveModal = async (e) => {
         e.preventDefault();
         if (!formState.text.trim()) {
-            setFormError('Please provide the quote text.');
+            setFormError(t('admin.ui.cmsQuotes.pleaseProvideTheQuoteText'));
             return;
         }
 
@@ -162,7 +162,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchQuotes', 'Search quotes by text or author...')}
+                            placeholder={t('admin.placeholders.searchQuotes')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -174,13 +174,13 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         value={filterLang}
                         onChange={(e) => setFilterLang(e.target.value)}
                     >
-                        <option value="all">{t('admin.filters.allLanguages', 'All Languages')}</option>
-                        <option value="en">{t('admin.labels.english', 'English')}</option>
-                        <option value="kn">{t('admin.labels.kannada', 'ಕನ್ನಡ')}</option>
+                        <option value="all">{t('admin.filters.allLanguages')}</option>
+                        <option value="en">{t('admin.labels.english')}</option>
+                        <option value="kn">{t('admin.labels.kannada')}</option>
                     </select>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredQuotes.length)} {t('admin.messages.of', 'of')} {formatNumber(quotes.length)}
+                        {formatNumber(filteredQuotes.length)} {t('admin.messages.of')} {formatNumber(quotes.length)}
                     </span>
                 </div>
 
@@ -190,7 +190,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAdd}
                     >
-                        {t('admin.actions.addQuote', '+ Add Quote')}
+                        {t('admin.actions.addQuote')}
                     </button>
                 </div>
             </div>
@@ -198,9 +198,9 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
             {/* Standard CMS List Rows */}
             {filteredQuotes.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noQuotes', 'No quotes found')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noQuotes')}</p>
                     <p className="cms-empty-text">
-                        {t('admin.messages.adjustSearch', 'Create quotes to display in the rotating banner at the top of the blog page.')}
+                        {t('admin.messages.adjustSearch')}
                     </p>
                     <button
                         type="button"
@@ -208,7 +208,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                         onClick={handleOpenAdd}
                         style={{ marginTop: '0.75rem' }}
                     >
-                        {t('admin.actions.addQuote', '+ Add First Quote')}
+                        {t('admin.actions.addQuote')}
                     </button>
                 </div>
             ) : (
@@ -228,7 +228,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                                 <span className="cms-tag cms-tag-source">— {quote.author}</span>
                                             )}
                                             <span className="cms-tag cms-tag-lang">
-                                                {quote.language === 'kn' ? t('admin.labels.kannada', 'ಕನ್ನಡ') : t('admin.labels.english', 'English')}
+                                                {quote.language === 'kn' ? t('admin.labels.kannada') : t('admin.labels.english')}
                                             </span>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveUp', 'Move Up')}
+                                        title={t('admin.actions.moveUp')}
                                         disabled={originalIndex === 0 || saving}
                                         onClick={() => handleMove(originalIndex, -1)}
                                     >
@@ -247,7 +247,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveDown', 'Move Down')}
+                                        title={t('admin.actions.moveDown')}
                                         disabled={originalIndex === quotes.length - 1 || saving}
                                         onClick={() => handleMove(originalIndex, 1)}
                                     >
@@ -259,7 +259,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                         onClick={() => handleOpenEdit(quote, originalIndex)}
                                         disabled={saving}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
@@ -267,7 +267,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                         onClick={() => handleDelete(originalIndex)}
                                         disabled={saving}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -282,7 +282,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                     <div className="cms-modal-content cms-modal-lg" onClick={(e) => e.stopPropagation()}>
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
-                                {editingIndex !== null ? t('admin.modals.editQuote', 'Edit Quote') : t('admin.modals.newQuote', 'Add New Quote')}
+                                {editingIndex !== null ? t('admin.modals.editQuote') : t('admin.modals.newQuote')}
                             </h3>
                             <button
                                 type="button"
@@ -303,12 +303,12 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
 
                                 <div className="cms-form-group">
                                     <label className="cms-form-label">
-                                        {t('admin.labels.quoteText', 'Quote Text')} <span className="required">*</span>
+                                        {t('admin.labels.quoteText')} <span className="required">*</span>
                                     </label>
                                     <textarea
                                         className="cms-textarea"
                                         rows={4}
-                                        placeholder={t('admin.placeholders.enterQuoteText', 'Enter the quote text...')}
+                                        placeholder={t('admin.placeholders.enterQuoteText')}
                                         value={formState.text}
                                         onChange={(e) =>
                                             setFormState((prev) => ({
@@ -322,11 +322,11 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
 
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.author', 'Author / Attribution')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.author')}</label>
                                         <input
                                             type="text"
                                             className="cms-input"
-                                            placeholder={t('admin.placeholders.quoteAuthor', 'e.g. James Madison')}
+                                            placeholder={t('admin.placeholders.quoteAuthor')}
                                             value={formState.author}
                                             onChange={(e) =>
                                                 setFormState((prev) => ({
@@ -338,7 +338,7 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.language', 'Language')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.language')}</label>
                                         <select
                                             className="cms-select"
                                             value={formState.language || 'en'}
@@ -349,8 +349,8 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                                 }))
                                             }
                                         >
-                                            <option value="en">{t('admin.labels.english', 'English')}</option>
-                                            <option value="kn">{t('admin.labels.kannada', 'ಕನ್ನಡ')}</option>
+                                            <option value="en">{t('admin.labels.english')}</option>
+                                            <option value="kn">{t('admin.labels.kannada')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -362,14 +362,14 @@ const CmsQuotes = ({ data = [], onSave, saving }) => {
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     className="cms-btn cms-btn-primary"
                                     disabled={saving}
                                 >
-                                    {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.save', 'Save Quote')}
+                                    {saving ? t('admin.actions.saving') : t('admin.actions.save')}
                                 </button>
                             </div>
                         </form>

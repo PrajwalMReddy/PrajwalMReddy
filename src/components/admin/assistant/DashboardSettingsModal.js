@@ -64,7 +64,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                 if (isMounted) {
                     console.error('Failed to load dashboard settings:', err);
                     setSaveStatus('error');
-                    setSaveMessage(err.message || t('admin.settings.loadFailed', 'Failed to load settings'));
+                    setSaveMessage(err.message || t('admin.settings.loadFailed'));
                     setLoading(false);
                 }
             });
@@ -97,7 +97,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
             };
             const res = await assistantApi.updateSettings(settingsToSave);
             setSaveStatus('success');
-            setSaveMessage(t('admin.settings.saved', 'Settings saved successfully!'));
+            setSaveMessage(t('admin.settings.saved'));
             if (res?.settings) {
                 setSettings(res.settings);
             }
@@ -109,7 +109,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
             }, 3000);
         } catch (err) {
             setSaveStatus('error');
-            setSaveMessage(err.message || t('admin.settings.saveFailed', 'Failed to save settings.'));
+            setSaveMessage(err.message || t('admin.settings.saveFailed'));
         } finally {
             setSaving(false);
         }
@@ -119,7 +119,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
     const handleTestCalendar = async () => {
         const icsUrl = settings?.calendar?.icsUrl;
         if (!icsUrl) {
-            setCalendarTestResult({ success: false, error: t('admin.settings.calendar.icsRequired', 'Please enter an ICS URL first.') });
+            setCalendarTestResult({ success: false, error: t('admin.settings.calendar.icsRequired') });
             return;
         }
 
@@ -141,7 +141,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
         setCustomFeedError('');
 
         if (!newFeed.name.trim() || !newFeed.url.trim()) {
-            setCustomFeedError(t('admin.settings.news.customFeedRequired', 'Feed Name and URL are required.'));
+            setCustomFeedError(t('admin.settings.news.customFeedRequired'));
             return;
         }
 
@@ -212,13 +212,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
 
         const cleanName = newTagName.trim().replace(/^#+/, '').trim();
         if (!cleanName) {
-            setTagError(t('admin.settings.news.tagRequired', 'Tag name is required.'));
+            setTagError(t('admin.settings.news.tagRequired'));
             return;
         }
 
         const currentTags = [...getEffectiveTags()];
         if (currentTags.some((tag) => (tag.label || tag.name || '').replace(/^#+/, '').trim().toLowerCase() === cleanName.toLowerCase())) {
-            setTagError(t('admin.settings.news.tagExists', 'A tag with this name already exists.'));
+            setTagError(t('admin.settings.news.tagExists'));
             return;
         }
 
@@ -288,7 +288,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
         if (!locToTest) {
             setLocationTestResult({
                 success: false,
-                error: t('admin.settings.weather.locationEmptyError', 'Please enter a city or location name to verify.'),
+                error: t('admin.settings.weather.locationEmptyError'),
             });
             return;
         }
@@ -310,13 +310,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
             } else {
                 setLocationTestResult({
                     success: false,
-                    error: res?.error || t('admin.settings.weather.locationNotFound', 'Could not find any location matching "{location}". Check the spelling or try adding a state/country.', { location: locToTest }),
+                    error: res?.error || t('admin.settings.weather.locationNotFound', { location: locToTest }),
                 });
             }
         } catch (err) {
             setLocationTestResult({
                 success: false,
-                error: err.message || t('admin.settings.weather.locationError', 'Failed to verify location. Please try again.'),
+                error: err.message || t('admin.settings.weather.locationError'),
             });
         } finally {
             setVerifyingLocation(false);
@@ -338,7 +338,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
 
     const handleDetectGps = () => {
         if (!navigator.geolocation) {
-            alert(t('admin.settings.weather.geolocationUnsupported', 'Geolocation is not supported by your browser.'));
+            alert(t('admin.settings.weather.geolocationUnsupported'));
             return;
         }
 
@@ -376,8 +376,8 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                 setLocationTestResult({
                     success: true,
                     location: detectedCity
-                        ? t('admin.settings.weather.gpsDetected', '{city} (Detected from browser)', { city: detectedCity })
-                        : t('admin.settings.weather.gpsCoordinates', 'GPS Coordinates: {lat}, {lon}', { lat: roundedLat, lon: roundedLon }),
+                        ? t('admin.settings.weather.gpsDetected', { city: detectedCity })
+                        : t('admin.settings.weather.gpsCoordinates', { lat: roundedLat, lon: roundedLon }),
                     latitude: roundedLat,
                     longitude: roundedLon,
                 });
@@ -385,7 +385,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
             },
             (err) => {
                 setDetectingGps(false);
-                alert(t('admin.settings.weather.geolocationError', 'Could not detect location: {message}', { message: err.message }));
+                alert(t('admin.settings.weather.geolocationError', { message: err.message }));
             },
             { timeout: 10000 }
         );
@@ -402,20 +402,20 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                     <div>
                         <h2 className="admin-settings-modal-title">
                             {activeTab === 'data'
-                                ? t('admin.settings.data.title', 'Database & Storage Settings')
-                                : t('admin.settings.title', 'Data Sources Settings')}
+                                ? t('admin.settings.data.title')
+                                : t('admin.settings.title')}
                         </h2>
                         <p className="admin-settings-modal-subtitle">
                             {activeTab === 'data'
-                                ? t('admin.settings.data.subtitle', 'Monitor MongoDB cloud usage, export full database backups, and restore site data.')
-                                : t('admin.settings.subtitle', 'Customize live Calendar, News feeds, and Weather sources without code changes.')}
+                                ? t('admin.settings.data.subtitle')
+                                : t('admin.settings.subtitle')}
                         </p>
                     </div>
                     <button
                         type="button"
                         className="admin-settings-close-btn"
                         onClick={onClose}
-                        aria-label={t('admin.settings.close', 'Close')}
+                        aria-label={t('admin.settings.close')}
                     >
                         &times;
                     </button>
@@ -430,7 +430,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                         className={`admin-settings-tab-btn ${activeTab === 'data' ? 'active' : ''}`}
                         onClick={() => setActiveTab('data')}
                     >
-                        <span>{t('admin.settings.tabs.data', 'Data')}</span>
+                        <span>{t('admin.settings.tabs.data')}</span>
                     </button>
                     <button
                         type="button"
@@ -439,7 +439,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                         className={`admin-settings-tab-btn ${activeTab === 'calendar' ? 'active' : ''}`}
                         onClick={() => setActiveTab('calendar')}
                     >
-                        <span>{t('admin.settings.tabs.calendar', 'Calendar (.ics)')}</span>
+                        <span>{t('admin.settings.tabs.calendar')}</span>
                     </button>
                     <button
                         type="button"
@@ -448,7 +448,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                         className={`admin-settings-tab-btn ${activeTab === 'news' ? 'active' : ''}`}
                         onClick={() => setActiveTab('news')}
                     >
-                        <span>{t('admin.settings.tabs.news', 'News & Topics')}</span>
+                        <span>{t('admin.settings.tabs.news')}</span>
                     </button>
                     <button
                         type="button"
@@ -457,7 +457,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                         className={`admin-settings-tab-btn ${activeTab === 'weather' ? 'active' : ''}`}
                         onClick={() => setActiveTab('weather')}
                     >
-                        <span>{t('admin.settings.tabs.weather', 'Weather')}</span>
+                        <span>{t('admin.settings.tabs.weather')}</span>
                     </button>
                 </div>
 
@@ -475,7 +475,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                     ) : loading ? (
                         <div className="admin-settings-loading">
                             <div className="admin-settings-loading-spinner" />
-                            <div>{t('admin.settings.loading', 'Loading settings...')}</div>
+                            <div>{t('admin.settings.loading')}</div>
                         </div>
                     ) : settings ? (
                         <>
@@ -485,20 +485,20 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                     <div className="admin-settings-card">
                                         <div className="admin-settings-card-header">
                                             <h4 className="admin-settings-card-title">
-                                                {t('admin.settings.calendar.cardTitle', 'Calendar Feed Integration')}
+                                                {t('admin.settings.calendar.cardTitle')}
                                             </h4>
                                         </div>
 
                                         <div className="admin-settings-field-group">
                                             <label className="admin-settings-label">
-                                                {t('admin.settings.calendar.icsUrlLabel', 'Calendar Subscription URL (.ics)')}
+                                                {t('admin.settings.calendar.icsUrlLabel')}
                                                 <span className="admin-settings-required"> *</span>
                                             </label>
                                             <div className="admin-settings-input-action-row">
                                                 <input
                                                     type="url"
                                                     className="admin-settings-input"
-                                                    placeholder={t('admin.settings.calendar.icsUrlPlaceholder', 'https://outlook.office365.com/.../calendar.ics or Google Calendar secret address')}
+                                                    placeholder={t('admin.settings.calendar.icsUrlPlaceholder')}
                                                     value={settings.calendar?.icsUrl || ''}
                                                     onChange={(e) =>
                                                         setSettings({
@@ -513,7 +513,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     onClick={handleTestCalendar}
                                                     disabled={testingCalendar || !settings.calendar?.icsUrl?.trim()}
                                                 >
-                                                    {testingCalendar ? t('admin.settings.testing', 'Testing...') : t('admin.settings.test', 'Test Feed')}
+                                                    {testingCalendar ? t('admin.settings.testing') : t('admin.settings.test')}
                                                 </button>
                                             </div>
                                         </div>
@@ -524,12 +524,12 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 {calendarTestResult.success ? (
                                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
-                                                        <span>{calendarTestResult.message || t('admin.settings.calendar.feedVerified', 'Feed verified ({count} events found)', { count: calendarTestResult.eventCount })}</span>
+                                                        <span>{calendarTestResult.message || t('admin.settings.calendar.feedVerified', { count: calendarTestResult.eventCount })}</span>
                                                     </span>
                                                 ) : (
                                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                                        <span>{calendarTestResult.error || t('admin.settings.calendar.testFailed', 'Failed to load feed')}</span>
+                                                        <span>{calendarTestResult.error || t('admin.settings.calendar.testFailed')}</span>
                                                     </span>
                                                 )}
                                             </div>
@@ -543,18 +543,18 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 onClick={() => setShowAdvancedCalendar(!showAdvancedCalendar)}
                                             >
                                                 <span>{showAdvancedCalendar ? '▾' : '▸'}</span>
-                                                <span>{showAdvancedCalendar ? t('admin.settings.calendar.advancedToggleHide', 'Hide advanced options') : t('admin.settings.calendar.advancedToggleShow', 'Show advanced web link options (optional)')}</span>
+                                                <span>{showAdvancedCalendar ? t('admin.settings.calendar.advancedToggleHide') : t('admin.settings.calendar.advancedToggleShow')}</span>
                                             </button>
 
                                             {showAdvancedCalendar && (
                                                 <div className="admin-settings-field-group" style={{ marginTop: '0.75rem' }}>
                                                     <label className="admin-settings-label">
-                                                        {t('admin.settings.calendar.htmlUrlLabel', 'Custom Web Calendar Link (optional)')}
+                                                        {t('admin.settings.calendar.htmlUrlLabel')}
                                                     </label>
                                                     <input
                                                         type="url"
                                                         className="admin-settings-input"
-                                                        placeholder={t('admin.settings.calendar.htmlUrlPlaceholder', 'Leave blank to auto-detect from .ics URL')}
+                                                        placeholder={t('admin.settings.calendar.htmlUrlPlaceholder')}
                                                         value={settings.calendar?.htmlUrl || ''}
                                                         onChange={(e) =>
                                                             setSettings({
@@ -564,7 +564,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                         }
                                                     />
                                                     <p className="admin-settings-help-text">
-                                                        {t('admin.settings.calendar.htmlUrlHelp', 'Destination opened by the "Open Calendar" button. If left blank, this is automatically generated from your .ics link.')}
+                                                        {t('admin.settings.calendar.htmlUrlHelp')}
                                                     </p>
                                                 </div>
                                             )}
@@ -597,10 +597,10 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                                                         <line x1="7" y1="7" x2="7.01" y2="7" />
                                                     </svg>
-                                                    {t('admin.settings.news.tagsTitle', 'Topic Tags & Interests')}
+                                                    {t('admin.settings.news.tagsTitle')}
                                                 </h4>
                                                 <p className="admin-settings-help-text" style={{ margin: '0.25rem 0 0 0' }}>
-                                                    {t('admin.settings.news.tagsHelp', 'Add topic tags to tailor your live dashboard news briefing.')}
+                                                    {t('admin.settings.news.tagsHelp')}
                                                 </p>
                                             </div>
                                         </div>
@@ -616,7 +616,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     <input
                                                         type="text"
                                                         className="admin-settings-tag-search-input"
-                                                        placeholder={t('admin.settings.news.searchTags', 'Search tags...')}
+                                                        placeholder={t('admin.settings.news.searchTags')}
                                                         value={tagSearchTerm}
                                                         onChange={(e) => setTagSearchTerm(e.target.value)}
                                                     />
@@ -625,7 +625,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                             type="button"
                                                             className="admin-settings-tag-search-clear"
                                                             onClick={() => setTagSearchTerm('')}
-                                                            aria-label={t('admin.settings.news.clearSearch', 'Clear search')}
+                                                            aria-label={t('admin.settings.news.clearSearch')}
                                                         >
                                                             &times;
                                                         </button>
@@ -635,32 +635,32 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 <div className="admin-settings-tag-toolbar-actions">
                                                     <span className={`admin-settings-tag-count-badge ${activeCount > 0 ? 'has-active' : ''}`}>
                                                         <span className="admin-settings-tag-count-dot" />
-                                                        {activeCount} / {effectiveTags.length} {t('admin.settings.news.tagsActive', 'active')}
+                                                        {activeCount} / {effectiveTags.length} {t('admin.settings.news.tagsActive')}
                                                     </span>
                                                     <button
                                                         type="button"
                                                         className="admin-settings-tag-action-btn"
                                                         onClick={handleEnableAllTags}
                                                         disabled={effectiveTags.length === 0}
-                                                        title={t('admin.settings.news.selectAllHelp', 'Enable all tags')}
+                                                        title={t('admin.settings.news.selectAllHelp')}
                                                     >
                                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                             <polyline points="20 6 9 17 4 12" />
                                                         </svg>
-                                                        {t('admin.settings.news.selectAll', 'Select All')}
+                                                        {t('admin.settings.news.selectAll')}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         className="admin-settings-tag-action-btn"
                                                         onClick={handleDisableAllTags}
                                                         disabled={effectiveTags.length === 0}
-                                                        title={t('admin.settings.news.clearAllHelp', 'Disable all tags')}
+                                                        title={t('admin.settings.news.clearAllHelp')}
                                                     >
                                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                             <line x1="18" y1="6" x2="6" y2="18" />
                                                             <line x1="6" y1="6" x2="18" y2="18" />
                                                         </svg>
-                                                        {t('admin.settings.news.clearAll', 'Clear All')}
+                                                        {t('admin.settings.news.clearAll')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -677,10 +677,10 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 </div>
                                                 <div className="admin-settings-tag-empty-text">
                                                     <h5 className="admin-settings-tag-empty-title">
-                                                        {t('admin.settings.news.noTagsTitle', 'No Topic Tags Yet')}
+                                                        {t('admin.settings.news.noTagsTitle')}
                                                     </h5>
                                                     <p className="admin-settings-tag-empty-desc">
-                                                        {t('admin.settings.news.noTagsHelp', 'Add your custom topic tags below (e.g. Artificial Intelligence, Startups, Space) to personalize your live news briefing.')}
+                                                        {t('admin.settings.news.noTagsHelp')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -695,7 +695,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                             key={tag.id}
                                                             className={`admin-settings-tag-chip ${isEnabled ? 'is-active' : 'is-inactive'}`}
                                                             onClick={() => handleToggleTag(tag.id)}
-                                                            title={isEnabled ? t('admin.settings.news.clickToDisableTag', 'Click to disable tag') : t('admin.settings.news.clickToEnableTag', 'Click to enable tag')}
+                                                            title={isEnabled ? t('admin.settings.news.clickToDisableTag') : t('admin.settings.news.clickToEnableTag')}
                                                             aria-pressed={isEnabled}
                                                         >
                                                             <span className="admin-settings-tag-chip-indicator">
@@ -727,8 +727,8 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                                         handleRemoveTag(tag.id);
                                                                     }
                                                                 }}
-                                                                title={t('admin.settings.news.removeTag', 'Remove {name}', { name: tagTitle })}
-                                                                aria-label={t('admin.settings.news.removeTag', 'Remove {name}', { name: tagTitle })}
+                                                                title={t('admin.settings.news.removeTag', { name: tagTitle })}
+                                                                aria-label={t('admin.settings.news.removeTag', { name: tagTitle })}
                                                             >
                                                                 &times;
                                                             </span>
@@ -738,13 +738,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
 
                                                 {filteredTags.length === 0 && tagSearchTerm && (
                                                     <div className="admin-settings-tag-empty">
-                                                        {t('admin.settings.news.noTagsMatch', 'No tags matching "{term}".', { term: tagSearchTerm })}
+                                                        {t('admin.settings.news.noTagsMatch', { term: tagSearchTerm })}
                                                         <button
                                                             type="button"
                                                             className="admin-settings-tag-clear-filter-link"
                                                             onClick={() => setTagSearchTerm('')}
                                                         >
-                                                            {t('admin.settings.news.clearSearch', 'Clear search')}
+                                                            {t('admin.settings.news.clearSearch')}
                                                         </button>
                                                     </div>
                                                 )}
@@ -763,7 +763,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 <input
                                                     type="text"
                                                     className="admin-settings-add-tag-input"
-                                                    placeholder={t('admin.settings.news.newTagPlaceholder', 'Add custom topic tag (e.g. Quantum Computing, SpaceX, Tesla)...')}
+                                                    placeholder={t('admin.settings.news.newTagPlaceholder')}
                                                     value={newTagName}
                                                     onChange={(e) => setNewTagName(e.target.value)}
                                                 />
@@ -773,7 +773,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     <line x1="12" y1="5" x2="12" y2="19" />
                                                     <line x1="5" y1="12" x2="19" y2="12" />
                                                 </svg>
-                                                {t('admin.settings.news.addTagBtn', 'Add Tag')}
+                                                {t('admin.settings.news.addTagBtn')}
                                             </button>
                                         </form>
 
@@ -794,10 +794,10 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                         <path d="M4 4a16 16 0 0 1 16 16" />
                                                         <circle cx="5" cy="19" r="1" />
                                                     </svg>
-                                                    {t('admin.settings.news.customFeedsTitle', 'Custom RSS Feeds')}
+                                                    {t('admin.settings.news.customFeedsTitle')}
                                                 </h4>
                                                 <p className="admin-settings-help-text" style={{ margin: '0.25rem 0 0 0' }}>
-                                                    {t('admin.settings.news.customFeedsHelp', 'Add arbitrary RSS/Atom feeds from any publication.')}
+                                                    {t('admin.settings.news.customFeedsHelp')}
                                                 </p>
                                             </div>
                                         </div>
@@ -817,7 +817,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                                 type="button"
                                                                 className="admin-settings-feed-del-btn"
                                                                 onClick={() => handleRemoveCustomFeed(feed.id)}
-                                                                title={t('admin.settings.news.removeFeed', 'Remove {name}', { name: feed.name })}
+                                                                title={t('admin.settings.news.removeFeed', { name: feed.name })}
                                                             >
                                                                 &times;
                                                             </button>
@@ -827,7 +827,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                             </div>
                                         ) : (
                                             <p className="admin-settings-feed-empty-hint">
-                                                {t('admin.settings.news.noCustomFeeds', 'No custom RSS feeds added yet.')}
+                                                {t('admin.settings.news.noCustomFeeds')}
                                             </p>
                                         )}
 
@@ -836,43 +836,43 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                             <div className="admin-settings-add-feed-grid">
                                                 <div>
                                                     <label className="admin-settings-label">
-                                                        {t('admin.settings.news.feedName', 'Feed Name')}
+                                                        {t('admin.settings.news.feedName')}
                                                     </label>
                                                     <input
                                                         type="text"
                                                         className="admin-settings-input"
-                                                        placeholder={t('admin.settings.news.feedNamePlaceholder', 'Feed Name (e.g. Ars Technica)')}
+                                                        placeholder={t('admin.settings.news.feedNamePlaceholder')}
                                                         value={newFeed.name}
                                                         onChange={(e) => setNewFeed({ ...newFeed, name: e.target.value })}
                                                     />
                                                 </div>
                                                 <div>
                                                     <label className="admin-settings-label">
-                                                        {t('admin.settings.news.feedUrl', 'RSS Feed URL')}
+                                                        {t('admin.settings.news.feedUrl')}
                                                     </label>
                                                     <input
                                                         type="url"
                                                         className="admin-settings-input"
-                                                        placeholder={t('admin.settings.news.feedUrlPlaceholder', 'https://example.com/rss.xml')}
+                                                        placeholder={t('admin.settings.news.feedUrlPlaceholder')}
                                                         value={newFeed.url}
                                                         onChange={(e) => setNewFeed({ ...newFeed, url: e.target.value })}
                                                     />
                                                 </div>
                                                 <div>
                                                     <label className="admin-settings-label">
-                                                        {t('admin.settings.news.feedBadge', 'Badge')}
+                                                        {t('admin.settings.news.feedBadge')}
                                                     </label>
                                                     <input
                                                         type="text"
                                                         className="admin-settings-input"
-                                                        placeholder={t('admin.settings.news.feedBadgePlaceholder', 'Tech')}
+                                                        placeholder={t('admin.settings.news.feedBadgePlaceholder')}
                                                         value={newFeed.badge}
                                                         onChange={(e) => setNewFeed({ ...newFeed, badge: e.target.value })}
                                                     />
                                                 </div>
                                                 <div className="admin-settings-add-feed-btn-col">
                                                     <button type="submit" className="admin-settings-btn-secondary">
-                                                        + {t('admin.settings.news.addFeed', 'Add Feed')}
+                                                        + {t('admin.settings.news.addFeed')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -892,7 +892,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                     <div className="admin-settings-card">
                                         <div className="admin-settings-card-header">
                                             <h4 className="admin-settings-card-title">
-                                                {t('admin.settings.weather.locationLabel', 'Weather Location')}
+                                                {t('admin.settings.weather.locationLabel')}
                                             </h4>
                                             {settings.weather?.defaultLocation && (
                                                 <span className="admin-settings-field-tag">
@@ -901,14 +901,14 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                             )}
                                         </div>
                                         <p className="admin-settings-help-text" style={{ marginTop: 0, marginBottom: '0.65rem' }}>
-                                            {t('admin.settings.weather.locationHelp', 'City, region or country used when opening the dashboard.')}
+                                            {t('admin.settings.weather.locationHelp')}
                                         </p>
 
                                         <div className="admin-settings-input-action-row">
                                             <input
                                                 type="text"
                                                 className="admin-settings-input"
-                                                placeholder={t('admin.settings.weather.locationPlaceholder', 'e.g. Ithaca, NY or Seattle, WA or Bengaluru, India')}
+                                                placeholder={t('admin.settings.weather.locationPlaceholder')}
                                                 value={settings.weather?.defaultLocation || ''}
                                                 onChange={(e) => {
                                                     setSettings({
@@ -930,7 +930,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 onClick={() => handleVerifyLocation()}
                                                 disabled={verifyingLocation || !settings.weather?.defaultLocation?.trim()}
                                             >
-                                                {verifyingLocation ? t('admin.settings.weather.verifying', 'Checking...') : t('admin.settings.weather.verifyBtn', 'Verify Location')}
+                                                {verifyingLocation ? t('admin.settings.weather.verifying') : t('admin.settings.weather.verifyBtn')}
                                             </button>
                                         </div>
 
@@ -943,12 +943,12 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                 {locationTestResult.success ? (
                                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
-                                                        <span>{t('admin.settings.weather.locationVerified', 'Location verified')}: {locationTestResult.location}</span>
+                                                        <span>{t('admin.settings.weather.locationVerified')}: {locationTestResult.location}</span>
                                                     </span>
                                                 ) : (
                                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                                        <span>{locationTestResult.error || t('admin.settings.weather.locationNotFound', 'Location not found')}</span>
+                                                        <span>{locationTestResult.error || t('admin.settings.weather.locationNotFound')}</span>
                                                     </span>
                                                 )}
                                             </div>
@@ -960,13 +960,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                         <div className="admin-settings-card-header" style={{ marginBottom: 0, alignItems: 'center' }}>
                                             <div className="admin-settings-card-header-left">
                                                 <h4 className="admin-settings-card-title">
-                                                    {t('admin.settings.weather.unitLabel', 'Temperature Unit')}
+                                                    {t('admin.settings.weather.unitLabel')}
                                                 </h4>
                                                 <p className="admin-settings-help-text" style={{ margin: '0.2rem 0 0 0' }}>
-                                                    {t('admin.settings.weather.unitHelp', 'Display temperatures in Fahrenheit (°F) or Celsius (°C).')}
+                                                    {t('admin.settings.weather.unitHelp')}
                                                 </p>
                                             </div>
-                                            <div className="admin-settings-unit-toggle-compact" role="radiogroup" aria-label={t('admin.settings.weather.unitAria', 'Temperature Unit')}>
+                                            <div className="admin-settings-unit-toggle-compact" role="radiogroup" aria-label={t('admin.settings.weather.unitAria')}>
                                                 <button
                                                     type="button"
                                                     role="radio"
@@ -978,7 +978,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                             weather: { ...settings.weather, defaultUnit: 'F' },
                                                         })
                                                     }
-                                                    title={t('admin.settings.weather.fahrenheit', 'Fahrenheit (°F)')}
+                                                    title={t('admin.settings.weather.fahrenheit')}
                                                 >
                                                     °F
                                                 </button>
@@ -993,7 +993,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                             weather: { ...settings.weather, defaultUnit: 'C' },
                                                         })
                                                     }
-                                                    title={t('admin.settings.weather.celsius', 'Celsius (°C)')}
+                                                    title={t('admin.settings.weather.celsius')}
                                                 >
                                                     °C
                                                 </button>
@@ -1006,13 +1006,13 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                         <div className="admin-settings-card-header">
                                             <div className="admin-settings-card-header-left">
                                                 <h4 className="admin-settings-card-title">
-                                                    {t('admin.settings.weather.coordsLabel', 'GPS Coordinates')}
+                                                    {t('admin.settings.weather.coordsLabel')}
                                                     <span className="admin-settings-field-tag">
-                                                        {t('admin.settings.weather.optional', 'Optional')}
+                                                        {t('admin.settings.weather.optional')}
                                                     </span>
                                                 </h4>
                                                 <p className="admin-settings-help-text" style={{ margin: '0.25rem 0 0 0' }}>
-                                                    {t('admin.settings.weather.coordsHelp', 'Fine-tune exact coordinates for pinpoint hyper-local weather. Leave blank to rely entirely on the city name above.')}
+                                                    {t('admin.settings.weather.coordsHelp')}
                                                 </p>
                                             </div>
                                             <div className="admin-settings-card-header-actions">
@@ -1021,9 +1021,9 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                         type="button"
                                                         className="admin-settings-btn-link-danger"
                                                         onClick={handleClearCoordinates}
-                                                        title={t('admin.settings.weather.clearCoordsTitle', 'Clear manual GPS coordinates')}
+                                                        title={t('admin.settings.weather.clearCoordsTitle')}
                                                     >
-                                                        {t('admin.settings.weather.clearCoords', 'Clear')}
+                                                        {t('admin.settings.weather.clearCoords')}
                                                     </button>
                                                 )}
                                                 <button
@@ -1031,12 +1031,12 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     className="admin-settings-btn-detect"
                                                     onClick={handleDetectGps}
                                                     disabled={detectingGps}
-                                                    title={t('admin.settings.weather.detectGpsTitle', 'Detect GPS coordinates from your browser')}
+                                                    title={t('admin.settings.weather.detectGpsTitle')}
                                                 >
                                                     {detectingGps ? (
                                                         <>
                                                             <span className="admin-settings-spinner-sm" />
-                                                            <span>{t('admin.settings.weather.detecting', 'Detecting...')}</span>
+                                                            <span>{t('admin.settings.weather.detecting')}</span>
                                                         </>
                                                     ) : (
                                                         <>
@@ -1054,7 +1054,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                                 <circle cx="12" cy="12" r="3" />
                                                                 <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
                                                             </svg>
-                                                            <span>{t('admin.settings.weather.detectGps', 'Detect from Browser')}</span>
+                                                            <span>{t('admin.settings.weather.detectGps')}</span>
                                                         </>
                                                     )}
                                                 </button>
@@ -1064,8 +1064,8 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                         <div className="admin-settings-coords-grid">
                                             <div className="admin-settings-coord-group">
                                                 <label className="admin-settings-coord-label">
-                                                    <span>{t('admin.settings.weather.lat', 'Latitude')}</span>
-                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.latHint', '(-90 to 90)')}</span>
+                                                    <span>{t('admin.settings.weather.lat')}</span>
+                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.latHint')}</span>
                                                 </label>
                                                 <div className="admin-settings-input-wrapper">
                                                     <input
@@ -1089,8 +1089,8 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                             </div>
                                             <div className="admin-settings-coord-group">
                                                 <label className="admin-settings-coord-label">
-                                                    <span>{t('admin.settings.weather.lon', 'Longitude')}</span>
-                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.lonHint', '(-180 to 180)')}</span>
+                                                    <span>{t('admin.settings.weather.lon')}</span>
+                                                    <span className="admin-settings-coord-hint">{t('admin.settings.weather.lonHint')}</span>
                                                 </label>
                                                 <div className="admin-settings-input-wrapper">
                                                     <input
@@ -1121,7 +1121,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     <polyline points="20 6 9 17 4 12" />
                                                 </svg>
                                                 <span>
-                                                    {t('admin.settings.weather.coordsActive', 'Custom coordinates active')}: {settings.weather.latitude}°, {settings.weather.longitude}°
+                                                    {t('admin.settings.weather.coordsActive')}: {settings.weather.latitude}°, {settings.weather.longitude}°
                                                 </span>
                                             </div>
                                         ) : (
@@ -1132,7 +1132,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                                     <line x1="12" y1="8" x2="12.01" y2="8" />
                                                 </svg>
                                                 <span>
-                                                    {t('admin.settings.weather.coordsInactive', 'No coordinate overrides — weather resolves via city name above.')}
+                                                    {t('admin.settings.weather.coordsInactive')}
                                                 </span>
                                             </div>
                                         )}
@@ -1152,7 +1152,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                             onClick={onClose}
                             disabled={saving}
                         >
-                            {t('admin.settings.close', 'Close')}
+                            {t('admin.settings.close')}
                         </button>
                         {activeTab !== 'data' && (
                             <button
@@ -1161,7 +1161,7 @@ const DashboardSettingsModal = ({ isOpen, onClose, initialTab = 'data', onSettin
                                 onClick={handleSave}
                                 disabled={saving || loading}
                             >
-                                {saving ? t('admin.settings.saving', 'Saving...') : t('admin.settings.save', 'Save Changes')}
+                                {saving ? t('admin.settings.saving') : t('admin.settings.save')}
                             </button>
                         )}
                     </div>

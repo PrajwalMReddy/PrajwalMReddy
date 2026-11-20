@@ -36,10 +36,10 @@ const BudgetAdmin = () => {
     };
 
     const tabs = [
-        { id: 'expenses', label: t('admin.budgetSection.tabs.expenses', 'Expenses') },
-        { id: 'income', label: t('admin.budgetSection.tabs.income', 'Income') },
-        { id: 'statistics', label: t('admin.budgetSection.tabs.statistics', 'Statistics') },
-        { id: 'planner', label: t('admin.budgetSection.tabs.planner', 'Planner') },
+        { id: 'expenses', label: t('admin.budgetSection.tabs.expenses') },
+        { id: 'income', label: t('admin.budgetSection.tabs.income') },
+        { id: 'statistics', label: t('admin.budgetSection.tabs.statistics') },
+        { id: 'planner', label: t('admin.budgetSection.tabs.planner') },
     ];
     const [expenses, setExpenses] = useState([]);
     const [income, setIncome] = useState([]);
@@ -66,7 +66,7 @@ const BudgetAdmin = () => {
     }, []);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminBudget', 'Budget | Admin | Prajwal Reddy');
+        document.title = t('pageTitles.adminBudget');
     }, [t]);
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const BudgetAdmin = () => {
     };
 
     return (
-        <AdminLayout title={t('admin.budgetSection.title', 'Budget Manager')}>
+        <AdminLayout title={t('admin.budgetSection.title')}>
             <div className="admin-tabs">
                 {tabs.map((tab) => (
                     <button
@@ -92,7 +92,7 @@ const BudgetAdmin = () => {
                 ))}
             </div>
 
-            {loading && <p className="admin-loading-text">{t('admin.budgetSection.loading', 'Loading budget data...')}</p>}
+            {loading && <p className="admin-loading-text">{t('admin.budgetSection.loading')}</p>}
             {error && <p className="admin-error">{error}</p>}
 
             {!loading && !error && (

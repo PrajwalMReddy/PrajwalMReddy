@@ -32,7 +32,7 @@ const NotesAdmin = () => {
     const [selectedId, setSelectedId] = useState(null);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminNotes', 'Notes | Admin | Prajwal Reddy');
+        document.title = t('pageTitles.adminNotes');
     }, [t]);
 
     const [draft, setDraft] = useState({
@@ -122,7 +122,7 @@ const NotesAdmin = () => {
         undoStackRef.current.push({
             id: `hist-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
             noteId: noteId || null,
-            noteTitle: noteTitle || t('admin.notesSection.untitledNote', 'Untitled note'),
+            noteTitle: noteTitle || t('admin.notesSection.untitledNote'),
             beforeDraft: JSON.parse(JSON.stringify(beforeDraft)),
             afterDraft: JSON.parse(JSON.stringify(afterDraft)),
             description,
@@ -192,7 +192,7 @@ const NotesAdmin = () => {
         flushPendingHistory();
 
         if (undoStackRef.current.length === 0) {
-            showToast(t('admin.notesSection.nothingToUndo', 'Nothing to undo'));
+            showToast(t('admin.notesSection.nothingToUndo'));
             return;
         }
 
@@ -209,7 +209,7 @@ const NotesAdmin = () => {
             if (entry.noteId) {
                 draftsCacheRef.current[entry.noteId] = entry.beforeDraft;
             }
-            showToast(`${t('admin.notesSection.undone', 'Undone')}: ${entry.description}`);
+            showToast(`${t('admin.notesSection.undone')}: ${entry.description}`);
         } else {
             if (selectedIdRef.current) {
                 draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
@@ -230,8 +230,8 @@ const NotesAdmin = () => {
                 navigate('/admin/notes', { replace: true });
             }
 
-            const title = entry.noteTitle || t('admin.notesSection.untitledNote', 'Untitled note');
-            showToast(`${t('admin.notesSection.undone', 'Undone')} (${title}): ${entry.description}`);
+            const title = entry.noteTitle || t('admin.notesSection.untitledNote');
+            showToast(`${t('admin.notesSection.undone')} (${title}): ${entry.description}`);
         }
     }, [flushPendingHistory, notes, navigate, t, showToast]);
 
@@ -239,7 +239,7 @@ const NotesAdmin = () => {
         flushPendingHistory();
 
         if (redoStackRef.current.length === 0) {
-            showToast(t('admin.notesSection.nothingToRedo', 'Nothing to redo'));
+            showToast(t('admin.notesSection.nothingToRedo'));
             return;
         }
 
@@ -256,7 +256,7 @@ const NotesAdmin = () => {
             if (entry.noteId) {
                 draftsCacheRef.current[entry.noteId] = entry.afterDraft;
             }
-            showToast(`${t('admin.notesSection.redone', 'Redone')}: ${entry.description}`);
+            showToast(`${t('admin.notesSection.redone')}: ${entry.description}`);
         } else {
             if (selectedIdRef.current) {
                 draftsCacheRef.current[selectedIdRef.current] = draftRef.current;
@@ -277,8 +277,8 @@ const NotesAdmin = () => {
                 navigate('/admin/notes', { replace: true });
             }
 
-            const title = entry.noteTitle || t('admin.notesSection.untitledNote', 'Untitled note');
-            showToast(`${t('admin.notesSection.redone', 'Redone')} (${title}): ${entry.description}`);
+            const title = entry.noteTitle || t('admin.notesSection.untitledNote');
+            showToast(`${t('admin.notesSection.redone')} (${title}): ${entry.description}`);
         }
     }, [flushPendingHistory, notes, navigate, t, showToast]);
 
@@ -337,7 +337,7 @@ const NotesAdmin = () => {
         } catch (e) { }
 
         const count = blocksToCopy.length;
-        showToast(`Copied ${count} widget${count > 1 ? 's' : ''}`);
+        showToast(t(count > 1 ? 'admin.ui.notesAdmin.copiedWidgets' : 'admin.ui.notesAdmin.copiedWidget', { p0: formatNumber(count) }));
     }, [groupedBlockIds, showToast]);
 
     const handlePaste = useCallback(async () => {
@@ -375,7 +375,7 @@ const NotesAdmin = () => {
         }
 
         if (!clipBlocks || clipBlocks.length === 0) {
-            showToast(t('admin.notesSection.clipboardEmpty', 'Clipboard is empty'));
+            showToast(t('admin.notesSection.clipboardEmpty'));
             return;
         }
 
@@ -830,7 +830,7 @@ const NotesAdmin = () => {
                     body: JSON.stringify({ folder: trimmed }),
                 });
             } catch (err) {
-                console.error(t('logs.folderRenameError', 'Failed to rename note folder:'), err);
+                console.error(t('logs.folderRenameError'), err);
             }
         }
         setNotes((current) =>
@@ -840,8 +840,7 @@ const NotesAdmin = () => {
 
     const handleDeleteFolder = async (folderName) => {
         const confirmMsg = t(
-            'admin.notesSection.deleteConfirmFolder',
-            'Delete folder "{name}"? Notes in this folder will be moved to / (root).'
+            'admin.notesSection.deleteConfirmFolder'
         ).replace('{name}', folderName);
         if (!window.confirm(confirmMsg)) return;
 
@@ -864,7 +863,7 @@ const NotesAdmin = () => {
                     body: JSON.stringify({ folder: '' }),
                 });
             } catch (err) {
-                console.error(t('logs.folderDeleteError', 'Failed to clear note folder on delete:'), err);
+                console.error(t('logs.folderDeleteError'), err);
             }
         }
         setNotes((current) =>
@@ -907,8 +906,8 @@ const NotesAdmin = () => {
                     )
                 );
             } catch (err) {
-                console.error(t('logs.folderChangeError', 'Failed to change folder:'), err);
-                setError(t('admin.notesSection.folderChangeError', 'Failed to update folder location'));
+                console.error(t('logs.folderChangeError'), err);
+                setError(t('admin.notesSection.folderChangeError'));
             } finally {
                 setSaving(false);
             }
@@ -1029,7 +1028,7 @@ const NotesAdmin = () => {
     const handleSave = useCallback(async (event) => {
         if (event?.preventDefault) event.preventDefault();
         if (!draft.title.trim()) {
-            setError('Give the note a title before saving.');
+            setError(t('admin.ui.notesAdmin.giveTheNoteATitleBefore'));
             return;
         }
 
@@ -1108,7 +1107,7 @@ const NotesAdmin = () => {
         if (
             !selectedId ||
             !window.confirm(
-                t('admin.notesSection.deleteConfirmNote', 'Delete this note?')
+                t('admin.notesSection.deleteConfirmNote')
             )
         )
             return;
@@ -1824,8 +1823,8 @@ const NotesAdmin = () => {
                             setGroupedBlockIds(allIds);
                             const count = allIds.size;
                             const msg = count === 1
-                                ? t('admin.notesSection.singleWidgetSelected', '1 widget selected')
-                                : t('admin.notesSection.groupSelected', '{count} elements grouped').replace('{count}', formatNumber ? formatNumber(count) : count);
+                                ? t('admin.notesSection.singleWidgetSelected')
+                                : t('admin.notesSection.groupSelected').replace('{count}', formatNumber ? formatNumber(count) : count);
                             showToast(msg);
                             return;
                         }
@@ -2079,19 +2078,19 @@ const NotesAdmin = () => {
     );
 
     return (
-        <AdminLayout title={t('admin.notesSection.title', 'Notes & Ideas')}>
+        <AdminLayout title={t('admin.notesSection.title')}>
             <div
                 className={`admin-notes-workspace${isFullScreen ? ' is-full-screen' : ''}`}
             >
                 <div className="admin-notes-toolbar">
                     <label className="admin-notes-search">
-                        <span>{t('admin.notesSection.searchNotes', 'Search notes')}</span>
+                        <span>{t('admin.notesSection.searchNotes')}</span>
                         <input
                             type="text"
                             inputMode="search"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder={t('admin.notesSection.searchPlaceholder', 'Search title, folder, or content')}
+                            placeholder={t('admin.notesSection.searchPlaceholder')}
                         />
                     </label>
                     <div className="admin-notes-toolbar-actions">
@@ -2106,8 +2105,8 @@ const NotesAdmin = () => {
                                         type="text"
                                         value={toolbarFolderName}
                                         onChange={(e) => setToolbarFolderName(e.target.value)}
-                                        placeholder={t('admin.notesSection.newFolderEllipsis', 'New folder...')}
-                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
+                                        placeholder={t('admin.notesSection.newFolderEllipsis')}
+                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder')}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
@@ -2139,7 +2138,7 @@ const NotesAdmin = () => {
                                             }
                                         }}
                                     >
-                                        {t('admin.notesSection.create', 'Create')}
+                                        {t('admin.notesSection.create')}
                                     </button>
                                     <button
                                         type="button"
@@ -2148,8 +2147,8 @@ const NotesAdmin = () => {
                                             setIsCreatingToolbarFolder(false);
                                             setToolbarFolderName('');
                                         }}
-                                        title={t('admin.notesSection.cancel', 'Cancel')}
-                                        aria-label={t('admin.notesSection.cancel', 'Cancel')}
+                                        title={t('admin.notesSection.cancel')}
+                                        aria-label={t('admin.notesSection.cancel')}
                                     >
                                         ✕
                                     </button>
@@ -2162,9 +2161,9 @@ const NotesAdmin = () => {
                                         setIsCreatingToolbarFolder(true);
                                         setToolbarFolderName('');
                                     }}
-                                    title={t('admin.notesSection.newFolder', 'Create new folder')}
+                                    title={t('admin.notesSection.newFolder')}
                                 >
-                                    {t('admin.notesSection.newFolderBtn', '+ New folder')}
+                                    {t('admin.notesSection.newFolderBtn')}
                                 </button>
                             )
                         )}
@@ -2176,13 +2175,13 @@ const NotesAdmin = () => {
                                 startNewNote('');
                             }}
                         >
-                            {t('admin.notesSection.newNoteBtn', '+ New note')}
+                            {t('admin.notesSection.newNoteBtn')}
                         </button>
                     </div>
                 </div>
 
                 {error && <p className="admin-error">{error}</p>}
-                {loading && <p className="admin-loading-text">{t('admin.notesSection.loading', 'Loading notes...')}</p>}
+                {loading && <p className="admin-loading-text">{t('admin.notesSection.loading')}</p>}
 
                 {!loading && (
                     <div className="admin-notes-layout">
@@ -2215,7 +2214,7 @@ const NotesAdmin = () => {
                             startNewNote={startNewNote}
                         />
 
-                        <section className="admin-note-editor" aria-label="Note editor">
+                        <section className="admin-note-editor" aria-label={t('admin.ui.notesAdmin.noteEditor')}>
                             <form onSubmit={handleSave}>
                                 <div className="admin-note-editor-header">
                                     <div className="admin-note-title-wrap">
@@ -2223,8 +2222,8 @@ const NotesAdmin = () => {
                                             className="admin-note-title"
                                             value={draft.title}
                                             onChange={handleTitleChange}
-                                            placeholder={t('admin.notesSection.untitledNote', 'Untitled note')}
-                                            aria-label={t('admin.labels.title', 'Note title')}
+                                            placeholder={t('admin.notesSection.untitledNote')}
+                                            aria-label={t('admin.labels.title')}
                                         />
                                         {noteView !== 'archived' && (
                                             <div
@@ -2240,7 +2239,7 @@ const NotesAdmin = () => {
                                                     }
                                                     aria-expanded={isFolderDropdownOpen}
                                                     aria-haspopup="listbox"
-                                                    title={t('admin.notesSection.changeFolder', 'Change note folder location')}
+                                                    title={t('admin.notesSection.changeFolder')}
                                                 >
                                                     <span
                                                         className="admin-note-folder-chip-icon"
@@ -2251,7 +2250,7 @@ const NotesAdmin = () => {
                                                     <span className="admin-note-folder-chip-label">
                                                         {draft.folder
                                                             ? `/${draft.folder}`
-                                                            : t('admin.notesSection.rootFolder', '/ (Root)')}
+                                                            : t('admin.notesSection.rootFolder')}
                                                     </span>
                                                     <span
                                                         className="admin-note-folder-chip-arrow"
@@ -2267,7 +2266,7 @@ const NotesAdmin = () => {
                                                         role="listbox"
                                                     >
                                                         <div className="admin-note-folder-menu-header">
-                                                            <span>{t('admin.notesSection.noteLocation', 'Note Location')}</span>
+                                                            <span>{t('admin.notesSection.noteLocation')}</span>
                                                         </div>
                                                         <div className="admin-note-folder-menu-items">
                                                             <button
@@ -2285,7 +2284,7 @@ const NotesAdmin = () => {
                                                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
                                                                 </span>
                                                                 <span className="admin-note-folder-item-text">
-                                                                    {t('admin.notesSection.rootFolder', '/ (Root)')}
+                                                                    {t('admin.notesSection.rootFolder')}
                                                                 </span>
                                                                 {!draft.folder && (
                                                                     <span
@@ -2358,8 +2357,8 @@ const NotesAdmin = () => {
                                                                                 e.target.value
                                                                             )
                                                                         }
-                                                                        placeholder={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name...')}
-                                                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
+                                                                        placeholder={t('admin.notesSection.newFolderNamePlaceholder')}
+                                                                        aria-label={t('admin.notesSection.newFolderNamePlaceholder')}
                                                                         onKeyDown={(e) => {
                                                                             if (
                                                                                 e.key === 'Enter'
@@ -2440,7 +2439,7 @@ const NotesAdmin = () => {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        {t('admin.notesSection.create', 'Create')}
+                                                                        {t('admin.notesSection.create')}
                                                                     </button>
                                                                     <button
                                                                         type="button"
@@ -2455,8 +2454,8 @@ const NotesAdmin = () => {
                                                                                 ''
                                                                             );
                                                                         }}
-                                                                        title={t('admin.notesSection.cancel', 'Cancel')}
-                                                                        aria-label={t('admin.notesSection.cancel', 'Cancel')}
+                                                                        title={t('admin.notesSection.cancel')}
+                                                                        aria-label={t('admin.notesSection.cancel')}
                                                                     >
                                                                         ✕
                                                                     </button>
@@ -2473,7 +2472,7 @@ const NotesAdmin = () => {
                                                                     }}
                                                                 >
                                                                     <span aria-hidden="true">+</span>{' '}
-                                                                    {t('admin.notesSection.newFolderEllipsis', 'New folder...')}
+                                                                    {t('admin.notesSection.newFolderEllipsis')}
                                                                 </button>
                                                             )}
                                                         </div>
@@ -2491,18 +2490,18 @@ const NotesAdmin = () => {
                                                 disabled={saving}
                                                 title={
                                                     draft.pinned
-                                                        ? t('admin.notesSection.unpinFromDashboard', 'Unpin from Dashboard')
-                                                        : t('admin.notesSection.pinToDashboard', 'Pin to Dashboard')
+                                                        ? t('admin.notesSection.unpinFromDashboard')
+                                                        : t('admin.notesSection.pinToDashboard')
                                                 }
                                                 aria-label={
                                                     draft.pinned
-                                                        ? t('admin.notesSection.unpinFromDashboard', 'Unpin from Dashboard')
-                                                        : t('admin.notesSection.pinToDashboard', 'Pin to Dashboard')
+                                                        ? t('admin.notesSection.unpinFromDashboard')
+                                                        : t('admin.notesSection.pinToDashboard')
                                                 }
                                             >
                                                 {draft.pinned
-                                                    ? t('admin.notesSection.pinned', 'Pinned')
-                                                    : t('admin.notesSection.pin', 'Pin')}
+                                                    ? t('admin.notesSection.pinned')
+                                                    : t('admin.notesSection.pin')}
                                             </button>
                                         )}
                                         {selectedId && (
@@ -2513,8 +2512,8 @@ const NotesAdmin = () => {
                                                 disabled={saving}
                                             >
                                                 {noteView === 'archived'
-                                                    ? t('admin.notesSection.unarchive', 'Unarchive')
-                                                    : t('admin.notesSection.archive', 'Archive')}
+                                                    ? t('admin.notesSection.unarchive')
+                                                    : t('admin.notesSection.archive')}
                                             </button>
                                         )}
                                         {selectedId && (
@@ -2524,7 +2523,7 @@ const NotesAdmin = () => {
                                                 onClick={handleDelete}
                                                 disabled={saving}
                                             >
-                                                {t('admin.notesSection.delete', 'Delete')}
+                                                {t('admin.notesSection.delete')}
                                             </button>
                                         )}
 
@@ -2537,13 +2536,13 @@ const NotesAdmin = () => {
                                             aria-pressed={isFullScreen}
                                             aria-label={
                                                 isFullScreen
-                                                    ? t('admin.notesSection.exitFullScreen', 'Exit full screen')
-                                                    : t('admin.notesSection.fullScreen', 'Full screen')
+                                                    ? t('admin.notesSection.exitFullScreen')
+                                                    : t('admin.notesSection.fullScreen')
                                             }
                                         >
                                             {isFullScreen
-                                                ? t('admin.notesSection.exitFullScreen', 'Exit full screen')
-                                                : t('admin.notesSection.fullScreen', 'Full screen')}
+                                                ? t('admin.notesSection.exitFullScreen')
+                                                : t('admin.notesSection.fullScreen')}
                                         </button>
                                         <button
                                             type="submit"
@@ -2551,19 +2550,19 @@ const NotesAdmin = () => {
                                             disabled={saving}
                                         >
                                             {saving
-                                                ? t('admin.actions.saving', 'Saving...')
-                                                : t('admin.notesSection.saveNote', 'Save note')}
+                                                ? t('admin.actions.saving')
+                                                : t('admin.notesSection.saveNote')}
                                         </button>
                                     </div>
                                 </div>
                                 <div className="admin-note-board-shell">
                                     <div
                                         className="admin-note-widget-palette"
-                                        aria-label="Widget palette"
+                                        aria-label={t('admin.ui.notesAdmin.widgetPalette')}
                                     >
                                         <div className="admin-note-widget-group">
                                             <div className="admin-note-widget-top-row">
-                                                <span>{t('admin.notesSection.widgets', 'Widgets')}</span>
+                                                <span>{t('admin.notesSection.widgets')}</span>
                                                 <div className="admin-note-widget-core">
                                                     {primaryWidgetTypes.map((blockType) => (
                                                         <button
@@ -2599,13 +2598,13 @@ const NotesAdmin = () => {
                                                     aria-expanded={showMoreWidgets}
                                                     aria-label={
                                                         showMoreWidgets
-                                                            ? t('admin.notesSection.hideMoreWidgets', 'Hide more widgets')
-                                                            : t('admin.notesSection.showMoreWidgets', 'Show more widgets')
+                                                            ? t('admin.notesSection.hideMoreWidgets')
+                                                            : t('admin.notesSection.showMoreWidgets')
                                                     }
                                                     title={
                                                         showMoreWidgets
-                                                            ? t('admin.notesSection.hideMoreWidgets', 'Hide more widgets')
-                                                            : t('admin.notesSection.showMoreWidgets', 'Show more widgets')
+                                                            ? t('admin.notesSection.hideMoreWidgets')
+                                                            : t('admin.notesSection.showMoreWidgets')
                                                     }
                                                 >
                                                     <span aria-hidden="true">
@@ -2639,7 +2638,7 @@ const NotesAdmin = () => {
                                         {showMoreWidgets && (
                                             <>
                                                 <div className="admin-note-text-tools">
-                                                <span>{t('admin.notesSection.textStyling', 'Text styling')}</span>
+                                                <span>{t('admin.notesSection.textStyling')}</span>
                                                 {TEXT_STYLES.map((style) => (
                                                     <button
                                                         type="button"
@@ -2670,11 +2669,11 @@ const NotesAdmin = () => {
                                                 ))}
                                                 <div
                                                     className="admin-note-font-size-control"
-                                                    aria-label="Font size"
+                                                    aria-label={t('admin.ui.notesAdmin.fontSize')}
                                                 >
                                                     <button
                                                         type="button"
-                                                        aria-label="Decrease font size"
+                                                        aria-label={t('admin.ui.notesAdmin.decreaseFontSize')}
                                                         onMouseDown={(event) => {
                                                             event.preventDefault();
                                                             saveTextSelection();
@@ -2689,7 +2688,7 @@ const NotesAdmin = () => {
                                                     <button
                                                         type="button"
                                                         className="admin-note-font-size-icon"
-                                                        aria-label={`Text size ${TEXT_SIZE_OPTIONS[textSizeLevel].label}`}
+                                                        aria-label={t('admin.ui.notesAdmin.textSize', { p0: TEXT_SIZE_OPTIONS[textSizeLevel].tag === 'p' ? t('admin.ui.notesAdmin.bodyText') : TEXT_SIZE_OPTIONS[textSizeLevel].label })}
                                                         title={
                                                             TEXT_SIZE_OPTIONS[textSizeLevel]
                                                                 .label
@@ -2715,7 +2714,7 @@ const NotesAdmin = () => {
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        aria-label="Increase font size"
+                                                        aria-label={t('admin.ui.notesAdmin.increaseFontSize')}
                                                         onMouseDown={(event) => {
                                                             event.preventDefault();
                                                             saveTextSelection();
@@ -2733,59 +2732,59 @@ const NotesAdmin = () => {
                                                     </button>
                                                 </div>
                                                 </div>
-                                                <div className="admin-note-text-tools admin-note-options-tools" aria-label="Options">
-                                                    <span>{t('admin.notesSection.options', 'Options')}</span>
+                                                <div className="admin-note-text-tools admin-note-options-tools" aria-label={t('admin.ui.notesAdmin.options')}>
+                                                    <span>{t('admin.notesSection.options')}</span>
                                                     <button
                                                         type="button"
                                                         className="admin-note-history-btn"
                                                         onClick={handleUndo}
                                                         disabled={undoStackRef.current.length === 0}
-                                                        title={t('admin.notesSection.undoShortcut', 'Undo (Ctrl+Z)')}
-                                                        aria-label={t('admin.notesSection.undoShortcut', 'Undo (Ctrl+Z)')}
+                                                        title={t('admin.notesSection.undoShortcut')}
+                                                        aria-label={t('admin.notesSection.undoShortcut')}
                                                     >
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                             <polyline points="9 14 4 9 9 4" />
                                                             <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
                                                         </svg>
-                                                        <span>{t('admin.notesSection.undo', 'Undo')}</span>
+                                                        <span>{t('admin.notesSection.undo')}</span>
                                                     </button>
                                                     <button
                                                         type="button"
                                                         className="admin-note-history-btn"
                                                         onClick={handleRedo}
                                                         disabled={redoStackRef.current.length === 0}
-                                                        title={t('admin.notesSection.redoShortcut', 'Redo (Ctrl+Y)')}
-                                                        aria-label={t('admin.notesSection.redoShortcut', 'Redo (Ctrl+Y)')}
+                                                        title={t('admin.notesSection.redoShortcut')}
+                                                        aria-label={t('admin.notesSection.redoShortcut')}
                                                     >
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                             <polyline points="15 14 20 9 15 4" />
                                                             <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
                                                         </svg>
-                                                        <span>{t('admin.notesSection.redo', 'Redo')}</span>
+                                                        <span>{t('admin.notesSection.redo')}</span>
                                                     </button>
                                                     <button
                                                         type="button"
                                                         className="admin-note-history-btn"
                                                         onClick={handlePaste}
                                                         disabled={!hasClipboard}
-                                                        title={t('admin.notesSection.pasteShortcut', 'Paste (Ctrl+V)')}
-                                                        aria-label={t('admin.notesSection.pasteShortcut', 'Paste (Ctrl+V)')}
+                                                        title={t('admin.notesSection.pasteShortcut')}
+                                                        aria-label={t('admin.notesSection.pasteShortcut')}
                                                     >
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                                                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                                                         </svg>
-                                                        <span>{t('admin.notesSection.paste', 'Paste')}</span>
+                                                        <span>{t('admin.notesSection.paste')}</span>
                                                     </button>
                                                 </div>
                                             </>
                                         )}
                                     </div>
                                     {selectedId && activeBacklinks.length > 0 && (
-                                        <div className="admin-note-backlinks-bar" aria-label="Backlinks">
+                                        <div className="admin-note-backlinks-bar" aria-label={t('admin.ui.notesAdmin.backlinks')}>
                                             <span className="admin-note-backlinks-label">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
-                                                {t('admin.notesSection.backlinks', 'Linked from')}:
+                                                {t('admin.notesSection.backlinks')}:
                                             </span>
                                             <div className="admin-note-backlinks-list">
                                                 {activeBacklinks.map((bl) => (
@@ -2842,7 +2841,7 @@ const NotesAdmin = () => {
                                                         gridColumn: `${dropPreview.col} / span ${width}`,
                                                         gridRow: `${dropPreview.row} / span ${height}`,
                                                     }}
-                                                    aria-label={`Drop position: column ${dropPreview.col}, row ${dropPreview.row}`}
+                                                    aria-label={t('admin.ui.notesAdmin.dropPositionColumnRow', { p0: formatNumber(dropPreview.col), p1: formatNumber(dropPreview.row) })}
                                                 />
                                             );
                                         })() : null}
@@ -2886,10 +2885,10 @@ const NotesAdmin = () => {
                                         {draft.blocks.length === 0 && (
                                             <div
                                                 className="admin-note-board-empty"
-                                                aria-label="Empty board"
+                                                aria-label={t('admin.ui.notesAdmin.emptyBoard')}
                                             >
-                                                <p>{t('admin.notesSection.noWidgets', 'No widgets on this board')}</p>
-                                                <span>{t('admin.notesSection.clickWidgetToAdd', 'Click any widget above to add content')}</span>
+                                                <p>{t('admin.notesSection.noWidgets')}</p>
+                                                <span>{t('admin.notesSection.clickWidgetToAdd')}</span>
                                             </div>
                                         )}
                                     </div>
@@ -2900,15 +2899,15 @@ const NotesAdmin = () => {
                                             </span>
                                             <span className="admin-note-group-bar-text">
                                                 {groupedBlockIds.size === 1
-                                                    ? t('admin.notesSection.singleWidgetSelected', '1 widget selected')
-                                                    : t('admin.notesSection.groupSelected', '{count} elements grouped').replace('{count}', formatNumber ? formatNumber(groupedBlockIds.size) : groupedBlockIds.size)}
+                                                    ? t('admin.notesSection.singleWidgetSelected')
+                                                    : t('admin.notesSection.groupSelected').replace('{count}', formatNumber ? formatNumber(groupedBlockIds.size) : groupedBlockIds.size)}
                                             </span>
                                             <div className="admin-note-group-bar-actions">
                                                 <button
                                                     type="button"
                                                     className="admin-note-group-bar-btn"
                                                     onClick={handleCut}
-                                                    title={t('admin.notesSection.cutShortcut', 'Cut (Ctrl+X)')}
+                                                    title={t('admin.notesSection.cutShortcut')}
                                                 >
                                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                         <circle cx="6" cy="6" r="3" />
@@ -2917,40 +2916,40 @@ const NotesAdmin = () => {
                                                         <line x1="14.47" y1="14.48" x2="20" y2="20" />
                                                         <line x1="8.12" y1="8.12" x2="12" y2="12" />
                                                     </svg>
-                                                    <span>{t('admin.notesSection.cut', 'Cut')}</span>
+                                                    <span>{t('admin.notesSection.cut')}</span>
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className="admin-note-group-bar-btn"
                                                     onClick={handleCopy}
-                                                    title={t('admin.notesSection.copyShortcut', 'Copy (Ctrl+C)')}
+                                                    title={t('admin.notesSection.copyShortcut')}
                                                 >
                                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                                                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                                                     </svg>
-                                                    <span>{t('admin.notesSection.copy', 'Copy')}</span>
+                                                    <span>{t('admin.notesSection.copy')}</span>
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className="admin-note-group-bar-btn admin-note-group-bar-btn-delete"
                                                     onClick={handleDeleteSelectedBlocks}
-                                                    title={t('admin.notesSection.deleteShortcut', 'Delete (Del)')}
+                                                    title={t('admin.notesSection.deleteShortcut')}
                                                 >
                                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                         <polyline points="3 6 5 6 21 6" />
                                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                                                     </svg>
-                                                    <span>{t('admin.notesSection.delete', 'Delete')}</span>
+                                                    <span>{t('admin.notesSection.delete')}</span>
                                                 </button>
                                             </div>
                                             <button
                                                 type="button"
                                                 className="admin-note-group-bar-ungroup-btn"
                                                 onClick={() => setGroupedBlockIds(new Set())}
-                                                title={t('admin.notesSection.deselect', 'Deselect (Esc)')}
+                                                title={t('admin.notesSection.deselect')}
                                             >
-                                                ✕ {groupedBlockIds.size > 1 ? t('admin.notesSection.ungroup', 'Ungroup') : t('admin.notesSection.deselect', 'Deselect')}
+                                                ✕ {groupedBlockIds.size > 1 ? t('admin.notesSection.ungroup') : t('admin.notesSection.deselect')}
                                             </button>
                                         </div>
                                     )}
@@ -2968,7 +2967,7 @@ const NotesAdmin = () => {
                                     )}
                                     <div
                                         className="admin-note-canvas-footer"
-                                        aria-label={t('admin.notesSection.canvasHeight', 'Canvas Height')}
+                                        aria-label={t('admin.notesSection.canvasHeight')}
                                     >
                                         <div className="admin-note-canvas-controls">
                                             <button
@@ -2979,12 +2978,11 @@ const NotesAdmin = () => {
                                                 title={
                                                     effectiveRows <= minAllowedRows
                                                         ? t(
-                                                            'admin.notesSection.cannotReduceRows',
-                                                            'Cannot reduce rows below active widgets or minimum (20)'
+                                                            'admin.notesSection.cannotReduceRows'
                                                         )
-                                                        : t('admin.notesSection.delete5Rows', '-5 rows')
+                                                        : t('admin.notesSection.delete5Rows')
                                                 }
-                                                aria-label={t('admin.notesSection.delete5Rows', '-5 rows')}
+                                                aria-label={t('admin.notesSection.delete5Rows')}
                                             >
                                                 <svg
                                                     width="12"
@@ -2999,24 +2997,21 @@ const NotesAdmin = () => {
                                                 >
                                                     <line x1="5" y1="12" x2="19" y2="12" />
                                                 </svg>
-                                                <span>5 {t('admin.notesSection.rowsUnit', 'rows')}</span>
+                                                <span>5 {t('admin.notesSection.rowsUnit')}</span>
                                             </button>
                                             <span className="admin-note-canvas-count" aria-live="polite">
                                                 <strong>
                                                     {formatNumber ? formatNumber(effectiveRows) : effectiveRows}
                                                 </strong>{' '}
-                                                {t('admin.notesSection.rowsUnit', 'rows')}
+                                                {t('admin.notesSection.rowsUnit')}
                                             </span>
                                             <button
                                                 type="button"
                                                 className="admin-note-canvas-btn"
                                                 onClick={() => addRows(5)}
                                                 disabled={effectiveRows >= MAX_GRID_ROWS}
-                                                title={t(
-                                                    'admin.notesSection.add5RowsTitle',
-                                                    t('admin.notesSection.add5Rows', '+5 rows')
-                                                )}
-                                                aria-label={t('admin.notesSection.add5Rows', '+5 rows')}
+                                                title={t('admin.notesSection.add5RowsTitle')}
+                                                aria-label={t('admin.notesSection.add5Rows')}
                                             >
                                                 <svg
                                                     width="12"
@@ -3032,7 +3027,7 @@ const NotesAdmin = () => {
                                                     <line x1="12" y1="5" x2="12" y2="19" />
                                                     <line x1="5" y1="12" x2="19" y2="12" />
                                                 </svg>
-                                                <span>5 {t('admin.notesSection.rowsUnit', 'rows')}</span>
+                                                <span>5 {t('admin.notesSection.rowsUnit')}</span>
                                             </button>
                                             {effectiveRows > minAllowedRows && (
                                                 <>
@@ -3042,12 +3037,10 @@ const NotesAdmin = () => {
                                                         className="admin-note-canvas-btn admin-note-canvas-btn-trim"
                                                         onClick={trimRows}
                                                         title={t(
-                                                            'admin.notesSection.trimEmptyRowsTitle',
-                                                            'Remove trailing empty rows below widgets'
+                                                            'admin.notesSection.trimEmptyRowsTitle'
                                                         )}
                                                         aria-label={t(
-                                                            'admin.notesSection.trimEmptyRows',
-                                                            'Trim empty rows'
+                                                            'admin.notesSection.trimEmptyRows'
                                                         )}
                                                     >
                                                         <svg
@@ -3066,7 +3059,7 @@ const NotesAdmin = () => {
                                                             <line x1="14" y1="10" x2="21" y2="3" />
                                                             <line x1="3" y1="21" x2="10" y2="14" />
                                                         </svg>
-                                                        <span>{t('admin.notesSection.trim', 'Trim')}</span>
+                                                        <span>{t('admin.notesSection.trim')}</span>
                                                     </button>
                                                 </>
                                             )}

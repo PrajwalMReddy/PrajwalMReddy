@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import { useAuth } from '../utils/AuthContext';
 import Settings from './Settings';
 
 const SideNav = () => {
-    const { t } = useLanguage();
+    const { t } = useContent();
     const { authenticated } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
@@ -136,7 +136,7 @@ const SideNav = () => {
                             className="nav-link"
                             onClick={() => setIsOpen(false)}
                         >
-                            {t('navAdmin', 'Admin')}
+                            {t('navAdmin')}
                         </Link>
                     </li>
                 )}

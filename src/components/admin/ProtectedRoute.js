@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
     if (loading) {
         return (
             <div className="admin-loading">
-                <p>{t('admin.login.checkingSession', 'Checking session...')}</p>
+                <p>{t('admin.login.checkingSession')}</p>
             </div>
         );
     }

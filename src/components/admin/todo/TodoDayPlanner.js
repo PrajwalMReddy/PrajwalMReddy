@@ -13,38 +13,6 @@ export const getTodayDateKey = () => {
     return `${year}-${month}-${day}`;
 };
 
-// Format minute (0..1440) to 12h display string e.g. "9:30 AM"
-export const formatMinutesToTime = (totalMinutes) => {
-    if (totalMinutes >= 1440) return '12:00 AM';
-    const mins = Math.max(0, Math.min(1439, Math.floor(totalMinutes)));
-    let hour = Math.floor(mins / 60);
-    const minute = mins % 60;
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
-    const minuteStr = String(minute).padStart(2, '0');
-    return `${hour}:${minuteStr} ${ampm}`;
-};
-
-// Format hour (0..24) to label e.g. "12 AM", "1 PM"
-const formatHourLabel = (hour) => {
-    const h = hour % 24;
-    if (h === 0) return '12 AM';
-    if (h < 12) return `${h} AM`;
-    if (h === 12) return '12 PM';
-    return `${h - 12} PM`;
-};
-
-// Format duration minutes e.g. "45m", "1h 30m"
-export const formatDuration = (mins) => {
-    if (!mins || mins <= 0) return '0m';
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    if (h > 0 && m > 0) return `${h}h ${m}m`;
-    if (h > 0) return `${h}h`;
-    return `${m}m`;
-};
-
 // Extract meeting URL and cleaned location from a calendar event
 function parseEventLocationAndMeeting(item) {
     if (!item) return { displayLocation: '', meetingUrl: null };
@@ -198,29 +166,6 @@ function layoutPlannerBlocks(blocks) {
     return { positioned, maxTracks: Math.max(1, globalMaxTrack + 1) };
 }
 
-// Precomputed 5-minute time options for single time dropdown
-const TIME_OPTIONS = Array.from({ length: 288 }, (_, i) => {
-    const mins = i * 5;
-    return {
-        value: mins,
-        label: formatMinutesToTime(mins),
-    };
-});
-
-// Generate 5-minute End Time options strictly after a given start minute up to 1440 (midnight)
-const getEndTimeOptions = (startMin) => {
-    const start = typeof startMin === 'number' ? startMin : 540;
-    const options = [];
-    for (let m = start + 5; m <= 1440; m += 5) {
-        const timeStr = m === 1440 ? '12:00 AM' : formatMinutesToTime(m);
-        options.push({
-            value: m,
-            label: timeStr,
-        });
-    }
-    return options;
-};
-
 const TodoDayPlanner = ({
     todos = [],
     draggedId = null,
@@ -229,7 +174,33 @@ const TodoDayPlanner = ({
     onToggleTodo,
     onEditTodo,
 }) => {
-    const { t } = useContent();
+    const { t, formatTime, formatNumber } = useContent();
+
+    // Time and duration labels in the active language (shadow the module helpers).
+    const formatMinutesToTime = (totalMinutes) => {
+        const mins = totalMinutes >= 1440 ? 0 : Math.max(0, Math.min(1439, Math.floor(totalMinutes)));
+        return formatTime(new Date(2000, 0, 1, Math.floor(mins / 60), mins % 60));
+    };
+    const formatHourLabel = (hour) => formatTime(hour % 24, { minutes: false });
+    const formatDuration = (mins) => {
+        const total = mins > 0 ? Math.round(mins) : 0;
+        const h = Math.floor(total / 60);
+        const m = total % 60;
+        if (h > 0 && m > 0) return t('admin.ui.time.hoursMinutes', { h: formatNumber(h), m: formatNumber(m) });
+        if (h > 0) return t('admin.ui.time.hours', { h: formatNumber(h) });
+        return t('admin.ui.time.minutes', { m: formatNumber(m) });
+    };
+
+    // 5-minute time options for the start-time dropdown
+    const TIME_OPTIONS = Array.from({ length: 288 }, (_, i) => ({ value: i * 5, label: formatMinutesToTime(i * 5) }));
+
+    // 5-minute end-time options strictly after the start minute, up to midnight
+    const getEndTimeOptions = (startMin) => {
+        const start = typeof startMin === 'number' ? startMin : 540;
+        const options = [];
+        for (let m = start + 5; m <= 1440; m += 5) options.push({ value: m, label: formatMinutesToTime(m) });
+        return options;
+    };
 
     // Mobile viewport detection for responsive timeline slot scaling (120px on mobile vs 180px desktop)
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
@@ -546,7 +517,7 @@ const TodoDayPlanner = ({
             if (e.key === 'Escape') {
                 if (selectedBlockId) {
                     if (selectedBlock && !selectedBlock.isImmutable && !selectedBlock.todoId) {
-                        const finalTitle = selectedBlockTitle.trim() || t('admin.todoSection.focusTime', 'Focus Block');
+                        const finalTitle = selectedBlockTitle.trim() || t('admin.todoSection.focusTime');
                         setBlocks((prev) =>
                             prev.map((b) => (b.id === selectedBlockId && !b.isImmutable && !b.todoId ? { ...b, title: finalTitle } : b))
                         );
@@ -686,7 +657,7 @@ const TodoDayPlanner = ({
                 if (duration >= 5) {
                     const newBlock = {
                         id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
-                        title: t('admin.todoSection.focusTime', 'Focus Block'),
+                        title: t('admin.todoSection.focusTime'),
                         startMin: minStart,
                         durationMin: duration,
                         color: 'darkblue',
@@ -760,7 +731,7 @@ const TodoDayPlanner = ({
     // Add custom block via composer form
     const handleAddCustomBlock = (e) => {
         e?.preventDefault();
-        const title = customDraft.title.trim() || t('admin.todoSection.focusTime', 'Focus Block');
+        const title = customDraft.title.trim() || t('admin.todoSection.focusTime');
         const startMin = Math.max(0, Math.min(1435, customDraft.startMin ?? 540));
         const endMin = Math.max(startMin + 5, Math.min(1440, customDraft.endMin ?? (startMin + 60)));
         const durationMin = endMin - startMin;
@@ -799,8 +770,7 @@ const TodoDayPlanner = ({
     const handleClearDay = () => {
         if (blocks.length === 0) return;
         const confirmMsg = t(
-            'admin.todoSection.clearPlanConfirm',
-            "Are you sure you want to clear today's planned timeline? (Synced calendar events will remain)"
+            'admin.todoSection.clearPlanConfirm'
         );
         if (window.confirm(confirmMsg)) {
             setBlocks([]);
@@ -824,7 +794,7 @@ const TodoDayPlanner = ({
 
     const handleTitleBlur = (blockId) => {
         if (selectedBlock && !selectedBlock.isImmutable && !selectedBlock.todoId) {
-            const finalTitle = selectedBlockTitle.trim() || t('admin.todoSection.focusTime', 'Focus Block');
+            const finalTitle = selectedBlockTitle.trim() || t('admin.todoSection.focusTime');
             setSelectedBlockTitle(finalTitle);
             setBlocks((prev) =>
                 prev.map((b) => (b.id === blockId && !b.isImmutable && !b.todoId ? { ...b, title: finalTitle } : b))
@@ -853,14 +823,14 @@ const TodoDayPlanner = ({
     return (
         <section
             className={`admin-todo-planner-horizontal ${densityClass}`.trim()}
-            aria-label="Day Planner"
+            aria-label={t('admin.ui.todoDayPlanner.dayPlanner')}
             onDragOver={handleTimelineDragOver}
             onDrop={handleTimelineDrop}
         >
             {/* Header Toolbar */}
             <div className="admin-todo-planner-h-header">
                 <div className="admin-todo-planner-h-left">
-                    <span className="admin-todo-planner-h-title">{t('admin.todoSection.dayPlanner', 'Day Planner')}</span>
+                    <span className="admin-todo-planner-h-title">{t('admin.todoSection.dayPlanner')}</span>
                 </div>
 
                 <div className="admin-todo-planner-h-right">
@@ -868,7 +838,7 @@ const TodoDayPlanner = ({
                     {allDayEvents.length > 0 && (
                         <div className="admin-todo-planner-h-all-day-bar">
                             <span className="admin-todo-planner-all-day-label">
-                                {t('admin.events.allDay', 'All Day')}:
+                                {t('admin.events.allDay')}:
                             </span>
                             <div className="admin-todo-planner-h-all-day-pills">
                                 {allDayEvents.map((evt, idx) => (
@@ -904,9 +874,9 @@ const TodoDayPlanner = ({
                             type="button"
                             className="admin-todo-planner-btn-clear-link"
                             onClick={handleClearDay}
-                            title={t('admin.todoSection.clearPlan', "Clear today's planned blocks")}
+                            title={t('admin.todoSection.clearPlan')}
                         >
-                            {t('admin.todoSection.clear', 'Clear')}
+                            {t('admin.todoSection.clear')}
                         </button>
                     )}
                 </div>
@@ -940,7 +910,7 @@ const TodoDayPlanner = ({
                             </div>
                         ))}
                         <div className="admin-todo-planner-h-hour-slot is-midnight" style={{ width: isMobile ? '40px' : '60px' }}>
-                            <span className="admin-todo-planner-h-hour-label">12 AM</span>
+                            <span className="admin-todo-planner-h-hour-label">{formatHourLabel(24)}</span>
                         </div>
                     </div>
 
@@ -972,7 +942,7 @@ const TodoDayPlanner = ({
                             <div
                                 className="admin-todo-planner-h-now-line"
                                 style={{ left: `${currentTimeLeftPx}px` }}
-                                title={`${t('admin.todoSection.currentTime', 'Current Time')}: ${formatMinutesToTime(currentTimeMin)}`}
+                                title={`${t('admin.todoSection.currentTime')}: ${formatMinutesToTime(currentTimeMin)}`}
                             >
                                 <span className="admin-todo-planner-h-now-pill">
                                     {formatMinutesToTime(currentTimeMin)}
@@ -1007,7 +977,7 @@ const TodoDayPlanner = ({
                                                     height: `${blockHeight}px`,
                                                 }}
                                             >
-                                                <span className="admin-todo-planner-drag-create-badge">+ New</span>
+                                                <span className="admin-todo-planner-drag-create-badge">{t('admin.ui.todoDayPlanner.new')}</span>
                                                 <span>
                                                     {formatMinutesToTime(b.startMin)} – {formatMinutesToTime(b.startMin + (b.durationMin || 60))}
                                                 </span>
@@ -1120,7 +1090,7 @@ const TodoDayPlanner = ({
                                             <div
                                                 className="admin-todo-planner-resize-handle-h"
                                                 onMouseDown={(e) => handleResizeMouseDown(b, e)}
-                                                title={t('admin.todoSection.dragToResize', 'Drag right/left to adjust duration')}
+                                                title={t('admin.todoSection.dragToResize')}
                                             >
                                                 <div className="admin-todo-planner-resize-grip-pill-v" />
                                             </div>
@@ -1140,7 +1110,7 @@ const TodoDayPlanner = ({
                     <form onSubmit={handleAddCustomBlock} className="admin-todo-planner-bottom-form-h">
                         <div className="admin-todo-planner-bottom-row-h">
                             <span className="admin-todo-planner-bottom-heading">
-                                {t('admin.todoSection.addCustomBlock', 'New event')}
+                                {t('admin.todoSection.addCustomBlock')}
                             </span>
 
                             <div className="admin-todo-planner-bottom-title-box">
@@ -1149,7 +1119,7 @@ const TodoDayPlanner = ({
                                     type="text"
                                     className="admin-todo-planner-bottom-title-input"
                                     autoFocus
-                                    placeholder={t('admin.todoSection.customBlockPlaceholder', 'Add title')}
+                                    placeholder={t('admin.todoSection.customBlockPlaceholder')}
                                     value={customDraft.title}
                                     onChange={(e) => setCustomDraft({ ...customDraft, title: e.target.value })}
                                 />
@@ -1158,7 +1128,7 @@ const TodoDayPlanner = ({
                             <div className="admin-todo-planner-bottom-time-pickers">
                                 <div className="admin-todo-planner-bottom-field">
                                     <label className="admin-todo-planner-bottom-label">
-                                        {t('admin.todoSection.startTime', 'Start')}
+                                        {t('admin.todoSection.startTime')}
                                     </label>
                                     <select
                                         className="admin-todo-planner-bottom-select"
@@ -1183,7 +1153,7 @@ const TodoDayPlanner = ({
 
                                 <div className="admin-todo-planner-bottom-field">
                                     <label className="admin-todo-planner-bottom-label">
-                                        {t('admin.todoSection.endTime', 'End')}
+                                        {t('admin.todoSection.endTime')}
                                     </label>
                                     <select
                                         className="admin-todo-planner-bottom-select"
@@ -1204,7 +1174,7 @@ const TodoDayPlanner = ({
                                     </select>
                                 </div>
 
-                                <div className="admin-todo-planner-bottom-duration-display" title={t('admin.todoSection.duration', 'Duration')}>
+                                <div className="admin-todo-planner-bottom-duration-display" title={t('admin.todoSection.duration')}>
                                     {formatDuration((customDraft.endMin ?? (customDraft.startMin + 60)) - customDraft.startMin)}
                                 </div>
                             </div>
@@ -1215,10 +1185,10 @@ const TodoDayPlanner = ({
                                     className="admin-todo-planner-bottom-btn-cancel"
                                     onClick={() => setIsAddModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Discard')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button type="submit" className="admin-todo-planner-bottom-btn-save">
-                                    {t('admin.todoSection.addBlock', 'Save')}
+                                    {t('admin.todoSection.addBlock')}
                                 </button>
                             </div>
                         </div>
@@ -1241,8 +1211,8 @@ const TodoDayPlanner = ({
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') e.target.blur();
                                     }}
-                                    placeholder={t('admin.todoSection.customBlockPlaceholder', 'Add title')}
-                                    title={t('admin.todoSection.clickToRename', 'Click to edit title')}
+                                    placeholder={t('admin.todoSection.customBlockPlaceholder')}
+                                    title={t('admin.todoSection.clickToRename')}
                                 />
                             ) : (
                                 <div className="admin-todo-planner-bottom-static-title-wrap">
@@ -1266,7 +1236,7 @@ const TodoDayPlanner = ({
                                         rel="noopener noreferrer"
                                         className="admin-todo-planner-meeting-btn"
                                     >
-                                        Join Meeting ↗
+                                        {t('admin.ui.todoDayPlanner.joinMeeting')}
                                     </a>
                                 )}
                             </div>
@@ -1274,7 +1244,7 @@ const TodoDayPlanner = ({
                             <div className="admin-todo-planner-bottom-time-pickers">
                                 <div className="admin-todo-planner-bottom-field">
                                     <label className="admin-todo-planner-bottom-label">
-                                        {t('admin.todoSection.startTime', 'Start')}
+                                        {t('admin.todoSection.startTime')}
                                     </label>
                                     <select
                                         className="admin-todo-planner-bottom-select"
@@ -1302,7 +1272,7 @@ const TodoDayPlanner = ({
 
                                 <div className="admin-todo-planner-bottom-field">
                                     <label className="admin-todo-planner-bottom-label">
-                                        {t('admin.todoSection.endTime', 'End')}
+                                        {t('admin.todoSection.endTime')}
                                     </label>
                                     <select
                                         className="admin-todo-planner-bottom-select"
@@ -1327,7 +1297,7 @@ const TodoDayPlanner = ({
                                     </select>
                                 </div>
 
-                                <div className="admin-todo-planner-bottom-duration-display" title={t('admin.todoSection.duration', 'Duration')}>
+                                <div className="admin-todo-planner-bottom-duration-display" title={t('admin.todoSection.duration')}>
                                     {formatDuration(selectedBlock.durationMin || 60)}
                                 </div>
 
@@ -1335,8 +1305,8 @@ const TodoDayPlanner = ({
                                     type="button"
                                     className="admin-todo-planner-bottom-icon-btn admin-todo-planner-bottom-trash-btn"
                                     onClick={(e) => handleDeleteBlock(selectedBlock.id, e)}
-                                    title={t('admin.actions.delete', 'Delete Block')}
-                                    aria-label={t('admin.actions.delete', 'Delete Block')}
+                                    title={t('admin.actions.delete')}
+                                    aria-label={t('admin.actions.delete')}
                                 >
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="3 6 5 6 21 6" />

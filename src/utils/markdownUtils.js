@@ -1,4 +1,4 @@
-import { marked, Marked } from 'marked';
+import { Marked } from 'marked';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import hljs from 'highlight.js/lib/core';
@@ -309,7 +309,7 @@ export const renderAssistantMarkdown = (content = '') => {
         const withMath = processMath(content);
         return chatMarked.parse(withMath);
     } catch (err) {
-        console.error(tStatic('logs.markdownParseError', undefined, 'Failed to parse assistant markdown:'), err);
+        console.error(tStatic('logs.markdownParseError', undefined), err);
         return escapeHtml(content);
     }
 };

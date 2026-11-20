@@ -146,7 +146,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
 
     const handleSaveHeadings = async (e) => {
         if (e) e.preventDefault();
-        await onSave(formState, t('admin.messages.saveSuccess', 'About & contact headings updated'));
+        await onSave(formState, t('admin.messages.saveSuccess'));
     };
 
     // --- Links Handlers ---
@@ -205,7 +205,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
     const handleDeleteLink = async (idx) => {
         const link = formState.links[idx];
         const label = getLocalized(link.label, getLocalized(link.text, 'this item'));
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${label})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${label})`)) return;
 
         const updated = formState.links.filter((_, i) => i !== idx);
         const newAbout = { ...formState, links: updated };
@@ -298,14 +298,14 @@ const CmsAbout = ({ data, onSave, saving }) => {
                             className={`cms-lang-pill-btn ${langTab === 'en' ? 'active' : ''}`}
                             onClick={() => setLangTab('en')}
                         >
-                            {t('admin.labels.english', 'English')}
+                            {t('admin.labels.english')}
                         </button>
                         <button
                             type="button"
                             className={`cms-lang-pill-btn ${langTab === 'kn' ? 'active' : ''}`}
                             onClick={() => setLangTab('kn')}
                         >
-                            {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                            {t('admin.labels.kannada')}
                         </button>
                     </div>
                 </div>
@@ -317,7 +317,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                         onClick={handleSaveHeadings}
                         disabled={saving}
                     >
-                        {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.save', 'Save Changes')}
+                        {saving ? t('admin.actions.saving') : t('admin.actions.save')}
                     </button>
                 </div>
             </div>
@@ -326,16 +326,16 @@ const CmsAbout = ({ data, onSave, saving }) => {
             <div className="cms-form-card">
                 <div className="cms-form-card-header">
                     <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
-                        {t('admin.about.headingsTitle', 'Page Headings & Notice')} ({langTab === 'en' ? t('admin.labels.english', 'English') : t('admin.labels.kannada', 'Kannada')})
+                        {t('admin.about.headingsTitle')} ({langTab === 'en' ? t('admin.labels.english') : t('admin.labels.kannada')})
                     </h3>
                     <p className="cms-form-card-sub">
-                        {t('admin.about.headingsDesc', 'Configure headings and closing message for the dedicated /about page and homepage contact block')}
+                        {t('admin.about.headingsDesc')}
                     </p>
                 </div>
 
                 <div className="cms-form-row" style={{ marginBottom: '0.85rem' }}>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.about.dedicatedPageTitle', 'Dedicated Page Title (/about)')}</label>
+                        <label className="cms-form-label">{t('admin.about.dedicatedPageTitle')}</label>
                         <input
                             type="text"
                             className="cms-input"
@@ -345,7 +345,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                         />
                     </div>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.about.homeSectionTitle', 'Homepage Section Title')}</label>
+                        <label className="cms-form-label">{t('admin.about.homeSectionTitle')}</label>
                         <input
                             type="text"
                             className="cms-input"
@@ -358,7 +358,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
 
                 <div className="cms-form-row" style={{ marginBottom: '0.85rem' }}>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.about.findMeHereLabel', 'Subheading ("Find Me Here")')}</label>
+                        <label className="cms-form-label">{t('admin.about.findMeHereLabel')}</label>
                         <input
                             type="text"
                             className="cms-input"
@@ -368,19 +368,19 @@ const CmsAbout = ({ data, onSave, saving }) => {
                         />
                     </div>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.labels.optionalNote', 'Intro Subtext (Optional)')}</label>
+                        <label className="cms-form-label">{t('admin.labels.optionalNote')}</label>
                         <input
                             type="text"
                             className="cms-input"
                             value={formState.intro[langTab] || ''}
                             onChange={(e) => handleTextChange('intro', langTab, e.target.value)}
-                            placeholder="Optional intro description before links"
+                            placeholder={t('admin.ui.cmsAbout.optionalIntroDescriptionBeforeLinks')}
                         />
                     </div>
                 </div>
 
                 <div className="cms-form-group">
-                    <label className="cms-form-label">{t('admin.about.closingNoticeLabel', 'Closing Notice Message')}</label>
+                    <label className="cms-form-label">{t('admin.about.closingNoticeLabel')}</label>
                     <input
                         type="text"
                         className="cms-input"
@@ -396,10 +396,10 @@ const CmsAbout = ({ data, onSave, saving }) => {
                 <div className="cms-form-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
                         <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
-                            {t('admin.about.linksHeading', 'Contact & Social Channels')} ({formatNumber(formState.links.length)})
+                            {t('admin.about.linksHeading')} ({formatNumber(formState.links.length)})
                         </h3>
                         <p className="cms-form-card-sub">
-                            {t('admin.about.linksDesc', 'Manage contact channels and toggle "Display on Home" for what appears on the homepage vs. dedicated about page')}
+                            {t('admin.about.linksDesc')}
                         </p>
                     </div>
 
@@ -408,7 +408,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddLink}
                     >
-                        {t('admin.actions.addLink', '+ Add Contact Link')}
+                        {t('admin.actions.addLink')}
                     </button>
                 </div>
 
@@ -423,7 +423,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchLinks', 'Search contact links...')}
+                            placeholder={t('admin.placeholders.searchLinks')}
                             value={searchLinks}
                             onChange={(e) => setSearchLinks(e.target.value)}
                             className="cms-search-input"
@@ -435,30 +435,30 @@ const CmsAbout = ({ data, onSave, saving }) => {
                             type="button"
                             className={`cms-filter-pill ${filterHome === 'home' ? 'active' : ''}`}
                             onClick={() => setFilterHome((prev) => (prev === 'home' ? 'all' : 'home'))}
-                            title="Filter items displayed on Home Page"
+                            title={t('admin.ui.cmsAbout.filterItemsDisplayedOnHomePage')}
                         >
-                            ★ {t('admin.about.showOnHome', 'On Home')} ({formatNumber(homeCount)})
+                            ★ {t('admin.about.showOnHome')} ({formatNumber(homeCount)})
                         </button>
 
                         <button
                             type="button"
                             className={`cms-filter-pill ${filterHome === 'about-only' ? 'active' : ''}`}
                             onClick={() => setFilterHome((prev) => (prev === 'about-only' ? 'all' : 'about-only'))}
-                            title="Filter items shown on About page only"
+                            title={t('admin.ui.cmsAbout.filterItemsShownOnAboutPage')}
                         >
-                            {language === 'kn' ? 'ನನ್ನ ಬಗ್ಗೆ ಮಾತ್ರ' : 'About Only'} ({formatNumber(formState.links.length - homeCount)})
+                            {language === 'kn' ? 'ನನ್ನ ಬಗ್ಗೆ ಮಾತ್ರ' : t('admin.ui.cmsAbout.aboutOnly')} ({formatNumber(formState.links.length - homeCount)})
                         </button>
 
                         <span className="cms-meta-summary">
-                            {formatNumber(filteredLinks.length)} {t('admin.messages.of', 'of')} {formatNumber(formState.links.length)}
+                            {formatNumber(filteredLinks.length)} {t('admin.messages.of')} {formatNumber(formState.links.length)}
                         </span>
                     </div>
                 </div>
 
                 {filteredLinks.length === 0 ? (
                     <div className="cms-empty-state">
-                        <p className="cms-empty-title">{t('admin.messages.noLinks', 'No contact links found')}</p>
-                        <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new item.')}</p>
+                        <p className="cms-empty-title">{t('admin.messages.noLinks')}</p>
+                        <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                     </div>
                 ) : (
                     <div className="cms-list">
@@ -487,7 +487,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                                     </a>
                                                 )}
                                                 {link.isInternal && (
-                                                    <span className="cms-tag cms-tag-section">Internal Route</span>
+                                                    <span className="cms-tag cms-tag-section">{t('admin.ui.cmsAbout.internalRoute')}</span>
                                                 )}
                                             </div>
                                         </div>
@@ -508,7 +508,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                             className="cms-btn-icon"
                                             onClick={() => handleMoveLink(originalIdx, -1)}
                                             disabled={originalIdx === 0}
-                                            title={t('admin.actions.moveUp', 'Move Up')}
+                                            title={t('admin.actions.moveUp')}
                                         >
                                             ▲
                                         </button>
@@ -517,7 +517,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                             className="cms-btn-icon"
                                             onClick={() => handleMoveLink(originalIdx, 1)}
                                             disabled={originalIdx === formState.links.length - 1}
-                                            title={t('admin.actions.moveDown', 'Move Down')}
+                                            title={t('admin.actions.moveDown')}
                                         >
                                             ▼
                                         </button>
@@ -526,14 +526,14 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                             className="cms-btn cms-btn-sm cms-btn-secondary"
                                             onClick={() => handleOpenEditLink(link, originalIdx)}
                                         >
-                                            {t('admin.actions.edit', 'Edit')}
+                                            {t('admin.actions.edit')}
                                         </button>
                                         <button
                                             type="button"
                                             className="cms-btn cms-btn-sm cms-btn-danger"
                                             onClick={() => handleDeleteLink(originalIdx)}
                                         >
-                                            {t('admin.actions.delete', 'Delete')}
+                                            {t('admin.actions.delete')}
                                         </button>
                                     </div>
                                 </div>
@@ -548,7 +548,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                 <div className="cms-modal-backdrop" onClick={() => setIsLinkModalOpen(false)}>
                     <div className="cms-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
                         <div className="cms-modal-header">
-                            <h3 className="cms-modal-title">{editingLinkIdx !== null ? t('admin.modals.editLink', 'Edit Contact Link') : t('admin.modals.newLink', 'Add Contact Link')}</h3>
+                            <h3 className="cms-modal-title">{editingLinkIdx !== null ? t('admin.modals.editLink') : t('admin.modals.newLink')}</h3>
                             <button type="button" className="cms-modal-close-btn" onClick={() => setIsLinkModalOpen(false)}>
                                 ✕
                             </button>
@@ -562,73 +562,73 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${linkModalLang === 'en' ? 'active' : ''}`}
                                         onClick={() => setLinkModalLang('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${linkModalLang === 'kn' ? 'active' : ''}`}
                                         onClick={() => setLinkModalLang('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                 </div>
 
                                 {linkModalLang === 'en' ? (
                                     <>
                                         <div className="cms-form-group" style={{ marginBottom: '0.75rem' }}>
-                                            <label className="cms-form-label">{t('admin.labels.label', 'Label')} ({t('admin.labels.english', 'English')})</label>
+                                            <label className="cms-form-label">{t('admin.labels.label')} ({t('admin.labels.english')})</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
                                                 value={linkState.label.en}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, label: { ...prev.label, en: e.target.value } }))}
-                                                placeholder="e.g. GitHub: "
+                                                placeholder={t('admin.ui.cmsAbout.examplePlaceholder1')}
                                             />
                                         </div>
                                         <div className="cms-form-group" style={{ marginBottom: '0.75rem' }}>
-                                            <label className="cms-form-label">{t('admin.labels.displayText', 'Display Text')} ({t('admin.labels.english', 'English')})</label>
+                                            <label className="cms-form-label">{t('admin.labels.displayText')} ({t('admin.labels.english')})</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
                                                 value={linkState.text.en}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, text: { ...prev.text, en: e.target.value } }))}
-                                                placeholder="e.g. github.com/PrajwalMReddy"
+                                                placeholder={t('admin.ui.cmsAbout.linkTextPlaceholderEn')}
                                             />
                                         </div>
                                     </>
                                 ) : (
                                     <>
                                         <div className="cms-form-group" style={{ marginBottom: '0.75rem' }}>
-                                            <label className="cms-form-label">{t('admin.labels.label', 'Label')} ({t('admin.labels.kannada', 'Kannada')})</label>
+                                            <label className="cms-form-label">{t('admin.labels.label')} ({t('admin.labels.kannada')})</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
                                                 value={linkState.label.kn}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, label: { ...prev.label, kn: e.target.value } }))}
-                                                placeholder="ಉದಾ: ಗಿಟ್‌ಹಬ್: "
+                                                placeholder={t('admin.ui.cmsAbout.examplePlaceholder2')}
                                             />
                                         </div>
                                         <div className="cms-form-group" style={{ marginBottom: '0.75rem' }}>
-                                            <label className="cms-form-label">{t('admin.labels.displayText', 'Display Text')} ({t('admin.labels.kannada', 'Kannada')})</label>
+                                            <label className="cms-form-label">{t('admin.labels.displayText')} ({t('admin.labels.kannada')})</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
                                                 value={linkState.text.kn}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, text: { ...prev.text, kn: e.target.value } }))}
-                                                placeholder="ಉದಾ: github.com/PrajwalMReddy"
+                                                placeholder={t('admin.ui.cmsAbout.linkTextPlaceholderKn')}
                                             />
                                         </div>
                                     </>
                                 )}
 
                                 <div className="cms-form-group" style={{ marginBottom: '0.75rem' }}>
-                                    <label className="cms-form-label">{t('admin.labels.url', 'URL / Destination')}</label>
+                                    <label className="cms-form-label">{t('admin.labels.url')}</label>
                                     <input
                                         type="text"
                                         className="cms-input"
                                         value={linkState.url}
                                         onChange={(e) => setLinkState((prev) => ({ ...prev, url: e.target.value }))}
-                                        placeholder="e.g. https://github.com/PrajwalMReddy or /blog"
+                                        placeholder={t('admin.ui.cmsAbout.linkUrlPlaceholder')}
                                     />
                                 </div>
 
@@ -640,7 +640,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                             checked={linkState.showOnHome}
                                             onChange={(e) => setLinkState((prev) => ({ ...prev, showOnHome: e.target.checked }))}
                                         />
-                                        <span>{t('admin.about.displayOnHomeToggle', 'Display on Homepage')}</span>
+                                        <span>{t('admin.about.displayOnHomeToggle')}</span>
                                     </label>
 
                                     <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.15rem' }}>
@@ -651,7 +651,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                                 checked={linkState.isLink}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, isLink: e.target.checked }))}
                                             />
-                                            <span>{language === 'kn' ? 'ಕ್ಲಿಕ್ ಮಾಡಬಹುದಾದ ಕೊಂಡಿ' : 'Clickable Link'}</span>
+                                            <span>{language === 'kn' ? 'ಕ್ಲಿಕ್ ಮಾಡಬಹುದಾದ ಕೊಂಡಿ' : t('admin.ui.cmsAbout.clickableLink')}</span>
                                         </label>
 
                                         <label className="cms-checkbox-label">
@@ -661,7 +661,7 @@ const CmsAbout = ({ data, onSave, saving }) => {
                                                 checked={linkState.isInternal}
                                                 onChange={(e) => setLinkState((prev) => ({ ...prev, isInternal: e.target.checked }))}
                                             />
-                                            <span>{language === 'kn' ? 'ಆಂತರಿಕ ಮಾರ್ಗ (/blog)' : 'Internal Router Link (/blog)'}</span>
+                                            <span>{t('admin.ui.cmsAbout.internalRouterLinkBlog')}</span>
                                         </label>
                                     </div>
                                 </div>
@@ -669,10 +669,10 @@ const CmsAbout = ({ data, onSave, saving }) => {
 
                             <div className="cms-modal-footer">
                                 <button type="button" className="cms-btn cms-btn-secondary" onClick={() => setIsLinkModalOpen(false)}>
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button type="submit" className="cms-btn cms-btn-primary">
-                                    {editingLinkIdx !== null ? t('admin.actions.save', 'Save Changes') : t('admin.actions.addLink', '+ Add Link')}
+                                    {editingLinkIdx !== null ? t('admin.actions.save') : t('admin.actions.addLink')}
                                 </button>
                             </div>
                         </form>

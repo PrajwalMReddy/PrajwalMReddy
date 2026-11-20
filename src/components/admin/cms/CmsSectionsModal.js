@@ -44,7 +44,7 @@ const CmsSectionsModal = ({
 
         const id = newSection.id.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
         if (!id) {
-            setError(t('admin.messages.sectionIdRequired', 'Section ID is required'));
+            setError(t('admin.messages.sectionIdRequired'));
             return;
         }
 
@@ -79,7 +79,7 @@ const CmsSectionsModal = ({
             return;
         }
 
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${sectionId})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${sectionId})`)) return;
 
         const updated = sections.filter((s) => s.id !== sectionId);
         await onSaveSections(updated, (t('admin.messages.deletedSection') || 'Deleted section "{id}"').replace('{id}', sectionId));
@@ -89,12 +89,12 @@ const CmsSectionsModal = ({
         <div className="cms-modal-backdrop" onClick={onClose}>
             <div className="cms-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="cms-modal-header">
-                    <h3 className="cms-modal-title">{title || t('admin.modals.manageSections', 'Manage Sections')}</h3>
+                    <h3 className="cms-modal-title">{title || t('admin.modals.manageSections')}</h3>
                     <button
                         type="button"
                         className="cms-modal-close-btn"
                         onClick={onClose}
-                        aria-label={t('admin.actions.close', 'Close')}
+                        aria-label={t('admin.actions.close')}
                     >
                         ✕
                     </button>
@@ -104,10 +104,10 @@ const CmsSectionsModal = ({
                     {error && <p className="admin-error" style={{ marginBottom: '0.75rem' }}>{error}</p>}
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                        <label className="cms-form-label">{t('admin.labels.existingSections', 'Existing Sections')}</label>
+                        <label className="cms-form-label">{t('admin.labels.existingSections')}</label>
                         {sections.length === 0 ? (
                             <p style={{ color: '#64748b', fontSize: '0.85rem' }}>
-                                {t('admin.messages.noSections', 'No sections defined yet.')}
+                                {t('admin.messages.noSections')}
                             </p>
                         ) : (
                             sections.map((s) => {
@@ -127,9 +127,9 @@ const CmsSectionsModal = ({
                                             className="cms-btn cms-btn-sm cms-btn-danger"
                                             onClick={() => handleDeleteSection(s.id)}
                                             disabled={count > 0}
-                                            title={count > 0 ? (t('admin.messages.cannotDeleteWhileItemsInSection') || 'Cannot delete while {itemLabel} are in this section').replace('{itemLabel}', itemLabel) : t('admin.actions.delete', 'Delete')}
+                                            title={count > 0 ? (t('admin.messages.cannotDeleteWhileItemsInSection') || 'Cannot delete while {itemLabel} are in this section').replace('{itemLabel}', itemLabel) : t('admin.actions.delete')}
                                         >
-                                            {t('admin.actions.delete', 'Delete')}
+                                            {t('admin.actions.delete')}
                                         </button>
                                     </div>
                                 );
@@ -140,24 +140,24 @@ const CmsSectionsModal = ({
                     <form onSubmit={handleAddSection} className="cms-section-form">
                         <div className="cms-section-form-header">
                             <h4 className="cms-form-heading">
-                                {t('admin.labels.addNewSection', 'Add New Section')}
+                                {t('admin.labels.addNewSection')}
                             </h4>
                             <div className="cms-lang-pills">
                                 <button
                                     type="button"
                                     className={`cms-lang-pill-btn ${activeLangTab === 'kn' ? 'active' : ''}`}
                                     onClick={() => setActiveLangTab('kn')}
-                                    aria-label={t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    aria-label={t('admin.labels.kannada')}
                                 >
-                                    {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                    {t('admin.labels.kannada')}
                                 </button>
                                 <button
                                     type="button"
                                     className={`cms-lang-pill-btn ${activeLangTab === 'en' ? 'active' : ''}`}
                                     onClick={() => setActiveLangTab('en')}
-                                    aria-label={t('admin.labels.english', 'English')}
+                                    aria-label={t('admin.labels.english')}
                                 >
-                                    {t('admin.labels.english', 'English')}
+                                    {t('admin.labels.english')}
                                 </button>
                             </div>
                         </div>
@@ -165,12 +165,12 @@ const CmsSectionsModal = ({
                         <div className="cms-form-row">
                             <div className="cms-form-group">
                                 <label className="cms-form-label">
-                                    {t('admin.labels.sectionId', 'Section ID')} <span className="required">*</span>
+                                    {t('admin.labels.sectionId')} <span className="required">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     className="cms-input"
-                                    placeholder={t('admin.placeholders.sectionId', 'Section ID (e.g. mobile-apps)')}
+                                    placeholder={t('admin.placeholders.sectionId')}
                                     value={newSection.id}
                                     onChange={(e) => setNewSection({ ...newSection, id: e.target.value })}
                                     required
@@ -178,12 +178,12 @@ const CmsSectionsModal = ({
                             </div>
                             <div className="cms-form-group">
                                 <label className="cms-form-label">
-                                    {t('admin.labels.title', 'Title')} ({activeLangTab === 'kn' ? t('admin.labels.kannada', 'ಕನ್ನಡ') : t('admin.labels.english', 'English')}) <span className="required">*</span>
+                                    {t('admin.labels.title')} ({activeLangTab === 'kn' ? t('admin.labels.kannada') : t('admin.labels.english')}) <span className="required">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     className="cms-input"
-                                    placeholder={activeLangTab === 'kn' ? t('admin.placeholders.sectionTitleKn', 'ಉದಾ: ಮೊಬೈಲ್ ಆ್ಯಪ್‌ಗಳು') : t('admin.placeholders.sectionTitleEn', 'e.g. Mobile Apps')}
+                                    placeholder={activeLangTab === 'kn' ? t('admin.placeholders.sectionTitleKn') : t('admin.placeholders.sectionTitleEn')}
                                     value={newSection.title[activeLangTab] || ''}
                                     onChange={(e) =>
                                         setNewSection({
@@ -197,7 +197,7 @@ const CmsSectionsModal = ({
 
                         <div className="cms-section-form-actions">
                             <button type="submit" className="cms-btn cms-btn-primary" disabled={saving}>
-                                {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.addSection', '+ Add Section')}
+                                {saving ? t('admin.actions.saving') : t('admin.actions.addSection')}
                             </button>
                         </div>
                     </form>
@@ -209,7 +209,7 @@ const CmsSectionsModal = ({
                         className="cms-btn cms-btn-secondary"
                         onClick={onClose}
                     >
-                        {t('admin.actions.close', 'Close')}
+                        {t('admin.actions.close')}
                     </button>
                 </div>
             </div>

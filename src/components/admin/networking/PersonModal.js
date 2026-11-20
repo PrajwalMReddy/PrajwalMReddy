@@ -176,7 +176,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                 setInteractions((prev) => prev.filter((item) => item.id !== interactionId));
             }
         } catch (err) {
-            console.error(t('logs.interactionDeleteError', 'Failed to delete interaction'), err);
+            console.error(t('logs.interactionDeleteError'), err);
         }
     };
 
@@ -184,7 +184,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
         if (e) e.preventDefault();
         const trimmedName = draft.name.trim();
         if (!trimmedName) {
-            setError(t('admin.networkingSection.nameRequiredError', 'Please enter a name.'));
+            setError(t('admin.networkingSection.nameRequiredError'));
             return;
         }
 
@@ -243,7 +243,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
         }
     };
 
-    const displayName = draft.name || person.name || t('admin.networkingSection.personDetails', 'Contact Details');
+    const displayName = draft.name || person.name || t('admin.networkingSection.personDetails');
 
     if (!isOpen || !person) return null;
 
@@ -259,7 +259,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         type="button"
                         className="admin-todo-modal-close"
                         onClick={onClose}
-                        aria-label="Close modal"
+                        aria-label={t('admin.ui.personModal.closeModal')}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -280,10 +280,10 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         {/* Row 1: Name & Website */}
                         <div className="admin-todo-modal-row">
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.networkingSection.name', 'Name *')}</label>
+                                <label>{t('admin.networkingSection.name')}</label>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.namePlaceholder', 'e.g. John Doe')}
+                                    placeholder={t('admin.networkingSection.namePlaceholder')}
                                     value={draft.name}
                                     onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                                     required
@@ -291,10 +291,10 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             </div>
 
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.networkingSection.website', 'Website')}</label>
+                                <label>{t('admin.networkingSection.website')}</label>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.websitePlaceholder', 'e.g. example.com')}
+                                    placeholder={t('admin.networkingSection.websitePlaceholder')}
                                     value={draft.website}
                                     onChange={(e) => setDraft({ ...draft, website: e.target.value })}
                                 />
@@ -303,10 +303,10 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
                         {/* Row 2: Where Met */}
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.networkingSection.whereMet', 'Where I Met Them')}</label>
+                            <label>{t('admin.networkingSection.whereMet')}</label>
                             <input
                                 type="text"
-                                placeholder={t('admin.networkingSection.whereMetPlaceholder', 'e.g. Tech Summit, mutual friend')}
+                                placeholder={t('admin.networkingSection.whereMetPlaceholder')}
                                 value={draft.whereMet}
                                 onChange={(e) => setDraft({ ...draft, whereMet: e.target.value })}
                             />
@@ -315,7 +315,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         {/* Tags Section matching TodoModal */}
                         <div className="admin-todo-tags-section">
                             <label className="admin-todo-tags-label">
-                                {t('admin.networkingSection.tags', 'Tags')} <span className="admin-todo-optional">({t('admin.networkingSection.optional', 'optional')})</span>
+                                {t('admin.networkingSection.tags')} <span className="admin-todo-optional">({t('admin.networkingSection.optional')})</span>
                             </label>
                             <div className="admin-todo-tag-input-row">
                                 <input
@@ -324,14 +324,14 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                     value={tagInput}
                                     onChange={(e) => setTagInput(e.target.value)}
                                     onKeyDown={handleTagKeyDown}
-                                    placeholder={t('admin.networkingSection.addTagPlaceholder', 'Add a tag (press Enter)')}
+                                    placeholder={t('admin.networkingSection.addTagPlaceholder')}
                                 />
                                 <button
                                     type="button"
                                     className="admin-todo-tag-add-btn"
                                     onClick={handleAddTag}
                                 >
-                                    {t('admin.networkingSection.addTagBtn', '+ Add')}
+                                    {t('admin.networkingSection.addTagBtn')}
                                 </button>
                             </div>
                             {Array.isArray(draft.tags) && draft.tags.length > 0 && (
@@ -343,8 +343,8 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                                 type="button"
                                                 className="admin-todo-tag-remove"
                                                 onClick={() => handleRemoveTag(tag)}
-                                                aria-label={`Remove tag ${tag}`}
-                                                title="Remove tag"
+                                                aria-label={t('admin.ui.personModal.removeTag', { p0: tag })}
+                                                title={t('admin.ui.personModal.removeTag2')}
                                             >
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -359,10 +359,10 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
                         {/* Notes Field */}
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.networkingSection.notes', 'Notes')}</label>
+                            <label>{t('admin.networkingSection.notes')}</label>
                             <textarea
                                 rows={3}
-                                placeholder={t('admin.networkingSection.notesPlaceholder', 'Notes, background, or discussion topics...')}
+                                placeholder={t('admin.networkingSection.notesPlaceholder')}
                                 value={draft.notes}
                                 onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
                             />
@@ -376,7 +376,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                     </svg>
                                     <h4 className="admin-networking-interactions-title">
-                                        {t('admin.networkingSection.interactionHistoryTitle', 'Interaction History')}
+                                        {t('admin.networkingSection.interactionHistoryTitle')}
                                     </h4>
                                 </div>
                                 {interactions.length > 0 && (
@@ -391,12 +391,12 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                     className="admin-networking-interaction-date-input"
                                     value={interactionDate}
                                     onChange={(e) => setInteractionDate(e.target.value)}
-                                    title="Interaction Date"
+                                    title={t('admin.ui.personModal.interactionDate')}
                                 />
                                 <input
                                     type="text"
                                     className="admin-networking-interaction-text-input"
-                                    placeholder={t('admin.networkingSection.addInteractionPlaceholder', 'Log a quick interaction (e.g. Discussed proposal, coffee meeting)...')}
+                                    placeholder={t('admin.networkingSection.addInteractionPlaceholder')}
                                     value={interactionText}
                                     onChange={(e) => setInteractionText(e.target.value)}
                                     onKeyDown={(e) => {
@@ -413,7 +413,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                     onClick={handleAddInteraction}
                                     disabled={addingInteraction || !interactionText.trim()}
                                 >
-                                    {addingInteraction ? '...' : t('admin.networkingSection.addInteractionBtn', 'Add')}
+                                    {addingInteraction ? '...' : t('admin.networkingSection.addInteractionBtn')}
                                 </button>
                             </div>
 
@@ -421,17 +421,17 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             <div className="admin-networking-interactions-list">
                                 {loadingInteractions ? (
                                     <p className="admin-networking-interactions-empty">
-                                        {t('admin.networkingSection.loadingContacts', 'Loading...')}
+                                        {t('admin.networkingSection.loadingContacts')}
                                     </p>
                                 ) : interactions.length === 0 ? (
                                     <p className="admin-networking-interactions-empty">
-                                        {t('admin.networkingSection.noInteractions', 'No interactions logged yet.')}
+                                        {t('admin.networkingSection.noInteractions')}
                                     </p>
                                 ) : (
                                     interactions.map((item) => (
                                         <div key={item.id} className="admin-networking-interaction-item">
                                             <span className="admin-networking-interaction-date-badge">
-                                                {item.date || 'No date'}
+                                                {item.date || t('admin.ui.personModal.noDate')}
                                             </span>
                                             <span className="admin-networking-interaction-summary" title={item.summary}>
                                                 {item.summary}
@@ -440,7 +440,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                                 type="button"
                                                 className="admin-networking-interaction-del-btn"
                                                 onClick={() => handleDeleteInteraction(item.id)}
-                                                title={t('admin.networkingSection.deleteInteractionTooltip', 'Delete interaction')}
+                                                title={t('admin.networkingSection.deleteInteractionTooltip')}
                                             >
                                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -462,7 +462,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                         <polyline points="12 6 12 12 16 14" />
                                     </svg>
                                     <h4 className="admin-networking-followup-title">
-                                        {t('admin.networkingSection.followUpSectionTitle', 'Follow-up & Next Steps')}
+                                        {t('admin.networkingSection.followUpSectionTitle')}
                                     </h4>
                                 </div>
                                 {Boolean(draft.followUpTitle || draft.followUpScheduledDate || draft.followUpDueDate) && (
@@ -471,16 +471,16 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                         className="admin-networking-followup-clear-btn"
                                         onClick={handleClearFollowUp}
                                     >
-                                        {t('admin.networkingSection.clearFollowUp', 'Clear Follow-up')}
+                                        {t('admin.networkingSection.clearFollowUp')}
                                     </button>
                                 )}
                             </div>
 
                             <div className="admin-todo-modal-field" style={{ marginTop: '0.75rem' }}>
-                                <label>{t('admin.networkingSection.taskTitle', 'Follow-up Task Name')}</label>
+                                <label>{t('admin.networkingSection.taskTitle')}</label>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.taskTitlePlaceholder', 'e.g. Follow up with {name}').replace('{name}', draft.name || 'contact')}
+                                    placeholder={t('admin.networkingSection.taskTitlePlaceholder').replace('{name}', draft.name || 'contact')}
                                     value={draft.followUpTitle}
                                     onChange={(e) => setDraft({ ...draft, followUpTitle: e.target.value })}
                                 />
@@ -488,7 +488,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
 
                             <div className="admin-todo-modal-row" style={{ marginTop: '0.75rem' }}>
                                 <div className="admin-todo-modal-field">
-                                    <label>{t('admin.networkingSection.scheduledDate', 'Scheduled Date (When to show task)')}</label>
+                                    <label>{t('admin.networkingSection.scheduledDate')}</label>
                                     <input
                                         type="date"
                                         value={draft.followUpScheduledDate}
@@ -496,7 +496,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                     />
                                 </div>
                                 <div className="admin-todo-modal-field">
-                                    <label>{t('admin.networkingSection.dueDate', 'Due Date (When to do by)')}</label>
+                                    <label>{t('admin.networkingSection.dueDate')}</label>
                                     <input
                                         type="date"
                                         value={draft.followUpDueDate}
@@ -511,7 +511,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                                     checked={draft.syncTodo}
                                     onChange={(e) => setDraft({ ...draft, syncTodo: e.target.checked })}
                                 />
-                                <span>{t('admin.networkingSection.syncWithTodo', 'Sync / Add to To-Do List')}</span>
+                                <span>{t('admin.networkingSection.syncWithTodo')}</span>
                             </label>
                         </div>
 
@@ -535,7 +535,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                             marginRight: 'auto',
                         }}
                     >
-                        {t('admin.networkingSection.deleteBtn', 'Delete')}
+                        {t('admin.networkingSection.deleteBtn')}
                     </button>
                     <button
                         type="button"
@@ -543,7 +543,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         onClick={onClose}
                         disabled={submitting}
                     >
-                        {t('admin.networkingSection.cancel', 'Cancel')}
+                        {t('admin.networkingSection.cancel')}
                     </button>
                     <button
                         type="button"
@@ -551,7 +551,7 @@ const PersonModal = ({ person, isOpen, onClose, onSave, onDelete }) => {
                         onClick={handleSave}
                         disabled={submitting}
                     >
-                        {submitting ? t('admin.networkingSection.saving', 'Saving...') : t('admin.networkingSection.saveChanges', 'Save Changes')}
+                        {submitting ? t('admin.networkingSection.saving') : t('admin.networkingSection.saveChanges')}
                     </button>
                 </div>
             </div>

@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 
 const Footer = () => {
-    const { t } = useLanguage();
+    const { t } = useContent();
     const navigate = useNavigate();
     const tapCountRef = useRef(0);
     const tapTimerRef = useRef(null);

@@ -81,7 +81,7 @@ export const useCustomData = (props = {}, options = {}) => {
                 }
             } catch (err) {
                 if (!isMounted) return;
-                console.error((tStatic('logs.customDataError', undefined, '[useCustomData] Failed to load data for {target}:') || '').replace('{target}', slug || explicitType), err);
+                console.error((tStatic('logs.customDataError', undefined) || '').replace('{target}', slug || explicitType), err);
                 setError(err.message);
                 setData(options.defaultData ?? null);
             } finally {
@@ -98,5 +98,3 @@ export const useCustomData = (props = {}, options = {}) => {
 
     return { data, post, loading, error };
 };
-
-export default useCustomData;

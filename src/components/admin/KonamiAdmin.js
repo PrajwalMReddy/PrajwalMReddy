@@ -264,7 +264,7 @@ const KonamiAdmin = () => {
                             return {
                                 ...lvl,
                                 id: lvl.id || `level-${idx + 1}`,
-                                name: lvl.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`,
+                                name: lvl.name || `${t('editor.nameLabel')} ${idx + 1}`,
                                 width: w,
                                 height: GRID_HEIGHT,
                                 grid: g
@@ -279,7 +279,7 @@ const KonamiAdmin = () => {
             }
             setLevels([]);
         } catch (err) {
-            console.error(t('logs.konamiLevelsLoadError'), err);
+            console.error(t('logs.levelsLoadError'), err);
             showToast(t('editor.failedLoadLevels'));
             setLevels([]);
         } finally {
@@ -535,7 +535,7 @@ const KonamiAdmin = () => {
         const nextNum = levels.length + 1;
         const newLevel = {
             id: `level-${Date.now()}`,
-            name: `${t('editor.nameLabel', 'Level')} ${nextNum}`,
+            name: `${t('editor.nameLabel')} ${nextNum}`,
             width: DEFAULT_WIDTH,
             height: GRID_HEIGHT,
             grid: createDefaultGrid(DEFAULT_WIDTH)
@@ -549,7 +549,7 @@ const KonamiAdmin = () => {
         const levelToDelete = levels[idx] || currentLevel;
         if (!levelToDelete) return;
 
-        const levelName = levelToDelete.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`;
+        const levelName = levelToDelete.name || `${t('editor.nameLabel')} ${idx + 1}`;
         if (!window.confirm((t('editor.confirmDeleteLevel') || 'Delete {name}?').replace('{name}', levelName))) return;
 
         const updatedLocal = levels.filter((_, i) => i !== idx);
@@ -601,7 +601,7 @@ const KonamiAdmin = () => {
                 showToast(t('editor.failedSaveDeletion'));
             }
         } catch (err) {
-            console.error(t('logs.konamiLevelDeleteError'), err);
+            console.error(t('logs.levelDeleteError'), err);
             showToast(t('editor.networkErrorDeleting'));
         } finally {
             setSaving(false);
@@ -657,7 +657,7 @@ const KonamiAdmin = () => {
 
             if (res.ok) {
                 const info = await res.json().catch(() => ({}));
-                const levelName = currentLevel.name || `${t('editor.nameLabel', 'Level')} ${activeLevelIdx + 1}`;
+                const levelName = currentLevel.name || `${t('editor.nameLabel')} ${activeLevelIdx + 1}`;
                 if (info.storage && info.storage.filesystem && !info.storage.database) {
                     showToast((t('editor.levelSavedDisk') || '{name} saved locally to disk (MongoDB offline)').replace('{name}', levelName));
                 } else {
@@ -668,7 +668,7 @@ const KonamiAdmin = () => {
                 showToast((t('editor.failedSave') || 'Failed to save: {error}').replace('{error}', err.error || 'Server error'));
             }
         } catch (err) {
-            console.error(t('logs.konamiLevelSaveError'), err);
+            console.error(t('logs.levelSaveError'), err);
             showToast(t('editor.networkErrorSaving'));
         } finally {
             setSaving(false);
@@ -698,7 +698,7 @@ const KonamiAdmin = () => {
                                     className="konami-level-tab"
                                     onClick={() => setActiveLevelIdx(idx)}
                                 >
-                                    {lvl.name || `${t('editor.nameLabel', 'Level')} ${idx + 1}`}
+                                    {lvl.name || `${t('editor.nameLabel')} ${idx + 1}`}
                                 </button>
                                 <button
                                     type="button"
@@ -747,7 +747,7 @@ const KonamiAdmin = () => {
 
                 {/* Empty State when no custom levels exist */}
                 {levels.length === 0 && (
-                    <p className="admin-empty">{t('admin.noCustomLevels', 'No custom levels')}</p>
+                    <p className="admin-empty">{t('admin.noCustomLevels')}</p>
                 )}
 
                 {/* Level Metadata & Tools Panel */}
@@ -796,20 +796,20 @@ const KonamiAdmin = () => {
                         </div>
 
                         {/* Bulk Edit Actions Group */}
-                        <div className="konami-bulk-group" role="group" aria-label={t('editor.bulkActions', 'Bulk Edit')}>
-                            <span className="konami-bulk-label">{t('editor.bulkActions', 'Bulk Edit')}</span>
+                        <div className="konami-bulk-group" role="group" aria-label={t('editor.bulkActions')}>
+                            <span className="konami-bulk-label">{t('editor.bulkActions')}</span>
                             <div className="konami-bulk-actions">
                                 <button
                                     type="button"
                                     className={`konami-bulk-btn ${activeTool === 'SELECT' ? 'active' : ''}`}
                                     onClick={() => setActiveTool(prev => prev === 'SELECT' ? '#' : 'SELECT')}
-                                    title={t('editor.selectGroupTitle', 'Click and drag to group elements together, then drag group to move')}
+                                    title={t('editor.selectGroupTitle')}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3"/>
                                         <path d="m14 14 5-5m-4 0h4v4"/>
                                     </svg>
-                                    <span>{t('editor.selectGroup', 'Select & Move')}</span>
+                                    <span>{t('editor.selectGroup')}</span>
                                 </button>
                                 <button
                                     type="button"
@@ -820,7 +820,7 @@ const KonamiAdmin = () => {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M4 19h16M4 15h16M4 11h16"/>
                                     </svg>
-                                    <span>{t('editor.fillFloor', 'Fill Floor')}</span>
+                                    <span>{t('editor.fillFloor')}</span>
                                 </button>
                                 <button
                                     type="button"
@@ -831,7 +831,7 @@ const KonamiAdmin = () => {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                     </svg>
-                                    <span>{t('editor.clear', 'Clear')}</span>
+                                    <span>{t('editor.clear')}</span>
                                 </button>
                             </div>
                         </div>
@@ -849,18 +849,18 @@ const KonamiAdmin = () => {
                                             <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3"/>
                                         </svg>
                                         <span>
-                                            {t('editor.groupSelectedCount', '{w}×{h} elements grouped')
+                                            {t('editor.groupSelectedCount')
                                                 .replace('{w}', formatNumber ? formatNumber(selectedGroup.cMax - selectedGroup.cMin + 1) : (selectedGroup.cMax - selectedGroup.cMin + 1))
                                                 .replace('{h}', formatNumber ? formatNumber(selectedGroup.rMax - selectedGroup.rMin + 1) : (selectedGroup.rMax - selectedGroup.rMin + 1))}
                                         </span>
                                     </span>
-                                    <div className="konami-group-nudge-cluster" aria-label={t('editor.nudgeGroup', 'Nudge group')}>
+                                    <div className="konami-group-nudge-cluster" aria-label={t('editor.nudgeGroup')}>
                                         <button
                                             type="button"
                                             className="konami-group-nudge-btn"
                                             onClick={() => moveGroup(selectedGroup, 0, -1)}
                                             disabled={selectedGroup.cMin <= 0}
-                                            title={t('editor.nudgeLeft', 'Nudge Left (Left Arrow)')}
+                                            title={t('editor.nudgeLeft')}
                                         >
                                             ◀
                                         </button>
@@ -869,7 +869,7 @@ const KonamiAdmin = () => {
                                             className="konami-group-nudge-btn"
                                             onClick={() => moveGroup(selectedGroup, -1, 0)}
                                             disabled={selectedGroup.rMin <= 0}
-                                            title={t('editor.nudgeUp', 'Nudge Up (Up Arrow)')}
+                                            title={t('editor.nudgeUp')}
                                         >
                                             ▲
                                         </button>
@@ -878,7 +878,7 @@ const KonamiAdmin = () => {
                                             className="konami-group-nudge-btn"
                                             onClick={() => moveGroup(selectedGroup, 1, 0)}
                                             disabled={selectedGroup.rMax >= GRID_HEIGHT - 1}
-                                            title={t('editor.nudgeDown', 'Nudge Down (Down Arrow)')}
+                                            title={t('editor.nudgeDown')}
                                         >
                                             ▼
                                         </button>
@@ -887,13 +887,13 @@ const KonamiAdmin = () => {
                                             className="konami-group-nudge-btn"
                                             onClick={() => moveGroup(selectedGroup, 0, 1)}
                                             disabled={selectedGroup.cMax >= (currentLevel ? currentLevel.width - 1 : DEFAULT_WIDTH - 1)}
-                                            title={t('editor.nudgeRight', 'Nudge Right (Right Arrow)')}
+                                            title={t('editor.nudgeRight')}
                                         >
                                             ▶
                                         </button>
                                     </div>
                                     <span className="konami-group-pill-hint">
-                                        {t('editor.groupMoveHint', 'Drag group to move • Arrow keys nudge')}
+                                        {t('editor.groupMoveHint')}
                                     </span>
                                     <div className="konami-group-pill-divider" aria-hidden="true" />
                                     <div className="konami-group-pill-actions">
@@ -901,24 +901,24 @@ const KonamiAdmin = () => {
                                             type="button"
                                             className="konami-group-action-btn"
                                             onClick={() => handleFillSelection('#')}
-                                            title={t('editor.fillSelectionTitle', 'Fill selected area with ground blocks')}
+                                            title={t('editor.fillSelectionTitle')}
                                         >
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                                             </svg>
-                                            <span>{t('editor.fillGroup', 'Fill')}</span>
+                                            <span>{t('editor.fillGroup')}</span>
                                         </button>
                                         <button
                                             type="button"
                                             className="konami-group-action-btn konami-group-action-danger"
                                             onClick={handleClearSelection}
-                                            title={t('editor.clearSelectionTitle', 'Erase elements in selected area (Delete)')}
+                                            title={t('editor.clearSelectionTitle')}
                                         >
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
                                                 <path d="M22 21H7"/>
                                             </svg>
-                                            <span>{t('editor.clearGroup', 'Clear')}</span>
+                                            <span>{t('editor.clearGroup')}</span>
                                         </button>
                                         <button
                                             type="button"
@@ -928,9 +928,9 @@ const KonamiAdmin = () => {
                                                 setMarqueeSelection(null);
                                                 setGroupDragPreview(null);
                                             }}
-                                            title={t('editor.deselectGroup', 'Deselect group (Esc)')}
+                                            title={t('editor.deselectGroup')}
                                         >
-                                            ✕ <span>{t('editor.deselect', 'Deselect')}</span>
+                                            ✕ <span>{t('editor.deselect')}</span>
                                         </button>
                                     </div>
                                 </div>

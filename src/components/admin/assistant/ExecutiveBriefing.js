@@ -10,7 +10,7 @@ function formatNewsDate(dateString, t, formatNumber) {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     if (diffMs < 0) {
-        return t('admin.news.justNow', 'Just now');
+        return t('admin.news.justNow');
     }
 
     const diffMins = Math.floor(diffMs / (1000 * 60));
@@ -18,24 +18,24 @@ function formatNewsDate(dateString, t, formatNumber) {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffMins < 1) {
-        return t('admin.news.justNow', 'Just now');
+        return t('admin.news.justNow');
     }
     if (diffMins === 1) {
-        return t('admin.news.minuteAgo', '1 minute ago');
+        return t('admin.news.minuteAgo');
     }
     if (diffMins < 60) {
-        return t('admin.news.minutesAgo', '{count} minutes ago').replace('{count}', formatNumber(diffMins));
+        return t('admin.news.minutesAgo').replace('{count}', formatNumber(diffMins));
     }
     if (diffHours === 1) {
-        return t('admin.news.hourAgo', '1 hour ago');
+        return t('admin.news.hourAgo');
     }
     if (diffHours < 24) {
-        return t('admin.news.hoursAgo', '{count} hours ago').replace('{count}', formatNumber(diffHours));
+        return t('admin.news.hoursAgo').replace('{count}', formatNumber(diffHours));
     }
     if (diffDays === 1) {
-        return t('admin.news.yesterday', 'Yesterday');
+        return t('admin.news.yesterday');
     }
-    return t('admin.news.daysAgo', '{count} days ago').replace('{count}', formatNumber(diffDays));
+    return t('admin.news.daysAgo').replace('{count}', formatNumber(diffDays));
 }
 
 const PAGE_SIZE = 5;
@@ -69,8 +69,8 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                 setHasMoreNews(initialNews.length >= PAGE_SIZE);
             }
         } catch (err) {
-            console.error(t('logs.newsLoadError', 'Failed to load recent news:'), err);
-            setError(err.message || t('admin.news.error', 'Failed to load recent news.'));
+            console.error(t('logs.newsLoadError'), err);
+            setError(err.message || t('admin.news.error'));
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -114,7 +114,7 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                 }
             }
         } catch (err) {
-            console.error(t('logs.moreNewsLoadError', 'Failed to load more news:'), err);
+            console.error(t('logs.moreNewsLoadError'), err);
         } finally {
             setLoadingMore(false);
         }
@@ -125,22 +125,22 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
             <div className="briefing-memo-document memo-news-loading-card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
                 <div className="memo-news-loading-spinner" />
                 <div className="memo-news-loading-title">
-                    {t('admin.news.loading', 'Loading Recent News...')}
+                    {t('admin.news.loading')}
                 </div>
                 <div className="memo-news-loading-sub">
-                    {t('admin.news.fetchingLatest', 'Fetching the latest articles')}
+                    {t('admin.news.fetchingLatest')}
                 </div>
             </div>
         );
     }
 
     return (
-        <article className="briefing-memo-document" aria-label={t('admin.news.recentNews', 'Recent News')}>
+        <article className="briefing-memo-document" aria-label={t('admin.news.recentNews')}>
             {/* Header */}
             <header className="memo-masthead" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem' }}>
                 <div className="memo-header-top" style={{ marginBottom: 0 }}>
                     <h2 className="memo-title" style={{ fontSize: '1.4rem', margin: 0 }}>
-                        {t('admin.news.recentNews', 'Recent News')}
+                        {t('admin.news.recentNews')}
                     </h2>
                 </div>
             </header>
@@ -154,7 +154,7 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                         onClick={handleRefresh}
                         className="memo-news-retry-btn"
                     >
-                        {t('admin.news.retry', 'Retry')}
+                        {t('admin.news.retry')}
                     </button>
                 </div>
             )}
@@ -203,11 +203,11 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                                     onClick={handleSeeMoreNews}
                                     disabled={loadingMore}
                                 >
-                                    {loadingMore ? t('admin.news.loadingMore', 'Loading More Articles...') : t('admin.news.seeMoreNews', 'See More News')}
+                                    {loadingMore ? t('admin.news.loadingMore') : t('admin.news.seeMoreNews')}
                                 </button>
                             ) : (
                                 <div className="memo-all-caught-up">
-                                    {t('admin.news.allCaughtUp', "✓ You're all caught up on recent news.")}
+                                    {t('admin.news.allCaughtUp')}
                                 </div>
                             )}
                         </div>
@@ -215,7 +215,7 @@ const ExecutiveBriefing = ({ onOpenSettings }) => {
                 ) : (
                     !error && (
                         <div className="memo-news-empty">
-                            {t('admin.news.empty', 'No news articles published in the last 24 hours.')}
+                            {t('admin.news.empty')}
                         </div>
                     )
                 )}

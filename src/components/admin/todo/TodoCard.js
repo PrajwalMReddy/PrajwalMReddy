@@ -82,7 +82,7 @@ const TodoCard = ({
             <div className="admin-todo-card-top">
                 <span
                     className={`admin-todo-card-avatar priority-${todo.priority}`}
-                    title={`${t('admin.todoSection.priority', 'Priority')}: ${t(`admin.todoSection.priorities.${todo.priority}`, PRIORITY_LABEL[todo.priority] || todo.priority)}`}
+                    title={`${t('admin.todoSection.priority')}: ${t(`admin.todoSection.priorities.${todo.priority}`, PRIORITY_LABEL[todo.priority] || todo.priority)}`}
                 />
 
                 <div className="admin-todo-card-check">
@@ -98,8 +98,8 @@ const TodoCard = ({
                     type="button"
                     className="admin-todo-card-edit"
                     onClick={() => onEdit(todo)}
-                    aria-label={`${t('admin.actions.edit', 'Edit')}: ${todo.title}`}
-                    title={t('admin.actions.edit', 'Edit')}
+                    aria-label={`${t('admin.actions.edit')}: ${todo.title}`}
+                    title={t('admin.actions.edit')}
                 >
                     ✎
                 </button>
@@ -108,8 +108,8 @@ const TodoCard = ({
                     type="button"
                     className="admin-todo-card-delete"
                     onClick={() => onDelete(todo)}
-                    aria-label={`${t('admin.actions.delete', 'Delete')}: ${todo.title}`}
-                    title={t('admin.actions.delete', 'Delete')}
+                    aria-label={`${t('admin.actions.delete')}: ${todo.title}`}
+                    title={t('admin.actions.delete')}
                 >
                     ✕
                 </button>
@@ -123,7 +123,7 @@ const TodoCard = ({
                             {dueDateLabel && (
                                 <span
                                     className={`admin-todo-card-due due-${dueState}`}
-                                    title={isMaster ? `${t('admin.todoSection.repeatUntil', 'Repeat until')}: ${dueDateLabel}` : dueDateLabel}
+                                    title={isMaster ? `${t('admin.todoSection.repeatUntil')}: ${dueDateLabel}` : dueDateLabel}
                                 >
                                     <span className="admin-todo-card-due-date">
                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
@@ -142,14 +142,14 @@ const TodoCard = ({
 
                             {todo.estimatedTime && (
                                 <span className="admin-todo-card-time"
-                                      title={t('admin.todoSection.estimatedTime', 'Estimated time')}>
+                                      title={t('admin.todoSection.estimatedTime')}>
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                          style={{verticalAlign: 'middle', marginRight: '3px'}}>
                                         <circle cx="12" cy="12" r="10"/>
                                         <polyline points="12 6 12 12 16 14"/>
                                     </svg>
-                                    {formatNumber(todo.estimatedTime)}{t('admin.todoSection.min', 'min')}
+                                    {formatNumber(todo.estimatedTime)}{t('admin.todoSection.min')}
                                 </span>
                             )}
                         </div>
@@ -160,22 +160,22 @@ const TodoCard = ({
                             {Boolean(todo.personId || (Array.isArray(todo.tags) && todo.tags.some((t) => String(t).toLowerCase() === 'networking'))) && (
                                 <span
                                     className="admin-todo-card-recurrence admin-todo-card-sync-badge"
-                                    title={t('admin.todoSection.syncedWithNetworking', 'Synced with Networking')}
+                                    title={t('admin.todoSection.syncedWithNetworking')}
                                 >
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '3px' }}>
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
                                         <polyline points="16 11 18 13 22 9" />
                                     </svg>
-                                    {t('admin.todoSection.syncedNetworking', 'Synced: Networking')}
+                                    {t('admin.todoSection.syncedNetworking')}
                                 </span>
                             )}
 
                             {isRecurringAny && (
                                 <span
                                     className="admin-todo-card-recurrence admin-todo-card-recurrence-icon"
-                                    title={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint', 'Recurring Task')}
-                                    aria-label={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint', 'Recurring Task')}
+                                    title={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint')}
+                                    aria-label={formatRecurrence(todo, t) || t('admin.todoSection.recurringTaskHint')}
                                 >
                                     <svg
                                         width="12"
@@ -218,7 +218,7 @@ const TodoCard = ({
                         className={`admin-todo-card-subtasks-toggle${isExpanded ? ' is-open' : ''}`}
                         onClick={() => onToggleSubtasksExpanded(todo.id)}
                         aria-expanded={isExpanded}
-                        title={isExpanded ? t('admin.todoSection.hideSubtasks', 'Hide subtasks') : t('admin.todoSection.showSubtasks', 'Show subtasks')}
+                        title={isExpanded ? t('admin.todoSection.hideSubtasks') : t('admin.todoSection.showSubtasks')}
                     >
                         <svg
                             className="admin-todo-card-subtasks-chevron"

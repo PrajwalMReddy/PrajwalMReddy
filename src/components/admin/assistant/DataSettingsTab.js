@@ -3,7 +3,7 @@ import { assistantApi } from '../../../utils/assistantApi';
 import { useContent } from '../../../utils/ContentContext';
 
 const DataSettingsTab = () => {
-    const { t } = useContent();
+    const { t, formatNumber, formatDate, formatTime } = useContent();
 
     // Storage stats state
     const [stats, setStats] = useState(null);
@@ -60,7 +60,7 @@ const DataSettingsTab = () => {
             const result = await assistantApi.downloadDatabaseBackup(includeSensitive);
             setBackupMessage({
                 type: 'success',
-                text: t('admin.settings.data.downloadSuccess', 'Backup downloaded successfully: {filename}', {
+                text: t('admin.settings.data.downloadSuccess', {
                     filename: result.filename,
                     size: formatSize(result.sizeBytes),
                 }),
@@ -99,7 +99,7 @@ const DataSettingsTab = () => {
         }
 
         if (!file.name.endsWith('.json') && file.type !== 'application/json' && file.type !== '') {
-            setFileError(t('admin.settings.data.invalidJsonError', 'Please upload a valid .json database backup file.'));
+            setFileError(t('admin.settings.data.invalidJsonError'));
             return;
         }
 
@@ -114,7 +114,7 @@ const DataSettingsTab = () => {
                 // Support both { manifest, collections } and { collections } or direct map
                 const collectionsMap = json.collections || (json.manifest ? null : json);
                 if (!collectionsMap || typeof collectionsMap !== 'object' || Array.isArray(collectionsMap)) {
-                    throw new Error(t('admin.settings.data.noCollectionsError', 'No collections found in this backup file.'));
+                    throw new Error(t('admin.settings.data.noCollectionsError'));
                 }
 
                 // If backup has top-level settings but no dashboard_settings collection, normalize it
@@ -132,7 +132,7 @@ const DataSettingsTab = () => {
 
                 const collectionNames = Object.keys(collectionsMap).filter((k) => Array.isArray(collectionsMap[k]));
                 if (collectionNames.length === 0) {
-                    throw new Error(t('admin.settings.data.noCollectionsError', 'No valid collection arrays found in backup file.'));
+                    throw new Error(t('admin.settings.data.noCollectionsError'));
                 }
 
                 let totalDocs = 0;
@@ -150,7 +150,7 @@ const DataSettingsTab = () => {
                 setSelectedCollections(initialSelected);
                 setRestorePreview({
                     version: json.manifest?.version || 1,
-                    exportedAt: json.manifest?.exportedAt ? new Date(json.manifest.exportedAt).toLocaleString() : 'Unknown date',
+                    exportedAt: json.manifest?.exportedAt || null,
                     database: json.manifest?.database || 'personal_dashboard',
                     collectionsCount: collectionNames.length,
                     totalDocuments: totalDocs,
@@ -158,12 +158,12 @@ const DataSettingsTab = () => {
                 });
             } catch (err) {
                 console.error('Error parsing backup file:', err);
-                setFileError(err.message || t('admin.settings.data.invalidJsonError', 'Failed to parse backup JSON file.'));
+                setFileError(err.message || t('admin.settings.data.invalidJsonError'));
                 setBackupFile(null);
             }
         };
         reader.onerror = () => {
-            setFileError('Failed to read file from disk.');
+            setFileError(t('admin.ui.dataSettingsTab.failedToReadFileFromDisk'));
             setBackupFile(null);
         };
         reader.readAsText(file);
@@ -227,12 +227,12 @@ const DataSettingsTab = () => {
 
         const colsToRestore = Object.keys(selectedCollections).filter((c) => selectedCollections[c]);
         if (colsToRestore.length === 0) {
-            setFileError('Please select at least one collection to restore.');
+            setFileError(t('admin.ui.dataSettingsTab.pleaseSelectAtLeastOneCollection'));
             return;
         }
 
         if (restoreMode === 'replace' && replaceConfirmText.trim().toUpperCase() !== 'RESTORE') {
-            setFileError('Please type RESTORE in the confirmation field to proceed with complete replacement.');
+            setFileError(t('admin.ui.dataSettingsTab.pleaseTypeRestoreInTheConfirmation'));
             return;
         }
 
@@ -249,7 +249,7 @@ const DataSettingsTab = () => {
 
             setRestoreResult({
                 type: 'success',
-                message: t('admin.settings.data.restoreSuccess', 'Database restored successfully! {cols} collections and {docs} documents restored.', {
+                message: t('admin.settings.data.restoreSuccess', {
                     cols: res.collectionsRestored,
                     docs: res.totalDocumentsRestored,
                 }),
@@ -262,7 +262,7 @@ const DataSettingsTab = () => {
             console.error('Database restore error:', err);
             setRestoreResult({
                 type: 'error',
-                message: err.message || t('admin.settings.data.restoreFailed', 'Database restore failed.'),
+                message: err.message || t('admin.settings.data.restoreFailed'),
             });
         } finally {
             setRestoring(false);
@@ -355,14 +355,14 @@ const DataSettingsTab = () => {
                     <div className="admin-settings-card-header-left">
                         <div className="admin-data-title-row">
                             <h4 className="admin-settings-card-title">
-                                {t('admin.settings.data.storageCardTitle', 'MongoDB Cloud Storage Quota')}
+                                {t('admin.settings.data.storageCardTitle')}
                             </h4>
                             <span className="admin-data-tier-badge">
-                                {t('admin.settings.data.m0TierBadge', 'Atlas M0 Free Tier (512 MB)')}
+                                {t('admin.settings.data.m0TierBadge')}
                             </span>
                         </div>
                         <p className="admin-settings-help-text">
-                            {t('admin.settings.data.subtitle', 'Monitor live MongoDB usage, export verified backups, and restore database collections.')}
+                            {t('admin.settings.data.subtitle')}
                         </p>
                     </div>
                 </div>
@@ -376,7 +376,7 @@ const DataSettingsTab = () => {
                 {loadingStats && !stats ? (
                     <div className="admin-settings-loading">
                         <div className="admin-settings-loading-spinner" />
-                        <div>{t('admin.settings.loading', 'Loading storage metrics...')}</div>
+                        <div>{t('admin.settings.loading')}</div>
                     </div>
                 ) : stats ? (
                     <>
@@ -385,7 +385,7 @@ const DataSettingsTab = () => {
                             <div className="admin-data-meter-header">
                                 <div className="admin-data-meter-label-left">
                                     <span className="admin-data-meter-title">
-                                        {t('admin.settings.data.storageUsed', 'Storage Used')}
+                                        {t('admin.settings.data.storageUsed')}
                                     </span>
                                     <span className="admin-data-meter-percent">
                                         {stats.usedPercentage}%
@@ -396,7 +396,7 @@ const DataSettingsTab = () => {
                                 </div>
                                 <div className="admin-data-meter-label-right">
                                     <span className="admin-data-meter-remaining">
-                                        {t('admin.settings.data.remainingSpace', '{remaining} remaining', { remaining: stats.remainingFormatted })}
+                                        {t('admin.settings.data.remainingSpace', { remaining: stats.remainingFormatted })}
                                     </span>
                                 </div>
                             </div>
@@ -413,7 +413,7 @@ const DataSettingsTab = () => {
 
                             <div className="admin-data-meter-footer">
                                 <span>
-                                    <strong>Database:</strong> {stats.database}
+                                    <strong>{t('admin.ui.dataSettingsTab.database')}</strong> {stats.database}
                                 </span>
                             </div>
                         </div>
@@ -422,34 +422,34 @@ const DataSettingsTab = () => {
                         <div className="admin-data-stats-grid">
                             <div className="admin-data-stat-card">
                                 <div className="admin-data-stat-label">
-                                    {t('admin.settings.data.totalCollections', 'Collections')}
+                                    {t('admin.settings.data.totalCollections')}
                                 </div>
                                 <div className="admin-data-stat-value">{stats.collectionsCount}</div>
-                                <div className="admin-data-stat-hint">Active Mongo collections</div>
+                                <div className="admin-data-stat-hint">{t('admin.ui.dataSettingsTab.activeMongoCollections')}</div>
                             </div>
 
                             <div className="admin-data-stat-card">
                                 <div className="admin-data-stat-label">
-                                    {t('admin.settings.data.totalDocuments', 'Documents')}
+                                    {t('admin.settings.data.totalDocuments')}
                                 </div>
-                                <div className="admin-data-stat-value">{stats.totalDocuments.toLocaleString()}</div>
-                                <div className="admin-data-stat-hint">Across all collections</div>
+                                <div className="admin-data-stat-value">{formatNumber(stats.totalDocuments.toLocaleString('en-US'))}</div>
+                                <div className="admin-data-stat-hint">{t('admin.ui.dataSettingsTab.acrossAllCollections')}</div>
                             </div>
 
                             <div className="admin-data-stat-card">
                                 <div className="admin-data-stat-label">
-                                    {t('admin.settings.data.dataSize', 'Data Size')}
+                                    {t('admin.settings.data.dataSize')}
                                 </div>
                                 <div className="admin-data-stat-value">{stats.dataSizeFormatted}</div>
-                                <div className="admin-data-stat-hint">Uncompressed JSON payload</div>
+                                <div className="admin-data-stat-hint">{t('admin.ui.dataSettingsTab.uncompressedJsonPayload')}</div>
                             </div>
 
                             <div className="admin-data-stat-card">
                                 <div className="admin-data-stat-label">
-                                    {t('admin.settings.data.storageSize', 'Allocated Disk')}
+                                    {t('admin.settings.data.storageSize')}
                                 </div>
                                 <div className="admin-data-stat-value">{stats.totalUsedFormatted}</div>
-                                <div className="admin-data-stat-hint">Storage: {stats.storageSizeFormatted} | Index: {stats.indexSizeFormatted}</div>
+                                <div className="admin-data-stat-hint">{t('admin.ui.dataSettingsTab.storageIndex', { p0: formatNumber(stats.storageSizeFormatted), p1: formatNumber(stats.indexSizeFormatted) })}</div>
                             </div>
                         </div>
                     </>
@@ -461,10 +461,10 @@ const DataSettingsTab = () => {
                 <div className="admin-settings-card-header">
                     <div className="admin-settings-card-header-left">
                         <h4 className="admin-settings-card-title">
-                            {t('admin.settings.data.backupCardTitle', 'Download Database Backup')}
+                            {t('admin.settings.data.backupCardTitle')}
                         </h4>
                         <p className="admin-settings-help-text">
-                            {t('admin.settings.data.backupCardHelp', 'Export an exact JSON snapshot of all collections and documents. The backup retains ObjectIds, dates, and schema definitions for 100% fidelity restoration.')}
+                            {t('admin.settings.data.backupCardHelp')}
                         </p>
                     </div>
                 </div>
@@ -476,7 +476,7 @@ const DataSettingsTab = () => {
                             checked={includeSensitive}
                             onChange={(e) => setIncludeSensitive(e.target.checked)}
                         />
-                        <span>{t('admin.settings.data.includeSensitive', 'Include session tokens and cached alerts in backup')}</span>
+                        <span>{t('admin.settings.data.includeSensitive')}</span>
                     </label>
 
                     <div className="admin-data-action-row">
@@ -493,8 +493,8 @@ const DataSettingsTab = () => {
                             </svg>
                             <span>
                                 {downloadingBackup
-                                    ? t('admin.settings.data.downloading', 'Preparing Snapshot...')
-                                    : t('admin.settings.data.downloadBtn', 'Download Full Backup (.json)')}
+                                    ? t('admin.settings.data.downloading')
+                                    : t('admin.settings.data.downloadBtn')}
                             </span>
                         </button>
                     </div>
@@ -512,10 +512,10 @@ const DataSettingsTab = () => {
                 <div className="admin-settings-card-header">
                     <div className="admin-settings-card-header-left">
                         <h4 className="admin-settings-card-title">
-                            {t('admin.settings.data.restoreCardTitle', 'Restore Site from Backup')}
+                            {t('admin.settings.data.restoreCardTitle')}
                         </h4>
                         <p className="admin-settings-help-text">
-                            {t('admin.settings.data.restoreCardHelp', 'Upload a previously exported backup (.json) file to restore database collections and documents.')}
+                            {t('admin.settings.data.restoreCardHelp')}
                         </p>
                     </div>
                 </div>
@@ -545,8 +545,8 @@ const DataSettingsTab = () => {
                             </svg>
                         </div>
                         <div className="admin-data-dropzone-text">
-                            <strong>{t('admin.settings.data.selectFileBtn', 'Select Backup File')}</strong>
-                            <span>{t('admin.settings.data.dropzoneText', 'or drag and drop your backup JSON file here')}</span>
+                            <strong>{t('admin.settings.data.selectFileBtn')}</strong>
+                            <span>{t('admin.settings.data.dropzoneText')}</span>
                         </div>
                     </div>
                 ) : (
@@ -568,7 +568,7 @@ const DataSettingsTab = () => {
                                 onClick={clearFile}
                                 disabled={restoring}
                             >
-                                {t('admin.settings.data.clearFile', 'Clear file')}
+                                {t('admin.settings.data.clearFile')}
                             </button>
                         </div>
 
@@ -576,31 +576,31 @@ const DataSettingsTab = () => {
                         {restorePreview && (
                             <div className="admin-data-preview-card">
                                 <div className="admin-data-preview-header">
-                                    <strong>{t('admin.settings.data.backupPreviewTitle', 'Backup Snapshot Details')}</strong>
+                                    <strong>{t('admin.settings.data.backupPreviewTitle')}</strong>
                                 </div>
                                 <div className="admin-data-preview-grid">
                                     <div>
-                                        <span className="admin-data-preview-label">{t('admin.settings.data.exportedOn', 'Exported on')}:</span>{' '}
-                                        <span className="admin-data-preview-val">{restorePreview.exportedAt}</span>
+                                        <span className="admin-data-preview-label">{t('admin.settings.data.exportedOn')}:</span>{' '}
+                                        <span className="admin-data-preview-val">{restorePreview.exportedAt ? `${formatDate(restorePreview.exportedAt)} ${formatTime(restorePreview.exportedAt)}` : t('admin.ui.dataSettingsTab.unknownDate')}</span>
                                     </div>
                                     <div>
-                                        <span className="admin-data-preview-label">{t('admin.settings.data.databaseLabel', 'Database')}:</span>{' '}
+                                        <span className="admin-data-preview-label">{t('admin.settings.data.databaseLabel')}:</span>{' '}
                                         <span className="admin-data-preview-val">{restorePreview.database}</span>
                                     </div>
                                     <div>
-                                        <span className="admin-data-preview-label">{t('admin.settings.data.totalCollections', 'Collections')}:</span>{' '}
-                                        <span className="admin-data-preview-val">{restorePreview.collectionsCount} collections</span>
+                                        <span className="admin-data-preview-label">{t('admin.settings.data.totalCollections')}:</span>{' '}
+                                        <span className="admin-data-preview-val">{t('admin.ui.dataSettingsTab.collections', { p0: formatNumber(restorePreview.collectionsCount) })}</span>
                                     </div>
                                     <div>
-                                        <span className="admin-data-preview-label">{t('admin.settings.data.totalDocuments', 'Documents')}:</span>{' '}
-                                        <span className="admin-data-preview-val">{restorePreview.totalDocuments.toLocaleString()} documents</span>
+                                        <span className="admin-data-preview-label">{t('admin.settings.data.totalDocuments')}:</span>{' '}
+                                        <span className="admin-data-preview-val">{t('admin.ui.dataSettingsTab.documentsCount', { p0: formatNumber(restorePreview.totalDocuments.toLocaleString('en-US')) })}</span>
                                     </div>
                                 </div>
 
                                 {/* Collection Checkbox Selector */}
                                 <div className="admin-data-col-selector-section">
                                     <div className="admin-data-col-selector-header">
-                                        <span>Select Collections to Restore ({selectedColsCount} of {restorePreview.collectionsCount} selected):</span>
+                                        <span>{t('admin.ui.dataSettingsTab.selectCollectionsToRestoreOfSelected', { p0: formatNumber(selectedColsCount), p1: formatNumber(restorePreview.collectionsCount) })}</span>
                                         <div className="admin-data-selector-actions">
                                             <button
                                                 type="button"
@@ -608,7 +608,7 @@ const DataSettingsTab = () => {
                                                 onClick={() => handleSelectAllCollections(true)}
                                                 disabled={restoring}
                                             >
-                                                Select All
+                                                {t('admin.ui.dataSettingsTab.selectAll')}
                                             </button>
                                             <span className="admin-data-divider">/</span>
                                             <button
@@ -617,7 +617,7 @@ const DataSettingsTab = () => {
                                                 onClick={() => handleSelectAllCollections(false)}
                                                 disabled={restoring}
                                             >
-                                                Deselect All
+                                                {t('admin.ui.dataSettingsTab.deselectAll')}
                                             </button>
                                         </div>
                                     </div>
@@ -642,7 +642,7 @@ const DataSettingsTab = () => {
                                                             '+'
                                                         )}
                                                     </span>
-                                                    <span className="admin-data-chip-name">{colName === 'dashboard_settings' ? t('admin.settings.title', 'Dashboard Settings') : colName}</span>
+                                                    <span className="admin-data-chip-name">{colName === 'dashboard_settings' ? t('admin.settings.title') : colName}</span>
                                                     <span className="admin-data-chip-count">({count})</span>
                                                 </button>
                                             );
@@ -653,7 +653,7 @@ const DataSettingsTab = () => {
                                 {/* Mode Selection */}
                                 <div className="admin-data-mode-section">
                                     <label className="admin-settings-label">
-                                        {t('admin.settings.data.restoreModeTitle', 'Restore Mode')}
+                                        {t('admin.settings.data.restoreModeTitle')}
                                     </label>
                                     <div className="admin-data-modes-row">
                                         <div
@@ -670,8 +670,8 @@ const DataSettingsTab = () => {
                                                 />
                                             </div>
                                             <div className="admin-data-mode-card-content">
-                                                <strong>{t('admin.settings.data.modeMerge', 'Safe Merge / Upsert (Recommended)')}</strong>
-                                                <p>{t('admin.settings.data.modeMergeDesc', 'Updates matching documents by ID and adds new ones. Does not wipe existing data.')}</p>
+                                                <strong>{t('admin.settings.data.modeMerge')}</strong>
+                                                <p>{t('admin.settings.data.modeMergeDesc')}</p>
                                             </div>
                                         </div>
 
@@ -689,8 +689,8 @@ const DataSettingsTab = () => {
                                                 />
                                             </div>
                                             <div className="admin-data-mode-card-content">
-                                                <strong>{t('admin.settings.data.modeReplace', 'Complete Collection Replace')}</strong>
-                                                <p>{t('admin.settings.data.modeReplaceDesc', 'Completely clears chosen collections and replaces them with the backup version.')}</p>
+                                                <strong>{t('admin.settings.data.modeReplace')}</strong>
+                                                <p>{t('admin.settings.data.modeReplaceDesc')}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -704,11 +704,11 @@ const DataSettingsTab = () => {
                                                     <line x1="12" y1="9" x2="12" y2="13" />
                                                     <line x1="12" y1="17" x2="12.01" y2="17" />
                                                 </svg>
-                                                <span>{t('admin.settings.data.replaceWarning', 'Warning: Complete Replace will overwrite existing documents in selected collections.')}</span>
+                                                <span>{t('admin.settings.data.replaceWarning')}</span>
                                             </div>
                                             <div className="admin-data-replace-confirm-field">
                                                 <label className="admin-settings-label">
-                                                    {t('admin.settings.data.typeRestoreConfirm', 'Type RESTORE below to confirm complete replacement:')}
+                                                    {t('admin.settings.data.typeRestoreConfirm')}
                                                 </label>
                                                 <input
                                                     type="text"
@@ -740,8 +740,8 @@ const DataSettingsTab = () => {
                                         </svg>
                                         <span>
                                             {restoring
-                                                ? t('admin.settings.data.restoring', 'Restoring Database...')
-                                                : t('admin.settings.data.restoreBtn', 'Restore Database')}
+                                                ? t('admin.settings.data.restoring')
+                                                : t('admin.settings.data.restoreBtn')}
                                         </span>
                                     </button>
                                 </div>
@@ -769,11 +769,9 @@ const DataSettingsTab = () => {
                     <div className="admin-settings-card-header">
                         <div className="admin-settings-card-header-left">
                             <h4 className="admin-settings-card-title">
-                                {t('admin.settings.data.collectionsBreakdownTitle', 'Collection-by-Collection Storage Breakdown')}
+                                {t('admin.settings.data.collectionsBreakdownTitle')}
                             </h4>
-                            <p className="admin-settings-help-text">
-                                Detailed size and document distributions across all {stats.collectionsCount} collections.
-                            </p>
+                            <p className="admin-settings-help-text">{t('admin.ui.dataSettingsTab.detailedSizeAndDocumentDistributionsAcross', { p0: formatNumber(stats.collectionsCount) })}</p>
                         </div>
                     </div>
 
@@ -794,10 +792,10 @@ const DataSettingsTab = () => {
                                                 handleSort('name');
                                             }
                                         }}
-                                        title={`Sort by Collection (${sortField === 'name' && sortDirection === 'asc' ? 'Descending' : 'Ascending'})`}
+                                        title={t('admin.ui.dataSettingsTab.sortByCollection', { p0: sortField === 'name' && sortDirection === 'asc' ? t('admin.ui.dataSettingsTab.descending') : t('admin.ui.dataSettingsTab.ascending') })}
                                     >
                                         <div className="admin-data-th-inner">
-                                            <span>{t('admin.settings.data.colName', 'Collection')}</span>
+                                            <span>{t('admin.settings.data.colName')}</span>
                                             {renderSortIcon('name')}
                                         </div>
                                     </th>
@@ -813,10 +811,10 @@ const DataSettingsTab = () => {
                                                 handleSort('category');
                                             }
                                         }}
-                                        title={`Sort by Category (${sortField === 'category' && sortDirection === 'asc' ? 'Descending' : 'Ascending'})`}
+                                        title={t('admin.ui.dataSettingsTab.sortByCategory', { p0: sortField === 'category' && sortDirection === 'asc' ? t('admin.ui.dataSettingsTab.descending') : t('admin.ui.dataSettingsTab.ascending') })}
                                     >
                                         <div className="admin-data-th-inner">
-                                            <span>{t('admin.settings.data.colCategory', 'Category')}</span>
+                                            <span>{t('admin.settings.data.colCategory')}</span>
                                             {renderSortIcon('category')}
                                         </div>
                                     </th>
@@ -832,10 +830,10 @@ const DataSettingsTab = () => {
                                                 handleSort('documents');
                                             }
                                         }}
-                                        title={`Sort by Documents (${sortField === 'documents' && sortDirection === 'desc' ? 'Ascending' : 'Descending'})`}
+                                        title={t('admin.ui.dataSettingsTab.sortByDocuments', { p0: sortField === 'documents' && sortDirection === 'desc' ? t('admin.ui.dataSettingsTab.ascending') : t('admin.ui.dataSettingsTab.descending') })}
                                     >
                                         <div className="admin-data-th-inner">
-                                            <span>{t('admin.settings.data.colDocuments', 'Documents')}</span>
+                                            <span>{t('admin.settings.data.colDocuments')}</span>
                                             {renderSortIcon('documents')}
                                         </div>
                                     </th>
@@ -851,10 +849,10 @@ const DataSettingsTab = () => {
                                                 handleSort('dataSize');
                                             }
                                         }}
-                                        title={`Sort by Data Size (${sortField === 'dataSize' && sortDirection === 'desc' ? 'Ascending' : 'Descending'})`}
+                                        title={t('admin.ui.dataSettingsTab.sortByDataSize', { p0: sortField === 'dataSize' && sortDirection === 'desc' ? t('admin.ui.dataSettingsTab.ascending') : t('admin.ui.dataSettingsTab.descending') })}
                                     >
                                         <div className="admin-data-th-inner">
-                                            <span>{t('admin.settings.data.colDataSize', 'Data Size')}</span>
+                                            <span>{t('admin.settings.data.colDataSize')}</span>
                                             {renderSortIcon('dataSize')}
                                         </div>
                                     </th>
@@ -870,10 +868,10 @@ const DataSettingsTab = () => {
                                                 handleSort('storageSize');
                                             }
                                         }}
-                                        title={`Sort by Storage Size (${sortField === 'storageSize' && sortDirection === 'desc' ? 'Ascending' : 'Descending'})`}
+                                        title={t('admin.ui.dataSettingsTab.sortByStorageSize', { p0: sortField === 'storageSize' && sortDirection === 'desc' ? t('admin.ui.dataSettingsTab.ascending') : t('admin.ui.dataSettingsTab.descending') })}
                                     >
                                         <div className="admin-data-th-inner">
-                                            <span>{t('admin.settings.data.colStorageSize', 'Storage Size')}</span>
+                                            <span>{t('admin.settings.data.colStorageSize')}</span>
                                             {renderSortIcon('storageSize')}
                                         </div>
                                     </th>
@@ -892,7 +890,7 @@ const DataSettingsTab = () => {
                                                     {col.category}
                                                 </span>
                                             </td>
-                                            <td className="admin-data-td-center font-mono">{col.count.toLocaleString()}</td>
+                                            <td className="admin-data-td-center font-mono">{formatNumber(col.count.toLocaleString('en-US'))}</td>
                                             <td className="admin-data-td-center font-mono">{col.sizeFormatted}</td>
                                             <td className="admin-data-td-center font-mono">{col.storageSizeFormatted}</td>
                                         </tr>
@@ -900,7 +898,7 @@ const DataSettingsTab = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="5" className="admin-data-empty-td">
-                                            {t('admin.settings.data.noCollections', 'No collections found.')}
+                                            {t('admin.settings.data.noCollections')}
                                         </td>
                                     </tr>
                                 )}

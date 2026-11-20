@@ -1,6 +1,6 @@
 import React, {lazy, Suspense, useEffect, useMemo, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import {getBlogPostBySlug} from '../utils/blogUtils';
@@ -31,7 +31,7 @@ class ComponentErrorBoundary extends React.Component {
 const BlogPost = () => {
     const {slug} = useParams();
     const navigate = useNavigate();
-    const {language, t, formatNumber} = useLanguage();
+    const {language, t, formatNumber} = useContent();
     const [blogData, setBlogData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -63,7 +63,7 @@ const BlogPost = () => {
             try {
                 return lazy(() => import(`./${blogData.component}`));
             } catch (e) {
-                console.error(t('logs.blogImportError', 'Failed to import custom component:'), e);
+                console.error(t('logs.blogImportError'), e);
                 return null;
             }
         }
@@ -116,8 +116,8 @@ const BlogPost = () => {
 
     const renderAuthor = (author) => {
         if (!author) return null;
-        const authorTemplate = t('byAuthor', 'by {author}');
-        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+        const authorTemplate = t('byAuthor');
+        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix')}${author}`;
     };
 
     return (

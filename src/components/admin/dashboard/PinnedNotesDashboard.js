@@ -33,7 +33,7 @@ const PinnedNotesDashboard = () => {
                 setPinnedNotes(pinned);
             }
         } catch (err) {
-            console.error(t('logs.pinnedNotesError', 'Failed to load pinned notes for dashboard:'), err);
+            console.error(t('logs.pinnedNotesError'), err);
         } finally {
             setLoading(false);
         }
@@ -102,23 +102,23 @@ const PinnedNotesDashboard = () => {
     }
 
     return (
-        <article className={`briefing-memo-document admin-pinned-note-widget ${canExpand && isExpanded ? 'is-expanded' : 'is-compact'}`} aria-label={t('admin.notesSection.pinnedNote', 'Pinned Note')}>
+        <article className={`briefing-memo-document admin-pinned-note-widget ${canExpand && isExpanded ? 'is-expanded' : 'is-compact'}`} aria-label={t('admin.notesSection.pinnedNote')}>
             <header className="memo-masthead admin-pinned-header">
                 <div className="memo-header-top admin-pinned-header-top">
                     <div className="admin-pinned-header-left">
                         <h2 className="memo-title" style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>
-                            {t('admin.notesSection.pinnedNotes', 'Pinned Notes')}
+                            {t('admin.notesSection.pinnedNotes')}
                         </h2>
 
                         {pinnedNotes.length === 1 ? (
                             <>
                                 <span className="admin-pinned-header-separator" aria-hidden="true">·</span>
-                                <span className="admin-pinned-active-title" title={activeNote.title || t('admin.notesSection.untitledNote', 'Untitled note')}>
-                                    {activeNote.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                <span className="admin-pinned-active-title" title={activeNote.title || t('admin.notesSection.untitledNote')}>
+                                    {activeNote.title || t('admin.notesSection.untitledNote')}
                                 </span>
                             </>
                         ) : (
-                            <div className="admin-events-view-toggle admin-pinned-tabs-toggle" role="tablist" aria-label="Pinned Notes Selector">
+                            <div className="admin-events-view-toggle admin-pinned-tabs-toggle" role="tablist" aria-label={t('admin.ui.pinnedNotesDashboard.pinnedNotesSelector')}>
                                 {pinnedNotes.map((note, idx) => (
                                     <button
                                         key={note.id}
@@ -127,10 +127,10 @@ const PinnedNotesDashboard = () => {
                                         aria-selected={idx === activeIndex}
                                         className={`admin-view-toggle-btn admin-pinned-tab-btn ${idx === activeIndex ? 'active' : ''}`}
                                         onClick={() => setActiveIndex(idx)}
-                                        title={note.title || `${t('admin.notesSection.untitledNote', 'Untitled note')} ${formatNumber(idx + 1)}`}
+                                        title={note.title || `${t('admin.notesSection.untitledNote')} ${formatNumber(idx + 1)}`}
                                     >
                                         <span className="admin-pinned-tab-text">
-                                            {note.title || `${t('admin.notesSection.untitledNote', 'Untitled note')} ${formatNumber(idx + 1)}`}
+                                            {note.title || `${t('admin.notesSection.untitledNote')} ${formatNumber(idx + 1)}`}
                                         </span>
                                     </button>
                                 ))}
@@ -155,10 +155,10 @@ const PinnedNotesDashboard = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="admin-view-toggle-btn admin-pinned-action-btn"
-                            title={t('admin.notesSection.openInNotes', 'Open in Notes')}
-                            aria-label={t('admin.notesSection.openInNotes', 'Open in Notes')}
+                            title={t('admin.notesSection.openInNotes')}
+                            aria-label={t('admin.notesSection.openInNotes')}
                         >
-                            <span>{t('admin.notesSection.openInNotes', 'Open in Notes')} ↗</span>
+                            <span>{t('admin.notesSection.openInNotes')} ↗</span>
                         </a>
                     </div>
                 </div>
@@ -195,7 +195,7 @@ const PinnedNotesDashboard = () => {
                             />
                         ) : (
                             <p className="admin-pinned-empty-text">
-                                {t('admin.notesSection.widgetsDetail.emptyBlock', 'This note has no content yet.')}
+                                {t('admin.notesSection.widgetsDetail.emptyBlock')}
                             </p>
                         )}
                     </div>
@@ -209,7 +209,7 @@ const PinnedNotesDashboard = () => {
                             className="admin-pinned-expand-footer-btn"
                             onClick={() => setIsExpanded((prev) => !prev)}
                         >
-                            <span>{isExpanded ? `▴ ${t('admin.notesSection.showLess', 'Show less')}` : `▾ ${t('admin.notesSection.showMore', 'Show more')}`}</span>
+                            <span>{isExpanded ? `▴ ${t('admin.notesSection.showLess')}` : `▾ ${t('admin.notesSection.showMore')}`}</span>
                         </button>
                     </div>
                 )}

@@ -1,0 +1,649 @@
+/* ============================================================
+   Admin Theme Layer
+   ------------------------------------------------------------
+   Loaded after admin.css, cms.css and konami-admin.css.
+   Puts the shared building blocks of every admin page
+   (header, page title, cards, labels, inputs, buttons, tabs,
+   stat tiles, tables, empty states) on one set of tokens so
+   Dashboard, To-Do, Notes, Budget, Networking, CMS and Konami
+   look like one app in both light and dark mode.
+
+   Selectors are prefixed with `body .admin-page` so they tie
+   with or beat the per-page `body.dark-mode .x` overrides and
+   win by source order. Colors only come from the tokens below.
+   ============================================================ */
+
+/* ---------- Tokens ---------- */
+
+body .admin-page {
+    --ui-surface: #ffffff;
+    --ui-surface-muted: #f8fafc;
+    --ui-border: #dce4ed;
+    --ui-border-input: #d3dce6;
+    --ui-border-strong: #b8c6d4;
+    --ui-text-strong: #1e293b;
+    --ui-text: #2c3e50;
+    --ui-text-muted: #5e748d;
+    --ui-placeholder: #94a3b8;
+    --ui-accent: #4a6b8a;
+    --ui-accent-hover: #3d5973;
+    --ui-accent-text: #4a6b8a;
+    --ui-accent-soft: rgba(74, 107, 138, 0.1);
+    --ui-hover: #f1f5f9;
+    --ui-danger: #dc2626;
+    --ui-input-bg: #ffffff;
+    --ui-header-bg: rgba(232, 237, 242, 0.88);
+    --ui-focus-ring: 0 0 0 3px rgba(74, 107, 138, 0.18);
+    --ui-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
+    --ui-shadow-hover: 0 6px 16px -6px rgba(15, 23, 42, 0.12);
+    --ui-btn-shadow: 0 1px 2px rgba(44, 62, 80, 0.14);
+    --ui-radius-sm: 6px;
+    --ui-radius: 8px;
+    --ui-radius-md: 10px;
+    --ui-radius-lg: 12px;
+    --ui-control-h: 38px;
+    --ui-card-pad: 1.25rem 1.5rem;
+}
+
+body.dark-mode .admin-page {
+    --ui-surface: #1f2326;
+    --ui-surface-muted: #1a1d20;
+    --ui-border: rgba(255, 255, 255, 0.09);
+    --ui-border-input: rgba(255, 255, 255, 0.13);
+    --ui-border-strong: rgba(255, 255, 255, 0.22);
+    --ui-text-strong: #f5f7fa;
+    --ui-text: #e2e8f0;
+    --ui-text-muted: #aab7b8;
+    --ui-placeholder: #6b7a86;
+    --ui-accent: #4a6b8a;
+    --ui-accent-hover: #5d7e9e;
+    --ui-accent-text: #9db8d2;
+    --ui-accent-soft: rgba(125, 155, 190, 0.16);
+    --ui-hover: rgba(255, 255, 255, 0.06);
+    --ui-danger: #f87171;
+    --ui-input-bg: #181a1b;
+    --ui-header-bg: rgba(35, 39, 42, 0.88);
+    --ui-focus-ring: 0 0 0 3px rgba(125, 155, 190, 0.3);
+    --ui-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --ui-shadow-hover: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+    --ui-btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 768px) {
+    body .admin-page {
+        --ui-card-pad: 1rem 1rem;
+    }
+}
+
+/* ---------- Header bar & navigation ---------- */
+
+body .admin-page .admin-header-bar {
+    background-color: var(--ui-header-bg);
+    -webkit-backdrop-filter: saturate(160%) blur(10px);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--ui-border);
+}
+
+body .admin-page .admin-nav-item,
+body .admin-page .admin-header-link {
+    color: var(--ui-text-muted);
+}
+
+body .admin-page .admin-nav-item:hover,
+body .admin-page .admin-header-link:hover {
+    color: var(--ui-text-strong);
+}
+
+body .admin-page .admin-nav-item.active {
+    color: var(--ui-text-strong);
+    border-bottom-color: var(--ui-accent-text);
+}
+
+body .admin-page .admin-header-logout {
+    color: var(--ui-text-strong);
+}
+
+body .admin-page .admin-header-logout:hover {
+    color: var(--ui-danger);
+}
+
+/* ---------- Page header ---------- */
+
+body .admin-page .admin-page-header-row {
+    margin-bottom: 1.25rem;
+    min-height: 40px;
+}
+
+body .admin-page .admin-page-title {
+    color: var(--ui-text-strong);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* ---------- Cards ---------- */
+
+body .admin-page .admin-todo-top-dashboard .admin-todo-form,
+body .admin-page .admin-form,
+body .admin-page .admin-notes-toolbar,
+body .admin-page .admin-networking-form-card,
+body .admin-page .admin-budget-form-card,
+body .admin-page .admin-budget-table-card,
+body .admin-page .admin-stats-section,
+body .admin-page .admin-planner-overview,
+body .admin-page .konami-admin-topbar {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow);
+}
+
+/* Top-of-page form and toolbar cards share the same padding */
+body .admin-page .admin-todo-top-dashboard .admin-todo-form,
+body .admin-page .admin-notes-toolbar,
+body .admin-page .admin-networking-form-card,
+body .admin-page .admin-budget-form-card,
+body .admin-page .admin-planner-overview,
+body .admin-page .konami-admin-topbar {
+    padding: var(--ui-card-pad);
+}
+
+/* Card titles */
+body .admin-page .admin-todo-form h3,
+body .admin-page .admin-form h3,
+body .admin-page .admin-networking-form-title,
+body .admin-page .admin-budget-form-title,
+body .admin-page .admin-planner-header h3,
+body .admin-page .admin-stats-section > h2,
+body .admin-page .admin-stats-section > h3 {
+    color: var(--ui-text-strong);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+body .admin-page .admin-stats-overview .admin-stats-section > h2,
+body .admin-page .admin-stats-overview .admin-stats-section > h3 {
+    color: var(--ui-text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+body .admin-page .admin-budget-form-subtitle {
+    color: var(--ui-text-muted);
+}
+
+/* ---------- Field labels ---------- */
+
+body .admin-page .admin-todo-title-field,
+body .admin-page .admin-todo-date-field,
+body .admin-page .admin-todo-priority-field,
+body .admin-page .admin-form label,
+body .admin-page .admin-notes-search,
+body .admin-page .admin-networking-form-field > span,
+body .admin-page .admin-field-label,
+body .admin-page .cms-form-label {
+    color: var(--ui-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Text inputs & selects ---------- */
+
+body .admin-page .admin-todo-form input,
+body .admin-page .admin-todo-form select,
+body .admin-page .admin-form input,
+body .admin-page .admin-form select,
+body .admin-page .admin-notes-search input,
+body .admin-page .admin-todo-search-input,
+body .admin-page .admin-table-search-input,
+body .admin-page .admin-networking-form-field input,
+body .admin-page .admin-networking-form-field textarea,
+body .admin-page .admin-budget-form-grid input,
+body .admin-page .admin-budget-form-grid select,
+body .admin-page .cms-input,
+body .admin-page .cms-select,
+body .admin-page .cms-textarea {
+    background-color: var(--ui-input-bg);
+    color: var(--ui-text-strong);
+    border: 1px solid var(--ui-border-input);
+    border-radius: var(--ui-radius);
+    box-shadow: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+body .admin-page .admin-todo-form input:hover,
+body .admin-page .admin-todo-form select:hover,
+body .admin-page .admin-form input:hover,
+body .admin-page .admin-form select:hover,
+body .admin-page .admin-notes-search input:hover,
+body .admin-page .admin-todo-search-input:hover,
+body .admin-page .admin-table-search-input:hover,
+body .admin-page .admin-networking-form-field input:hover,
+body .admin-page .admin-networking-form-field textarea:hover,
+body .admin-page .admin-budget-form-grid input:hover,
+body .admin-page .admin-budget-form-grid select:hover,
+body .admin-page .cms-input:hover,
+body .admin-page .cms-select:hover,
+body .admin-page .cms-textarea:hover {
+    border-color: var(--ui-border-strong);
+}
+
+body .admin-page .admin-todo-form input:focus,
+body .admin-page .admin-todo-form select:focus,
+body .admin-page .admin-form input:focus,
+body .admin-page .admin-form select:focus,
+body .admin-page .admin-notes-search input:focus,
+body .admin-page .admin-todo-search-input:focus,
+body .admin-page .admin-table-search-input:focus,
+body .admin-page .admin-networking-form-field input:focus,
+body .admin-page .admin-networking-form-field textarea:focus,
+body .admin-page .admin-budget-form-grid input:focus,
+body .admin-page .admin-budget-form-grid select:focus,
+body .admin-page .cms-input:focus,
+body .admin-page .cms-select:focus,
+body .admin-page .cms-textarea:focus {
+    outline: none;
+    border-color: var(--ui-accent);
+    box-shadow: var(--ui-focus-ring);
+}
+
+body .admin-page .admin-todo-form input::placeholder,
+body .admin-page .admin-form input::placeholder,
+body .admin-page .admin-notes-search input::placeholder,
+body .admin-page .admin-todo-search-input::placeholder,
+body .admin-page .admin-table-search-input::placeholder,
+body .admin-page .admin-networking-form-field input::placeholder,
+body .admin-page .admin-networking-form-field textarea::placeholder,
+body .admin-page .admin-budget-form-grid input::placeholder,
+body .admin-page .cms-input::placeholder,
+body .admin-page .cms-textarea::placeholder {
+    color: var(--ui-placeholder);
+}
+
+/* One control height for single-line fields in top-of-page forms */
+body .admin-page .admin-budget-form-grid input,
+body .admin-page .admin-budget-form-grid select,
+body .admin-page .admin-budget-submit-btn {
+    height: var(--ui-control-h);
+    min-height: var(--ui-control-h);
+}
+
+/* ---------- Buttons ---------- */
+
+body .admin-page .admin-todo-submit,
+body .admin-page .admin-budget-submit-btn,
+body .admin-page .admin-networking-btn-submit,
+body .admin-page .admin-note-btn-create,
+body .admin-page .cms-btn-primary,
+body .admin-page .konami-save-btn,
+body .admin-page .admin-note-actions button.primary {
+    background: var(--ui-accent);
+    color: #ffffff;
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius);
+    font-weight: 600;
+    box-shadow: var(--ui-btn-shadow);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+body .admin-page .admin-todo-submit:hover:not(:disabled),
+body .admin-page .admin-budget-submit-btn:hover:not(:disabled),
+body .admin-page .admin-networking-btn-submit:hover:not(:disabled),
+body .admin-page .admin-note-btn-create:hover:not(:disabled),
+body .admin-page .cms-btn-primary:hover:not(:disabled),
+body .admin-page .konami-save-btn:hover:not(:disabled),
+body .admin-page .admin-note-actions button.primary:hover:not(:disabled) {
+    background: var(--ui-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px -2px rgba(44, 62, 80, 0.3);
+}
+
+body .admin-page .admin-todo-submit:active:not(:disabled),
+body .admin-page .admin-budget-submit-btn:active:not(:disabled),
+body .admin-page .admin-networking-btn-submit:active:not(:disabled),
+body .admin-page .admin-note-btn-create:active:not(:disabled),
+body .admin-page .cms-btn-primary:active:not(:disabled),
+body .admin-page .konami-save-btn:active:not(:disabled),
+body .admin-page .admin-note-actions button.primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: var(--ui-btn-shadow);
+}
+
+body .admin-page .admin-networking-btn-cancel,
+body .admin-page .admin-note-btn-cancel,
+body .admin-page .cms-btn-secondary {
+    background: var(--ui-surface);
+    color: var(--ui-text-strong);
+    border: 1px solid var(--ui-border-input);
+    border-radius: var(--ui-radius);
+    font-weight: 600;
+    box-shadow: none;
+}
+
+body .admin-page .admin-networking-btn-cancel:hover,
+body .admin-page .admin-note-btn-cancel:hover,
+body .admin-page .cms-btn-secondary:hover {
+    background: var(--ui-hover);
+    border-color: var(--ui-border-strong);
+    color: var(--ui-text-strong);
+}
+
+/* Keyboard focus: one visible ring everywhere in admin */
+body .admin-page button:focus-visible,
+body .admin-page a:focus-visible,
+body .admin-page [role="tab"]:focus-visible {
+    outline: 2px solid var(--ui-accent-text);
+    outline-offset: 2px;
+}
+
+/* ---------- Tabs ---------- */
+
+body .admin-page .admin-tabs {
+    gap: 1.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--ui-border);
+}
+
+body .admin-page .admin-tabs button,
+body .admin-page .admin-tab {
+    color: var(--ui-text-muted);
+    padding: 0.55rem 0;
+    border-bottom-width: 2px;
+}
+
+body .admin-page .admin-tabs button:hover,
+body .admin-page .admin-tab:hover {
+    color: var(--ui-text-strong);
+}
+
+body .admin-page .admin-tabs button.active,
+body .admin-page .admin-tab.active {
+    color: var(--ui-text-strong);
+    border-bottom-color: var(--ui-accent-text);
+}
+
+body .admin-page .admin-tab-badge {
+    background: var(--ui-hover);
+    color: var(--ui-text-muted);
+}
+
+body .admin-page .admin-tabs button.active .admin-tab-badge,
+body .admin-page .admin-tab.active .admin-tab-badge {
+    background: var(--ui-accent);
+    color: #ffffff;
+}
+
+body .admin-page .konami-level-tab.active {
+    background: var(--ui-accent);
+    color: #ffffff;
+}
+
+/* ---------- Stat tiles ---------- */
+
+body .admin-page .admin-todo-stat,
+body .admin-page .admin-stat-card {
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    box-shadow: var(--ui-shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+body .admin-page .admin-todo-stat:hover,
+body .admin-page .admin-stat-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--ui-border-strong);
+    box-shadow: var(--ui-shadow-hover);
+}
+
+body .admin-page .admin-todo-stat span {
+    color: var(--ui-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+body .admin-page .admin-todo-stat strong {
+    color: var(--ui-text-strong);
+}
+
+/* Urgent tile keeps its red tint in both themes */
+body .admin-page .admin-todo-stat.admin-todo-stat-urgent {
+    background-color: #fdf0ee;
+    border-color: #f5b5b0;
+}
+
+body.dark-mode .admin-page .admin-todo-stat.admin-todo-stat-urgent {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(248, 113, 113, 0.35);
+}
+
+body .admin-page .admin-todo-stat.admin-todo-stat-urgent span {
+    color: var(--ui-danger);
+}
+
+/* ---------- Tables ---------- */
+
+body .admin-page .admin-table th {
+    background-color: var(--ui-surface-muted);
+    color: var(--ui-text-muted);
+    border-bottom: 1px solid var(--ui-border);
+}
+
+body .admin-page .admin-table td {
+    border-bottom-color: var(--ui-border);
+}
+
+body .admin-page .admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+body .admin-page .admin-table tbody tr:not(.admin-inline-edit-row):hover td {
+    background-color: var(--ui-hover);
+}
+
+/* ---------- Lists ---------- */
+
+body .admin-page .cms-item-row {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+}
+
+body .admin-page .cms-item-row:hover {
+    border-color: var(--ui-border-strong);
+    box-shadow: var(--ui-shadow-hover);
+}
+
+/* ---------- Messages & empty states ---------- */
+
+body .admin-page .admin-empty {
+    color: var(--ui-text-muted);
+}
+
+body .admin-page .admin-loading-text {
+    color: var(--ui-text-muted);
+}
+
+body .admin-page .admin-error {
+    color: var(--ui-danger);
+}
+
+/* ---------- To-Do board ---------- */
+
+/* Tabs that share a row with search/filters don't need a baseline */
+body .admin-page .admin-todo-nav-bar .admin-tabs {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Cards: soft outline in light mode */
+body .admin-page .admin-todo-card {
+    border: 1px solid rgba(31, 45, 61, 0.06);
+}
+
+body .admin-page .admin-todo-card:hover {
+    box-shadow: var(--ui-shadow-hover);
+}
+
+/* Dark mode: tinted dark cards so the dark-mode text inside stays readable */
+body.dark-mode .admin-page .admin-todo-card,
+body.dark-mode .admin-page .admin-todo-column-body .admin-todo-card.tone-normal:nth-child(n) {
+    background-color: #222a33;
+    border-color: rgba(125, 155, 190, 0.18);
+    box-shadow: var(--ui-shadow);
+}
+
+body.dark-mode .admin-page .admin-todo-card.tone-urgent {
+    background-color: #33241f;
+    border-color: rgba(248, 140, 110, 0.28);
+}
+
+body.dark-mode .admin-page .admin-todo-card.tone-done {
+    background-color: var(--ui-surface-muted);
+    border-color: var(--ui-border);
+}
+
+body.dark-mode .admin-page .admin-todo-card-title {
+    color: var(--ui-text-strong);
+}
+
+body.dark-mode .admin-page .admin-todo-card-edit,
+body.dark-mode .admin-page .admin-todo-card-delete {
+    color: rgba(226, 232, 240, 0.45);
+}
+
+body.dark-mode .admin-page .admin-todo-card-edit:hover,
+body.dark-mode .admin-page .admin-todo-card-delete:hover {
+    color: var(--ui-text-strong);
+}
+
+body.dark-mode .admin-page .admin-todo-card.tone-urgent .admin-todo-card-due {
+    color: #f4a58c;
+}
+
+body.dark-mode .admin-page .admin-todo-card-tag {
+    background: rgba(125, 155, 190, 0.16);
+    color: var(--ui-accent-text);
+}
+
+/* ---------- Dashboard cards ---------- */
+
+body .admin-page .briefing-memo-document {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow);
+}
+
+body .admin-page .memo-masthead {
+    border-bottom-color: var(--ui-border);
+}
+
+/* Pinned note preview: show more before fading, and fade into the card color */
+body .admin-page .admin-pinned-note-content-container.is-collapsed,
+body .admin-page .admin-pinned-note-content-container.is-collapsed .admin-pinned-note-content {
+    max-height: 260px;
+}
+
+body .admin-page .admin-pinned-note-fade,
+body.dark-mode .admin-page .admin-pinned-note-fade {
+    height: 56px;
+    background: linear-gradient(to bottom, transparent 0%, var(--ui-surface) 90%) !important;
+}
+
+/* ---------- Note text (Notes page and pinned notes) ---------- */
+
+/* Headings had a hard-coded near-black color with no dark-mode value */
+body.dark-mode .admin-page .admin-note-text-editor h1,
+body.dark-mode .admin-page .admin-note-text-editor h2,
+body.dark-mode .admin-page .admin-note-text-editor h3,
+body.dark-mode .admin-page .admin-note-text-editor h4,
+body.dark-mode .admin-page .admin-note-text-editor h5,
+body.dark-mode .admin-page .admin-note-text-editor h6 {
+    color: var(--ui-text-strong);
+}
+
+/* Text pasted from the light theme can carry its default dark text color inline.
+   In dark mode, remap only those default colors; intentional colors are kept. */
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: rgb(44, 62, 80)"],
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: rgb(15, 23, 42)"],
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: rgb(30, 41, 59)"],
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: rgb(0, 0, 0)"],
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: #2c3e50"],
+body.dark-mode .admin-page .admin-note-text-editor [style*="color: #2C3E50"] {
+    color: var(--ui-text-strong) !important;
+}
+
+/* Notes editor: widget/text-tool groups were a flat light overlay in dark mode */
+body.dark-mode .admin-page .admin-note-widget-group,
+body.dark-mode .admin-page .admin-note-text-tools {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--ui-border);
+}
+
+body.dark-mode .admin-page .admin-note-widget-group > .admin-note-widget-top-row > span,
+body.dark-mode .admin-page .admin-note-text-tools > span {
+    color: var(--ui-text-muted);
+}
+
+/* ---------- Budget planner ---------- */
+
+/* Planner defined its own colors with no dark-mode values */
+body.dark-mode .admin-page .admin-budget-planner {
+    --planner-border: rgba(255, 255, 255, 0.08);
+    --planner-border-strong: rgba(255, 255, 255, 0.15);
+    --planner-subtle: var(--ui-surface-muted);
+    --planner-green: #5cc98f;
+    --planner-red: #f2836f;
+}
+
+/* ---------- Dashboard details ---------- */
+
+body .admin-page .admin-event-toggle-desc-btn,
+body .admin-page .admin-event-toggle-desc-btn span {
+    color: var(--ui-accent-text);
+}
+
+body.dark-mode .admin-page .weather-meta-sep {
+    color: var(--ui-text-muted);
+}
+
+/* ---------- Secondary text: readable muted color everywhere ---------- */
+
+body .admin-page .admin-todo-column-count,
+body .admin-page .weather-stat-label,
+body .admin-page .admin-networking-notes-empty,
+body .admin-page .cms-date-tag,
+body .admin-page .cms-star-btn:not(.active):not(.is-active):not(.starred),
+body .admin-page .cms-item-meta-sub,
+body .admin-page .cms-item-meta-sub span:not([class]) {
+    color: var(--ui-text-muted);
+}
+
+/* Decorative separators stay quiet but visible */
+body .admin-page .admin-pinned-header-separator,
+body .admin-page .memo-news-dot,
+body .admin-page .weather-meta-sep,
+body .admin-page .cms-meta-dot {
+    color: var(--ui-placeholder);
+}
+
+/* Card edit/delete icons a touch stronger */
+body .admin-page .admin-todo-card-edit,
+body .admin-page .admin-todo-card-delete {
+    color: rgba(31, 45, 61, 0.55);
+}
+
+body .admin-page .admin-todo-card-edit:hover,
+body .admin-page .admin-todo-card-delete:hover {
+    color: rgba(31, 45, 61, 0.9);
+}
+
+/* Planner "under budget" green was too light on white */
+body:not(.dark-mode) .admin-page .admin-budget-planner .positive,
+body:not(.dark-mode) .admin-page .admin-budget-planner .positive strong {
+    color: #13805a;
+}

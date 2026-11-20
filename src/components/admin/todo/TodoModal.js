@@ -39,7 +39,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
 
     const handleSave = async () => {
         if (!draft.title?.trim()) {
-            alert(t('admin.todoSection.modal.alertTitleRequired', 'Please enter a task title.'));
+            alert(t('admin.todoSection.modal.alertTitleRequired'));
             return;
         }
         await onSave({
@@ -94,8 +94,8 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                 <div className="admin-todo-modal-header">
                     <h3 className="admin-todo-modal-title">
                         {isMaster
-                            ? t('admin.todoSection.modal.editRecurringTask', t('admin.todoSection.modal.editMasterTask', 'Edit Recurring Task'))
-                            : t('admin.todoSection.modal.editTask', 'Edit Task')}
+                            ? t('admin.todoSection.modal.editRecurringTask')
+                            : t('admin.todoSection.modal.editTask')}
                     </h3>
                     <button className="admin-todo-modal-close" onClick={onClose}>✕</button>
                 </div>
@@ -107,12 +107,12 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                 <line x1="12" y1="16" x2="12" y2="12" />
                                 <line x1="12" y1="8" x2="12.01" y2="8" />
                             </svg>
-                            <span>{t('admin.todoSection.modal.seriesMasterNotice', 'Changes to this master task apply across all current and future tasks in this series.')}</span>
+                            <span>{t('admin.todoSection.modal.seriesMasterNotice')}</span>
                         </div>
                     )}
                     <form className="admin-todo-modal-form" onSubmit={(e) => e.preventDefault()}>
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.todoSection.modal.title', 'Title')}</label>
+                            <label>{t('admin.todoSection.modal.title')}</label>
                             <input
                                 type="text"
                                 value={draft.title || ''}
@@ -120,24 +120,24 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                             />
                         </div>
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.todoSection.modal.description', 'Description')}</label>
+                            <label>{t('admin.todoSection.modal.description')}</label>
                             <textarea
                                 value={draft.description || ''}
                                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
                             />
                         </div>
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.todoSection.modal.link', 'Link')}</label>
+                            <label>{t('admin.todoSection.modal.link')}</label>
                             <input
                                 type="url"
-                                placeholder={t('admin.todoSection.modal.linkPlaceholder', 'https://example.com')}
+                                placeholder={t('admin.todoSection.modal.linkPlaceholder')}
                                 value={draft.link || ''}
                                 onChange={(e) => setDraft({ ...draft, link: e.target.value })}
                             />
                         </div>
                         <div className="admin-todo-modal-row">
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.todoSection.modal.dueDate', 'Due Date')}</label>
+                                <label>{t('admin.todoSection.modal.dueDate')}</label>
                                 <input
                                     type="date"
                                     value={draft.dueDate || ''}
@@ -145,20 +145,20 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                 />
                             </div>
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.todoSection.modal.priority', 'Priority')}</label>
+                                <label>{t('admin.todoSection.modal.priority')}</label>
                                 <select
                                     value={draft.priority || 'medium'}
                                     onChange={(e) => setDraft({ ...draft, priority: e.target.value })}
                                 >
-                                    <option value="low">{t('admin.todoSection.priorities.low', 'Low')}</option>
-                                    <option value="medium">{t('admin.todoSection.priorities.medium', 'Medium')}</option>
-                                    <option value="high">{t('admin.todoSection.priorities.high', 'High')}</option>
+                                    <option value="low">{t('admin.todoSection.priorities.low')}</option>
+                                    <option value="medium">{t('admin.todoSection.priorities.medium')}</option>
+                                    <option value="high">{t('admin.todoSection.priorities.high')}</option>
                                 </select>
                             </div>
                         </div>
                         <div className="admin-todo-modal-row">
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.todoSection.modal.estimatedTime', 'Estimated Time (min)')}</label>
+                                <label>{t('admin.todoSection.modal.estimatedTime')}</label>
                                 <input
                                     type="number"
                                     value={draft.estimatedTime || ''}
@@ -166,7 +166,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                 />
                             </div>
                             <div className="admin-todo-modal-field">
-                                <label>{t('admin.todoSection.modal.recurrence', 'Recurrence')}</label>
+                                <label>{t('admin.todoSection.modal.recurrence')}</label>
                                 <select
                                     value={draft.recurrence || 'none'}
                                     disabled={Boolean(draft.recurrenceSeriesId)}
@@ -176,13 +176,13 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                         recurrenceDays: e.target.value === 'weekly' ? (draft.recurrenceDays || []) : [],
                                     })}
                                 >
-                                    <option value="none">{t('admin.todoSection.modal.recurrenceOptions.none', 'None')}</option>
-                                    <option value="daily">{t('admin.todoSection.modal.recurrenceOptions.daily', 'Daily')}</option>
-                                    <option value="weekly">{t('admin.todoSection.modal.recurrenceOptions.weekly', 'Weekly')}</option>
-                                    <option value="monthly">{t('admin.todoSection.modal.recurrenceOptions.monthly', 'Monthly')}</option>
+                                    <option value="none">{t('admin.todoSection.modal.recurrenceOptions.none')}</option>
+                                    <option value="daily">{t('admin.todoSection.modal.recurrenceOptions.daily')}</option>
+                                    <option value="weekly">{t('admin.todoSection.modal.recurrenceOptions.weekly')}</option>
+                                    <option value="monthly">{t('admin.todoSection.modal.recurrenceOptions.monthly')}</option>
                                 </select>
                                 {draft.recurrenceSeriesId && (
-                                    <span className="admin-todo-field-help">{t('admin.todoSection.modal.childRecurrenceHelp', 'Recurrence is set on the master task in the Recurring Tasks column.')}</span>
+                                    <span className="admin-todo-field-help">{t('admin.todoSection.modal.childRecurrenceHelp')}</span>
                                 )}
                             </div>
                         </div>
@@ -190,7 +190,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                             <div className="admin-todo-recurrence-options">
                                 {draft.recurrence === 'weekly' && (
                                     <div className="admin-todo-modal-field">
-                                        <label>{t('admin.todoSection.modal.repeatOnWeekdays', 'Repeat on these weekdays')}</label>
+                                        <label>{t('admin.todoSection.modal.repeatOnWeekdays')}</label>
                                         <div className="admin-todo-day-picker">
                                             {RECURRENCE_DAYS.map(([value, label]) => {
                                                 const selected = (draft.recurrenceDays || []).includes(value);
@@ -214,7 +214,7 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                     </div>
                                 )}
                                 <div className="admin-todo-modal-field">
-                                    <label>{t('admin.todoSection.modal.repeatUntil', 'Repeat until')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional', 'optional')})</span></label>
+                                    <label>{t('admin.todoSection.modal.repeatUntil')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional')})</span></label>
                                     <input
                                         type="date"
                                         value={draft.recurrenceUntil || ''}
@@ -224,17 +224,17 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                             </div>
                         )}
                         <div className="admin-todo-modal-field">
-                            <label>{t('admin.todoSection.modal.showTaskOn', 'Show task on')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional', 'optional')})</span></label>
+                            <label>{t('admin.todoSection.modal.showTaskOn')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional')})</span></label>
                             <input
                                 type="date"
                                 value={draft.scheduledAt ? draft.scheduledAt.slice(0, 10) : ''}
                                 onChange={(e) => setDraft({ ...draft, scheduledAt: e.target.value })}
                             />
-                            <span className="admin-todo-field-help">{t('admin.todoSection.modal.showTaskHelp', 'The task stays in Other until this day.')}</span>
+                            <span className="admin-todo-field-help">{t('admin.todoSection.modal.showTaskHelp')}</span>
                         </div>
                         <div className="admin-todo-tags-section">
                             <label className="admin-todo-tags-label">
-                                {t('admin.todoSection.modal.tags', 'Tags')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional', 'optional')})</span>
+                                {t('admin.todoSection.modal.tags')} <span className="admin-todo-optional">({t('admin.todoSection.modal.optional')})</span>
                             </label>
                             <div className="admin-todo-tag-input-row">
                                 <input
@@ -243,14 +243,14 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                     value={tagInput}
                                     onChange={(e) => setTagInput(e.target.value)}
                                     onKeyDown={handleTagKeyDown}
-                                    placeholder={t('admin.todoSection.modal.tagPlaceholder', 'Add a tag (press Enter)')}
+                                    placeholder={t('admin.todoSection.modal.tagPlaceholder')}
                                 />
                                 <button
                                     type="button"
                                     className="admin-todo-tag-add-btn"
                                     onClick={handleAddTag}
                                 >
-                                    {t('admin.todoSection.modal.addTag', 'Add')}
+                                    {t('admin.todoSection.modal.addTag')}
                                 </button>
                             </div>
                             {Array.isArray(draft.tags) && draft.tags.length > 0 && (
@@ -262,8 +262,8 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                                 type="button"
                                                 className="admin-todo-tag-remove"
                                                 onClick={() => handleRemoveTag(tag)}
-                                                aria-label={`Remove tag ${tag}`}
-                                                title="Remove tag"
+                                                aria-label={t('admin.ui.todoModal.removeTag', { p0: tag })}
+                                                title={t('admin.ui.todoModal.removeTag2')}
                                             >
                                                 ✕
                                             </button>
@@ -275,15 +275,15 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                         <div className="admin-todo-subtasks-section">
                             <div className="admin-todo-subtasks-header">
                                 <div>
-                                    <h4>{t('admin.todoSection.modal.subtasks', 'Subtasks')}</h4>
-                                    <span>{formatNumber((draft.subtasks || []).length)} {t('admin.messages.items', 'items')}</span>
+                                    <h4>{t('admin.todoSection.modal.subtasks')}</h4>
+                                    <span>{formatNumber((draft.subtasks || []).length)} {t('admin.messages.items')}</span>
                                 </div>
                                 <button type="button" className="admin-todo-subtask-add" onClick={addSubtask}>
-                                    {t('admin.todoSection.modal.addSubtask', '+ Add Subtask')}
+                                    {t('admin.todoSection.modal.addSubtask')}
                                 </button>
                             </div>
                             {(draft.subtasks || []).length === 0 ? (
-                                <p className="admin-todo-subtasks-empty">{t('admin.todoSection.modal.breakIntoSteps', 'Break this task into smaller steps.')}</p>
+                                <p className="admin-todo-subtasks-empty">{t('admin.todoSection.modal.breakIntoSteps')}</p>
                             ) : (
                                 <div className="admin-todo-subtask-list">
                                     {(draft.subtasks || []).map((st, i) => (
@@ -292,21 +292,21 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                                                 type="checkbox"
                                                 checked={Boolean(st.completed)}
                                                 onChange={(e) => updateSubtask(i, { completed: e.target.checked })}
-                                                aria-label={`Complete subtask ${i + 1}`}
+                                                aria-label={t('admin.ui.todoModal.completeSubtask', { p0: formatNumber(i + 1) })}
                                             />
                                             <input
                                                 type="text"
                                                 value={st.title || ''}
                                                 onChange={(e) => updateSubtask(i, { title: e.target.value })}
-                                                placeholder={t('admin.todoSection.modal.subtaskPlaceholder', 'Subtask name')}
-                                                aria-label={`Subtask ${i + 1}`}
+                                                placeholder={t('admin.todoSection.modal.subtaskPlaceholder')}
+                                                aria-label={t('admin.ui.todoModal.subtask', { p0: formatNumber(i + 1) })}
                                             />
                                             <button
                                                 type="button"
                                                 className="admin-todo-subtask-remove"
                                                 onClick={() => removeSubtask(i)}
-                                                aria-label={`Remove subtask ${i + 1}`}
-                                                title="Remove subtask"
+                                                aria-label={t('admin.ui.todoModal.removeSubtask', { p0: formatNumber(i + 1) })}
+                                                title={t('admin.ui.todoModal.removeSubtask2')}
                                             >
                                                 ✕
                                             </button>
@@ -319,10 +319,10 @@ const TodoModal = ({ todo, isOpen, onClose, onSave, isRecurringColumn = false })
                 </div>
                 <div className="admin-todo-modal-footer">
                     <button className="admin-todo-modal-btn admin-todo-modal-btn-cancel" onClick={onClose}>
-                        {t('admin.todoSection.modal.cancel', 'Cancel')}
+                        {t('admin.todoSection.modal.cancel')}
                     </button>
                     <button className="admin-todo-modal-btn admin-todo-modal-btn-save" onClick={handleSave}>
-                        {t('admin.todoSection.modal.saveChanges', 'Save Changes')}
+                        {t('admin.todoSection.modal.saveChanges')}
                     </button>
                 </div>
             </div>

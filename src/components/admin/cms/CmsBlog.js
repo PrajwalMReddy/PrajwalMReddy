@@ -127,7 +127,7 @@ const CmsBlog = ({
                     setMarkdownContent(data.content || '');
                 }
             } catch (err) {
-                console.warn(t('logs.blogMarkdownError', 'Could not load blog markdown:'), err);
+                console.warn(t('logs.blogMarkdownError'), err);
             } finally {
                 setLoadingMarkdown(false);
             }
@@ -157,7 +157,7 @@ const CmsBlog = ({
         const isExternal = !isCustom && (editingPost.source === 'external' || editingPost.type === 'external');
 
         if (!editingPost.title.trim()) {
-            alert('Title is required');
+            alert(t('admin.ui.cmsBlog.titleIsRequired'));
             return;
         }
 
@@ -165,7 +165,7 @@ const CmsBlog = ({
         if (!isExternal) {
             safeSlug = (editingPost.slug || '').trim();
             if (!safeSlug) {
-                alert('Slug is required');
+                alert(t('admin.ui.cmsBlog.slugIsRequired'));
                 return;
             }
 
@@ -174,18 +174,18 @@ const CmsBlog = ({
                 isNew &&
                 posts.some((p) => p.slug && p.slug.toLowerCase() === safeSlug.toLowerCase())
             ) {
-                alert('A post with this slug already exists. Please choose a unique slug.');
+                alert(t('admin.ui.cmsBlog.aPostWithThisSlugAlready'));
                 return;
             }
         }
 
         if (isExternal && !(editingPost.externalUrl || '').trim()) {
-            alert('External URL is required for External Link posts.');
+            alert(t('admin.ui.cmsBlog.externalUrlIsRequiredForExternal'));
             return;
         }
 
         if (isCustom && !(editingPost.component || '').trim()) {
-            alert('Component Name is required for Custom React Component posts.');
+            alert(t('admin.ui.cmsBlog.componentNameIsRequiredForCustom'));
             return;
         }
 
@@ -215,7 +215,7 @@ const CmsBlog = ({
                 try {
                     postMetadata.customData = JSON.parse(editingPost.customDataString.trim());
                 } catch (jsonErr) {
-                    alert(`Custom Data must be valid JSON: ${jsonErr.message}`);
+                    alert(t('admin.ui.cmsBlog.customDataMustBeValidJson', { p0: jsonErr.message }));
                     return;
                 }
             } else {
@@ -243,7 +243,7 @@ const CmsBlog = ({
     const handleDelete = async (index) => {
         const post = posts[index];
         const postDesc = post.slug ? `"${post.title}" (${post.slug})` : `"${post.title}"`;
-        if (!window.confirm(`Are you sure you want to delete post ${postDesc}?`)) return;
+        if (!window.confirm(t('admin.ui.cmsBlog.areYouSureYouWantTo', { p0: postDesc }))) return;
 
         const updated = posts.filter((_, idx) => idx !== index);
         await onSave(updated, `Deleted post "${post.title}"`);
@@ -288,7 +288,7 @@ const CmsBlog = ({
                         className={`cms-subnav-btn ${currentSection === 'posts' ? 'active' : ''}`}
                         onClick={() => setCurrentSection('posts')}
                     >
-                        <span>{t('admin.tabs.blog', 'Blog Posts')}</span>
+                        <span>{t('admin.tabs.blog')}</span>
                         <span className="cms-subnav-badge">{formatNumber(posts.length)}</span>
                     </button>
                     <button
@@ -296,7 +296,7 @@ const CmsBlog = ({
                         className={`cms-subnav-btn ${currentSection === 'quotes' ? 'active' : ''}`}
                         onClick={() => setCurrentSection('quotes')}
                     >
-                        <span>{t('admin.tabs.quotes', 'Quotes')}</span>
+                        <span>{t('admin.tabs.quotes')}</span>
                         <span className="cms-subnav-badge">{formatNumber(quotes.length)}</span>
                     </button>
                 </div>
@@ -322,7 +322,7 @@ const CmsBlog = ({
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchBlog', 'Search posts...')}
+                            placeholder={t('admin.placeholders.searchBlog')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -334,8 +334,8 @@ const CmsBlog = ({
                         onChange={(e) => setFilterLang(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allLanguages', 'All Languages')}</option>
-                        <option value="en">English</option>
+                        <option value="all">{t('admin.filters.allLanguages')}</option>
+                        <option value="en">{t('admin.ui.cmsBlog.english')}</option>
                         <option value="kn">ಕನ್ನಡ</option>
                     </select>
 
@@ -344,9 +344,9 @@ const CmsBlog = ({
                         onChange={(e) => setFilterVisibility(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allVisibility', 'All Visibility')}</option>
-                        <option value="public">{t('admin.filters.public', 'Public')}</option>
-                        <option value="unlisted">{t('admin.filters.unlisted', 'Unlisted')}</option>
+                        <option value="all">{t('admin.filters.allVisibility')}</option>
+                        <option value="public">{t('admin.filters.public')}</option>
+                        <option value="unlisted">{t('admin.filters.unlisted')}</option>
                     </select>
 
                     <select
@@ -354,14 +354,14 @@ const CmsBlog = ({
                         onChange={(e) => setFilterSource(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allSources', 'All Sources')}</option>
-                        <option value="local">{t('admin.filters.markdown', 'Markdown File')}</option>
-                        <option value="custom">{t('admin.filters.customComponent', 'Custom Component')}</option>
-                        <option value="external">{t('admin.filters.external', 'External Link')}</option>
+                        <option value="all">{t('admin.filters.allSources')}</option>
+                        <option value="local">{t('admin.filters.markdown')}</option>
+                        <option value="custom">{t('admin.filters.customComponent')}</option>
+                        <option value="external">{t('admin.filters.external')}</option>
                     </select>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredPosts.length)} {t('admin.messages.of', 'of')} {formatNumber(posts.length)}
+                        {formatNumber(filteredPosts.length)} {t('admin.messages.of')} {formatNumber(posts.length)}
                     </span>
                 </div>
 
@@ -371,7 +371,7 @@ const CmsBlog = ({
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.newPost', '+ New Post')}
+                        {t('admin.actions.newPost')}
                     </button>
                 </div>
             </div>
@@ -379,8 +379,8 @@ const CmsBlog = ({
             {/* Posts List */}
             {filteredPosts.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noPosts', 'No blog posts found')}</p>
-                    <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Create your first blog post using the button above.')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noPosts')}</p>
+                    <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                 </div>
             ) : (
                 <div className="cms-list">
@@ -410,7 +410,7 @@ const CmsBlog = ({
                                 <div className="cms-item-main">
                                     <div className="cms-item-content">
                                         <div className="cms-item-header">
-                                            <h4 className="cms-item-title">{post.title || 'Untitled Post'}</h4>
+                                            <h4 className="cms-item-title">{post.title || t('admin.ui.cmsBlog.untitledPost')}</h4>
                                             
                                             {isCustom && (
                                                 <span className="cms-tag cms-tag-custom">
@@ -418,13 +418,13 @@ const CmsBlog = ({
                                                         <polyline points="16 18 22 12 16 6" />
                                                         <polyline points="8 6 2 12 8 18" />
                                                     </svg>
-                                                    {post.component || t('admin.filters.customComponent', 'Custom')}
+                                                    {post.component || t('admin.filters.customComponent')}
                                                 </span>
                                             )}
 
                                             {isExternal ? (
                                                 <span className="cms-tag cms-tag-external">
-                                                    ↗ {t('admin.filters.external', 'External')}
+                                                    ↗ {t('admin.filters.external')}
                                                 </span>
                                             ) : post.slug ? (
                                                 <span className="cms-item-slug" title={`/${post.slug}`}>
@@ -435,7 +435,7 @@ const CmsBlog = ({
                                             <button
                                                 type="button"
                                                 className={`cms-tag ${post.visibility === 'public' ? 'cms-tag-public' : 'cms-tag-unlisted'} cms-tag-interactive`}
-                                                title={t('admin.actions.toggleVisibility', 'Click to toggle visibility (public/unlisted)')}
+                                                title={t('admin.actions.toggleVisibility')}
                                                 disabled={saving}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -443,11 +443,11 @@ const CmsBlog = ({
                                                 }}
                                             >
                                                 <span className={`cms-status-indicator ${post.visibility === 'public' ? 'public' : 'unlisted'}`} />
-                                                {post.visibility === 'public' ? t('admin.filters.public', 'Public') : t('admin.filters.unlisted', 'Unlisted')}
+                                                {post.visibility === 'public' ? t('admin.filters.public') : t('admin.filters.unlisted')}
                                             </button>
 
                                             <span className="cms-tag cms-tag-lang">
-                                                {post.language === 'kn' ? 'ಕನ್ನಡ' : 'EN'}
+                                                {post.language === 'kn' ? t('admin.kannada') : t('admin.english')}
                                             </span>
                                         </div>
 
@@ -472,7 +472,7 @@ const CmsBlog = ({
                                                 {post.date && externalHost && <span className="cms-meta-dot">•</span>}
 
                                                 {externalHost && (
-                                                    <span style={{ fontSize: '0.735rem', color: '#94a3b8' }}>
+                                                    <span style={{ fontSize: '0.735rem', color: 'var(--ui-text-muted, #5e748d)' }}>
                                                         {externalHost}
                                                     </span>
                                                 )}
@@ -485,7 +485,7 @@ const CmsBlog = ({
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveUp', 'Move Up')}
+                                        title={t('admin.actions.moveUp')}
                                         disabled={originalIndex === 0 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, -1)}
                                     >
@@ -496,7 +496,7 @@ const CmsBlog = ({
                                     <button
                                         type="button"
                                         className="cms-btn-icon"
-                                        title={t('admin.actions.moveDown', 'Move Down')}
+                                        title={t('admin.actions.moveDown')}
                                         disabled={originalIndex === posts.length - 1 || saving}
                                         onClick={() => handleMoveOrder(originalIndex, 1)}
                                     >
@@ -509,29 +509,29 @@ const CmsBlog = ({
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="cms-btn cms-btn-sm cms-btn-view"
-                                        title={t('admin.actions.viewInNewTab', 'View in new tab')}
-                                        aria-label={t('admin.actions.viewInNewTab', 'View in new tab')}
+                                        title={t('admin.actions.viewInNewTab')}
+                                        aria-label={t('admin.actions.viewInNewTab')}
                                     >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                             <polyline points="15 3 21 3 21 9" />
                                             <line x1="10" y1="14" x2="21" y2="3" />
                                         </svg>
-                                        <span>{t('admin.actions.view', 'View')}</span>
+                                        <span>{t('admin.actions.view')}</span>
                                     </a>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEditModal(post, originalIndex)}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -547,8 +547,8 @@ const CmsBlog = ({
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
                                 {editingPost._index !== undefined
-                                    ? `${t('admin.actions.edit', 'Edit')}: ${editingPost.title}`
-                                    : t('admin.modals.newPost', 'Create Blog Post')}
+                                    ? `${t('admin.actions.edit')}: ${editingPost.title}`
+                                    : t('admin.modals.newPost')}
                             </h3>
                             <button
                                 type="button"
@@ -564,14 +564,14 @@ const CmsBlog = ({
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            {t('admin.labels.title', 'Post Title')} <span className="required">*</span>
+                                            {t('admin.labels.title')} <span className="required">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             className="cms-input"
                                             value={editingPost.title}
                                             onChange={(e) => handleTitleChange(e.target.value)}
-                                            placeholder="e.g. Great Quotes"
+                                            placeholder={t('admin.ui.cmsBlog.examplePlaceholder1')}
                                             required
                                         />
                                     </div>
@@ -579,7 +579,7 @@ const CmsBlog = ({
                                     {editingPost.source !== 'external' && editingPost.type !== 'external' && (
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.slug', 'URL Slug')} <span className="required">*</span>
+                                                {t('admin.labels.slug')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -594,56 +594,56 @@ const CmsBlog = ({
                                 </div>
 
                                 <div className="cms-form-group">
-                                    <label className="cms-form-label">{t('admin.labels.description', 'Short Description / Subtitle')}</label>
+                                    <label className="cms-form-label">{t('admin.labels.description')}</label>
                                     <input
                                         type="text"
                                         className="cms-input"
                                         value={editingPost.description}
                                         onChange={(e) => setEditingPost({ ...editingPost, description: e.target.value })}
-                                        placeholder="Brief summary shown on blog list..."
+                                        placeholder={t('admin.ui.cmsBlog.briefSummaryShownOnBlogList')}
                                     />
                                 </div>
 
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.date', 'Publication Date')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.date')}</label>
                                         <input
                                             type="text"
                                             className="cms-input"
                                             value={editingPost.date}
                                             onChange={(e) => setEditingPost({ ...editingPost, date: e.target.value })}
-                                            placeholder="e.g. July 16, 2025"
+                                            placeholder={t('admin.ui.cmsBlog.examplePlaceholder2')}
                                         />
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.language', 'Language')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.language')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingPost.language}
                                             onChange={(e) => setEditingPost({ ...editingPost, language: e.target.value })}
                                         >
-                                            <option value="en">English</option>
+                                            <option value="en">{t('admin.ui.cmsBlog.english')}</option>
                                             <option value="kn">ಕನ್ನಡ</option>
                                         </select>
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.visibility', 'Visibility')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.visibility')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingPost.visibility}
                                             onChange={(e) => setEditingPost({ ...editingPost, visibility: e.target.value })}
                                         >
-                                            <option value="public">{t('admin.filters.public', 'Public')}</option>
-                                            <option value="unlisted">{t('admin.filters.unlisted', 'Unlisted')}</option>
+                                            <option value="public">{t('admin.filters.public')}</option>
+                                            <option value="unlisted">{t('admin.filters.unlisted')}</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.postType', 'Source Type')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.postType')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingPost.source || 'local'}
@@ -674,9 +674,9 @@ const CmsBlog = ({
                                                 }
                                             }}
                                         >
-                                            <option value="local">{t('admin.filters.markdown', 'Markdown File')}</option>
-                                            <option value="custom">{t('admin.labels.customReactComponent', 'Custom React Component')}</option>
-                                            <option value="external">{t('admin.filters.external', 'External Link')}</option>
+                                            <option value="local">{t('admin.filters.markdown')}</option>
+                                            <option value="custom">{t('admin.labels.customReactComponent')}</option>
+                                            <option value="external">{t('admin.filters.external')}</option>
                                         </select>
                                     </div>
 
@@ -684,14 +684,14 @@ const CmsBlog = ({
                                         <>
                                             <div className="cms-form-group">
                                                 <label className="cms-form-label">
-                                                    {t('admin.labels.componentName', 'Component Name')} <span className="required">*</span>
+                                                    {t('admin.labels.componentName')} <span className="required">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
                                                     value={editingPost.component || ''}
                                                     onChange={(e) => setEditingPost({ ...editingPost, component: e.target.value })}
-                                                    placeholder="e.g. BengaluruTeluguDictionary"
+                                                    placeholder={t('admin.ui.cmsBlog.examplePlaceholder3')}
                                                     required
                                                 />
                                             </div>
@@ -699,16 +699,16 @@ const CmsBlog = ({
                                             <div className="cms-form-group" style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                                                     <label className="cms-form-label" style={{ marginBottom: 0 }}>
-                                                        {t('admin.labels.customDataJson', 'Custom Data (Optional JSON)')}
+                                                        {t('admin.labels.customDataJson')}
                                                     </label>
                                                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                                         {Boolean(editingPost.customDataString?.trim()) && (
                                                             (() => {
                                                                 try {
                                                                     JSON.parse(editingPost.customDataString);
-                                                                    return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ Valid JSON</span>;
+                                                                    return <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>{t('admin.ui.cmsBlog.validJson')}</span>;
                                                                 } catch (err) {
-                                                                    return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>⚠ Invalid JSON</span>;
+                                                                    return <span style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>{t('admin.ui.cmsBlog.invalidJson')}</span>;
                                                                 }
                                                             })()
                                                         )}
@@ -721,11 +721,11 @@ const CmsBlog = ({
                                                                     const parsed = JSON.parse(editingPost.customDataString);
                                                                     setEditingPost({ ...editingPost, customDataString: JSON.stringify(parsed, null, 2) });
                                                                 } catch (err) {
-                                                                    alert('Cannot format invalid JSON: ' + err.message);
+                                                                    alert(t('admin.ui.cmsBlog.cannotFormatInvalidJson', { p0: err.message }));
                                                                 }
                                                             }}
                                                         >
-                                                            Prettify JSON
+                                                            {t('admin.ui.cmsBlog.prettifyJson')}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -736,7 +736,7 @@ const CmsBlog = ({
                                                     onChange={(e) =>
                                                         setEditingPost({ ...editingPost, customDataString: e.target.value })
                                                     }
-                                                    placeholder={'// Optional JSON payload passed to component props (e.g. array of entries, config object)'}
+                                                    placeholder={t('admin.ui.cmsBlog.optionalJsonPayloadPassedToComponent')}
                                                 />
                                             </div>
                                         </>
@@ -745,7 +745,7 @@ const CmsBlog = ({
                                     {editingPost.source === 'external' && (
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.externalUrl', 'External URL')} <span className="required">*</span>
+                                                {t('admin.labels.externalUrl')} <span className="required">*</span>
                                             </label>
                                             <input
                                                 type="url"
@@ -762,15 +762,15 @@ const CmsBlog = ({
                                 {editingPost.source !== 'external' && editingPost.source !== 'custom' && (
                                     <div className="cms-form-group" style={{ marginTop: '0.85rem' }}>
                                         <label className="cms-form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
-                                            {t('admin.labels.contentMarkdown', 'Markdown Content')}
+                                            {t('admin.labels.contentMarkdown')}
                                         </label>
                                         {loadingMarkdown ? (
-                                            <p className="admin-loading-text">{t('admin.messages.loadingMarkdown', 'Loading markdown...')}</p>
+                                            <p className="admin-loading-text">{t('admin.messages.loadingMarkdown')}</p>
                                         ) : (
                                             <CmsMarkdownEditor
                                                 value={markdownContent}
                                                 onChange={setMarkdownContent}
-                                                placeholder={t('admin.placeholders.writeArticleMarkdown', 'Write your article in markdown format...')}
+                                                placeholder={t('admin.placeholders.writeArticleMarkdown')}
                                             />
                                         )}
                                     </div>
@@ -783,14 +783,14 @@ const CmsBlog = ({
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsEditorOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     className="cms-btn cms-btn-primary"
                                     disabled={saving}
                                 >
-                                    {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.save', 'Save Blog Post')}
+                                    {saving ? t('admin.actions.saving') : t('admin.actions.save')}
                                 </button>
                             </div>
                         </form>

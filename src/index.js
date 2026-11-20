@@ -18,10 +18,10 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         navigator.serviceWorker
             .register('/sw.js')
             .then((registration) => {
-                console.log(tStatic('logs.swRegistered', undefined, 'PWA ServiceWorker registered with scope:'), registration.scope);
+                console.log(tStatic('logs.swRegistered', undefined), registration.scope);
             })
             .catch((error) => {
-                console.warn(tStatic('logs.swFailed', undefined, 'PWA ServiceWorker registration failed:'), error);
+                console.warn(tStatic('logs.swFailed', undefined), error);
             });
     });
 }

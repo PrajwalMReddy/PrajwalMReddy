@@ -126,7 +126,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
     const handleDelete = async (index) => {
         const photo = photos[index];
         const label = getLocalized(photo.title, photo.filename);
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${label})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${label})`)) return;
 
         const updated = photos
             .filter((_, idx) => idx !== index)
@@ -163,11 +163,11 @@ const CmsPhotography = ({ data, onSave, saving }) => {
     const handleSavePhotoModal = async (e) => {
         e.preventDefault();
         if (!editingPhoto.filename.trim()) {
-            alert('Please select a Vercel hosted picture, upload a file, or enter an image URL');
+            alert(t('admin.ui.cmsPhotography.pleaseSelectAVercelHostedPicture'));
             return;
         }
         if (!editingPhoto.title.en.trim() && !editingPhoto.title.kn.trim()) {
-            alert('A photo title in English or Kannada is required');
+            alert(t('admin.ui.cmsPhotography.aPhotoTitleInEnglishOr'));
             return;
         }
 
@@ -220,7 +220,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchPhotos', 'Search photos...')}
+                            placeholder={t('admin.placeholders.searchPhotos')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -228,7 +228,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                     </div>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredPhotos.length)} {t('admin.messages.of', 'of')} {formatNumber(photos.length)}
+                        {formatNumber(filteredPhotos.length)} {t('admin.messages.of')} {formatNumber(photos.length)}
                     </span>
                 </div>
 
@@ -238,15 +238,15 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.uploadPhoto', '+ Add Photo')}
+                        {t('admin.actions.uploadPhoto')}
                     </button>
                 </div>
             </div>
 
             {filteredPhotos.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noPhotos', 'No photos found')}</p>
-                    <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new item.')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noPhotos')}</p>
+                    <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                 </div>
             ) : (
                 <div className="cms-list">
@@ -281,7 +281,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                                 textAlign: 'center',
                                             }}
                                         >
-                                            No Link
+                                            {t('admin.ui.cmsPhotography.noLink')}
                                         </div>
                                     )}
 
@@ -323,14 +323,14 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEditModal(photo, originalIndex)}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -346,8 +346,8 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
                                 {editingPhoto._index !== undefined
-                                    ? t('admin.modals.editPhoto', 'Edit Photo')
-                                    : t('admin.modals.uploadPhoto', 'Upload Photo')}
+                                    ? t('admin.modals.editPhoto')
+                                    : t('admin.modals.uploadPhoto')}
                             </h3>
                             <button
                                 type="button"
@@ -363,7 +363,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                 <div className="cms-form-group">
                                     <CmsImageUploader
                                         folder="photography"
-                                        label={t('admin.labels.photoFile', 'Photo Picture / File')}
+                                        label={t('admin.labels.photoFile')}
                                         value={editingPhoto.filename}
                                         onChange={(newFilename) =>
                                             setEditingPhoto((prev) => ({ ...prev, filename: newFilename }))
@@ -378,14 +378,14 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                 </div>
 
@@ -393,7 +393,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.photoTitle', 'Photo Title')}
+                                                {t('admin.labels.photoTitle')}
                                             </label>
                                             <input
                                                 type="text"
@@ -405,13 +405,13 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                                         title: { ...editingPhoto.title, en: e.target.value },
                                                     })
                                                 }
-                                                placeholder="e.g. Farm Life"
+                                                placeholder={t('admin.ui.cmsPhotography.examplePlaceholder1')}
                                             />
                                         </div>
 
                                         <div className="cms-form-row">
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.locationPlace', 'Location / Place')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.locationPlace')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -428,12 +428,12 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                                             },
                                                         })
                                                     }
-                                                    placeholder="Bengaluru, Karnataka"
+                                                    placeholder={t('admin.ui.cmsPhotography.bengaluruKarnataka')}
                                                 />
                                             </div>
 
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.date', 'Date')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.date')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -444,7 +444,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                                             date: { ...editingPhoto.date, en: e.target.value },
                                                         })
                                                     }
-                                                    placeholder="December 16, 2023"
+                                                    placeholder={t('admin.ui.cmsPhotography.december162023')}
                                                 />
                                             </div>
                                         </div>
@@ -454,7 +454,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                 {editLangTab === 'kn' && (
                                     <>
                                         <div className="cms-form-group">
-                                            <label className="cms-form-label">{t('admin.labels.photoTitle', 'Photo Title')}</label>
+                                            <label className="cms-form-label">{t('admin.labels.photoTitle')}</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
@@ -471,7 +471,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
 
                                         <div className="cms-form-row">
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.locationPlace', 'Location / Place')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.locationPlace')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -493,7 +493,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                             </div>
 
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.date', 'Date')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.date')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -513,12 +513,12 @@ const CmsPhotography = ({ data, onSave, saving }) => {
 
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.latitude', 'Latitude')} (Optional)</label>
+                                        <label className="cms-form-label">{t('admin.labels.latitude')} {t('admin.ui.cmsPhotography.optional')}</label>
                                         <input
                                             type="number"
                                             step="any"
                                             className="cms-input"
-                                            placeholder="e.g. 40.7128"
+                                            placeholder={t('admin.ui.cmsPhotography.examplePlaceholder2')}
                                             value={editingPhoto.location.lat}
                                             onChange={(e) =>
                                                 setEditingPhoto({
@@ -530,12 +530,12 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.longitude', 'Longitude')} (Optional)</label>
+                                        <label className="cms-form-label">{t('admin.labels.longitude')} {t('admin.ui.cmsPhotography.optional')}</label>
                                         <input
                                             type="number"
                                             step="any"
                                             className="cms-input"
-                                            placeholder="e.g. -74.0060"
+                                            placeholder={t('admin.ui.cmsPhotography.examplePlaceholder3')}
                                             value={editingPhoto.location.lng}
                                             onChange={(e) =>
                                                 setEditingPhoto({
@@ -554,7 +554,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsEditModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -562,10 +562,10 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                                     disabled={saving}
                                 >
                                     {saving
-                                        ? t('admin.actions.saving', 'Saving...')
+                                        ? t('admin.actions.saving')
                                         : (editingPhoto._index !== undefined
-                                            ? t('admin.actions.save', 'Save Photo')
-                                            : t('admin.actions.uploadPhoto', 'Upload Photo'))}
+                                            ? t('admin.actions.save')
+                                            : t('admin.actions.uploadPhoto'))}
                                 </button>
                             </div>
                         </form>
@@ -593,7 +593,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                             style={{ position: 'absolute', top: -36, right: 0, color: '#ffffff' }}
                             onClick={() => setFullscreenPhoto(null)}
                         >
-                            ✕ Close
+                            {t('admin.ui.cmsPhotography.close')}
                         </button>
                         {fullscreenPhoto.filename ? (
                             <img
@@ -603,7 +603,7 @@ const CmsPhotography = ({ data, onSave, saving }) => {
                             />
                         ) : (
                             <div style={{ color: '#fff', padding: '3rem', textAlign: 'center' }}>
-                                No Image Link Provided
+                                {t('admin.ui.cmsPhotography.noImageLinkProvided')}
                             </div>
                         )}
                         <div

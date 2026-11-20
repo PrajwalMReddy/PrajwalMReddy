@@ -99,7 +99,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
     const handleDelete = async (index) => {
         const project = projects[index];
         const title = getLocalized(project.title, 'this project');
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${title})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${title})`)) return;
 
         const updated = projects.filter((_, idx) => idx !== index);
         await onSave({ sections, projects: updated }, `Deleted "${title}"`);
@@ -176,7 +176,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchProjects', 'Search projects...')}
+                            placeholder={t('admin.placeholders.searchProjects')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -188,7 +188,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         onChange={(e) => setSelectedSection(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allSections', 'All Sections')} ({formatNumber(sections.length)})</option>
+                        <option value="all">{t('admin.filters.allSections')} ({formatNumber(sections.length)})</option>
                         {sections.map((s) => (
                             <option key={s.id} value={s.id}>
                                 {getLocalized(s.title, s.id)}
@@ -200,13 +200,13 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         type="button"
                         className={`cms-filter-pill ${filterFeatured === 'featured' ? 'active' : ''}`}
                         onClick={() => setFilterFeatured((prev) => (prev === 'featured' ? 'all' : 'featured'))}
-                        title="Filter projects featured on Home Page"
+                        title={t('admin.ui.cmsProjects.filterProjectsFeaturedOnHomePage')}
                     >
-                        ★ {t('admin.filters.featured', 'Featured')} ({formatNumber(featuredCount)})
+                        ★ {t('admin.filters.featured')} ({formatNumber(featuredCount)})
                     </button>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredProjects.length)} {t('admin.messages.of', 'of')} {formatNumber(projects.length)}
+                        {formatNumber(filteredProjects.length)} {t('admin.messages.of')} {formatNumber(projects.length)}
                     </span>
                 </div>
 
@@ -216,7 +216,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-secondary"
                         onClick={() => setIsSectionsModalOpen(true)}
                     >
-                        {t('admin.actions.sections', 'Sections')}
+                        {t('admin.actions.sections')}
                     </button>
 
                     <button
@@ -224,7 +224,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.addProject', '+ Add Project')}
+                        {t('admin.actions.addProject')}
                     </button>
                 </div>
             </div>
@@ -232,8 +232,8 @@ const CmsProjects = ({ data, onSave, saving }) => {
             {/* Ergonomic Project Rows */}
             {filteredProjects.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noProjects', 'No projects found')}</p>
-                    <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new project.')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noProjects')}</p>
+                    <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                 </div>
             ) : (
                 <div className="cms-list">
@@ -299,7 +299,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                         onClick={(e) => handleToggleFeatured(originalIndex, e)}
                                         title={project.featured ? 'Featured on Home (click to unfeature)' : 'Feature on Home'}
                                     >
-                                        ★ {project.featured ? t('admin.actions.featured', 'Featured') : t('admin.actions.feature', 'Feature')}
+                                        ★ {project.featured ? t('admin.actions.featured') : t('admin.actions.feature')}
                                     </button>
 
                                     <button
@@ -307,7 +307,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                         className="cms-btn-icon"
                                         onClick={() => handleMoveOrder(originalIndex, -1)}
                                         disabled={originalIndex === 0}
-                                        title={t('admin.actions.moveUp', 'Move Up')}
+                                        title={t('admin.actions.moveUp')}
                                     >
                                         ▲
                                     </button>
@@ -316,7 +316,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                         className="cms-btn-icon"
                                         onClick={() => handleMoveOrder(originalIndex, 1)}
                                         disabled={originalIndex === projects.length - 1}
-                                        title={t('admin.actions.moveDown', 'Move Down')}
+                                        title={t('admin.actions.moveDown')}
                                     >
                                         ▼
                                     </button>
@@ -326,14 +326,14 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEditModal(project, originalIndex)}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -349,8 +349,8 @@ const CmsProjects = ({ data, onSave, saving }) => {
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
                                 {editingProject._index !== undefined
-                                    ? t('admin.modals.editProject', 'Edit Project')
-                                    : t('admin.modals.newProject', 'Add New Project')}
+                                    ? t('admin.modals.editProject')
+                                    : t('admin.modals.newProject')}
                             </h3>
                             <button
                                 type="button"
@@ -369,14 +369,14 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                 </div>
 
@@ -384,7 +384,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.projectTitle', 'Project Title')}
+                                                {t('admin.labels.projectTitle')}
                                             </label>
                                             <input
                                                 type="text"
@@ -396,13 +396,13 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                                         title: { ...editingProject.title, en: e.target.value },
                                                     })
                                                 }
-                                                placeholder="e.g. Personal Website"
+                                                placeholder={t('admin.ui.cmsProjects.examplePlaceholder1')}
                                             />
                                         </div>
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.description', 'Description')}
+                                                {t('admin.labels.description')}
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
@@ -413,7 +413,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                                         description: { ...editingProject.description, en: e.target.value },
                                                     })
                                                 }
-                                                placeholder="Brief description of your project..."
+                                                placeholder={t('admin.ui.cmsProjects.briefDescriptionOfYourProject')}
                                             />
                                         </div>
                                     </>
@@ -423,7 +423,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                     <>
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.projectTitle', 'Project Title')}
+                                                {t('admin.labels.projectTitle')}
                                             </label>
                                             <input
                                                 type="text"
@@ -435,13 +435,13 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                                         title: { ...editingProject.title, kn: e.target.value },
                                                     })
                                                 }
-                                                placeholder="ಉದಾ: ವೈಯಕ್ತಿಕ ಜಾಲತಾಣ"
+                                                placeholder={t('admin.ui.cmsProjects.examplePlaceholder2')}
                                             />
                                         </div>
 
                                         <div className="cms-form-group">
                                             <label className="cms-form-label">
-                                                {t('admin.labels.description', 'Description')}
+                                                {t('admin.labels.description')}
                                             </label>
                                             <textarea
                                                 className="cms-textarea"
@@ -461,7 +461,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            {t('admin.labels.sectionCategory', 'Section Category')}
+                                            {t('admin.labels.sectionCategory')}
                                         </label>
                                         <select
                                             className="cms-select"
@@ -480,7 +480,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
 
                                     <div className="cms-form-group">
                                         <label className="cms-form-label">
-                                            {t('admin.labels.projectUrl', 'Live / Repository URL')}
+                                            {t('admin.labels.projectUrl')}
                                         </label>
                                         <input
                                             type="url"
@@ -505,9 +505,9 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                             }
                                         />
                                         <span>
-                                            {t('admin.labels.featureOnHome', '★ Feature on Home Page')}{' '}
+                                            {t('admin.labels.featureOnHome')}{' '}
                                             <span className="cms-help-inline">
-                                                {t('admin.labels.featureDescProj', '(Included in Featured Projects showcase)')}
+                                                {t('admin.labels.featureDescProj')}
                                             </span>
                                         </span>
                                     </label>
@@ -516,7 +516,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                 <div className="cms-form-group">
                                     <CmsImageUploader
                                         folder="projects"
-                                        label={t('admin.labels.imageUpload', 'Project Card Image')}
+                                        label={t('admin.labels.imageUpload')}
                                         value={editingProject.image || ''}
                                         onChange={(imgVal) =>
                                             setEditingProject({ ...editingProject, image: imgVal })
@@ -532,7 +532,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsEditModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -540,10 +540,10 @@ const CmsProjects = ({ data, onSave, saving }) => {
                                     disabled={saving}
                                 >
                                     {saving
-                                        ? t('admin.actions.saving', 'Saving...')
+                                        ? t('admin.actions.saving')
                                         : (editingProject._index !== undefined
-                                            ? t('admin.actions.save', 'Save Project')
-                                            : t('admin.actions.addProject', 'Add Project'))}
+                                            ? t('admin.actions.save')
+                                            : t('admin.actions.addProject'))}
                                 </button>
                             </div>
                         </form>
@@ -555,7 +555,7 @@ const CmsProjects = ({ data, onSave, saving }) => {
             <CmsSectionsModal
                 isOpen={isSectionsModalOpen}
                 onClose={() => setIsSectionsModalOpen(false)}
-                title="Manage Project Sections"
+                title={t('admin.ui.cmsProjects.manageProjectSections')}
                 itemLabel="projects"
                 sections={sections}
                 items={projects}

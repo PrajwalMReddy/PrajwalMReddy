@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import About from './About';
 
 const Contact = () => {
-    const {t} = useLanguage();
+    const {t} = useContent();
 
     useEffect(() => {
         document.title = t('pageTitles.contact');

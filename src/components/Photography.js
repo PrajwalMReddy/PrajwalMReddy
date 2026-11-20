@@ -302,7 +302,7 @@ const Photography = () => {
                                         const originalIdx = photos.indexOf(photo);
                                         const imgUrl = getPhotoUrl(photo);
                                         const photoKey = photo.id || photo.filename || String(originalIdx);
-                                        const photoAlt = photo.title || t('photoAltDefault', `Photography ${originalIdx + 1}`).replace('{index}', formatNumber(originalIdx + 1));
+                                        const photoAlt = photo.title || t('photoAltDefault', { index: formatNumber(originalIdx + 1) });
                                         return (
                                             <div
                                                 className="gallery-item"

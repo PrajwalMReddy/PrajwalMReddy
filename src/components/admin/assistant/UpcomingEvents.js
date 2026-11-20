@@ -25,38 +25,6 @@ function parseEventLocationAndMeeting(item) {
     return { displayLocation, meetingUrl };
 }
 
-function formatDuration(minutes) {
-    if (!minutes || minutes <= 0) return '';
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    if (h > 0 && m > 0) return `${h}h ${m}m`;
-    if (h > 0) return `${h}h`;
-    return `${m}m`;
-}
-
-function formatHourLabel(hour) {
-    const h = hour % 24;
-    if (h === 0) return '12 AM';
-    if (h < 12) return `${h} AM`;
-    if (h === 12) return '12 PM';
-    return `${h - 12} PM`;
-}
-
-function formatEventTime(dateStr) {
-    if (!dateStr) return '';
-    try {
-        const d = new Date(dateStr);
-        if (Number.isNaN(d.getTime())) return '';
-        return d.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZone: 'America/New_York',
-        });
-    } catch {
-        return '';
-    }
-}
-
 function getNyTimeParts(dateStr) {
     if (!dateStr) return { minutes: 0, dateKey: '', hour: 0, minute: 0 };
     const d = new Date(dateStr);
@@ -252,7 +220,22 @@ function computeTimetableLayout(events) {
 }
 
 const UpcomingEvents = ({ onOpenSettings }) => {
-    const { t } = useContent();
+    const { t, formatTime, formatNumber } = useContent();
+
+    // Time and duration labels in the active language (shadow the module helpers).
+    const formatMinutesToTime = (totalMinutes) => {
+        const mins = totalMinutes >= 1440 ? 0 : Math.max(0, Math.min(1439, Math.floor(totalMinutes)));
+        return formatTime(new Date(2000, 0, 1, Math.floor(mins / 60), mins % 60));
+    };
+    const formatHourLabel = (hour) => formatTime(hour % 24, { minutes: false });
+    const formatDuration = (mins) => {
+        const total = mins > 0 ? Math.round(mins) : 0;
+        const h = Math.floor(total / 60);
+        const m = total % 60;
+        if (h > 0 && m > 0) return t('admin.ui.time.hoursMinutes', { h: formatNumber(h), m: formatNumber(m) });
+        if (h > 0) return t('admin.ui.time.hours', { h: formatNumber(h) });
+        return t('admin.ui.time.minutes', { m: formatNumber(m) });
+    };
     const [events, setEvents] = useState([]);
     const [meta, setMeta] = useState({
         todayCount: 0,
@@ -293,8 +276,8 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                 calendarHtmlUrl: res?.calendarHtmlUrl || '',
             });
         } catch (err) {
-            console.error(t('logs.eventsLoadError', "Failed to load today's events:"), err);
-            setError(err.message || t('admin.events.error', 'Failed to load calendar events.'));
+            console.error(t('logs.eventsLoadError'), err);
+            setError(err.message || t('admin.events.error'));
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -363,10 +346,10 @@ const UpcomingEvents = ({ onOpenSettings }) => {
             <article className="briefing-memo-document admin-events-card events-loading-card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
                 <div className="events-loading-spinner" />
                 <div className="events-loading-title">
-                    {t('admin.events.loading', "Loading Today's Events...")}
+                    {t('admin.events.loading')}
                 </div>
                 <div className="events-loading-sub">
-                    {t('admin.events.fetchingLatest', 'Syncing with Cornell Office 365 calendar')}
+                    {t('admin.events.fetchingLatest')}
                 </div>
             </article>
         );
@@ -375,13 +358,13 @@ const UpcomingEvents = ({ onOpenSettings }) => {
     const { happeningNow } = meta;
 
     return (
-        <article className="briefing-memo-document admin-events-card" aria-label={t('admin.events.todaysEvents', "Today's Events")}>
+        <article className="briefing-memo-document admin-events-card" aria-label={t('admin.events.todaysEvents')}>
             {/* Header */}
             <header className="memo-masthead" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem' }}>
                 <div className="memo-header-top" style={{ marginBottom: 0, alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                         <h2 className="memo-title" style={{ fontSize: '1.4rem', margin: 0 }}>
-                            {t('admin.events.todaysEvents', "Today's Events")}
+                            {t('admin.events.todaysEvents')}
                         </h2>
 
                         {/* Happening Now Pulse Pill */}
@@ -389,7 +372,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                             <span className="admin-events-pulse-pill" title={happeningNow.subject}>
                                 <span className="pulse-dot" />
                                 <span className="pulse-text">
-                                    {t('admin.events.happeningNow', 'Happening Now')}: <strong>{happeningNow.subject}</strong>
+                                    {t('admin.events.happeningNow')}: <strong>{happeningNow.subject}</strong>
                                 </span>
                             </span>
                         )}
@@ -398,12 +381,12 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                     {/* Actions & View Toggle */}
                     <div className="memo-actions" style={{ gap: '0.5rem', alignItems: 'center' }}>
                         {/* View Switcher Toggle */}
-                        <div className="admin-events-view-toggle" role="group" aria-label="View Switcher">
+                        <div className="admin-events-view-toggle" role="group" aria-label={t('admin.ui.upcomingEvents.viewSwitcher')}>
                             <button
                                 type="button"
                                 className={`admin-view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
                                 onClick={() => handleViewChange('list')}
-                                title={t('admin.events.listView', 'List View')}
+                                title={t('admin.events.listView')}
                                 aria-pressed={viewMode === 'list'}
                             >
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -414,14 +397,14 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                     <line x1="3" y1="12" x2="3.01" y2="12" />
                                     <line x1="3" y1="18" x2="3.01" y2="18" />
                                 </svg>
-                                <span>{t('admin.events.listView', 'List')}</span>
+                                <span>{t('admin.events.listView')}</span>
                             </button>
 
                             <button
                                 type="button"
                                 className={`admin-view-toggle-btn ${viewMode === 'timetable' ? 'active' : ''}`}
                                 onClick={() => handleViewChange('timetable')}
-                                title={t('admin.events.timetableView', 'Timetable View')}
+                                title={t('admin.events.timetableView')}
                                 aria-pressed={viewMode === 'timetable'}
                             >
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -431,7 +414,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                     <line x1="10" y1="10" x2="10" y2="22" />
                                 </svg>
-                                <span>{t('admin.events.timetableView', 'Timetable')}</span>
+                                <span>{t('admin.events.timetableView')}</span>
                             </button>
                         </div>
 
@@ -441,7 +424,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="admin-events-outlook-link"
-                            title={t('admin.events.openOutlook', 'Open Outlook Calendar')}
+                            title={t('admin.events.openOutlook')}
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -463,7 +446,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                         onClick={handleRefresh}
                         className="events-retry-btn"
                     >
-                        {t('admin.events.retry', 'Retry')}
+                        {t('admin.events.retry')}
                     </button>
                 </div>
             )}
@@ -479,7 +462,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                             <line x1="3" y1="10" x2="21" y2="10" />
                             <line x1="9" y1="14" x2="15" y2="14" />
                         </svg>
-                        <div>{t('admin.events.noEventsToday', 'No events scheduled for today.')}</div>
+                        <div>{t('admin.events.noEventsToday')}</div>
                     </div>
                 ) : viewMode === 'list' ? (
                     /* ================= LIST VIEW ================= */
@@ -524,7 +507,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                         <div className="admin-event-title-row">
                                             <h4 className="admin-event-subject">{item.subject}</h4>
                                             {item.isRecurring && (
-                                                <span className="admin-event-recurring-icon" title="Recurring Series">
+                                                <span className="admin-event-recurring-icon" title={t('admin.ui.upcomingEvents.recurringSeries')}>
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <polyline points="23 4 23 10 17 10" />
                                                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -559,7 +542,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                                                 <polygon points="23 7 16 12 23 17 23 7" />
                                                                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                                                             </svg>
-                                                            <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
+                                                            <span>{t('admin.events.joinMeeting')}</span>
                                                         </a>
                                                     )}
                                                 </div>
@@ -574,7 +557,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                                     className="admin-event-toggle-desc-btn"
                                                     onClick={() => toggleExpand(item.id)}
                                                 >
-                                                    <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
+                                                    <span>{isExpanded ? t('admin.ui.upcomingEvents.hideDetails') : t('admin.ui.upcomingEvents.viewDetails')}</span>
                                                     <svg
                                                         width="10"
                                                         height="10"
@@ -606,7 +589,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                         {/* All-Day Events Banner if present */}
                         {allDayEvents.length > 0 && (
                             <div className="admin-timetable-allday-row">
-                                <div className="admin-timetable-allday-label">{t('admin.events.allDay', 'All Day')}</div>
+                                <div className="admin-timetable-allday-label">{t('admin.events.allDay')}</div>
                                 <div className="admin-timetable-allday-items">
                                     {allDayEvents.map((evt) => (
                                         <div key={evt.id} className="admin-timetable-allday-pill">
@@ -687,7 +670,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
 
                                             {/* Recurrence loop icon at bottom right matching screenshot */}
                                             {evt.isRecurring && (
-                                                <span className="admin-timetable-recurring-icon" title="Recurring Series">
+                                                <span className="admin-timetable-recurring-icon" title={t('admin.ui.upcomingEvents.recurringSeries')}>
                                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <polyline points="23 4 23 10 17 10" />
                                                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -709,7 +692,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                         type="button"
                                         className="preview-close-btn"
                                         onClick={() => setActiveTimetableEvent(null)}
-                                        aria-label="Close"
+                                        aria-label={t('admin.ui.upcomingEvents.close')}
                                     >
                                         ✕
                                     </button>
@@ -719,18 +702,18 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                     return (
                                         <div className="preview-body">
                                             <div className="preview-row">
-                                                <span className="preview-label">Time:</span>
+                                                <span className="preview-label">{t('admin.ui.upcomingEvents.time')}</span>
                                                 <span className="preview-value">{activeTimetableEvent.timeFormatted}</span>
                                             </div>
                                             {displayLocation && (
                                                 <div className="preview-row">
-                                                    <span className="preview-label">Location:</span>
+                                                    <span className="preview-label">{t('admin.ui.upcomingEvents.location')}</span>
                                                     <span className="preview-value">{displayLocation}</span>
                                                 </div>
                                             )}
                                             {activeTimetableEvent.category && (
                                                 <div className="preview-row">
-                                                    <span className="preview-label">Category:</span>
+                                                    <span className="preview-label">{t('admin.ui.upcomingEvents.category')}</span>
                                                     <span className="preview-value">{activeTimetableEvent.category}</span>
                                                 </div>
                                             )}
@@ -751,7 +734,7 @@ const UpcomingEvents = ({ onOpenSettings }) => {
                                                         <polygon points="23 7 16 12 23 17 23 7" />
                                                         <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                                                     </svg>
-                                                    <span>{t('admin.events.joinMeeting', 'Join Meeting')}</span>
+                                                    <span>{t('admin.events.joinMeeting')}</span>
                                                 </a>
                                             )}
                                         </div>

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import {getAllBlogPosts} from '../utils/blogUtils';
@@ -37,7 +37,7 @@ function parseBlogDate(dateStr) {
 }
 
 const Blog = () => {
-    const {t, language, quotes, formatNumber} = useLanguage();
+    const {t, language, quotes, formatNumber} = useContent();
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -128,8 +128,8 @@ const Blog = () => {
 
                         const renderAuthor = (author) => {
                             if (!author) return null;
-                            const authorTemplate = t('byAuthor', 'by {author}');
-                            return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+                            const authorTemplate = t('byAuthor');
+                            return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix')}${author}`;
                         };
 
                         if (post.externalUrl) {

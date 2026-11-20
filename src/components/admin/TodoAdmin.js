@@ -11,8 +11,6 @@ import {
     getDueDayKey,
     getDueState,
     getNextNDaysRange,
-    getNextThreeDaysRange,
-    isChildTask,
     isMasterTask,
     isRecurringChildVisible,
     isCompletedToday,
@@ -163,7 +161,7 @@ const TodoAdmin = () => {
     }, []);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminTodo', 'To-Do | Admin | Prajwal Reddy');
+        document.title = t('pageTitles.adminTodo');
     }, [t]);
 
     useEffect(() => {
@@ -507,7 +505,7 @@ const TodoAdmin = () => {
         event.preventDefault();
         const trimmedTodo = newTodo.trim();
         if (!trimmedTodo) {
-            setError('Please enter a task title.');
+            setError(t('admin.ui.todoAdmin.pleaseEnterATaskTitle'));
             return;
         }
 
@@ -777,8 +775,8 @@ const TodoAdmin = () => {
                 const isRecurring = isRecurringTask;
                 const confirmed = window.confirm(
                     isRecurring
-                        ? t('admin.todoSection.deleteSeriesConfirm', 'Are you sure you want to delete this recurring task and its upcoming instances?')
-                        : t('admin.todoSection.deleteConfirm', 'Are you sure you want to delete this task?')
+                        ? t('admin.todoSection.deleteSeriesConfirm')
+                        : t('admin.todoSection.deleteConfirm')
                 );
                 if (confirmed) {
                     handleDeleteTodo(taskItem.id, isRecurring);
@@ -793,21 +791,21 @@ const TodoAdmin = () => {
 
     const renderColumn = (titleKey, items) => {
         const columnTitleMap = {
-            'Overdue': t('admin.todoSection.columns.overdue', 'Overdue'),
-            'Today': t('admin.todoSection.columns.today', 'Today'),
-            'Next 3 Days': t('admin.todoSection.columns.next3Days', 'Next 3 Days'),
-            'Upcoming': t('admin.todoSection.columns.upcoming', 'Upcoming'),
-            'No Due Date': t('admin.todoSection.columns.noDueDate', 'No Due Date'),
-            'Recurring Tasks': t('admin.todoSection.columns.recurringTasks', t('admin.todoSection.columns.masterTasks', 'Recurring Tasks')),
-            'Master Tasks': t('admin.todoSection.columns.recurringTasks', t('admin.todoSection.columns.masterTasks', 'Recurring Tasks')),
-            'Scheduled': t('admin.todoSection.columns.scheduled', 'Scheduled'),
-            'Completed': t('admin.todoSection.columns.completed', 'Completed'),
+            'Overdue': t('admin.todoSection.columns.overdue'),
+            'Today': t('admin.todoSection.columns.today'),
+            'Next 3 Days': t('admin.todoSection.columns.next3Days'),
+            'Upcoming': t('admin.todoSection.columns.upcoming'),
+            'No Due Date': t('admin.todoSection.columns.noDueDate'),
+            'Recurring Tasks': t('admin.todoSection.columns.recurringTasks'),
+            'Master Tasks': t('admin.todoSection.columns.recurringTasks'),
+            'Scheduled': t('admin.todoSection.columns.scheduled'),
+            'Completed': t('admin.todoSection.columns.completed'),
         };
         const displayTitle = columnTitleMap[titleKey] || titleKey;
         const isCollapsed = collapsedColumns.has(titleKey);
         const isNextDaysColumn = titleKey === 'Next 3 Days';
         const hasOpenDropdown = isNextDaysColumn && isDaysPickerOpen;
-        const nextDaysTitleText = `${t('admin.todoSection.columns.nextPrefix', 'Next')} ${formatNumber(nextDaysCount)} ${nextDaysCount === 1 ? t('admin.todoSection.columns.daySuffixSingular', 'Day') : t('admin.todoSection.columns.daySuffixPlural', 'Days')}`;
+        const nextDaysTitleText = `${t('admin.todoSection.columns.nextPrefix')} ${formatNumber(nextDaysCount)} ${nextDaysCount === 1 ? t('admin.todoSection.columns.daySuffixSingular') : t('admin.todoSection.columns.daySuffixPlural')}`;
 
         return (
             <div className={`admin-todo-column${isCollapsed ? ' is-collapsed' : ''}${hasOpenDropdown ? ' has-open-dropdown' : ''}`} key={titleKey}>
@@ -826,8 +824,8 @@ const TodoAdmin = () => {
                     aria-expanded={!isCollapsed}
                     title={
                         isCollapsed
-                            ? t('admin.todoSection.showColumn', 'Show column')
-                            : t('admin.todoSection.hideColumn', 'Hide column')
+                            ? t('admin.todoSection.showColumn')
+                            : t('admin.todoSection.hideColumn')
                     }
                 >
                     {isNextDaysColumn ? (
@@ -844,7 +842,7 @@ const TodoAdmin = () => {
                                 }}
                                 aria-haspopup="true"
                                 aria-expanded={isDaysPickerOpen}
-                                title={t('admin.todoSection.changeDaysRange', 'Click to change upcoming days range')}
+                                title={t('admin.todoSection.changeDaysRange')}
                             >
                                 <span className="admin-todo-column-title admin-todo-days-header-title">
                                     {nextDaysTitleText}
@@ -856,10 +854,10 @@ const TodoAdmin = () => {
                                     className="admin-todo-days-dropdown-menu"
                                     onClick={(e) => e.stopPropagation()}
                                     role="menu"
-                                    aria-label={t('admin.todoSection.changeDaysRange', 'Change upcoming days range')}
+                                    aria-label={t('admin.todoSection.changeDaysRange')}
                                 >
                                     <div className="admin-todo-days-dropdown-header">
-                                        {t('admin.todoSection.upcomingRange', 'Show Upcoming')}
+                                        {t('admin.todoSection.upcomingRange')}
                                     </div>
                                     <div className="admin-todo-days-dropdown-list">
                                         {[1, 2, 3, 4, 5, 6, 7, 10, 14].map((num) => (
@@ -875,7 +873,7 @@ const TodoAdmin = () => {
                                                 }}
                                             >
                                                 <span className="admin-todo-days-dropdown-label">
-                                                    {formatNumber(num)} {num === 1 ? t('admin.todoSection.columns.daySuffixSingular', 'Day') : t('admin.todoSection.columns.daySuffixPlural', 'Days')}
+                                                    {formatNumber(num)} {num === 1 ? t('admin.todoSection.columns.daySuffixSingular') : t('admin.todoSection.columns.daySuffixPlural')}
                                                 </span>
                                                 {nextDaysCount === num && (
                                                     <svg
@@ -929,34 +927,34 @@ const TodoAdmin = () => {
     };
 
     return (
-        <AdminLayout title={t('admin.todoSection.title', 'To-Do Manager')}>
+        <AdminLayout title={t('admin.todoSection.title')}>
             <div className="admin-todo-top-dashboard">
                 <form className="admin-form admin-todo-form" onSubmit={handleAddTodo}>
-                    <h3>{t('admin.todoSection.addATask', 'Add a task')}</h3>
+                    <h3>{t('admin.todoSection.addATask')}</h3>
                     <div className="admin-todo-form-row">
                         <label className="admin-todo-title-field">
-                            <span>{t('admin.todoSection.taskTitle', 'Task title')}</span>
+                            <span>{t('admin.todoSection.taskTitle')}</span>
                             <input
                                 type="text"
                                 value={newTodo}
                                 onChange={(event) => setNewTodo(event.target.value)}
-                                placeholder={t('admin.todoSection.placeholder', 'Write a new item')}
+                                placeholder={t('admin.todoSection.placeholder')}
                             />
                         </label>
 
                         <label className="admin-todo-tags-field">
-                            <span>{t('admin.todoSection.tags', 'Tags')}</span>
+                            <span>{t('admin.todoSection.tags')}</span>
                             <input
                                 type="text"
                                 value={newTags}
                                 onChange={(event) => setNewTags(event.target.value)}
-                                placeholder={t('admin.todoSection.tagsPlaceholder', 'e.g. work, urgent')}
+                                placeholder={t('admin.todoSection.tagsPlaceholder')}
                                 autoComplete="off"
                             />
                         </label>
 
                         <label className="admin-todo-date-field">
-                            <span>{t('admin.todoSection.dueDate', 'Due date')}</span>
+                            <span>{t('admin.todoSection.dueDate')}</span>
                             <input
                                 type="date"
                                 value={dueDate}
@@ -965,14 +963,14 @@ const TodoAdmin = () => {
                         </label>
 
                         <label className="admin-todo-priority-field">
-                            <span>{t('admin.todoSection.priority', 'Priority')}</span>
+                            <span>{t('admin.todoSection.priority')}</span>
                             <select
                                 value={priority}
                                 onChange={(event) => setPriority(event.target.value)}
                             >
-                                <option value="low">{t('admin.todoSection.priorities.low', 'Low')}</option>
-                                <option value="medium">{t('admin.todoSection.priorities.medium', 'Medium')}</option>
-                                <option value="high">{t('admin.todoSection.priorities.high', 'High')}</option>
+                                <option value="low">{t('admin.todoSection.priorities.low')}</option>
+                                <option value="medium">{t('admin.todoSection.priorities.medium')}</option>
+                                <option value="high">{t('admin.todoSection.priorities.high')}</option>
                             </select>
                         </label>
 
@@ -981,7 +979,7 @@ const TodoAdmin = () => {
                             className="admin-todo-submit"
                             disabled={loading}
                         >
-                            {t('admin.todoSection.addTask', 'Add task')}
+                            {t('admin.todoSection.addTask')}
                         </button>
                     </div>
 
@@ -990,22 +988,22 @@ const TodoAdmin = () => {
 
                 <div className="admin-todo-overview">
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.dueToday', 'Due Today')}</span>
+                        <span>{t('admin.todoSection.dueToday')}</span>
                         <strong>{formatNumber(todayTodos.length)}</strong>
                     </div>
 
                     <div className="admin-todo-stat admin-todo-stat-urgent">
-                        <span>{t('admin.todoSection.urgent', 'Urgent')}</span>
+                        <span>{t('admin.todoSection.urgent')}</span>
                         <strong>{formatNumber(urgentTodos.length)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.pending', 'Pending')}</span>
+                        <span>{t('admin.todoSection.pending')}</span>
                         <strong>{formatNumber(pendingCount)}</strong>
                     </div>
 
                     <div className="admin-todo-stat">
-                        <span>{t('admin.todoSection.completedToday', 'Completed Today')}</span>
+                        <span>{t('admin.todoSection.completedToday')}</span>
                         <strong>{formatNumber(completedTodayCount)}</strong>
                     </div>
                 </div>
@@ -1019,7 +1017,7 @@ const TodoAdmin = () => {
                             className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
                             onClick={() => setActiveTab('all')}
                         >
-                            {t('admin.todoSection.allTasks', 'All Tasks')}
+                            {t('admin.todoSection.allTasks')}
                         </button>
 
                         <button
@@ -1027,7 +1025,7 @@ const TodoAdmin = () => {
                             className={`admin-tab ${activeTab === 'other' ? 'active' : ''}`}
                             onClick={() => setActiveTab('other')}
                         >
-                            {t('admin.todoSection.other', 'Other')}
+                            {t('admin.todoSection.other')}
                         </button>
                     </div>
 
@@ -1041,7 +1039,7 @@ const TodoAdmin = () => {
                             </span>
                             <input
                                 type="text"
-                                placeholder={t('admin.todoSection.searchPlaceholder', 'Search tasks...')}
+                                placeholder={t('admin.todoSection.searchPlaceholder')}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 onKeyDown={(e) => {
@@ -1051,15 +1049,15 @@ const TodoAdmin = () => {
                                     }
                                 }}
                                 className="admin-todo-search-input"
-                                aria-label={t('admin.todoSection.searchAriaLabel', 'Search tasks')}
+                                aria-label={t('admin.todoSection.searchAriaLabel')}
                             />
                             {search && (
                                 <button
                                     type="button"
                                     className="admin-todo-search-clear"
                                     onClick={() => setSearch('')}
-                                    aria-label={t('admin.todoSection.clearSearch', 'Clear search')}
-                                    title={t('admin.todoSection.clearSearch', 'Clear search')}
+                                    aria-label={t('admin.todoSection.clearSearch')}
+                                    title={t('admin.todoSection.clearSearch')}
                                 >
                                     ✕
                                 </button>
@@ -1073,13 +1071,13 @@ const TodoAdmin = () => {
                                 className={`admin-todo-tag-filter-btn ${selectedTags.size > 0 ? 'has-active' : ''} ${isTagDropdownOpen ? 'is-open' : ''}`}
                                 onClick={() => setIsTagDropdownOpen((prev) => !prev)}
                                 aria-expanded={isTagDropdownOpen}
-                                title={t('admin.todoSection.filterByTags', 'Filter by Tags')}
+                                title={t('admin.todoSection.filterByTags')}
                             >
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                                     <line x1="7" y1="7" x2="7.01" y2="7" />
                                 </svg>
-                                <span>{t('admin.todoSection.tags', 'Tags')}</span>
+                                <span>{t('admin.todoSection.tags')}</span>
                                 {selectedTags.size > 0 && (
                                     <span className="admin-todo-tag-filter-badge">
                                         {formatNumber(selectedTags.size)}
@@ -1094,7 +1092,7 @@ const TodoAdmin = () => {
                                 <div className="admin-todo-tag-dropdown-menu">
                                     <div className="admin-todo-tag-dropdown-header">
                                         <span className="admin-todo-tag-dropdown-title">
-                                            {t('admin.todoSection.filterByTags', 'Filter by Tags')}
+                                            {t('admin.todoSection.filterByTags')}
                                         </span>
                                     </div>
 
@@ -1102,7 +1100,7 @@ const TodoAdmin = () => {
                                         <div className="admin-todo-tag-dropdown-search">
                                             <input
                                                 type="text"
-                                                placeholder={t('admin.todoSection.searchTagsPlaceholder', 'Search tags...')}
+                                                placeholder={t('admin.todoSection.searchTagsPlaceholder')}
                                                 value={tagFilterSearch}
                                                 onChange={(e) => setTagFilterSearch(e.target.value)}
                                                 className="admin-todo-tag-dropdown-search-input"
@@ -1114,11 +1112,11 @@ const TodoAdmin = () => {
                                     <div className="admin-todo-tag-dropdown-list">
                                         {allAvailableTags.length === 0 ? (
                                             <div className="admin-todo-tag-dropdown-empty">
-                                                {t('admin.todoSection.noTagsFound', 'No tags created yet')}
+                                                {t('admin.todoSection.noTagsFound')}
                                             </div>
                                         ) : filteredDropdownTags.length === 0 ? (
                                             <div className="admin-todo-tag-dropdown-empty">
-                                                {t('admin.todoSection.noMatchingSearchTasks', 'No matching tags')}
+                                                {t('admin.todoSection.noMatchingSearchTasks')}
                                             </div>
                                         ) : (
                                             filteredDropdownTags.map((tag) => {
@@ -1152,7 +1150,7 @@ const TodoAdmin = () => {
                                     {allAvailableTags.length > 0 && (
                                         <div className="admin-todo-tag-dropdown-footer">
                                             <span className="admin-todo-tag-dropdown-summary">
-                                                {t('admin.todoSection.selectedCount', '{count} selected').replace('{count}', formatNumber(selectedTags.size))}
+                                                {t('admin.todoSection.selectedCount').replace('{count}', formatNumber(selectedTags.size))}
                                             </span>
                                             <div className="admin-todo-tag-dropdown-footer-actions">
                                                 {selectedTags.size < allAvailableTags.length && (
@@ -1161,7 +1159,7 @@ const TodoAdmin = () => {
                                                         className="admin-todo-tag-dropdown-select-all-btn"
                                                         onClick={selectAllTags}
                                                     >
-                                                        {t('admin.todoSection.selectAllTags', 'Select All')}
+                                                        {t('admin.todoSection.selectAllTags')}
                                                     </button>
                                                 )}
                                                 {selectedTags.size > 0 && (
@@ -1170,7 +1168,7 @@ const TodoAdmin = () => {
                                                         className="admin-todo-tag-dropdown-clear-btn"
                                                         onClick={clearAllTags}
                                                     >
-                                                        {t('admin.todoSection.clearTags', 'Clear')}
+                                                        {t('admin.todoSection.clearTags')}
                                                     </button>
                                                 )}
                                             </div>
@@ -1185,8 +1183,8 @@ const TodoAdmin = () => {
                             type="button"
                             className={`admin-todo-planner-toggle-btn ${isPlannerOpen ? 'is-active' : ''}`}
                             onClick={() => setIsPlannerOpen((prev) => !prev)}
-                            title={isPlannerOpen ? t('admin.todoSection.hidePlanner', 'Hide Day Planner') : t('admin.todoSection.showPlanner', 'Show Day Planner')}
-                            aria-label={t('admin.todoSection.dayPlanner', 'Day Planner')}
+                            title={isPlannerOpen ? t('admin.todoSection.hidePlanner') : t('admin.todoSection.showPlanner')}
+                            aria-label={t('admin.todoSection.dayPlanner')}
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -1194,7 +1192,7 @@ const TodoAdmin = () => {
                                 <line x1="8" y1="2" x2="8" y2="6" />
                                 <line x1="3" y1="10" x2="21" y2="10" />
                             </svg>
-                            <span>{t('admin.todoSection.dayPlanner', 'Day Planner')}</span>
+                            <span>{t('admin.todoSection.dayPlanner')}</span>
                         </button>
                     </div>
                 </div>
@@ -1220,16 +1218,16 @@ const TodoAdmin = () => {
             <div className="admin-todo-layout-wrap">
                 <div className="admin-todo-board-pane">
                     {loading ? (
-                        <p className="admin-loading-text">{t('admin.todoSection.loading', 'Loading tasks...')}</p>
+                        <p className="admin-loading-text">{t('admin.todoSection.loading')}</p>
                     ) : todos.length === 0 ? (
-                        <p className="admin-empty">{t('admin.todoSection.empty', 'No tasks yet. Add your first one above.')}</p>
+                        <p className="admin-empty">{t('admin.todoSection.empty')}</p>
                     ) : (activeTab === 'all' && displayTodos.length === 0) || (activeTab === 'other' && recurringTodos.length === 0 && scheduledTodos.length === 0 && completedTodos.length === 0) ? (
                         <p className="admin-empty">
                             {selectedTags.size > 0 && search
-                                ? t('admin.todoSection.noMatchingFilterTasks', 'No tasks match your search and tag filters.')
+                                ? t('admin.todoSection.noMatchingFilterTasks')
                                 : selectedTags.size > 0
-                                ? t('admin.todoSection.noMatchingTagTasks', 'No tasks match this tag filter.')
-                                : t('admin.todoSection.noMatchingSearchTasks', 'No tasks match your search.')}
+                                ? t('admin.todoSection.noMatchingTagTasks')
+                                : t('admin.todoSection.noMatchingSearchTasks')}
                         </p>
                     ) : (
                         <div className="admin-todo-board">

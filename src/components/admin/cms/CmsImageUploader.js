@@ -139,7 +139,7 @@ const CmsImageUploader = ({
                     }}
                     style={{ fontSize: '0.8rem', padding: '0.25rem 0.65rem' }}
                 >
-                    {isLibraryOpen ? 'Hide Library' : 'Browse Image Library'}
+                    {isLibraryOpen ? t('admin.ui.cmsImageUploader.hideLibrary') : t('admin.ui.cmsImageUploader.browseImageLibrary')}
                 </button>
             </div>
 
@@ -148,7 +148,7 @@ const CmsImageUploader = ({
                 <input
                     type="text"
                     className="cms-input"
-                    placeholder="URL"
+                    placeholder={t('admin.ui.cmsImageUploader.url')}
                     value={trimmedValue}
                     onChange={handleInputChange}
                     style={{
@@ -181,7 +181,7 @@ const CmsImageUploader = ({
                         {!imageError && previewSrc ? (
                             <img
                                 src={previewSrc}
-                                alt="Selected preview"
+                                alt={t('admin.ui.cmsImageUploader.selectedPreview')}
                                 style={{
                                     width: '46px',
                                     height: '46px',
@@ -212,7 +212,7 @@ const CmsImageUploader = ({
                                     padding: '2px',
                                 }}
                             >
-                                No preview
+                                {t('admin.ui.cmsImageUploader.noPreview')}
                             </div>
                         )}
                         <div style={{ minWidth: 0, flex: 1 }}>
@@ -232,15 +232,13 @@ const CmsImageUploader = ({
                             <div style={{ fontSize: '0.76rem', marginTop: '2px' }}>
                                 {imageError ? (
                                     <span style={{ color: '#ef4444' }}>
-                                        Could not load preview from <code>{previewSrc}</code>
+                                        {t('admin.ui.cmsImageUploader.couldNotLoadPreviewFrom').split('{p0}').map((part, i, arr) => (<React.Fragment key={i}>{part}{i < arr.length - 1 && <code>{previewSrc}</code>}</React.Fragment>))}
                                     </span>
                                 ) : isLocalHosted ? (
-                                    <span style={{ color: '#059669', fontWeight: 500 }}>
-                                        ✓ Hosted image ({previewSrc})
-                                    </span>
+                                    <span style={{ color: '#059669', fontWeight: 500 }}>{t('admin.ui.cmsImageUploader.hostedImage', { p0: previewSrc })}</span>
                                 ) : (
                                     <span style={{ color: '#2563eb', fontWeight: 500 }}>
-                                        ✓ External Image Link
+                                        {t('admin.ui.cmsImageUploader.externalImageLink')}
                                     </span>
                                 )}
                             </div>
@@ -255,7 +253,7 @@ const CmsImageUploader = ({
                         }}
                         style={{ padding: '0.3rem 0.6rem', fontSize: '0.78rem' }}
                     >
-                        {t('admin.actions.delete', 'Clear')}
+                        {t('admin.actions.delete')}
                     </button>
                 </div>
             )}
@@ -293,7 +291,7 @@ const CmsImageUploader = ({
                                 onClick={() => setActiveFolderTab('projects')}
                                 style={{ fontSize: '0.76rem', padding: '0.2rem 0.5rem' }}
                             >
-                                Projects
+                                {t('admin.ui.cmsImageUploader.projects')}
                             </button>
                             <button
                                 type="button"
@@ -301,7 +299,7 @@ const CmsImageUploader = ({
                                 onClick={() => setActiveFolderTab('photography')}
                                 style={{ fontSize: '0.76rem', padding: '0.2rem 0.5rem' }}
                             >
-                                Photography
+                                {t('admin.ui.cmsImageUploader.photography')}
                             </button>
                             <button
                                 type="button"
@@ -309,14 +307,14 @@ const CmsImageUploader = ({
                                 onClick={() => setActiveFolderTab('all')}
                                 style={{ fontSize: '0.76rem', padding: '0.2rem 0.5rem' }}
                             >
-                                All Images
+                                {t('admin.ui.cmsImageUploader.allImages')}
                             </button>
                         </div>
 
                         {/* Search Filter */}
                         <input
                             type="text"
-                            placeholder="Filter by filename..."
+                            placeholder={t('admin.ui.cmsImageUploader.filterByFilename')}
                             value={librarySearch}
                             onChange={(e) => setLibrarySearch(e.target.value)}
                             style={{
@@ -332,13 +330,13 @@ const CmsImageUploader = ({
                     {/* Grid of Hosted Images */}
                     {loadingLibrary ? (
                         <p style={{ fontSize: '0.85rem', color: '#64748b', textAlign: 'center', padding: '1rem' }}>
-                            Loading images...
+                            {t('admin.ui.cmsImageUploader.loadingImages')}
                         </p>
                     ) : filteredImages.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '1.25rem', color: '#64748b', fontSize: '0.85rem' }}>
-                            <p style={{ margin: 0 }}>No images found in <code>public/{activeFolderTab}/</code></p>
-                            <p style={{ margin: '0.25rem 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
-                                Add images to <code>public/{activeFolderTab}/</code> in the source code or type any URL directly above.
+                            <p style={{ margin: 0 }}>{t('admin.ui.cmsImageUploader.noImagesFoundIn').split('{p0}').map((part, i, arr) => (<React.Fragment key={i}>{part}{i < arr.length - 1 && <code>{`public/${activeFolderTab}/`}</code>}</React.Fragment>))}</p>
+                            <p style={{ margin: '0.25rem 0 0', fontSize: '0.78rem', color: 'var(--ui-text-muted, #5e748d)' }}>
+                                {t('admin.ui.cmsImageUploader.addImagesHelp').split('{p0}').map((part, i, arr) => (<React.Fragment key={i}>{part}{i < arr.length - 1 && <code>{`public/${activeFolderTab}/`}</code>}</React.Fragment>))}
                             </p>
                         </div>
                     ) : (
@@ -362,7 +360,7 @@ const CmsImageUploader = ({
                                     <div
                                         key={fullSourcePath}
                                         onClick={() => handleSelectImage(img)}
-                                        title={`${fullSourcePath} (Click to select)`}
+                                        title={t('admin.ui.cmsImageUploader.clickToSelect', { p0: fullSourcePath })}
                                         style={{
                                             position: 'relative',
                                             cursor: 'pointer',

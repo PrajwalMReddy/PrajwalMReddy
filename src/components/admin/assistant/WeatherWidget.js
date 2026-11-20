@@ -101,7 +101,7 @@ function WeatherIcon({ name, size = 18, className = '' }) {
 }
 
 const WeatherWidget = () => {
-    const { t, formatNumber } = useContent();
+    const { t, formatNumber, formatTime } = useContent();
 
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -122,11 +122,11 @@ const WeatherWidget = () => {
             } else if (res && (res.configured === false || !res.weather)) {
                 setWeather(null);
             } else {
-                throw new Error(res?.status || t('admin.weather.error', 'Unable to load weather forecast.'));
+                throw new Error(res?.status || t('admin.weather.error'));
             }
         } catch (err) {
             console.error('Weather load error:', err);
-            setError(err.message || t('admin.weather.error', 'Unable to load weather forecast.'));
+            setError(err.message || t('admin.weather.error'));
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -155,25 +155,53 @@ const WeatherWidget = () => {
 
     const displaySpeed = (speedMph, speedKmh) => {
         if (unit === 'C') {
-            return `${formatNumber(speedKmh || Math.round(speedMph * 1.609))} km/h`;
+            return t('admin.ui.weatherWidget.kmh', { p0: formatNumber(speedKmh || Math.round(speedMph * 1.609)) });
         }
-        return `${formatNumber(speedMph || 0)} mph`;
+        return t('admin.ui.weatherWidget.mph', { p0: formatNumber(speedMph || 0) });
+    };
+
+    // Condition names come from the WMO code; the icon category covers providers without one.
+    const conditionLabel = (item) => (item.conditionCode !== undefined && item.conditionCode !== null
+        ? t(`admin.ui.weatherWidget.wmo.c${item.conditionCode}`)
+        : t(`admin.ui.weatherWidget.icons.${item.conditionIcon || 'partly-cloudy'}`));
+
+    // Local clock times: ISO-like "2026-11-16T15:00" or "07:02 AM"
+    const clockLabel = (value, minutes = true) => {
+        if (!value) return '';
+        const iso = String(value).match(/T(\d{2}):(\d{2})/);
+        const ampm = String(value).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        let h; let m;
+        if (iso) { h = Number(iso[1]); m = Number(iso[2]); }
+        else if (ampm) { h = (Number(ampm[1]) % 12) + (ampm[3].toUpperCase() === 'PM' ? 12 : 0); m = Number(ampm[2]); }
+        else return '';
+        return formatTime(new Date(2000, 0, 1, h, m), minutes ? {} : { minutes: false });
+    };
+
+    const summaryText = (rec) => {
+        if (!rec || !rec.outfitKey) return '';
+        const rain = rec.rainTiming || { kind: 'dry' };
+        const rainText = rain.kind === 'peak'
+            ? t('admin.ui.weatherWidget.rainPeak', { time: clockLabel(rain.time, false), p: formatNumber(rain.chance) })
+            : rain.kind === 'possible'
+                ? t('admin.ui.weatherWidget.rainPossible', { p: formatNumber(rain.chance) })
+                : t('admin.ui.weatherWidget.rainDry');
+        return t('admin.ui.weatherWidget.summary', { outfit: t(`admin.ui.weatherWidget.outfits.${rec.outfitKey}`), rain: rainText });
     };
 
     if (loading) {
         return (
-            <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title', "Today's Weather")}>
+            <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title')}>
                 <header className="memo-masthead weather-memo-masthead">
                     <div className="memo-header-top">
                         <h2 className="memo-title">
-                            {t('admin.weather.title', "Today's Weather")}
+                            {t('admin.weather.title')}
                         </h2>
                     </div>
                 </header>
                 <div className="weather-loading-box">
                     <div className="weather-loading-spinner" />
                     <div className="weather-loading-text">
-                        {t('admin.weather.loading', 'Loading weather...')}
+                        {t('admin.weather.loading')}
                     </div>
                 </div>
             </article>
@@ -182,22 +210,22 @@ const WeatherWidget = () => {
 
     if (!weather) {
         return (
-            <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title', "Today's Weather")}>
+            <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title')}>
                 <header className="memo-masthead weather-memo-masthead">
                     <div className="memo-header-top">
                         <div className="weather-title-group">
                             <h2 className="memo-title">
-                                {t('admin.weather.title', "Today's Weather")}
+                                {t('admin.weather.title')}
                             </h2>
                         </div>
                     </div>
                 </header>
                 <div className="weather-empty-box" style={{ padding: '28px 16px', textAlign: 'center' }}>
                     <p style={{ margin: '0 0 6px 0', fontSize: '0.88rem', fontWeight: 600, color: 'inherit' }}>
-                        {t('admin.weather.noLocationTitle', 'No Weather Location Set')}
+                        {t('admin.weather.noLocationTitle')}
                     </p>
                     <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.75 }}>
-                        {t('admin.weather.noLocationHelp', 'Configure your location in Settings to display live weather forecasts.')}
+                        {t('admin.weather.noLocationHelp')}
                     </p>
                 </div>
             </article>
@@ -210,13 +238,13 @@ const WeatherWidget = () => {
     const condIcon = w.conditionIcon || 'partly-cloudy';
 
     return (
-        <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title', "Today's Weather")}>
+        <article className="briefing-memo-document admin-weather-widget" aria-label={t('admin.weather.title')}>
             {/* Header: Title, Location & Refresh */}
             <header className="memo-masthead weather-memo-masthead">
                 <div className="memo-header-top">
                     <div className="weather-title-group">
                         <h2 className="memo-title">
-                            {t('admin.weather.title', "Today's Weather")}
+                            {t('admin.weather.title')}
                         </h2>
                         {w.location && (
                             <span className="weather-location-sub" title={w.location}>
@@ -236,7 +264,7 @@ const WeatherWidget = () => {
                         onClick={handleRefresh}
                         className="weather-retry-btn"
                     >
-                        {t('admin.weather.retry', 'Retry')}
+                        {t('admin.weather.retry')}
                     </button>
                 </div>
             )}
@@ -250,37 +278,37 @@ const WeatherWidget = () => {
                             {displayTemp(w.temperatureF, w.temperatureC)}
                         </span>
                         <div className="weather-current-meta">
-                            <span className="weather-current-condition">{w.condition || 'Clear'}</span>
+                            <span className="weather-current-condition">{conditionLabel(w)}</span>
                             <div className="weather-current-details">
-                                <span>H: {displayTemp(w.highF, w.highC)}</span>
+                                <span>{t('admin.ui.weatherWidget.high', { p0: displayTemp(w.highF, w.highC) })}</span>
                                 <span className="weather-meta-sep">·</span>
-                                <span>L: {displayTemp(w.lowF, w.lowC)}</span>
+                                <span>{t('admin.ui.weatherWidget.low', { p0: displayTemp(w.lowF, w.lowC) })}</span>
                                 <span className="weather-meta-sep">·</span>
-                                <span>{t('admin.weather.feelsLike', 'Feels like')} {displayTemp(w.feelsLikeF, w.feelsLikeC)}</span>
+                                <span>{t('admin.weather.feelsLike')} {displayTemp(w.feelsLikeF, w.feelsLikeC)}</span>
                             </div>
                         </div>
                     </div>
                     {(w.sunrise || w.sunset) && (
-                        <div className="weather-sun-chip" aria-label="Sunrise and sunset">
+                        <div className="weather-sun-chip" aria-label={t('admin.ui.weatherWidget.sunriseAndSunset')}>
                             {w.sunrise && (
-                                <span className="weather-sun-chip-item" title={t('admin.weather.sunrise', 'Sunrise')}>
+                                <span className="weather-sun-chip-item" title={t('admin.weather.sunrise')}>
                                     <WeatherIcon name="sunrise" size={13} />
-                                    <span>{w.sunrise}</span>
+                                    <span>{clockLabel(w.sunriseTime || w.sunrise)}</span>
                                 </span>
                             )}
                             {w.sunrise && w.sunset && <span className="weather-meta-sep">·</span>}
                             {w.sunset && (
-                                <span className="weather-sun-chip-item" title={t('admin.weather.sunset', 'Sunset')}>
+                                <span className="weather-sun-chip-item" title={t('admin.weather.sunset')}>
                                     <WeatherIcon name="sunset" size={13} />
-                                    <span>{w.sunset}</span>
+                                    <span>{clockLabel(w.sunsetTime || w.sunset)}</span>
                                 </span>
                             )}
                         </div>
                     )}
                 </div>
-                {rec.summary && (
+                {summaryText(rec) && (
                     <p className="weather-current-note">
-                        {rec.summary}
+                        {summaryText(rec)}
                     </p>
                 )}
             </div>
@@ -288,20 +316,20 @@ const WeatherWidget = () => {
             {/* 2. Minimalist Metric Stats Strip */}
             <div className="weather-stats-row">
                 <div className="weather-stat-item">
-                    <span className="weather-stat-label">{t('admin.weather.rainChance', 'Rain')}</span>
+                    <span className="weather-stat-label">{t('admin.weather.rainChance')}</span>
                     <span className="weather-stat-value">{formatNumber(chanceOfRain)}%</span>
                 </div>
                 <div className="weather-stat-item">
-                    <span className="weather-stat-label">{t('admin.weather.wind', 'Wind')}</span>
+                    <span className="weather-stat-label">{t('admin.weather.wind')}</span>
                     <span className="weather-stat-value">{displaySpeed(w.windSpeedMph, w.windSpeedKmh)}</span>
                 </div>
                 <div className="weather-stat-item">
-                    <span className="weather-stat-label">{t('admin.weather.humidity', 'Humidity')}</span>
+                    <span className="weather-stat-label">{t('admin.weather.humidity')}</span>
                     <span className="weather-stat-value">{formatNumber(w.humidity || 0)}%</span>
                 </div>
                 <div className="weather-stat-item">
-                    <span className="weather-stat-label">{t('admin.weather.uvIndex', 'UV')}</span>
-                    <span className="weather-stat-value">{formatNumber(Math.round(w.uvIndex || 0))} / 10</span>
+                    <span className="weather-stat-label">{t('admin.weather.uvIndex')}</span>
+                    <span className="weather-stat-value">{formatNumber(`${Math.round(w.uvIndex || 0)} / 10`)}</span>
                 </div>
             </div>
 
@@ -310,17 +338,18 @@ const WeatherWidget = () => {
                 <div className="weather-hourly-wrap">
                     <div className="weather-hourly-strip">
                         {w.hourly.slice(0, 8).map((hourItem, idx) => {
-                            const isNow = hourItem.timeLabel === 'Now';
+                            const isNow = idx === 0;
+                            const hourLabel = isNow ? t('admin.weather.now') : clockLabel(hourItem.time, false);
                             const hasRain = hourItem.rainChance >= 20;
                             const iconName = hourItem.conditionIcon || (hasRain ? 'rain' : 'cloudy');
                             return (
                                 <div
                                     key={hourItem.time || idx}
                                     className={`weather-hourly-item ${isNow ? 'is-now' : ''}`}
-                                    title={`${hourItem.timeLabel}: ${hourItem.condition || ''} (${hourItem.rainChance}% rain)`}
+                                    title={t('admin.ui.weatherWidget.rain', { p0: hourLabel, p1: conditionLabel(hourItem), p2: formatNumber(hourItem.rainChance) })}
                                 >
                                     <span className="weather-hourly-time">
-                                        {isNow ? t('admin.weather.now', 'Now') : hourItem.timeLabel}
+                                        {hourLabel}
                                     </span>
                                     <WeatherIcon name={iconName} size={16} className="weather-hourly-icon" />
                                     <span className="weather-hourly-temp">

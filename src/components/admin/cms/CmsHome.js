@@ -104,7 +104,7 @@ const CmsHome = ({ data, onSave, saving }) => {
 
     const handleSaveHero = async (e) => {
         if (e) e.preventDefault();
-        await onSave(formState, t('admin.messages.saveSuccess', 'Homepage details updated'));
+        await onSave(formState, t('admin.messages.saveSuccess'));
     };
 
     // --- Skills Handlers ---
@@ -132,7 +132,7 @@ const CmsHome = ({ data, onSave, saving }) => {
     const handleDeleteSkill = async (idx) => {
         const skill = formState.skills[idx];
         const name = getLocalized(skill.name, 'this skill');
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${name})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${name})`)) return;
 
         const updated = formState.skills.filter((_, i) => i !== idx);
         const newHome = { ...formState, skills: updated };
@@ -199,14 +199,14 @@ const CmsHome = ({ data, onSave, saving }) => {
                             className={`cms-lang-pill-btn ${langTab === 'en' ? 'active' : ''}`}
                             onClick={() => setLangTab('en')}
                         >
-                            {t('admin.labels.english', 'English')}
+                            {t('admin.labels.english')}
                         </button>
                         <button
                             type="button"
                             className={`cms-lang-pill-btn ${langTab === 'kn' ? 'active' : ''}`}
                             onClick={() => setLangTab('kn')}
                         >
-                            {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                            {t('admin.labels.kannada')}
                         </button>
                     </div>
                 </div>
@@ -218,7 +218,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                         onClick={handleSaveHero}
                         disabled={saving}
                     >
-                        {saving ? t('admin.actions.saving', 'Saving...') : t('admin.actions.save', 'Save Changes')}
+                        {saving ? t('admin.actions.saving') : t('admin.actions.save')}
                     </button>
                 </div>
             </div>
@@ -227,16 +227,16 @@ const CmsHome = ({ data, onSave, saving }) => {
             <div className="cms-form-card">
                 <div className="cms-form-card-header">
                     <h3 className="cms-form-heading" style={{ fontSize: '1.05rem', margin: 0 }}>
-                        {t('admin.home.heroHeading', 'Hero & Introduction')} ({langTab === 'en' ? t('admin.labels.english', 'English') : t('admin.labels.kannada', 'Kannada')})
+                        {t('admin.home.heroHeading')} ({langTab === 'en' ? t('admin.labels.english') : t('admin.labels.kannada')})
                     </h3>
                     <p className="cms-form-card-sub">
-                        {t('admin.home.heroDesc', 'Configure the greeting, tagline, role, and bio displayed at the top of your homepage')}
+                        {t('admin.home.heroDesc')}
                     </p>
                 </div>
 
                 <div className="cms-form-row" style={{ marginBottom: '0.85rem' }}>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.home.titleGreeting', 'Title / Greeting')}</label>
+                        <label className="cms-form-label">{t('admin.home.titleGreeting')}</label>
                         <input
                             type="text"
                             className="cms-input"
@@ -246,7 +246,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                         />
                     </div>
                     <div className="cms-form-group">
-                        <label className="cms-form-label">{t('admin.home.introLine', 'Name & Pronunciation Line')}</label>
+                        <label className="cms-form-label">{t('admin.home.introLine')}</label>
                         <input
                             type="text"
                             className="cms-input"
@@ -258,7 +258,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                 </div>
 
                 <div className="cms-form-group" style={{ marginBottom: '0.85rem' }}>
-                    <label className="cms-form-label">{t('admin.home.taglineRole', 'Tagline / Role')}</label>
+                    <label className="cms-form-label">{t('admin.home.taglineRole')}</label>
                     <input
                         type="text"
                         className="cms-input"
@@ -269,7 +269,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                 </div>
 
                 <div className="cms-form-group">
-                    <label className="cms-form-label">{t('admin.home.bioDesc', 'Bio / Detailed Description')}</label>
+                    <label className="cms-form-label">{t('admin.home.bioDesc')}</label>
                     <textarea
                         className="cms-textarea"
                         rows={4}
@@ -286,7 +286,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                     {/* Section Heading Input */}
                     <div className="cms-form-group" style={{ margin: 0, flex: '1 1 360px', maxWidth: '520px' }}>
                         <label className="cms-form-label">
-                            {t('admin.home.skillsSectionHeading', 'Section Heading on Homepage')} ({langTab === 'en' ? t('admin.labels.english', 'English') : t('admin.labels.kannada', 'Kannada')})
+                            {t('admin.home.skillsSectionHeading')} ({langTab === 'en' ? t('admin.labels.english') : t('admin.labels.kannada')})
                         </label>
                         <input
                             type="text"
@@ -296,7 +296,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                             placeholder={langTab === 'en' ? 'e.g. My Programming Skills' : 'ಉದಾ: ನನ್ನ ಹಮ್ಮುಗಾರಿಕೆಯ ಕಲಿಕೆಗಳು'}
                         />
                         <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem', display: 'block' }}>
-                            {t('admin.home.skillsSectionHeadingHelp', 'The title displayed above the skill pills on your homepage.')}
+                            {t('admin.home.skillsSectionHeadingHelp')}
                         </span>
                     </div>
 
@@ -306,7 +306,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                             className="cms-btn cms-btn-primary"
                             onClick={handleOpenAddSkill}
                         >
-                            {t('admin.actions.addSkill', '+ Add Skill')}
+                            {t('admin.actions.addSkill')}
                         </button>
                     </div>
                 </div>
@@ -322,7 +322,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchSkills', 'Search skills...')}
+                            placeholder={t('admin.placeholders.searchSkills')}
                             value={searchSkills}
                             onChange={(e) => setSearchSkills(e.target.value)}
                             className="cms-search-input"
@@ -332,8 +332,8 @@ const CmsHome = ({ data, onSave, saving }) => {
 
                 {filteredSkills.length === 0 ? (
                     <div className="cms-empty-state">
-                        <p className="cms-empty-title">{t('admin.messages.noSkills', 'No skills found')}</p>
-                        <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new item.')}</p>
+                        <p className="cms-empty-title">{t('admin.messages.noSkills')}</p>
+                        <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                     </div>
                 ) : (
                     <div className="cms-list">
@@ -357,7 +357,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                                             className="cms-btn-icon"
                                             onClick={() => handleMoveSkill(originalIdx, -1)}
                                             disabled={originalIdx === 0}
-                                            title={t('admin.actions.moveUp', 'Move Up')}
+                                            title={t('admin.actions.moveUp')}
                                         >
                                             ▲
                                         </button>
@@ -366,7 +366,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                                             className="cms-btn-icon"
                                             onClick={() => handleMoveSkill(originalIdx, 1)}
                                             disabled={originalIdx === formState.skills.length - 1}
-                                            title={t('admin.actions.moveDown', 'Move Down')}
+                                            title={t('admin.actions.moveDown')}
                                         >
                                             ▼
                                         </button>
@@ -375,14 +375,14 @@ const CmsHome = ({ data, onSave, saving }) => {
                                             className="cms-btn cms-btn-sm cms-btn-secondary"
                                             onClick={() => handleOpenEditSkill(skill, originalIdx)}
                                         >
-                                            {t('admin.actions.edit', 'Edit')}
+                                            {t('admin.actions.edit')}
                                         </button>
                                         <button
                                             type="button"
                                             className="cms-btn cms-btn-sm cms-btn-danger"
                                             onClick={() => handleDeleteSkill(originalIdx)}
                                         >
-                                            {t('admin.actions.delete', 'Delete')}
+                                            {t('admin.actions.delete')}
                                         </button>
                                     </div>
                                 </div>
@@ -397,7 +397,7 @@ const CmsHome = ({ data, onSave, saving }) => {
                 <div className="cms-modal-backdrop" onClick={() => setIsSkillModalOpen(false)}>
                     <div className="cms-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '440px' }}>
                         <div className="cms-modal-header">
-                            <h3 className="cms-modal-title">{editingSkillIdx !== null ? t('admin.modals.editSkill', 'Edit Skill') : t('admin.modals.newSkill', 'Add New Skill')}</h3>
+                            <h3 className="cms-modal-title">{editingSkillIdx !== null ? t('admin.modals.editSkill') : t('admin.modals.newSkill')}</h3>
                             <button type="button" className="cms-modal-close-btn" onClick={() => setIsSkillModalOpen(false)}>
                                 ✕
                             </button>
@@ -411,38 +411,38 @@ const CmsHome = ({ data, onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${skillModalLang === 'en' ? 'active' : ''}`}
                                         onClick={() => setSkillModalLang('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${skillModalLang === 'kn' ? 'active' : ''}`}
                                         onClick={() => setSkillModalLang('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                 </div>
 
                                 {skillModalLang === 'en' ? (
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.skillName', 'Skill Name')} ({t('admin.labels.english', 'English')})</label>
+                                        <label className="cms-form-label">{t('admin.labels.skillName')} ({t('admin.labels.english')})</label>
                                         <input
                                             type="text"
                                             className="cms-input"
                                             value={skillState.name.en}
                                             onChange={(e) => setSkillState((prev) => ({ ...prev, name: { ...prev.name, en: e.target.value } }))}
-                                            placeholder={t('admin.placeholders.skillName', 'e.g. Python')}
+                                            placeholder={t('admin.placeholders.skillName')}
                                             autoFocus
                                         />
                                     </div>
                                 ) : (
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.skillName', 'Skill Name')} ({t('admin.labels.kannada', 'Kannada')})</label>
+                                        <label className="cms-form-label">{t('admin.labels.skillName')} ({t('admin.labels.kannada')})</label>
                                         <input
                                             type="text"
                                             className="cms-input"
                                             value={skillState.name.kn}
                                             onChange={(e) => setSkillState((prev) => ({ ...prev, name: { ...prev.name, kn: e.target.value } }))}
-                                            placeholder="ಉದಾ: ಪಾಯ್ತನ್"
+                                            placeholder={t('admin.ui.cmsHome.examplePlaceholder1')}
                                             autoFocus
                                         />
                                     </div>
@@ -451,10 +451,10 @@ const CmsHome = ({ data, onSave, saving }) => {
 
                             <div className="cms-modal-footer">
                                 <button type="button" className="cms-btn cms-btn-secondary" onClick={() => setIsSkillModalOpen(false)}>
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button type="submit" className="cms-btn cms-btn-primary">
-                                    {editingSkillIdx !== null ? t('admin.actions.save', 'Save Changes') : t('admin.actions.addSkill', '+ Add Skill')}
+                                    {editingSkillIdx !== null ? t('admin.actions.save') : t('admin.actions.addSkill')}
                                 </button>
                             </div>
                         </form>

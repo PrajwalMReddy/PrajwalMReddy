@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import SideNav from './SideNav';
 import Footer from './Footer';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import {useCustomData} from '../utils/useCustomData';
 import './BengaluruTeluguDictionary.css';
 
@@ -42,7 +42,7 @@ const BengaluruTeluguDictionary = (props) => {
     });
     const entries = Array.isArray(entriesData) ? entriesData : [];
     const [search, setSearch] = useState("");
-    const {t} = useLanguage();
+    const {t} = useContent();
 
     useEffect(() => {
         document.title = t('pageTitles.dictionary');
@@ -76,7 +76,7 @@ const BengaluruTeluguDictionary = (props) => {
                 />
             </div>
             {loading ? (<div className="blog-post-loading">{t('loading')}</div>) : error ? (
-                <div className="blog-post-error">{t('errorPrefix', 'Error: ')}{error}</div>) : (<div className="dictionary-list">
+                <div className="blog-post-error">{t('errorPrefix')}{error}</div>) : (<div className="dictionary-list">
                 {sortedInitials.length === 0 && (<div className="blog-post-error">{t('researchNoResults')}</div>)}
                 {sortedInitials.map(initial => {
                     const [col1, col2] = splitIntoColumns(grouped[initial]);

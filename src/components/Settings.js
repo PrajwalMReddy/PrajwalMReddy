@@ -1,8 +1,8 @@
 import React from 'react';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 
 const Settings = () => {
-    const {language, setLanguage, t, darkMode, setDarkMode} = useLanguage();
+    const {language, setLanguage, t, darkMode, setDarkMode} = useContent();
 
     const settingsConfig = [{
         key: 'darkMode',

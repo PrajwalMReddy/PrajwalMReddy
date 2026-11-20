@@ -256,7 +256,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
         const total = Number(budgetTotal) || 0;
 
         if (total <= 0 || monthsInAyana.length === 0) {
-            setError(t('admin.budgetSection.planner.enterTotalFirst', 'Enter a total Ayana budget first.'));
+            setError(t('admin.budgetSection.planner.enterTotalFirst'));
             return;
         }
 
@@ -316,7 +316,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
         const amount = Number(form.amount);
 
         if (!Number.isFinite(amount) || amount < 0) {
-            setError(t('admin.budgetSection.planner.validAmountError', 'Enter a valid expense amount.'));
+            setError(t('admin.budgetSection.planner.validAmountError'));
             return;
         }
 
@@ -519,8 +519,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
             const formattedDiff = formatNumber(formatCurrency(Math.abs(allocationDifference)));
             setError(
                 allocationDifference < 0
-                    ? `${t('admin.budgetSection.planner.budgetExceeded', 'Budget exceeded by')} ${formattedDiff}.`
-                    : `${formattedDiff} ${t('admin.budgetSection.planner.leftToAllocate', 'left to allocate')}.`
+                    ? `${t('admin.budgetSection.planner.budgetExceeded')} ${formattedDiff}.`
+                    : `${formattedDiff} ${t('admin.budgetSection.planner.leftToAllocate')}.`
             );
             return;
         }
@@ -586,7 +586,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
         if (
             !window.confirm(
-                t('admin.budgetSection.planner.deleteConfirmPlan', 'Delete this budget plan?')
+                t('admin.budgetSection.planner.deleteConfirmPlan')
             )
         ) {
             return;
@@ -617,7 +617,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
     if (loading) {
         return (
             <p className="admin-loading-text">
-                {t('admin.budgetSection.planner.loading', 'Loading budget plans...')}
+                {t('admin.budgetSection.planner.loading')}
             </p>
         );
     }
@@ -637,7 +637,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
             <div className="admin-planner-tabs">
                 <div className="admin-planner-plan-controls">
                     <label className="admin-planner-ayana-selector">
-                        <span>{t('admin.budgetSection.planner.planFor', 'Plan for')}</span>
+                        <span>{t('admin.budgetSection.planner.planFor')}</span>
 
                         <select
                             value={
@@ -650,7 +650,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                             onChange={handleAyanaSelection}
                         >
                             <option value="" disabled>
-                                {t('admin.budgetSection.planner.selectAyana', 'Select Ayana')}
+                                {t('admin.budgetSection.planner.selectAyana')}
                             </option>
 
                             {availableAyanaNumbers.map((ayanaNumber) => {
@@ -664,15 +664,15 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                         key={ayanaNumber}
                                         value={ayanaNumber}
                                     >
-                                        {`${t('admin.budgetSection.planner.ayana', 'Ayana')} ${formatNumber(ayanaNumber)}${
+                                        {`${t('admin.budgetSection.planner.ayana')} ${formatNumber(ayanaNumber)}${
                                             ayanaNumber === currentAyanaNumber
-                                                ? ` · ${t('admin.budgetSection.planner.current', 'Current')}`
+                                                ? ` · ${t('admin.budgetSection.planner.current')}`
                                                 : ayanaNumber < currentAyanaNumber
-                                                    ? ` · ${t('admin.budgetSection.planner.past', 'Past')}`
-                                                    : ` · ${t('admin.budgetSection.planner.future', 'Future')}`
+                                                    ? ` · ${t('admin.budgetSection.planner.past')}`
+                                                    : ` · ${t('admin.budgetSection.planner.future')}`
                                         }${
                                             hasPlan
-                                                ? ` · ${t('admin.budgetSection.planner.saved', 'Saved')}`
+                                                ? ` · ${t('admin.budgetSection.planner.saved')}`
                                                 : ''
                                         }`}
                                     </option>
@@ -685,10 +685,10 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
             {!draftPlan && !error && (
                 <div className="admin-planner-empty">
-                    <h3>{t('admin.budgetSection.planner.noPlanSelected', 'No budget plan selected')}</h3>
+                    <h3>{t('admin.budgetSection.planner.noPlanSelected')}</h3>
 
                     <p>
-                        {t('admin.budgetSection.planner.selectAyanaPrompt', 'Select an Ayana above to create or edit its budget plan.')}
+                        {t('admin.budgetSection.planner.selectAyanaPrompt')}
                     </p>
                 </div>
             )}
@@ -702,7 +702,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                     <div className="admin-planner-header">
                         <div>
                             <span className="admin-planner-eyebrow">
-                                {t('admin.budgetSection.planner.budgetPlanner', 'Budget Planner')}
+                                {t('admin.budgetSection.planner.budgetPlanner')}
                             </span>
 
                             <h3>
@@ -721,7 +721,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 className="danger"
                                 onClick={handleDeletePlan}
                             >
-                                {t('admin.budgetSection.planner.deletePlan', 'Delete')}
+                                {t('admin.budgetSection.planner.deletePlan')}
                             </button>
 
                             <button
@@ -733,8 +733,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 }
                             >
                                 {saving
-                                    ? t('admin.actions.saving', 'Saving...')
-                                    : t('admin.budgetSection.planner.savePlan', 'Save Plan')}
+                                    ? t('admin.actions.saving')
+                                    : t('admin.budgetSection.planner.savePlan')}
                             </button>
                         </div>
                     </div>
@@ -742,7 +742,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                     <section className="admin-planner-overview">
                         <div className="admin-planner-budget-input">
                             <label>
-                                <span>{t('admin.budgetSection.planner.totalAyanaBudget', 'Total Ayana Budget')}</span>
+                                <span>{t('admin.budgetSection.planner.totalAyanaBudget')}</span>
 
                                 <div className="admin-planner-money-input">
                                     <span>$</span>
@@ -767,13 +767,13 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 onClick={handleDistributeEvenly}
                                 disabled={totalBudget <= 0}
                             >
-                                {t('admin.budgetSection.planner.distributeEvenly', 'Split Evenly')}
+                                {t('admin.budgetSection.planner.distributeEvenly')}
                             </button>
                         </div>
 
                         <div className="admin-planner-overview-stats">
                             <div>
-                                <span>{t('admin.budgetSection.planner.totalAllocated', 'Total Allocated')}</span>
+                                <span>{t('admin.budgetSection.planner.totalAllocated')}</span>
 
                                 <strong>
                                     {formatNumber(formatCurrency(
@@ -783,7 +783,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                             </div>
 
                             <div>
-                                <span>{t('admin.budgetSection.planner.planned', 'Planned')}</span>
+                                <span>{t('admin.budgetSection.planner.planned')}</span>
 
                                 <strong>
                                     {formatNumber(formatCurrency(
@@ -793,7 +793,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                             </div>
 
                             <div>
-                                <span>{t('admin.budgetSection.planner.actualSpent', 'Actual Spent')}</span>
+                                <span>{t('admin.budgetSection.planner.actualSpent')}</span>
 
                                 <strong>
                                     {formatNumber(formatCurrency(
@@ -806,8 +806,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 <div className={ayanaAnalysis.isOver ? 'negative' : 'positive'}>
                                     <span>
                                         {ayanaAnalysis.isOver
-                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
-                                            : t('admin.budgetSection.planner.underBudget', 'Under Budget')}
+                                            ? t('admin.budgetSection.planner.overBudget')
+                                            : t('admin.budgetSection.planner.underBudget')}
                                     </span>
 
                                     <strong>
@@ -826,8 +826,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 >
                                     <span>
                                         {remainingToSpend < 0
-                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
-                                            : t('admin.budgetSection.planner.remaining', 'Remaining')}
+                                            ? t('admin.budgetSection.planner.overBudget')
+                                            : t('admin.budgetSection.planner.remaining')}
                                     </span>
 
                                     <strong>
@@ -877,16 +877,16 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                 }
                             >
                                 {allocationValid
-                                    ? t('admin.budgetSection.planner.allocatedFully', 'Budget fully allocated')
+                                    ? t('admin.budgetSection.planner.allocatedFully')
                                     : allocationDifference < 0
                                         ? `${formatNumber(formatCurrency(
                                             Math.abs(
                                                 allocationDifference
                                             )
-                                        ))} ${t('admin.budgetSection.planner.overAllocated', 'over-allocated')}`
+                                        ))} ${t('admin.budgetSection.planner.overAllocated')}`
                                         : `${formatNumber(formatCurrency(
                                             allocationDifference
-                                        ))} ${t('admin.budgetSection.planner.leftToAllocate', 'left to allocate')}`}
+                                        ))} ${t('admin.budgetSection.planner.leftToAllocate')}`}
                             </span>
                         </div>
                     </section>
@@ -897,10 +897,10 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
                     <section className="admin-planner-months">
                         <div className="admin-planner-section-heading">
-                            <h2>{t('admin.budgetSection.planner.monthlyPlan', 'Monthly Plan')}</h2>
+                            <h2>{t('admin.budgetSection.planner.monthlyPlan')}</h2>
 
                             <p>
-                                {t('admin.budgetSection.planner.monthlyPlanDesc', "Set each month's budget and add the expenses you expect during that month.")}
+                                {t('admin.budgetSection.planner.monthlyPlanDesc')}
                             </p>
                         </div>
 
@@ -955,7 +955,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
                                             <span className="admin-planner-month-metrics">
                                                 <span>
-                                                    {t('admin.budgetSection.planner.budget', 'Budget')}{' '}
+                                                    {t('admin.budgetSection.planner.budget')}{' '}
                                                     <strong>
                                                         {formatNumber(formatCurrency(
                                                             budgeted
@@ -964,7 +964,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 </span>
 
                                                 <span>
-                                                    {t('admin.budgetSection.planner.planned', 'Planned')}{' '}
+                                                    {t('admin.budgetSection.planner.planned')}{' '}
                                                     <strong>
                                                         {formatNumber(formatCurrency(
                                                             planned
@@ -973,7 +973,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 </span>
 
                                                 <span>
-                                                    {t('admin.budgetSection.planner.actualSpent', 'Actual Spent')}{' '}
+                                                    {t('admin.budgetSection.planner.actualSpent')}{' '}
                                                     <strong>
                                                         {formatNumber(formatCurrency(
                                                             actualData?.actualSpent || 0
@@ -984,8 +984,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 {isMonthCompleted ? (
                                                     <span className={actualData?.isOver ? 'negative' : 'positive'}>
                                                         {actualData?.isOver
-                                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
-                                                            : t('admin.budgetSection.planner.underBudget', 'Under Budget')}{': '}
+                                                            ? t('admin.budgetSection.planner.overBudget')
+                                                            : t('admin.budgetSection.planner.underBudget')}{': '}
                                                         <strong>
                                                             {actualData?.isOver
                                                                 ? `+${formatNumber(formatCurrency(actualData.overAmount))}`
@@ -995,8 +995,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 ) : isMonthCurrent ? (
                                                     <span className={actualData?.isOver ? 'negative' : ''}>
                                                         {actualData?.isOver
-                                                            ? t('admin.budgetSection.planner.overBudget', 'Over Budget')
-                                                            : t('admin.budgetSection.planner.left', 'Left')}{': '}
+                                                            ? t('admin.budgetSection.planner.overBudget')
+                                                            : t('admin.budgetSection.planner.left')}{': '}
                                                         <strong>
                                                             {actualData?.isOver
                                                                 ? `+${formatNumber(formatCurrency(actualData.overAmount))}`
@@ -1012,8 +1012,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                         }
                                                     >
                                                         {remaining < 0
-                                                            ? t('admin.budgetSection.planner.over', 'Over ')
-                                                            : t('admin.budgetSection.planner.left', 'Left ')}{': '}
+                                                            ? t('admin.budgetSection.planner.over')
+                                                            : t('admin.budgetSection.planner.left')}{': '}
 
                                                         <strong>
                                                             {formatNumber(formatCurrency(
@@ -1041,7 +1041,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 <div className="admin-planner-month-budget">
                                                     <label>
                                                         <span>
-                                                            {t('admin.budgetSection.planner.monthlyBudget', 'Monthly Budget')}
+                                                            {t('admin.budgetSection.planner.monthlyBudget')}
                                                         </span>
 
                                                         <div className="admin-planner-money-input">
@@ -1073,11 +1073,11 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                 <div className="admin-planner-planned-expenses">
                                                     <div className="admin-planner-subsection-header">
                                                         <h3>
-                                                            {t('admin.budgetSection.planner.plannedExpenses', 'Planned Expenses')}
+                                                            {t('admin.budgetSection.planner.plannedExpenses')}
                                                         </h3>
 
                                                         <p>
-                                                            {t('admin.budgetSection.planner.plannedExpensesDesc', 'Add expenses you expect to make this month.')}
+                                                            {t('admin.budgetSection.planner.plannedExpensesDesc')}
                                                         </p>
                                                     </div>
 
@@ -1092,12 +1092,12 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                     >
                                                         <label>
                                                             <span>
-                                                                {t('admin.budgetSection.planner.headers.item', 'Expense')}
+                                                                {t('admin.budgetSection.planner.headers.item')}
                                                             </span>
 
                                                             <input
                                                                 type="text"
-                                                                placeholder={t('admin.budgetSection.planner.expenseItemPlaceholder', 'e.g. Groceries')}
+                                                                placeholder={t('admin.budgetSection.planner.expenseItemPlaceholder')}
                                                                 value={form.item}
                                                                 onChange={(event) =>
                                                                     handleItemFormChange(
@@ -1111,7 +1111,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
                                                         <label>
                                                             <span>
-                                                                {t('admin.budgetSection.planner.headers.category', 'Category')}
+                                                                {t('admin.budgetSection.planner.headers.category')}
                                                             </span>
 
                                                             <select
@@ -1149,7 +1149,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
 
                                                         <label>
                                                             <span>
-                                                                {t('admin.budgetSection.planner.headers.amount', 'Amount')}
+                                                                {t('admin.budgetSection.planner.headers.amount')}
                                                             </span>
 
                                                             <div className="admin-planner-money-input">
@@ -1185,7 +1185,7 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                                 form.amount === ''
                                                             }
                                                         >
-                                                            {t('admin.budgetSection.planner.addExpenseBtn', 'Add expense')}
+                                                            {t('admin.budgetSection.planner.addExpenseBtn')}
                                                         </button>
                                                     </form>
 
@@ -1195,15 +1195,15 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                         <div className="admin-planner-expense-list">
                                                             <div className="admin-planner-expense-list-header">
                                                                 <span>
-                                                                    {t('admin.budgetSection.planner.headers.item', 'Expense')}
+                                                                    {t('admin.budgetSection.planner.headers.item')}
                                                                 </span>
 
                                                                 <span>
-                                                                    {t('admin.budgetSection.planner.headers.category', 'Category')}
+                                                                    {t('admin.budgetSection.planner.headers.category')}
                                                                 </span>
 
                                                                 <span>
-                                                                    {t('admin.budgetSection.planner.headers.amount', 'Amount')}
+                                                                    {t('admin.budgetSection.planner.headers.amount')}
                                                                 </span>
 
                                                                 <span/>
@@ -1249,8 +1249,8 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                                                     item.id
                                                                                 )
                                                                             }
-                                                                            aria-label={`${t('admin.actions.delete', 'Delete')} ${item.item}`}
-                                                                            title={t('admin.budgetSection.planner.deleteExpenseTitle', 'Delete expense')}
+                                                                            aria-label={`${t('admin.actions.delete')} ${item.item}`}
+                                                                            title={t('admin.budgetSection.planner.deleteExpenseTitle')}
                                                                         >
                                                                             ×
                                                                         </button>
@@ -1261,11 +1261,11 @@ const BudgetPlanner = ({ expenses: propExpenses, onRefresh }) => {
                                                     ) : (
                                                         <div className="admin-planner-no-expenses">
                                                             <strong>
-                                                                {t('admin.budgetSection.planner.noExpensesYet', 'No expenses yet')}
+                                                                {t('admin.budgetSection.planner.noExpensesYet')}
                                                             </strong>
 
                                                             <span>
-                                                                {t('admin.budgetSection.planner.addExpectedAbove', 'Add your expected expenses above.')}
+                                                                {t('admin.budgetSection.planner.addExpectedAbove')}
                                                             </span>
                                                         </div>
                                                     )}

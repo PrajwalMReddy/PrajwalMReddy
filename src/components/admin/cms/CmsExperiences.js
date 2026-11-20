@@ -100,7 +100,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
     const handleDelete = async (index) => {
         const item = experiences[index];
         const title = getLocalized(item.title, getLocalized(item.company, 'this item'));
-        if (!window.confirm(`${t('admin.messages.confirmDelete', 'Are you sure you want to delete this item?')} (${title})`)) return;
+        if (!window.confirm(`${t('admin.messages.confirmDelete')} (${title})`)) return;
 
         const updated = experiences.filter((_, idx) => idx !== index);
         await onSave({ sections, experiences: updated }, `Deleted "${title}"`);
@@ -190,7 +190,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.placeholders.searchExperiences', 'Search experiences...')}
+                            placeholder={t('admin.placeholders.searchExperiences')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="cms-search-input"
@@ -202,7 +202,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         onChange={(e) => setSelectedSection(e.target.value)}
                         className="cms-select"
                     >
-                        <option value="all">{t('admin.filters.allSections', 'All Sections')} ({formatNumber(sections.length)})</option>
+                        <option value="all">{t('admin.filters.allSections')} ({formatNumber(sections.length)})</option>
                         {sections.map((s) => (
                             <option key={s.id} value={s.id}>
                                 {getLocalized(s.title, s.id)}
@@ -214,13 +214,13 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         type="button"
                         className={`cms-filter-pill ${filterFeatured === 'featured' ? 'active' : ''}`}
                         onClick={() => setFilterFeatured((prev) => (prev === 'featured' ? 'all' : 'featured'))}
-                        title="Filter experiences featured on Home Page"
+                        title={t('admin.ui.cmsExperiences.filterExperiencesFeaturedOnHomePage')}
                     >
-                        ★ {t('admin.filters.featured', 'Featured')} ({formatNumber(featuredCount)})
+                        ★ {t('admin.filters.featured')} ({formatNumber(featuredCount)})
                     </button>
 
                     <span className="cms-meta-summary">
-                        {formatNumber(filteredExperiences.length)} {t('admin.messages.of', 'of')} {formatNumber(experiences.length)}
+                        {formatNumber(filteredExperiences.length)} {t('admin.messages.of')} {formatNumber(experiences.length)}
                     </span>
                 </div>
 
@@ -230,7 +230,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-secondary"
                         onClick={() => setIsSectionsModalOpen(true)}
                     >
-                        {t('admin.actions.sections', 'Sections')}
+                        {t('admin.actions.sections')}
                     </button>
 
                     <button
@@ -238,7 +238,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         className="cms-btn cms-btn-primary"
                         onClick={handleOpenAddModal}
                     >
-                        {t('admin.actions.addExperience', '+ Add Experience')}
+                        {t('admin.actions.addExperience')}
                     </button>
                 </div>
             </div>
@@ -246,8 +246,8 @@ const CmsExperiences = ({ data, onSave, saving }) => {
             {/* Experience List View */}
             {filteredExperiences.length === 0 ? (
                 <div className="cms-empty-state">
-                    <p className="cms-empty-title">{t('admin.messages.noExperiences', 'No experiences found')}</p>
-                    <p className="cms-empty-text">{t('admin.messages.adjustSearch', 'Try adjusting your search or add a new item.')}</p>
+                    <p className="cms-empty-title">{t('admin.messages.noExperiences')}</p>
+                    <p className="cms-empty-text">{t('admin.messages.adjustSearch')}</p>
                 </div>
             ) : (
                 <div className="cms-list">
@@ -307,7 +307,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         onClick={(e) => handleToggleFeatured(originalIndex, e)}
                                         title={item.featured ? 'Featured on Home (click to unfeature)' : 'Feature on Home'}
                                     >
-                                        ★ {item.featured ? t('admin.actions.featured', 'Featured') : t('admin.actions.feature', 'Feature')}
+                                        ★ {item.featured ? t('admin.actions.featured') : t('admin.actions.feature')}
                                     </button>
 
                                     <button
@@ -315,7 +315,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         className="cms-btn-icon"
                                         onClick={() => handleMoveOrder(originalIndex, -1)}
                                         disabled={originalIndex === 0}
-                                        title={t('admin.actions.moveUp', 'Move Up')}
+                                        title={t('admin.actions.moveUp')}
                                     >
                                         ▲
                                     </button>
@@ -324,7 +324,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         className="cms-btn-icon"
                                         onClick={() => handleMoveOrder(originalIndex, 1)}
                                         disabled={originalIndex === experiences.length - 1}
-                                        title={t('admin.actions.moveDown', 'Move Down')}
+                                        title={t('admin.actions.moveDown')}
                                     >
                                         ▼
                                     </button>
@@ -334,14 +334,14 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         className="cms-btn cms-btn-sm cms-btn-secondary"
                                         onClick={() => handleOpenEditModal(item, originalIndex)}
                                     >
-                                        {t('admin.actions.edit', 'Edit')}
+                                        {t('admin.actions.edit')}
                                     </button>
                                     <button
                                         type="button"
                                         className="cms-btn cms-btn-sm cms-btn-danger"
                                         onClick={() => handleDelete(originalIndex)}
                                     >
-                                        {t('admin.actions.delete', 'Delete')}
+                                        {t('admin.actions.delete')}
                                     </button>
                                 </div>
                             </div>
@@ -357,8 +357,8 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                         <div className="cms-modal-header">
                             <h3 className="cms-modal-title">
                                 {editingExperience._index !== undefined
-                                    ? t('admin.modals.editExperience', 'Edit Experience')
-                                    : t('admin.modals.newExperience', 'Add New Experience')}
+                                    ? t('admin.modals.editExperience')
+                                    : t('admin.modals.newExperience')}
                             </h3>
                             <button
                                 type="button"
@@ -377,14 +377,14 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         className={`cms-lang-pill-btn ${editLangTab === 'kn' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('kn')}
                                     >
-                                        {t('admin.labels.kannada', 'ಕನ್ನಡ')}
+                                        {t('admin.labels.kannada')}
                                     </button>
                                     <button
                                         type="button"
                                         className={`cms-lang-pill-btn ${editLangTab === 'en' ? 'active' : ''}`}
                                         onClick={() => setEditLangTab('en')}
                                     >
-                                        {t('admin.labels.english', 'English')}
+                                        {t('admin.labels.english')}
                                     </button>
                                 </div>
 
@@ -392,7 +392,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                     <>
                                         <div className="cms-form-row">
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.role', 'Title / Role')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.role')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -403,11 +403,11 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                                             title: { ...editingExperience.title, en: e.target.value },
                                                         })
                                                     }
-                                                    placeholder="Software Engineering Intern"
+                                                    placeholder={t('admin.ui.cmsExperiences.softwareEngineeringIntern')}
                                                 />
                                             </div>
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.company', 'Company / Institution')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.company')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -418,13 +418,13 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                                             company: { ...editingExperience.company, en: e.target.value },
                                                         })
                                                     }
-                                                    placeholder="Cornell University / Google"
+                                                    placeholder={t('admin.ui.cmsExperiences.cornellUniversityGoogle')}
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="cms-form-group">
-                                            <label className="cms-form-label">{t('admin.labels.duration', 'Duration')}</label>
+                                            <label className="cms-form-label">{t('admin.labels.duration')}</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
@@ -435,12 +435,12 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                                         duration: { ...editingExperience.duration, en: e.target.value },
                                                     })
                                                 }
-                                                placeholder="e.g. May 2025 – Aug 2025"
+                                                placeholder={t('admin.ui.cmsExperiences.examplePlaceholder1')}
                                             />
                                         </div>
 
                                         <div className="cms-form-group">
-                                            <label className="cms-form-label">{t('admin.labels.description', 'Description')}</label>
+                                            <label className="cms-form-label">{t('admin.labels.description')}</label>
                                             <textarea
                                                 className="cms-textarea"
                                                 style={{ minHeight: '130px' }}
@@ -451,7 +451,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                                         description: { ...editingExperience.description, en: e.target.value },
                                                     })
                                                 }
-                                                placeholder="• Responsibilities and key contributions..."
+                                                placeholder={t('admin.ui.cmsExperiences.responsibilitiesAndKeyContributions')}
                                             />
                                         </div>
                                     </>
@@ -461,7 +461,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                     <>
                                         <div className="cms-form-row">
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.role', 'Title / Role')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.role')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -476,7 +476,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                                 />
                                             </div>
                                             <div className="cms-form-group">
-                                                <label className="cms-form-label">{t('admin.labels.company', 'Company / Institution')}</label>
+                                                <label className="cms-form-label">{t('admin.labels.company')}</label>
                                                 <input
                                                     type="text"
                                                     className="cms-input"
@@ -493,7 +493,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         </div>
 
                                         <div className="cms-form-group">
-                                            <label className="cms-form-label">{t('admin.labels.duration', 'Duration')}</label>
+                                            <label className="cms-form-label">{t('admin.labels.duration')}</label>
                                             <input
                                                 type="text"
                                                 className="cms-input"
@@ -509,7 +509,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                         </div>
 
                                         <div className="cms-form-group">
-                                            <label className="cms-form-label">{t('admin.labels.description', 'Description')}</label>
+                                            <label className="cms-form-label">{t('admin.labels.description')}</label>
                                             <textarea
                                                 className="cms-textarea"
                                                 style={{ minHeight: '130px' }}
@@ -528,7 +528,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
 
                                 <div className="cms-form-row">
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.section', 'Section')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.section')}</label>
                                         <select
                                             className="cms-select"
                                             value={editingExperience.section}
@@ -545,11 +545,11 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                     </div>
 
                                     <div className="cms-form-group">
-                                        <label className="cms-form-label">{t('admin.labels.optionalNote', 'Optional Note (Label)')}</label>
+                                        <label className="cms-form-label">{t('admin.labels.optionalNote')}</label>
                                         <input
                                             type="text"
                                             className="cms-input"
-                                            placeholder="e.g. Award / GPA"
+                                            placeholder={t('admin.ui.cmsExperiences.examplePlaceholder2')}
                                             value={editingExperience.notes?.label || ''}
                                             onChange={(e) =>
                                                 setEditingExperience({
@@ -572,9 +572,9 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                             }
                                         />
                                         <span>
-                                            {t('admin.labels.featureOnHome', '★ Feature on Home Page')}{' '}
+                                            {t('admin.labels.featureOnHome')}{' '}
                                             <span className="cms-help-inline">
-                                                {t('admin.labels.featureDescExp', '(Included in Featured Experience section)')}
+                                                {t('admin.labels.featureDescExp')}
                                             </span>
                                         </span>
                                     </label>
@@ -587,7 +587,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                     className="cms-btn cms-btn-secondary"
                                     onClick={() => setIsEditModalOpen(false)}
                                 >
-                                    {t('admin.actions.cancel', 'Cancel')}
+                                    {t('admin.actions.cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -595,10 +595,10 @@ const CmsExperiences = ({ data, onSave, saving }) => {
                                     disabled={saving}
                                 >
                                     {saving
-                                        ? t('admin.actions.saving', 'Saving...')
+                                        ? t('admin.actions.saving')
                                         : (editingExperience._index !== undefined
-                                            ? t('admin.actions.save', 'Save Experience')
-                                            : t('admin.actions.addExperience', 'Add Experience'))}
+                                            ? t('admin.actions.save')
+                                            : t('admin.actions.addExperience'))}
                                 </button>
                             </div>
                         </form>
@@ -610,7 +610,7 @@ const CmsExperiences = ({ data, onSave, saving }) => {
             <CmsSectionsModal
                 isOpen={isSectionsModalOpen}
                 onClose={() => setIsSectionsModalOpen(false)}
-                title="Manage Experience Sections"
+                title={t('admin.ui.cmsExperiences.manageExperienceSections')}
                 itemLabel="experiences"
                 sections={sections}
                 items={experiences}

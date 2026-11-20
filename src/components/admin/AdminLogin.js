@@ -12,7 +12,7 @@ const AdminLogin = () => {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminLogin', 'Admin Login | Prajwal Reddy');
+        document.title = t('pageTitles.adminLogin');
     }, [t]);
 
     const rawFrom = location.state?.from;
@@ -39,10 +39,10 @@ const AdminLogin = () => {
     return (
         <div className="admin-page admin-login-page">
             <div className="admin-login-card">
-                <h1>{t('admin.login.title', 'Admin Access')}</h1>
-                <p className="admin-login-subtitle">{t('admin.login.subtitle', 'Enter your password to continue.')}</p>
+                <h1>{t('admin.login.title')}</h1>
+                <p className="admin-login-subtitle">{t('admin.login.subtitle')}</p>
                 <form onSubmit={handleSubmit}>
-                    <label htmlFor="admin-password">{t('admin.login.password', 'Password')}</label>
+                    <label htmlFor="admin-password">{t('admin.login.password')}</label>
                     <input
                         id="admin-password"
                         type="password"
@@ -54,8 +54,8 @@ const AdminLogin = () => {
                     {error && <p className="admin-error">{error}</p>}
                     <button type="submit" disabled={submitting}>
                         {submitting
-                            ? t('admin.login.signingIn', 'Signing in...')
-                            : t('admin.login.signIn', 'Sign In')}
+                            ? t('admin.login.signingIn')
+                            : t('admin.login.signIn')}
                     </button>
                 </form>
             </div>

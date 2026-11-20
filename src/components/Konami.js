@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useLanguage } from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import { setPlatformerLocale, startPlatformer, stopPlatformer } from '../platformer/controller';
 import { syncCoinsWithCode } from '../platformer/model';
 
 const Konami = () => {
-    const { t, language } = useLanguage();
+    const { t, language } = useContent();
     const { code } = useParams();
     const canvasRef = useRef(null);
 
@@ -18,7 +18,7 @@ const Konami = () => {
         startPlatformer(canvas, {
             language,
             t,
-            displayText: t('platformer.loading') || t('displayText')
+            displayText: t('platformer.loading')
         });
 
         return () => {

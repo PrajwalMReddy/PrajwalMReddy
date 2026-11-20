@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { translations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, tStatic } from '../locales';
+import { translations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, tStatic, reportMissingTranslation } from '../locales';
 
 const ContentContext = createContext();
 
@@ -76,6 +76,48 @@ export const formatDate = (val, lang = DEFAULT_LANGUAGE, options = {}) => {
     return monthName;
 };
 
+export const MERIDIEM_REGISTRY = {
+    en: { am: 'AM', pm: 'PM' },
+    kn: { am: 'ಪೂರ್ವಾಹ್ನ', pm: 'ಅಪರಾಹ್ನ' },
+};
+
+/**
+ * Formats a time of day in the active language (12-hour clock, localized
+ * meridiem and numerals). Pass `timeZone` to show the time in that zone, and
+ * `minutes: false` for hour-only labels such as "9 AM".
+ */
+export const formatTime = (val, lang = DEFAULT_LANGUAGE, options = {}) => {
+    if (val === null || val === undefined || val === '') return '';
+    let hour;
+    let minute;
+    if (typeof val === 'number' && val >= 0 && val < 24 && Number.isInteger(val)) {
+        hour = val;
+        minute = 0;
+    } else {
+        const d = val instanceof Date ? val : new Date(val);
+        if (Number.isNaN(d.getTime())) return '';
+        if (options.timeZone) {
+            const parts = new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hourCycle: 'h23',
+                timeZone: options.timeZone,
+            }).formatToParts(d);
+            hour = Number(parts.find((p) => p.type === 'hour')?.value || 0) % 24;
+            minute = Number(parts.find((p) => p.type === 'minute')?.value || 0);
+        } else {
+            hour = d.getHours();
+            minute = d.getMinutes();
+        }
+    }
+
+    const meridiems = MERIDIEM_REGISTRY[lang] || MERIDIEM_REGISTRY[DEFAULT_LANGUAGE];
+    const meridiem = hour >= 12 ? meridiems.pm : meridiems.am;
+    const h12 = hour % 12 || 12;
+    const clock = options.minutes === false ? `${h12}` : `${h12}:${String(minute).padStart(2, '0')}`;
+    return formatNumber(`${clock} ${meridiem}`, lang);
+};
+
 const normalizeEscapedNewlines = (value) => {
     if (typeof value === 'string') {
         return value.replace(/\\n/g, '\n');
@@ -149,7 +191,7 @@ export const ContentProvider = ({ children }) => {
                         return await apiRes.json();
                     }
                 } catch (fetchErr) {
-                    console.warn((tStatic('logs.contentFetchError', undefined, '[ContentProvider] Error fetching {type}:') || '').replace('{type}', type), fetchErr);
+                    console.warn((tStatic('logs.contentFetchError', undefined) || '').replace('{type}', type), fetchErr);
                 }
                 return null;
             };
@@ -196,7 +238,7 @@ export const ContentProvider = ({ children }) => {
 
             setRawContent(newContent);
         } catch (err) {
-            console.warn(tStatic('logs.contentDynamicError', undefined, '[ContentProvider] Could not load dynamic content:'), err);
+            console.warn(tStatic('logs.contentDynamicError', undefined), err);
         } finally {
             setLoading(false);
         }
@@ -384,15 +426,12 @@ export const ContentProvider = ({ children }) => {
         if (key === 'contactSubheading') return interpolate(aboutContent.subheading || actualFallback || key);
         if (key === 'contactNotice') return interpolate(aboutContent.notice || actualFallback || key);
 
-        let translatedValue = getNestedTranslation(language, key);
+        const translatedValue = getNestedTranslation(language, key);
 
-        if (translatedValue === undefined && language !== DEFAULT_LANGUAGE) {
-            translatedValue = getNestedTranslation(DEFAULT_LANGUAGE, key);
-        }
-
+        // Languages are co-equal: a missing key is never filled in from another language.
         if (translatedValue === undefined) {
-            const raw = actualFallback !== undefined ? actualFallback : key;
-            return interpolate(raw);
+            reportMissingTranslation(language, key);
+            return interpolate(key);
         }
 
         return interpolate(normalizeEscapedNewlines(translatedValue));
@@ -488,6 +527,11 @@ export const ContentProvider = ({ children }) => {
         [language]
     );
 
+    const formatTimeBound = useCallback(
+        (val, options, overrideLang) => formatTime(val, overrideLang || language, options),
+        [language]
+    );
+
     const value = {
         language,
         setLanguage,
@@ -500,6 +544,7 @@ export const ContentProvider = ({ children }) => {
         tArray,
         formatNumber: formatNumberBound,
         formatDate: formatDateBound,
+        formatTime: formatTimeBound,
         homeContent,
         aboutContent,
         rawContent,
@@ -524,5 +569,4 @@ export const useContent = () => {
     return context;
 };
 
-export const useLanguage = useContent;
 export { tStatic, getActiveLanguage, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../locales';

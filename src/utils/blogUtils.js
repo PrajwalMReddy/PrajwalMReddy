@@ -16,7 +16,7 @@ const getLocalMarkdownIndex = async (basePath) => {
             }
         }
     } catch (err) {
-        console.warn((tStatic('logs.blogIndexError', undefined, '[blogUtils] Error fetching {path} index:') || '').replace('{path}', basePath), err);
+        console.warn((tStatic('logs.blogIndexError', undefined) || '').replace('{path}', basePath), err);
     }
     return [];
 };

@@ -7,7 +7,8 @@ export const research = {
         researchDictionaryTitle: "Bengaluru Telugu Dictionary",
         researchDictionarySearchTitle: "Search",
         researchDictionarySearchPlaceholder: "Search by word, meaning, or pronunciation...",
-        researchNoResults: "No results found."
+        researchNoResults: "No results found.",
+        researchDictionaryNote: "Note:"
     },
     kn: {
         researchTitle: "ಸಂಶೋದನೆ",
@@ -17,6 +18,7 @@ export const research = {
         researchDictionaryTitle: "ಬೆಂಗಳೂರು ತೆಲುಗು ಶಬ್ದಕೋಶ",
         researchDictionarySearchTitle: "ಹುಡುಕಿ",
         researchDictionarySearchPlaceholder: "ಪದ, ಅರ್ತ, ಇಲ್ಲವೇ ಉಚ್ಚಾರಣೆಯನ್ನು ಹುಡುಕಿ...",
-        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ."
+        researchNoResults: "ಯಾವುದೇ ಪದಗಳು ಸಿಗಲಿಲ್ಲ.",
+        researchDictionaryNote: "ಟಿಪ್ಪಣಿ:"
     }
 };

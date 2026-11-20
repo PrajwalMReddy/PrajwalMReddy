@@ -140,7 +140,7 @@ export const renderChart = (block, t = (k, f) => f) => {
             <div
                 className="admin-note-chart-pie"
                 style={{ background: `conic-gradient(${segments.join(', ')})` }}
-                aria-label="Pie chart preview"
+                aria-label={t('admin.ui.noteWidgets.pieChartPreview')}
             />
         );
     }
@@ -159,7 +159,7 @@ export const renderChart = (block, t = (k, f) => f) => {
                 className="admin-note-chart-plot"
                 viewBox="0 0 110 110"
                 role="img"
-                aria-label={`${block.label || t('admin.notesSection.widgetsDetail.line', 'Line')} ${t('admin.notesSection.blockTypes.chart', 'chart')}`}
+                aria-label={`${block.label || t('admin.notesSection.widgetsDetail.line')} ${t('admin.notesSection.blockTypes.chart')}`}
             >
                 <line x1="12" y1="10" x2="12" y2="86" />
                 <line x1="12" y1="86" x2="98" y2="86" />
@@ -186,7 +186,7 @@ export const renderChart = (block, t = (k, f) => f) => {
                     </text>
                 ))}
                 <text className="admin-note-chart-axis-label" x="55" y="108" textAnchor="middle">
-                    {block.chartXAxis || t('admin.notesSection.widgetsDetail.category', 'Category')}
+                    {block.chartXAxis || t('admin.notesSection.widgetsDetail.category')}
                 </text>
                 <text
                     className="admin-note-chart-axis-label"
@@ -195,7 +195,7 @@ export const renderChart = (block, t = (k, f) => f) => {
                     textAnchor="middle"
                     transform="rotate(-90 2 48)"
                 >
-                    {block.chartYAxis || t('admin.notesSection.widgetsDetail.value', 'Value')}
+                    {block.chartYAxis || t('admin.notesSection.widgetsDetail.value')}
                 </text>
             </svg>
         );
@@ -206,7 +206,7 @@ export const renderChart = (block, t = (k, f) => f) => {
             className="admin-note-chart-plot"
             viewBox="0 0 110 110"
             role="img"
-            aria-label={`${block.label || t('admin.notesSection.widgetsDetail.bar', 'Bar')} ${t('admin.notesSection.blockTypes.chart', 'chart')}`}
+            aria-label={`${block.label || t('admin.notesSection.widgetsDetail.bar')} ${t('admin.notesSection.blockTypes.chart')}`}
         >
             <line x1="12" y1="10" x2="12" y2="86" />
             <line x1="12" y1="86" x2="98" y2="86" />
@@ -237,7 +237,7 @@ export const renderChart = (block, t = (k, f) => f) => {
                 );
             })}
             <text className="admin-note-chart-axis-label" x="55" y="108" textAnchor="middle">
-                {block.chartXAxis || t('admin.notesSection.widgetsDetail.category', 'Category')}
+                {block.chartXAxis || t('admin.notesSection.widgetsDetail.category')}
             </text>
             <text
                 className="admin-note-chart-axis-label"
@@ -246,7 +246,7 @@ export const renderChart = (block, t = (k, f) => f) => {
                 textAnchor="middle"
                 transform="rotate(-90 2 48)"
             >
-                {block.chartYAxis || t('admin.notesSection.widgetsDetail.value', 'Value')}
+                {block.chartYAxis || t('admin.notesSection.widgetsDetail.value')}
             </text>
         </svg>
     );
@@ -403,28 +403,28 @@ export const NoteBlock = ({
         }
         return (
             <div className={`admin-note-list-wrap${numbered ? ' is-numbered' : ''}`}>
-                <div className="admin-note-list-controls" aria-label="List controls">
+                <div className="admin-note-list-controls" aria-label={t('admin.ui.noteWidgets.listControls')}>
                     <input
                         className="admin-note-list-label"
                         value={block.label}
-                        placeholder={t('admin.notesSection.widgetsDetail.listLabel', 'List label')}
-                        aria-label={t('admin.notesSection.widgetsDetail.listLabel', 'List label')}
+                        placeholder={t('admin.notesSection.widgetsDetail.listLabel')}
+                        aria-label={t('admin.notesSection.widgetsDetail.listLabel')}
                         onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
                     />
                     <select
                         className="admin-note-list-style"
                         value={block.listStyle || 'bulleted'}
-                        aria-label="List style"
+                        aria-label={t('admin.ui.noteWidgets.listStyle')}
                         onChange={(event) => updateBlock?.(block.id, { listStyle: event.target.value })}
                     >
-                        <option value="bulleted">{t('admin.notesSection.widgetsDetail.bulleted', 'Bulleted')}</option>
-                        <option value="numbered">{t('admin.notesSection.widgetsDetail.numbered', 'Numbered')}</option>
+                        <option value="bulleted">{t('admin.notesSection.widgetsDetail.bulleted')}</option>
+                        <option value="numbered">{t('admin.notesSection.widgetsDetail.numbered')}</option>
                     </select>
                     <button
                         type="button"
                         onClick={addListItem}
-                        aria-label={t('admin.notesSection.widgetsDetail.addListItem', 'Add list item')}
-                        title={t('admin.notesSection.widgetsDetail.addListItem', 'Add list item')}
+                        aria-label={t('admin.notesSection.widgetsDetail.addListItem')}
+                        title={t('admin.notesSection.widgetsDetail.addListItem')}
                     >
                         +
                     </button>
@@ -440,15 +440,15 @@ export const NoteBlock = ({
                             </span>
                             <input
                                 value={item}
-                                placeholder={itemIndex === 0 ? blockPlaceholder : t('admin.notesSection.widgetsDetail.listItem', 'List item')}
-                                aria-label={`${numbered ? t('admin.notesSection.widgetsDetail.numbered', 'Numbered') : t('admin.notesSection.widgetsDetail.bulleted', 'Bulleted')} ${t('admin.notesSection.widgetsDetail.listItem', 'List item')} ${formatNumber(itemIndex + 1)}`}
+                                placeholder={itemIndex === 0 ? blockPlaceholder : t('admin.notesSection.widgetsDetail.listItem')}
+                                aria-label={`${numbered ? t('admin.notesSection.widgetsDetail.numbered') : t('admin.notesSection.widgetsDetail.bulleted')} ${t('admin.notesSection.widgetsDetail.listItem')} ${formatNumber(itemIndex + 1)}`}
                                 onChange={(event) => updateListItem(itemIndex, event.target.value)}
                             />
                             <button
                                 type="button"
                                 onClick={() => removeListItem(itemIndex)}
-                                aria-label={`${t('admin.notesSection.widgetsDetail.removeListItem', 'Remove list item')} ${formatNumber(itemIndex + 1)}`}
-                                title={t('admin.notesSection.widgetsDetail.removeListItem', 'Remove list item')}
+                                aria-label={`${t('admin.notesSection.widgetsDetail.removeListItem')} ${formatNumber(itemIndex + 1)}`}
+                                title={t('admin.notesSection.widgetsDetail.removeListItem')}
                             >
                                 -
                             </button>
@@ -495,7 +495,7 @@ export const NoteBlock = ({
             onPointerUp={readOnly ? undefined : (event) => finishBlockDrag?.(event, block.id)}
         >
             {!readOnly && (
-                <span className="admin-note-block-grip" title={t('admin.notesSection.widgetsDetail.dragToReorder', 'Drag to reorder')} aria-hidden="true">
+                <span className="admin-note-block-grip" title={t('admin.notesSection.widgetsDetail.dragToReorder')} aria-hidden="true">
                     ::
                 </span>
             )}
@@ -510,11 +510,11 @@ export const NoteBlock = ({
                         <input
                             value={block.label}
                             placeholder={blockPlaceholder}
-                            aria-label={t('admin.notesSection.placeholders.counter', 'Counter label')}
+                            aria-label={t('admin.notesSection.placeholders.counter')}
                             onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
                         />
                     )}
-                    <div className="admin-note-counter-main" aria-label="Counter controls">
+                    <div className="admin-note-counter-main" aria-label={t('admin.ui.noteWidgets.counterControls')}>
                         {!readOnly && (
                             <button
                                 type="button"
@@ -523,7 +523,7 @@ export const NoteBlock = ({
                                         counterValue: (block.counterValue || 0) - (block.counterStep || 1),
                                     })
                                 }
-                                aria-label="Decrease counter"
+                                aria-label={t('admin.ui.noteWidgets.decreaseCounter')}
                             >
                                 -
                             </button>
@@ -539,7 +539,7 @@ export const NoteBlock = ({
                                         counterValue: (block.counterValue || 0) + (block.counterStep || 1),
                                     })
                                 }
-                                aria-label="Increase counter"
+                                aria-label={t('admin.ui.noteWidgets.increaseCounter')}
                             >
                                 +
                             </button>
@@ -549,12 +549,12 @@ export const NoteBlock = ({
                         <div className="admin-note-counter-controls">
                             <div className="admin-note-counter-adjust">
                                 <label className="admin-note-counter-step">
-                                    <span>{t('admin.notesSection.widgetsDetail.stepSize', 'Step size')}</span>
+                                    <span>{t('admin.notesSection.widgetsDetail.stepSize')}</span>
                                     <input
                                         type="number"
                                         min="1"
                                         value={block.counterStep || 1}
-                                        aria-label="Counter step size"
+                                        aria-label={t('admin.ui.noteWidgets.counterStepSize')}
                                         onChange={(event) =>
                                             updateBlock?.(block.id, {
                                                 counterStep: Math.max(1, Number(event.target.value) || 1),
@@ -567,9 +567,9 @@ export const NoteBlock = ({
                                 type="button"
                                 className="admin-note-counter-reset"
                                 onClick={() => updateBlock?.(block.id, { counterValue: 0 })}
-                                aria-label={t('admin.notesSection.widgetsDetail.reset', 'Reset counter')}
+                                aria-label={t('admin.notesSection.widgetsDetail.reset')}
                             >
-                                {t('admin.notesSection.widgetsDetail.reset', 'Reset')}
+                                {t('admin.notesSection.widgetsDetail.reset')}
                             </button>
                         </div>
                     )}
@@ -579,23 +579,23 @@ export const NoteBlock = ({
                     <input
                         value={block.label}
                         placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.picker', 'Picker title')}
+                        aria-label={t('admin.notesSection.placeholders.picker')}
                         onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                     />
                     <label className="admin-note-picker-field">
-                        <span>{t('admin.notesSection.widgetsDetail.options', 'Options')}</span>
+                        <span>{t('admin.notesSection.widgetsDetail.options')}</span>
                         <textarea
                             value={block.pickerOptions || ''}
-                            placeholder={t('admin.notesSection.widgetsDetail.oneOptionPerLine', 'One option per line')}
-                            aria-label="Picker options"
+                            placeholder={t('admin.notesSection.widgetsDetail.oneOptionPerLine')}
+                            aria-label={t('admin.ui.noteWidgets.pickerOptions')}
                             onChange={(event) =>
                                 updateBlock(block.id, { pickerOptions: event.target.value })
                             }
                         />
                     </label>
-                    <div className="admin-note-picker-result-label">{t('admin.notesSection.widgetsDetail.result', 'Result')}</div>
+                    <div className="admin-note-picker-result-label">{t('admin.notesSection.widgetsDetail.result')}</div>
                     <div className="admin-note-picker-result">
-                        <span aria-live="polite">{block.pickerChoice || t('admin.notesSection.widgetsDetail.noChoiceYet', 'No choice yet')}</span>
+                        <span aria-live="polite">{block.pickerChoice || t('admin.notesSection.widgetsDetail.noChoiceYet')}</span>
                         <button
                             type="button"
                             className="admin-note-picker-choice"
@@ -610,7 +610,7 @@ export const NoteBlock = ({
                                 });
                             }}
                         >
-                            {t('admin.notesSection.widgetsDetail.pick', 'Pick')}
+                            {t('admin.notesSection.widgetsDetail.pick')}
                         </button>
                     </div>
                 </div>
@@ -618,12 +618,12 @@ export const NoteBlock = ({
                 <div className="admin-note-progress-wrap">
                     <div className="admin-note-progress-header">
                         {readOnly ? (
-                            <span className="admin-note-widget-label-static">{block.label || t('admin.notesSection.blockTypes.progress', 'Progress')}</span>
+                            <span className="admin-note-widget-label-static">{block.label || t('admin.notesSection.blockTypes.progress')}</span>
                         ) : (
                             <input
                                 value={block.label}
                                 placeholder={blockPlaceholder}
-                                aria-label={t('admin.notesSection.placeholders.progress', 'Progress label')}
+                                aria-label={t('admin.notesSection.placeholders.progress')}
                                 onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
                             />
                         )}
@@ -637,7 +637,7 @@ export const NoteBlock = ({
                                     min="0"
                                     max="100"
                                     value={block.value}
-                                    aria-label="Progress percentage"
+                                    aria-label={t('admin.ui.noteWidgets.progressPercentage')}
                                     onChange={(event) =>
                                         updateBlock?.(block.id, {
                                             value: Math.max(0, Math.min(100, Number(event.target.value) || 0)),
@@ -651,7 +651,7 @@ export const NoteBlock = ({
                     <progress
                         max="100"
                         value={block.value}
-                        aria-label={`${block.label || t('admin.notesSection.blockTypes.progress', 'Progress')}: ${formatNumber(block.value)}%`}
+                        aria-label={`${block.label || t('admin.notesSection.blockTypes.progress')}: ${formatNumber(block.value)}%`}
                     />
                 </div>
             ) : block.type === 'link' ? (
@@ -670,7 +670,7 @@ export const NoteBlock = ({
                                 window.clearTimeout(linkClickTimerRef.current);
                                 setEditingLinkId(block.id);
                             }}
-                            title={t('admin.notesSection.widgetsDetail.openLinkOrEdit', 'Click to open link (Double-click to edit)')}
+                            title={t('admin.notesSection.widgetsDetail.openLinkOrEdit')}
                         >
                             <span className="admin-note-link-icon" aria-hidden="true">
                                 ↗
@@ -698,7 +698,7 @@ export const NoteBlock = ({
                             <input
                                 value={block.label}
                                 placeholder={blockPlaceholder}
-                                aria-label={t('admin.notesSection.placeholders.link', 'Link label')}
+                                aria-label={t('admin.notesSection.placeholders.link')}
                                 onChange={(event) => {
                                     setEditingLinkId(block.id);
                                     updateBlock(block.id, { label: event.target.value });
@@ -707,7 +707,7 @@ export const NoteBlock = ({
                             <input
                                 value={block.url}
                                 placeholder="https://example.com"
-                                aria-label="Link URL"
+                                aria-label={t('admin.ui.noteWidgets.linkUrl')}
                                 onChange={(event) => {
                                     setEditingLinkId(block.id);
                                     updateBlock(block.id, { url: event.target.value });
@@ -721,13 +721,13 @@ export const NoteBlock = ({
                     <input
                         value={block.label}
                         placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.date', 'Date label')}
+                        aria-label={t('admin.notesSection.placeholders.date')}
                         onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                     />
                     <input
                         type="date"
                         value={block.date}
-                        aria-label="Note date"
+                        aria-label={t('admin.ui.noteWidgets.noteDate')}
                         onChange={(event) => updateBlock(block.id, { date: event.target.value })}
                     />
                 </div>
@@ -739,13 +739,13 @@ export const NoteBlock = ({
                         <input
                             value={block.label}
                             placeholder={blockPlaceholder}
-                            aria-label={t('admin.notesSection.placeholders.habit', 'Habit name')}
+                            aria-label={t('admin.notesSection.placeholders.habit')}
                             onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                         />
                         <input
                             type="month"
                             value={block.habitMonth || getCurrentMonthValue()}
-                            aria-label="Habit month"
+                            aria-label={t('admin.ui.noteWidgets.habitMonth')}
                             onChange={(event) => updateBlock(block.id, { habitMonth: event.target.value })}
                         />
                     </div>
@@ -754,7 +754,7 @@ export const NoteBlock = ({
                             <span key={dayKey}>{t(`admin.todoSection.modal.weekdays.${dayKey}`, dayKey)}</span>
                         ))}
                     </div>
-                    <div className="admin-note-habit-calendar" aria-label="Habit calendar">
+                    <div className="admin-note-habit-calendar" aria-label={t('admin.ui.noteWidgets.habitCalendar')}>
                         {getHabitCalendarDays(block.habitMonth).map((day, dayIndex) => {
                             if (!day)
                                 return <span className="admin-note-habit-blank" key={`blank-${dayIndex}`} />;
@@ -791,7 +791,7 @@ export const NoteBlock = ({
                                     completed
                             ).length
                         )}{' '}
-                        {t('admin.notesSection.widgetsDetail.daysComplete', 'days complete')}
+                        {t('admin.notesSection.widgetsDetail.daysComplete')}
                     </span>
                 </div>
             ) : block.type === 'status' ? (
@@ -799,18 +799,18 @@ export const NoteBlock = ({
                     <input
                         value={block.label}
                         placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.status', 'Status label')}
+                        aria-label={t('admin.notesSection.placeholders.status')}
                         onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                     />
                     <select
                         value={block.status || 'In progress'}
-                        aria-label={t('admin.notesSection.placeholders.status', 'Status')}
+                        aria-label={t('admin.notesSection.placeholders.status')}
                         onChange={(event) => updateBlock(block.id, { status: event.target.value })}
                     >
-                        <option value="Not started">{t('admin.notesSection.widgetsDetail.notStarted', 'Not started')}</option>
-                        <option value="In progress">{t('admin.notesSection.widgetsDetail.inProgress', 'In progress')}</option>
-                        <option value="Blocked">{t('admin.notesSection.widgetsDetail.blocked', 'Blocked')}</option>
-                        <option value="Done">{t('admin.notesSection.widgetsDetail.done', 'Done')}</option>
+                        <option value="Not started">{t('admin.notesSection.widgetsDetail.notStarted')}</option>
+                        <option value="In progress">{t('admin.notesSection.widgetsDetail.inProgress')}</option>
+                        <option value="Blocked">{t('admin.notesSection.widgetsDetail.blocked')}</option>
+                        <option value="Done">{t('admin.notesSection.widgetsDetail.done')}</option>
                     </select>
                 </div>
             ) : block.type === 'countdown' ? (
@@ -818,13 +818,13 @@ export const NoteBlock = ({
                     <input
                         value={block.label}
                         placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.countdown', 'Countdown label')}
+                        aria-label={t('admin.notesSection.placeholders.countdown')}
                         onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                     />
                     <input
                         type="datetime-local"
                         value={block.dateTime}
-                        aria-label="Countdown date and time"
+                        aria-label={t('admin.ui.noteWidgets.countdownDateAndTime')}
                         onFocus={unlockCountdownAudio}
                         onChange={(event) => updateBlock(block.id, { dateTime: event.target.value })}
                     />
@@ -836,7 +836,7 @@ export const NoteBlock = ({
                             {formatNumber(getCountdownParts(block.dateTime).seconds)}
                         </strong>
                     ) : (
-                        <strong>{t('admin.notesSection.widgetsDetail.chooseDateTime', 'Choose a date and time')}</strong>
+                        <strong>{t('admin.notesSection.widgetsDetail.chooseDateTime')}</strong>
                     )}
                 </div>
             ) : block.type === 'rating' ? (
@@ -844,23 +844,23 @@ export const NoteBlock = ({
                     <input
                         value={block.label}
                         placeholder={blockPlaceholder}
-                        aria-label={t('admin.notesSection.placeholders.rating', 'Rating label')}
+                        aria-label={t('admin.notesSection.placeholders.rating')}
                         onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                     />
                     {renderStars()}
                 </div>
             ) : block.type === 'flashcards' ? (
                 <div className="admin-note-flashcard-wrap">
-                    <div className="admin-note-flashcard-controls" aria-label="Flashcard controls">
+                    <div className="admin-note-flashcard-controls" aria-label={t('admin.ui.noteWidgets.flashcardControls')}>
                         <input
                             className="admin-note-flashcard-title"
                             value={block.label}
-                            placeholder={t('admin.notesSection.widgetsDetail.flashcardTitle', 'Flashcard title')}
-                            aria-label={t('admin.notesSection.widgetsDetail.flashcardTitle', 'Flashcard title')}
+                            placeholder={t('admin.notesSection.widgetsDetail.flashcardTitle')}
+                            aria-label={t('admin.notesSection.widgetsDetail.flashcardTitle')}
                             onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                         />
                         <span className="admin-note-table-label">
-                            {t('admin.notesSection.widgetsDetail.card', 'Card')} {formatNumber((block.cardIndex || 0) + 1)} {t('admin.notesSection.widgetsDetail.of', 'of')} {formatNumber(getFlashcards(block).length)}
+                            {t('admin.notesSection.widgetsDetail.card')} {formatNumber((block.cardIndex || 0) + 1)} {t('admin.notesSection.widgetsDetail.of')} {formatNumber(getFlashcards(block).length)}
                         </span>
                         <button
                             type="button"
@@ -871,10 +871,10 @@ export const NoteBlock = ({
                                 })
                             }
                             disabled={!block.cardIndex}
-                            aria-label={t('admin.notesSection.widgetsDetail.previous', 'Previous')}
-                            title={t('admin.notesSection.widgetsDetail.previous', 'Previous')}
+                            aria-label={t('admin.notesSection.widgetsDetail.previous')}
+                            title={t('admin.notesSection.widgetsDetail.previous')}
                         >
-                            {t('admin.notesSection.widgetsDetail.previous', 'Previous')}
+                            {t('admin.notesSection.widgetsDetail.previous')}
                         </button>
                         <button
                             type="button"
@@ -885,18 +885,18 @@ export const NoteBlock = ({
                                 })
                             }
                             disabled={(block.cardIndex || 0) === getFlashcards(block).length - 1}
-                            aria-label={t('admin.notesSection.widgetsDetail.next', 'Next')}
-                            title={t('admin.notesSection.widgetsDetail.next', 'Next')}
+                            aria-label={t('admin.notesSection.widgetsDetail.next')}
+                            title={t('admin.notesSection.widgetsDetail.next')}
                         >
-                            {t('admin.notesSection.widgetsDetail.next', 'Next')}
+                            {t('admin.notesSection.widgetsDetail.next')}
                         </button>
                         <button
                             type="button"
                             onClick={addFlashcard}
-                            aria-label={t('admin.notesSection.widgetsDetail.newCard', 'New')}
-                            title={t('admin.notesSection.widgetsDetail.newCard', 'New')}
+                            aria-label={t('admin.notesSection.widgetsDetail.newCard')}
+                            title={t('admin.notesSection.widgetsDetail.newCard')}
                         >
-                            {t('admin.notesSection.widgetsDetail.newCard', 'New')}
+                            {t('admin.notesSection.widgetsDetail.newCard')}
                         </button>
                     </div>
                     {editingFlashcardId === block.id ? (
@@ -908,21 +908,21 @@ export const NoteBlock = ({
                             }}
                         >
                             <label className="admin-note-flashcard-edit-field">
-                                <span>{t('admin.notesSection.widgetsDetail.front', 'Front')}</span>
+                                <span>{t('admin.notesSection.widgetsDetail.front')}</span>
                                 <input
                                     autoFocus
                                     value={getFlashcards(block)[block.cardIndex || 0].front}
-                                    placeholder={t('admin.notesSection.placeholders.flashcards', 'Front of card')}
-                                    aria-label="Flashcard front"
+                                    placeholder={t('admin.notesSection.placeholders.flashcards')}
+                                    aria-label={t('admin.ui.noteWidgets.flashcardFront')}
                                     onChange={(event) => updateFlashcard({ front: event.target.value })}
                                 />
                             </label>
                             <label className="admin-note-flashcard-edit-field">
-                                <span>{t('admin.notesSection.widgetsDetail.back', 'Back')}</span>
+                                <span>{t('admin.notesSection.widgetsDetail.back')}</span>
                                 <input
                                     value={getFlashcards(block)[block.cardIndex || 0].back}
-                                    placeholder={t('admin.notesSection.widgetsDetail.addAnswerBelow', 'Add an answer below')}
-                                    aria-label="Flashcard back"
+                                    placeholder={t('admin.notesSection.widgetsDetail.addAnswerBelow')}
+                                    aria-label={t('admin.ui.noteWidgets.flashcardBack')}
                                     onChange={(event) => updateFlashcard({ back: event.target.value })}
                                 />
                             </label>
@@ -940,11 +940,11 @@ export const NoteBlock = ({
                                     updateBlock(block.id, { flipped: !block.flipped });
                                 }
                             }}
-                            aria-label={`${t('admin.notesSection.widgetsDetail.clickToFlip', 'Click to flip')}; ${t('admin.notesSection.widgetsDetail.doubleClickToEdit', 'double-click to edit')}`}
+                            aria-label={`${t('admin.notesSection.widgetsDetail.clickToFlip')}; ${t('admin.notesSection.widgetsDetail.doubleClickToEdit')}`}
                         >
                             <span>
                                 {block.flipped
-                                    ? getFlashcards(block)[block.cardIndex || 0].back || t('admin.notesSection.widgetsDetail.addAnswerBelow', 'Add an answer below')
+                                    ? getFlashcards(block)[block.cardIndex || 0].back || t('admin.notesSection.widgetsDetail.addAnswerBelow')
                                     : getFlashcards(block)[block.cardIndex || 0].front || blockPlaceholder}
                             </span>
                         </div>
@@ -954,63 +954,63 @@ export const NoteBlock = ({
                 <div className="admin-note-chart-wrap">
                     <div className="admin-note-chart-heading">
                         <label className="admin-note-chart-field">
-                            <span>{t('admin.notesSection.widgetsDetail.chartTitle', 'Title')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.chartTitle')}</span>
                             <input
                                 value={block.label}
                                 placeholder={blockPlaceholder}
-                                aria-label={t('admin.notesSection.widgetsDetail.chartTitle', 'Chart title')}
+                                aria-label={t('admin.notesSection.widgetsDetail.chartTitle')}
                                 onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                             />
                         </label>
                         <label className="admin-note-chart-field chart-type">
-                            <span>{t('admin.notesSection.widgetsDetail.chartType', 'Type')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.chartType')}</span>
                             <select
                                 value={block.chartStyle || 'bar'}
-                                aria-label="Chart type"
+                                aria-label={t('admin.ui.noteWidgets.chartType')}
                                 onChange={(event) => updateBlock(block.id, { chartStyle: event.target.value })}
                             >
-                                <option value="bar">{t('admin.notesSection.widgetsDetail.bar', 'Bar')}</option>
-                                <option value="line">{t('admin.notesSection.widgetsDetail.line', 'Line')}</option>
-                                <option value="pie">{t('admin.notesSection.widgetsDetail.pie', 'Pie')}</option>
+                                <option value="bar">{t('admin.notesSection.widgetsDetail.bar')}</option>
+                                <option value="line">{t('admin.notesSection.widgetsDetail.line')}</option>
+                                <option value="pie">{t('admin.notesSection.widgetsDetail.pie')}</option>
                             </select>
                         </label>
                     </div>
                     <div className="admin-note-chart-data-inputs">
                         <label className="admin-note-chart-field">
-                            <span>{t('admin.notesSection.widgetsDetail.values', 'Values')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.values')}</span>
                             <input
                                 value={block.chartValues || '25, 50, 35, 70'}
                                 placeholder="25, 50, 35, 70"
-                                aria-label="Chart values"
+                                aria-label={t('admin.ui.noteWidgets.chartValues')}
                                 onChange={(event) => updateBlock(block.id, { chartValues: event.target.value })}
                             />
                         </label>
                         <label className="admin-note-chart-field">
-                            <span>{t('admin.notesSection.widgetsDetail.categories', 'Categories')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.categories')}</span>
                             <input
                                 value={block.chartLabels || 'A, B, C, D'}
                                 placeholder="A, B, C, D"
-                                aria-label="Chart category labels"
+                                aria-label={t('admin.ui.noteWidgets.chartCategoryLabels')}
                                 onChange={(event) => updateBlock(block.id, { chartLabels: event.target.value })}
                             />
                         </label>
                     </div>
                     <div className="admin-note-chart-axis-inputs">
                         <label className="admin-note-chart-field">
-                            <span>{t('admin.notesSection.widgetsDetail.xAxis', 'X axis')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.xAxis')}</span>
                             <input
                                 value={block.chartXAxis || ''}
-                                placeholder={t('admin.notesSection.widgetsDetail.category', 'Category')}
-                                aria-label="X-axis label"
+                                placeholder={t('admin.notesSection.widgetsDetail.category')}
+                                aria-label={t('admin.ui.noteWidgets.xAxisLabel')}
                                 onChange={(event) => updateBlock(block.id, { chartXAxis: event.target.value })}
                             />
                         </label>
                         <label className="admin-note-chart-field">
-                            <span>{t('admin.notesSection.widgetsDetail.yAxis', 'Y axis')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.yAxis')}</span>
                             <input
                                 value={block.chartYAxis || ''}
-                                placeholder={t('admin.notesSection.widgetsDetail.value', 'Value')}
-                                aria-label="Y-axis label"
+                                placeholder={t('admin.notesSection.widgetsDetail.value')}
+                                aria-label={t('admin.ui.noteWidgets.yAxisLabel')}
                                 onChange={(event) => updateBlock(block.id, { chartYAxis: event.target.value })}
                             />
                         </label>
@@ -1028,15 +1028,15 @@ export const NoteBlock = ({
                         >
                             <input
                                 value={block.label}
-                                placeholder={t('admin.notesSection.widgetsDetail.equationLabel', 'Equation label')}
-                                aria-label={t('admin.notesSection.widgetsDetail.equationLabel', 'Equation label')}
+                                placeholder={t('admin.notesSection.widgetsDetail.equationLabel')}
+                                aria-label={t('admin.notesSection.widgetsDetail.equationLabel')}
                                 onChange={(event) => updateBlock(block.id, { label: event.target.value })}
                             />
                             <input
                                 autoFocus
                                 value={block.text}
                                 placeholder="\frac{a}{b}"
-                                aria-label="Equation LaTeX"
+                                aria-label={t('admin.ui.noteWidgets.equationLatex')}
                                 onChange={(event) => updateBlock(block.id, { text: event.target.value })}
                             />
                         </div>
@@ -1045,7 +1045,7 @@ export const NoteBlock = ({
                             type="button"
                             className="admin-note-equation-display"
                             onClick={() => setEditingEquationId(block.id)}
-                            aria-label={t('admin.notesSection.widgetsDetail.doubleClickToEdit', 'Edit equation')}
+                            aria-label={t('admin.notesSection.widgetsDetail.doubleClickToEdit')}
                         >
                             {block.label && <small>{block.label}</small>}
                             <span dangerouslySetInnerHTML={{ __html: renderEquation(block.text) }} />
@@ -1077,7 +1077,7 @@ export const NoteBlock = ({
                                         window.clearTimeout(linkClickTimerRef.current);
                                         setEditingNoteLinkId(block.id);
                                     }}
-                                    title={t('admin.notesSection.widgetsDetail.openLinkedNote', 'Click to open note (Double-click to edit)')}
+                                    title={t('admin.notesSection.widgetsDetail.openLinkedNote')}
                                 >
                                     <span className="admin-note-link-icon" aria-hidden="true">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
@@ -1093,12 +1093,12 @@ export const NoteBlock = ({
                                                     selectNote(linkedNote);
                                                 }, 250);
                                             }}
-                                            title={t('admin.notesSection.widgetsDetail.openLinkedNote', 'Click to open note (Double-click to edit)')}
+                                            title={t('admin.notesSection.widgetsDetail.openLinkedNote')}
                                         >
-                                            {linkedNote.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                            {linkedNote.title || t('admin.notesSection.untitledNote')}
                                         </button>
                                         <span className="admin-note-linked-note-meta">
-                                            {linkedNote.folder ? `/${linkedNote.folder}` : t('admin.notesSection.rootFolder', '/ (Root)')}
+                                            {linkedNote.folder ? `/${linkedNote.folder}` : t('admin.notesSection.rootFolder')}
                                         </span>
                                         <span className="admin-note-linked-note-preview">
                                             {getNotePreview(linkedNote)}
@@ -1107,19 +1107,19 @@ export const NoteBlock = ({
                                 </div>
                             ) : (
                                 <div className="admin-note-linked-note-missing">
-                                    <span>{t('admin.notesSection.widgetsDetail.linkedUnavailable', 'Linked note is unavailable.')}</span>
+                                    <span>{t('admin.notesSection.widgetsDetail.linkedUnavailable')}</span>
                                     <button
                                         type="button"
                                         onClick={() => updateBlock(block.id, { linkedNote: '' })}
                                     >
-                                        {t('admin.notesSection.widgetsDetail.chooseAnother', 'Choose another')}
+                                        {t('admin.notesSection.widgetsDetail.chooseAnother')}
                                     </button>
                                 </div>
                             );
                         })()
                     ) : (
                         <label className="admin-note-linked-note-picker">
-                            <span>{t('admin.notesSection.widgetsDetail.linkToNote', 'Link to a note')}</span>
+                            <span>{t('admin.notesSection.widgetsDetail.linkToNote')}</span>
                             <select
                                 className="admin-note-linked-notes-select"
                                 value={block.linkedNote || ''}
@@ -1130,12 +1130,12 @@ export const NoteBlock = ({
                                     }
                                 }}
                             >
-                                <option value="">{t('admin.notesSection.widgetsDetail.chooseNote', 'Choose a note...')}</option>
+                                <option value="">{t('admin.notesSection.widgetsDetail.chooseNote')}</option>
                                 {notes
                                     .filter((n) => n.id !== selectedId)
                                     .map((note) => (
                                         <option key={note.id} value={note.id}>
-                                            {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                            {note.title || t('admin.notesSection.untitledNote')}
                                             {note.folder ? ` · /${note.folder}` : ''}
                                         </option>
                                     ))}
@@ -1181,8 +1181,8 @@ export const NoteBlock = ({
                         </span>
                         <input
                             value={block.author || ''}
-                            placeholder={t('admin.notesSection.widgetsDetail.authorship', 'Authorship')}
-                            aria-label={t('admin.notesSection.widgetsDetail.authorship', 'Authorship')}
+                            placeholder={t('admin.notesSection.widgetsDetail.authorship')}
+                            aria-label={t('admin.notesSection.widgetsDetail.authorship')}
                             onChange={(event) => updateBlock(block.id, { author: event.target.value })}
                         />
                     </div>
@@ -1197,12 +1197,12 @@ export const NoteBlock = ({
                             }}
                         >
                             <label className="admin-note-image-edit-field">
-                                <span>{t('admin.notesSection.widgetsDetail.imageUrl', 'Image URL')}</span>
+                                <span>{t('admin.notesSection.widgetsDetail.imageUrl')}</span>
                                 <input
                                     autoFocus
                                     value={block.url}
                                     placeholder="https://example.com/image.jpg"
-                                    aria-label="Image URL"
+                                    aria-label={t('admin.ui.noteWidgets.imageUrl')}
                                     onChange={(event) => {
                                         setImageErrors((current) => ({ ...current, [block.id]: false }));
                                         updateBlock(block.id, { url: event.target.value });
@@ -1210,11 +1210,11 @@ export const NoteBlock = ({
                                 />
                             </label>
                             <label className="admin-note-image-edit-field">
-                                <span>{t('admin.notesSection.widgetsDetail.caption', 'Caption')}</span>
+                                <span>{t('admin.notesSection.widgetsDetail.caption')}</span>
                                 <input
                                     value={block.alt}
-                                    placeholder={t('admin.notesSection.widgetsDetail.caption', 'Optional caption')}
-                                    aria-label="Image label"
+                                    placeholder={t('admin.notesSection.widgetsDetail.caption')}
+                                    aria-label={t('admin.ui.noteWidgets.imageLabel')}
                                     onChange={(event) => updateBlock(block.id, { alt: event.target.value })}
                                 />
                             </label>
@@ -1229,7 +1229,7 @@ export const NoteBlock = ({
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter') setEditingImageId(block.id);
                                 }}
-                                aria-label={`${t('admin.notesSection.blockTypes.image', 'Image preview')}; ${t('admin.notesSection.widgetsDetail.doubleClickToEdit', 'double-click to edit')}`}
+                                aria-label={`${t('admin.notesSection.blockTypes.image')}; ${t('admin.notesSection.widgetsDetail.doubleClickToEdit')}`}
                             >
                                 {block.url && !imageErrors[block.id] ? (
                                     <img
@@ -1252,8 +1252,8 @@ export const NoteBlock = ({
                                 ) : (
                                     <div className="admin-note-image-placeholder">
                                         {imageErrors[block.id]
-                                            ? t('admin.notesSection.widgetsDetail.couldNotLoadImage', 'Could not load this URL. Use a direct image link.')
-                                            : t('admin.notesSection.widgetsDetail.doubleClickToAddImage', 'Double-click to add an image')}
+                                            ? t('admin.notesSection.widgetsDetail.couldNotLoadImage')
+                                            : t('admin.notesSection.widgetsDetail.doubleClickToAddImage')}
                                     </div>
                                 )}
                             </div>
@@ -1266,11 +1266,11 @@ export const NoteBlock = ({
             ) : block.type === 'code' ? (
                 <div className="admin-note-code-wrap">
                     {!readOnly && (
-                        <div className="admin-note-code-controls" aria-label="Code block controls">
-                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.code', 'Code')}</span>
+                        <div className="admin-note-code-controls" aria-label={t('admin.ui.noteWidgets.codeBlockControls')}>
+                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.code')}</span>
                             <select
                                 value={block.language || 'plain'}
-                                aria-label="Code language"
+                                aria-label={t('admin.ui.noteWidgets.codeLanguage')}
                                 onChange={(event) => updateBlock?.(block.id, { language: event.target.value })}
                             >
                                 {CODE_LANGUAGES.map((option) => (
@@ -1309,17 +1309,17 @@ export const NoteBlock = ({
             ) : block.type === 'table' ? (
                 <div className="admin-note-table-wrap">
                     {!readOnly && (
-                        <div className="admin-note-table-controls" aria-label="Table controls">
-                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.table', 'Table')}</span>
-                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.columns', 'Columns')}</span>
+                        <div className="admin-note-table-controls" aria-label={t('admin.ui.noteWidgets.tableControls')}>
+                            <span className="admin-note-table-label">{t('admin.notesSection.widgetsDetail.table')}</span>
+                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.columns')}</span>
                             <button
                                 type="button"
                                 onClick={() =>
                                     resizeTableColumns(block, getTableColumnCount(block) - 1, updateBlock)
                                 }
                                 disabled={getTableColumnCount(block) === 1}
-                                aria-label={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
-                                title={t('admin.notesSection.widgetsDetail.removeColumn', 'Remove column')}
+                                aria-label={t('admin.notesSection.widgetsDetail.removeColumn')}
+                                title={t('admin.notesSection.widgetsDetail.removeColumn')}
                             >
                                 -
                             </button>
@@ -1330,18 +1330,18 @@ export const NoteBlock = ({
                                     resizeTableColumns(block, getTableColumnCount(block) + 1, updateBlock)
                                 }
                                 disabled={getTableColumnCount(block) === 8}
-                                aria-label={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
-                                title={t('admin.notesSection.widgetsDetail.addColumn', 'Add column')}
+                                aria-label={t('admin.notesSection.widgetsDetail.addColumn')}
+                                title={t('admin.notesSection.widgetsDetail.addColumn')}
                             >
                                 +
                             </button>
-                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.rows', 'Rows')}</span>
+                            <span className="admin-note-table-control-label">{t('admin.notesSection.widgetsDetail.rows')}</span>
                             <button
                                 type="button"
                                 onClick={() => resizeTableRows(block, block.rows.length - 1, updateBlock)}
                                 disabled={block.rows.length === 2}
-                                aria-label={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
-                                title={t('admin.notesSection.widgetsDetail.removeRow', 'Remove row')}
+                                aria-label={t('admin.notesSection.widgetsDetail.removeRow')}
+                                title={t('admin.notesSection.widgetsDetail.removeRow')}
                             >
                                 -
                             </button>
@@ -1350,8 +1350,8 @@ export const NoteBlock = ({
                                 type="button"
                                 onClick={() => resizeTableRows(block, block.rows.length + 1, updateBlock)}
                                 disabled={block.rows.length === getTableRowCapacity(block)}
-                                aria-label={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
-                                title={t('admin.notesSection.widgetsDetail.addRow', 'Add row')}
+                                aria-label={t('admin.notesSection.widgetsDetail.addRow')}
+                                title={t('admin.notesSection.widgetsDetail.addRow')}
                             >
                                 +
                             </button>
@@ -1368,7 +1368,7 @@ export const NoteBlock = ({
                                             ) : (
                                                 <input
                                                     value={cell}
-                                                    aria-label={`${t('admin.notesSection.widgetsDetail.rows', 'Row')} ${formatNumber(rowIndex + 1)}, ${t('admin.notesSection.widgetsDetail.columns', 'Column')} ${formatNumber(cellIndex + 1)}`}
+                                                    aria-label={`${t('admin.notesSection.widgetsDetail.rows')} ${formatNumber(rowIndex + 1)}, ${t('admin.notesSection.widgetsDetail.columns')} ${formatNumber(cellIndex + 1)}`}
                                                     placeholder={blockPlaceholder}
                                                     onChange={(event) => {
                                                         const rows = block.rows.map((currentRow) => [
@@ -1395,18 +1395,18 @@ export const NoteBlock = ({
                             </div>
                         ) : null
                     ) : (
-                        <div className="admin-note-callout-controls" aria-label="Callout controls">
+                        <div className="admin-note-callout-controls" aria-label={t('admin.ui.noteWidgets.calloutControls')}>
                             <input
                                 className="admin-note-callout-label"
                                 value={block.label || ''}
-                                placeholder={t('admin.notesSection.blockTypes.callout', 'Callout')}
-                                aria-label={t('admin.notesSection.widgetsDetail.calloutLabel', 'Callout title')}
+                                placeholder={t('admin.notesSection.blockTypes.callout')}
+                                aria-label={t('admin.notesSection.widgetsDetail.calloutLabel')}
                                 onChange={(event) => updateBlock?.(block.id, { label: event.target.value })}
                             />
                             <select
                                 className="admin-note-callout-type"
                                 value={block.calloutType || 'info'}
-                                aria-label="Callout type"
+                                aria-label={t('admin.ui.noteWidgets.calloutType')}
                                 onChange={(event) => updateBlock?.(block.id, { calloutType: event.target.value })}
                             >
                                 {Object.entries(CALLOUT_VARIANTS).map(([variantKey, variantConfig]) => (
@@ -1492,8 +1492,8 @@ export const NoteBlock = ({
                     type="button"
                     className="admin-note-block-remove"
                     onClick={() => removeBlock?.(block.id)}
-                    aria-label={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
-                    title={t('admin.notesSection.widgetsDetail.removeBlock', 'Remove block')}
+                    aria-label={t('admin.notesSection.widgetsDetail.removeBlock')}
+                    title={t('admin.notesSection.widgetsDetail.removeBlock')}
                 >
                     x
                 </button>
@@ -1502,8 +1502,8 @@ export const NoteBlock = ({
                 <button
                     type="button"
                     className="admin-note-block-resize"
-                    aria-label={t('admin.notesSection.widgetsDetail.resizeWidget', 'Resize widget')}
-                    title={t('admin.notesSection.widgetsDetail.resizeWidget', 'Resize widget')}
+                    aria-label={t('admin.notesSection.widgetsDetail.resizeWidget')}
+                    title={t('admin.notesSection.widgetsDetail.resizeWidget')}
                     onPointerDown={(event) => startBlockResize?.(event, block)}
                     onPointerMove={(event) => updateBlockResize?.(event, block)}
                     onPointerUp={finishBlockResize}

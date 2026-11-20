@@ -4,8 +4,6 @@ import { useContent } from '../../utils/ContentContext';
 import PersonModal from './networking/PersonModal';
 
 const NETWORKING_API = '/api/networking/people';
-const TODO_API = '/api/todo';
-
 function normalizeWebsiteUrl(input = '') {
     let val = input.trim();
     if (!val) return '';
@@ -78,7 +76,7 @@ function getFollowUpDisplay(person, t, formatDate) {
         return null;
     }
 
-    const defaultTitle = t('admin.networkingSection.taskTitlePlaceholder', 'Follow up with {name}').replace('{name}', person.name || t('admin.networkingSection.contactFallback', 'contact'));
+    const defaultTitle = t('admin.networkingSection.taskTitlePlaceholder').replace('{name}', person.name || t('admin.networkingSection.contactFallback'));
     const title = person.followUpNotes || defaultTitle;
 
     // 2. Due by date is when I should do it by
@@ -86,7 +84,7 @@ function getFollowUpDisplay(person, t, formatDate) {
     if (dueDate && dueDate < todayStr) {
         return {
             isOverdue: true,
-            label: t('admin.networkingSection.overdue', 'Overdue'),
+            label: t('admin.networkingSection.overdue'),
             date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
@@ -96,7 +94,7 @@ function getFollowUpDisplay(person, t, formatDate) {
     if (dueDate && dueDate === todayStr) {
         return {
             isOverdue: false,
-            label: t('admin.networkingSection.dueToday', 'Due Today'),
+            label: t('admin.networkingSection.dueToday'),
             date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
@@ -106,7 +104,7 @@ function getFollowUpDisplay(person, t, formatDate) {
     if (dueDate) {
         return {
             isOverdue: false,
-            label: t('admin.networkingSection.dueDateLabel', 'Due:').replace(/:$/, ''),
+            label: t('admin.networkingSection.dueDateLabel').replace(/:$/, ''),
             date: formatDate ? formatDate(dueDate) : dueDate,
             title,
         };
@@ -116,7 +114,7 @@ function getFollowUpDisplay(person, t, formatDate) {
     if (scheduledDate) {
         return {
             isOverdue: false,
-            label: scheduledDate === todayStr ? t('admin.networkingSection.followUpToday', 'Follow-up Today') : t('admin.networkingSection.followUpBadge', 'Follow-up'),
+            label: scheduledDate === todayStr ? t('admin.networkingSection.followUpToday') : t('admin.networkingSection.followUpBadge'),
             date: formatDate ? formatDate(scheduledDate) : scheduledDate,
             title,
         };
@@ -125,7 +123,7 @@ function getFollowUpDisplay(person, t, formatDate) {
     // 6. If neither scheduledDate nor dueDate is set, but follow-up is active
     return {
         isOverdue: false,
-        label: t('admin.networkingSection.followUpBadge', 'Follow-up'),
+        label: t('admin.networkingSection.followUpBadge'),
         date: '',
         title,
     };
@@ -182,20 +180,20 @@ const NetworkingAdmin = () => {
             });
             const data = await res.json();
             if (!res.ok) {
-                throw new Error(data.error || t('admin.networkingSection.loadingContacts', 'Failed to load networking contacts'));
+                throw new Error(data.error || t('admin.networkingSection.loadingContacts'));
             }
 
             const rawPeople = Array.isArray(data.people) ? data.people : [];
             setPeople(rawPeople);
         } catch (err) {
-            setError(err.message || t('admin.networkingSection.loadingContacts', 'Error fetching contacts'));
+            setError(err.message || t('admin.networkingSection.loadingContacts'));
         } finally {
             setLoading(false);
         }
     }, [t]);
 
     useEffect(() => {
-        document.title = t('pageTitles.adminNetworking', 'Networking | Admin | Prajwal Reddy');
+        document.title = t('pageTitles.adminNetworking');
     }, [t]);
 
     useEffect(() => {
@@ -332,7 +330,7 @@ const NetworkingAdmin = () => {
         e.preventDefault();
         const trimmedName = formData.name.trim();
         if (!trimmedName) {
-            setFormError(t('admin.networkingSection.nameRequiredError', 'Please enter a name.'));
+            setFormError(t('admin.networkingSection.nameRequiredError'));
             return;
         }
 
@@ -416,7 +414,7 @@ const NetworkingAdmin = () => {
 
     const handleDeletePerson = async (person) => {
         if (!person) return;
-        const confirmMsg = t('admin.networkingSection.deleteConfirm', 'Are you sure you want to delete {name}?').replace('{name}', person.name || 'this contact');
+        const confirmMsg = t('admin.networkingSection.deleteConfirm').replace('{name}', person.name || 'this contact');
         if (!window.confirm(confirmMsg)) return;
 
         try {
@@ -440,7 +438,7 @@ const NetworkingAdmin = () => {
     const hasFormData = Boolean(formData.name || formData.website || formData.whereMet || formData.tags || formData.notes);
 
     return (
-        <AdminLayout title={t('admin.networkingSection.title', 'Networking Manager')}>
+        <AdminLayout title={t('admin.networkingSection.title')}>
             <div className="admin-networking-page">
                 {/* Add Person Card Form */}
                 <div className="admin-networking-form-card">
@@ -450,16 +448,16 @@ const NetworkingAdmin = () => {
                         onSubmit={handleFormSubmit}
                     >
                         <h3 className="admin-networking-form-title">
-                            {t('admin.networkingSection.addPerson', 'Add Person')}
+                            {t('admin.networkingSection.addPerson')}
                         </h3>
 
                         {/* Row 1: 4 Fields (Name, Website, Where Met, Tags) */}
                         <div className="admin-networking-form-row">
                             <label className="admin-networking-form-field">
-                                <span>{t('admin.networkingSection.name', 'Name *')}</span>
+                                <span>{t('admin.networkingSection.name')}</span>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.namePlaceholder', 'e.g. Aditya Reddy')}
+                                    placeholder={t('admin.networkingSection.namePlaceholder')}
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     required
@@ -467,30 +465,30 @@ const NetworkingAdmin = () => {
                             </label>
 
                             <label className="admin-networking-form-field">
-                                <span>{t('admin.networkingSection.website', 'Website')}</span>
+                                <span>{t('admin.networkingSection.website')}</span>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.websitePlaceholder', 'e.g. example.com')}
+                                    placeholder={t('admin.networkingSection.websitePlaceholder')}
                                     value={formData.website}
                                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                                 />
                             </label>
 
                             <label className="admin-networking-form-field">
-                                <span>{t('admin.networkingSection.whereMet', 'Where I Met Them')}</span>
+                                <span>{t('admin.networkingSection.whereMet')}</span>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.whereMetPlaceholder', 'e.g. House, Tech Summit')}
+                                    placeholder={t('admin.networkingSection.whereMetPlaceholder')}
                                     value={formData.whereMet}
                                     onChange={(e) => setFormData({ ...formData, whereMet: e.target.value })}
                                 />
                             </label>
 
                             <label className="admin-networking-form-field">
-                                <span>{t('admin.networkingSection.tags', 'Tags')}</span>
+                                <span>{t('admin.networkingSection.tags')}</span>
                                 <input
                                     type="text"
-                                    placeholder={t('admin.networkingSection.tagsPlaceholder', 'e.g. alumni, ai, mentor')}
+                                    placeholder={t('admin.networkingSection.tagsPlaceholder')}
                                     value={formData.tags}
                                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                                     autoComplete="off"
@@ -501,10 +499,10 @@ const NetworkingAdmin = () => {
                         {/* Row 2: Notes Field with Add Person next to it */}
                         <div className="admin-networking-form-bottom-row">
                             <label className="admin-networking-form-field admin-networking-form-field-notes">
-                                <span>{t('admin.networkingSection.notes', 'Notes')}</span>
+                                <span>{t('admin.networkingSection.notes')}</span>
                                 <textarea
                                     rows={2}
-                                    placeholder={t('admin.networkingSection.notesPlaceholder', 'Notes, background, or discussion topics...')}
+                                    placeholder={t('admin.networkingSection.notesPlaceholder')}
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                 />
@@ -517,7 +515,7 @@ const NetworkingAdmin = () => {
                                         className="admin-networking-btn-cancel"
                                         onClick={handleResetForm}
                                     >
-                                        {t('admin.networkingSection.cancel', 'Cancel')}
+                                        {t('admin.networkingSection.cancel')}
                                     </button>
                                 )}
                                 <button
@@ -526,8 +524,8 @@ const NetworkingAdmin = () => {
                                     disabled={submitting}
                                 >
                                     {submitting
-                                        ? t('admin.networkingSection.saving', 'Saving...')
-                                        : t('admin.networkingSection.addPersonBtn', 'Add Person')}
+                                        ? t('admin.networkingSection.saving')
+                                        : t('admin.networkingSection.addPersonBtn')}
                                 </button>
                             </div>
                         </div>
@@ -547,7 +545,7 @@ const NetworkingAdmin = () => {
                         </span>
                         <input
                             type="text"
-                            placeholder={t('admin.networkingSection.searchPlaceholder', 'Search contacts...')}
+                            placeholder={t('admin.networkingSection.searchPlaceholder')}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => {
@@ -557,15 +555,15 @@ const NetworkingAdmin = () => {
                                 }
                             }}
                             className="admin-todo-search-input"
-                            aria-label={t('admin.networkingSection.searchAriaLabel', 'Search contacts')}
+                            aria-label={t('admin.networkingSection.searchAriaLabel')}
                         />
                         {search && (
                             <button
                                 type="button"
                                 className="admin-todo-search-clear"
                                 onClick={() => setSearch('')}
-                                aria-label={t('admin.networkingSection.clearSearch', 'Clear search')}
-                                title={t('admin.networkingSection.clearSearch', 'Clear search')}
+                                aria-label={t('admin.networkingSection.clearSearch')}
+                                title={t('admin.networkingSection.clearSearch')}
                             >
                                 ✕
                             </button>
@@ -579,13 +577,13 @@ const NetworkingAdmin = () => {
                             className={`admin-todo-tag-filter-btn ${selectedTags.size > 0 ? 'has-active' : ''} ${isTagDropdownOpen ? 'is-open' : ''}`}
                             onClick={() => setIsTagDropdownOpen((prev) => !prev)}
                             aria-expanded={isTagDropdownOpen}
-                            title={t('admin.networkingSection.filterByTags', 'Filter by Tags')}
+                            title={t('admin.networkingSection.filterByTags')}
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                                 <line x1="7" y1="7" x2="7.01" y2="7" />
                             </svg>
-                            <span>{t('admin.networkingSection.tags', 'Tags')}</span>
+                            <span>{t('admin.networkingSection.tags')}</span>
                             {selectedTags.size > 0 && (
                                 <span className="admin-todo-tag-filter-badge">
                                     {formatNumber(selectedTags.size)}
@@ -600,7 +598,7 @@ const NetworkingAdmin = () => {
                             <div className="admin-todo-tag-dropdown-menu">
                                 <div className="admin-todo-tag-dropdown-header">
                                     <span className="admin-todo-tag-dropdown-title">
-                                        {t('admin.networkingSection.filterByTags', 'Filter by Tags')}
+                                        {t('admin.networkingSection.filterByTags')}
                                     </span>
                                 </div>
 
@@ -608,7 +606,7 @@ const NetworkingAdmin = () => {
                                     <div className="admin-todo-tag-dropdown-search">
                                         <input
                                             type="text"
-                                            placeholder={t('admin.networkingSection.searchTagsPlaceholder', 'Search tags...')}
+                                            placeholder={t('admin.networkingSection.searchTagsPlaceholder')}
                                             value={tagFilterSearch}
                                             onChange={(e) => setTagFilterSearch(e.target.value)}
                                             className="admin-todo-tag-dropdown-search-input"
@@ -620,11 +618,11 @@ const NetworkingAdmin = () => {
                                 <div className="admin-todo-tag-dropdown-list">
                                     {allAvailableTags.length === 0 ? (
                                         <div className="admin-todo-tag-dropdown-empty">
-                                            {t('admin.networkingSection.noTagsFound', 'No tags created yet')}
+                                            {t('admin.networkingSection.noTagsFound')}
                                         </div>
                                     ) : filteredDropdownTags.length === 0 ? (
                                         <div className="admin-todo-tag-dropdown-empty">
-                                            {t('admin.networkingSection.noMatchingTags', 'No matching tags')}
+                                            {t('admin.networkingSection.noMatchingTags')}
                                         </div>
                                     ) : (
                                         filteredDropdownTags.map((tag) => {
@@ -658,7 +656,7 @@ const NetworkingAdmin = () => {
                                 {allAvailableTags.length > 0 && (
                                     <div className="admin-todo-tag-dropdown-footer">
                                         <span className="admin-todo-tag-dropdown-summary">
-                                            {t('admin.networkingSection.selectedCount', '{count} selected').replace('{count}', formatNumber(selectedTags.size))}
+                                            {t('admin.networkingSection.selectedCount').replace('{count}', formatNumber(selectedTags.size))}
                                         </span>
                                         <div className="admin-todo-tag-dropdown-footer-actions">
                                             {selectedTags.size < allAvailableTags.length && (
@@ -667,7 +665,7 @@ const NetworkingAdmin = () => {
                                                     className="admin-todo-tag-dropdown-select-all-btn"
                                                     onClick={selectAllTags}
                                                 >
-                                                    {t('admin.networkingSection.selectAllTags', 'Select All')}
+                                                    {t('admin.networkingSection.selectAllTags')}
                                                 </button>
                                             )}
                                             {selectedTags.size > 0 && (
@@ -676,7 +674,7 @@ const NetworkingAdmin = () => {
                                                     className="admin-todo-tag-dropdown-clear-btn"
                                                     onClick={clearAllTags}
                                                 >
-                                                    {t('admin.networkingSection.clearTags', 'Clear')}
+                                                    {t('admin.networkingSection.clearTags')}
                                                 </button>
                                             )}
                                         </div>
@@ -697,19 +695,19 @@ const NetworkingAdmin = () => {
                 {/* Contact Cards Grid */}
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '3.5rem 0', color: 'var(--text-muted)' }}>
-                        {t('admin.networkingSection.loadingContacts', 'Loading contacts...')}
+                        {t('admin.networkingSection.loadingContacts')}
                     </div>
                 ) : people.length === 0 ? (
                     <p className="admin-empty">
-                        {t('admin.networkingSection.noContacts', 'No contacts yet. Add your first one above.')}
+                        {t('admin.networkingSection.noContacts')}
                     </p>
                 ) : searchFilteredPeople.length === 0 ? (
                     <p className="admin-empty">
                         {selectedTags.size > 0 && search
-                            ? t('admin.networkingSection.noMatchingFilterContacts', 'No contacts match your search and tag filters.')
+                            ? t('admin.networkingSection.noMatchingFilterContacts')
                             : selectedTags.size > 0
-                            ? t('admin.networkingSection.noMatchingTagContacts', 'No contacts match this tag filter.')
-                            : t('admin.networkingSection.noMatch', 'No contacts match your current search.')}
+                            ? t('admin.networkingSection.noMatchingTagContacts')
+                            : t('admin.networkingSection.noMatch')}
                     </p>
                 ) : (
                     <div className="admin-networking-grid">
@@ -737,7 +735,7 @@ const NetworkingAdmin = () => {
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="admin-networking-website-link admin-networking-linkedin-link"
-                                                            title={t('admin.networkingSection.website', 'Website')}
+                                                            title={t('admin.networkingSection.website')}
                                                             onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -745,19 +743,19 @@ const NetworkingAdmin = () => {
                                                                 <line x1="2" y1="12" x2="22" y2="12" />
                                                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                                                             </svg>
-                                                            {t('admin.networkingSection.website', 'Website')}
+                                                            {t('admin.networkingSection.website')}
                                                         </a>
                                                     )}
 
                                                     {person.lastInteractionAt && (
                                                         <div className="admin-networking-met-badge">
-                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.contactedLabel', 'Contacted:')}</span> {formatDate(person.lastInteractionAt)}
+                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.contactedLabel')}</span> {formatDate(person.lastInteractionAt)}
                                                         </div>
                                                     )}
 
                                                     {whereMet && (
                                                         <div className="admin-networking-met-badge">
-                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.metLabel', 'Met:')}</span> {whereMet}
+                                                            <span className="admin-networking-met-prefix">{t('admin.networkingSection.metLabel')}</span> {whereMet}
                                                         </div>
                                                     )}
                                                 </div>
@@ -770,7 +768,7 @@ const NetworkingAdmin = () => {
                                         <div
                                             className={followUpInfo.isOverdue ? 'admin-networking-card-overdue' : 'admin-networking-card-followup'}
                                             onClick={() => setSelectedPersonForModal(person)}
-                                            title={t('admin.networkingSection.editBtn', 'Edit')}
+                                            title={t('admin.networkingSection.editBtn')}
                                         >
                                             <span className={followUpInfo.isOverdue ? 'admin-networking-card-overdue-badge' : 'admin-networking-card-followup-badge'}>
                                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -797,7 +795,7 @@ const NetworkingAdmin = () => {
 
                                     {/* Middle: Notes box */}
                                     <div className="admin-networking-notes-box">
-                                        {person.notes || <span className="admin-networking-notes-empty">{t('admin.networkingSection.noNotesEmpty', 'No notes')}</span>}
+                                        {person.notes || <span className="admin-networking-notes-empty">{t('admin.networkingSection.noNotesEmpty')}</span>}
                                     </div>
 
                                     {/* Bottom: Tags on left, Edit & Delete on right */}
@@ -831,26 +829,26 @@ const NetworkingAdmin = () => {
                                                 type="button"
                                                 className="admin-networking-card-btn admin-networking-card-btn-edit"
                                                 onClick={() => setSelectedPersonForModal(person)}
-                                                title={t('admin.networkingSection.editBtn', 'Edit')}
+                                                title={t('admin.networkingSection.editBtn')}
                                             >
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                                 </svg>
-                                                <span>{t('admin.networkingSection.editBtn', 'Edit')}</span>
+                                                <span>{t('admin.networkingSection.editBtn')}</span>
                                             </button>
 
                                             <button
                                                 type="button"
                                                 className="admin-networking-card-btn admin-networking-card-btn-delete"
                                                 onClick={() => handleDeletePerson(person)}
-                                                title={t('admin.networkingSection.deleteBtn', 'Delete')}
+                                                title={t('admin.networkingSection.deleteBtn')}
                                             >
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <polyline points="3 6 5 6 21 6" />
                                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                                                 </svg>
-                                                <span>{t('admin.networkingSection.deleteBtn', 'Delete')}</span>
+                                                <span>{t('admin.networkingSection.deleteBtn')}</span>
                                             </button>
                                         </div>
                                     </div>

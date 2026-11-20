@@ -1,6 +1,6 @@
 import React, {lazy, Suspense, useEffect, useMemo, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {useLanguage} from '../utils/LanguageContext';
+import { useContent } from '../utils/ContentContext';
 import SideNav from './SideNav';
 import Footer from './Footer';
 import NotFound from './NotFound';
@@ -30,7 +30,7 @@ class ResearchErrorBoundary extends React.Component {
 
 const ResearchPost = () => {
     const {slug} = useParams();
-    const {t, formatNumber} = useLanguage();
+    const {t, formatNumber} = useContent();
     const [postData, setPostData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,7 +38,7 @@ const ResearchPost = () => {
     useEffect(() => {
         const load = async () => {
             if (!slug) {
-                setError(t('noArticleSpecified', 'No article specified'));
+                setError(t('noArticleSpecified'));
                 setLoading(false);
                 return;
             }
@@ -50,7 +50,7 @@ const ResearchPost = () => {
                 const baseTitle = t('pageTitles.research') || 'Research';
                 document.title = `${post.title} | ${baseTitle}`;
             } catch (e) {
-                console.error(t('logs.researchArticleError', 'Error loading research article:'), e);
+                console.error(t('logs.researchArticleError'), e);
                 setError(e.message);
             } finally {
                 setLoading(false);
@@ -64,7 +64,7 @@ const ResearchPost = () => {
             try {
                 return lazy(() => import(`./${postData.component}`));
             } catch (e) {
-                console.error(t('logs.researchImportError', 'Failed to import custom research component:'), e);
+                console.error(t('logs.researchImportError'), e);
                 return null;
             }
         }
@@ -114,8 +114,8 @@ const ResearchPost = () => {
 
     const renderAuthor = (author) => {
         if (!author) return null;
-        const authorTemplate = t('byAuthor', 'by {author}');
-        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix', 'by ')}${author}`;
+        const authorTemplate = t('byAuthor');
+        return authorTemplate.includes('{author}') ? authorTemplate.replace('{author}', author) : `${t('byPrefix')}${author}`;
     };
 
     return (

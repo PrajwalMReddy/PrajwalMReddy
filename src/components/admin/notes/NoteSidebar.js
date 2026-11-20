@@ -50,12 +50,12 @@ const NoteSidebar = ({
 }) => {
     const { t, formatNumber, language } = useContent();
     return (
-        <aside className="admin-notes-list" aria-label="Notes file explorer">
+        <aside className="admin-notes-list" aria-label={t('admin.ui.noteSidebar.notesFileExplorer')}>
             <div className="admin-notes-list-heading">
                 <div className="admin-notes-list-header-top">
-                    <h2 className="admin-notes-list-title">{t('admin.nav.notes', 'Notes')}</h2>
+                    <h2 className="admin-notes-list-title">{t('admin.nav.notes')}</h2>
                 </div>
-                <div className="admin-note-view-toggle" role="tablist" aria-label="Note status">
+                <div className="admin-note-view-toggle" role="tablist" aria-label={t('admin.ui.noteSidebar.noteStatus')}>
                     <button
                         type="button"
                         className={noteView === 'active' ? 'active' : ''}
@@ -63,7 +63,7 @@ const NoteSidebar = ({
                         role="tab"
                         aria-selected={noteView === 'active'}
                     >
-                        {t('admin.notesSection.active', 'Active')} <span>{formatNumber(notes.filter((note) => !note.archived).length)}</span>
+                        {t('admin.notesSection.active')} <span>{formatNumber(notes.filter((note) => !note.archived).length)}</span>
                     </button>
                     <button
                         type="button"
@@ -72,7 +72,7 @@ const NoteSidebar = ({
                         role="tab"
                         aria-selected={noteView === 'archived'}
                     >
-                        {t('admin.notesSection.archived', 'Archived')} <span>{formatNumber(notes.filter((note) => note.archived).length)}</span>
+                        {t('admin.notesSection.archived')} <span>{formatNumber(notes.filter((note) => note.archived).length)}</span>
                     </button>
                 </div>
             </div>
@@ -91,13 +91,13 @@ const NoteSidebar = ({
                             >
                                 <strong>
                                     <span className="admin-note-item-title">
-                                        {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                        {note.title || t('admin.notesSection.untitledNote')}
                                     </span>
                                     {note.pinned && (
                                         <span
                                             className="admin-note-pin-badge"
-                                            title={t('admin.notesSection.pinned', 'Pinned')}
-                                            aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                            title={t('admin.notesSection.pinned')}
+                                            aria-label={t('admin.notesSection.pinned')}
                                         >
                                             <PinIcon size={13} />
                                         </span>
@@ -109,7 +109,7 @@ const NoteSidebar = ({
                         ))}
 
                         {filteredNotes.length === 0 && (
-                            <p className="admin-notes-empty">{t('admin.notesSection.noArchived', 'No archived notes found.')}</p>
+                            <p className="admin-notes-empty">{t('admin.notesSection.noArchived')}</p>
                         )}
                     </>
                 ) : (
@@ -130,8 +130,8 @@ const NoteSidebar = ({
                                     type="text"
                                     value={newFolderName}
                                     onChange={(e) => setNewFolderName(e.target.value)}
-                                    placeholder={t('admin.notesSection.folderNamePlaceholder', 'folder name')}
-                                    aria-label={t('admin.notesSection.newFolderNamePlaceholder', 'New folder name')}
+                                    placeholder={t('admin.notesSection.folderNamePlaceholder')}
+                                    aria-label={t('admin.notesSection.newFolderNamePlaceholder')}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Escape') {
                                             setIsCreatingFolder(false);
@@ -139,7 +139,7 @@ const NoteSidebar = ({
                                         }
                                     }}
                                 />
-                                <button type="submit" title={t('admin.notesSection.create', 'Create')} aria-label={t('admin.notesSection.create', 'Confirm new folder')}>
+                                <button type="submit" title={t('admin.notesSection.create')} aria-label={t('admin.notesSection.create')}>
                                     ✓
                                 </button>
                                 <button
@@ -148,8 +148,8 @@ const NoteSidebar = ({
                                         setIsCreatingFolder(false);
                                         setNewFolderName('');
                                     }}
-                                    title={t('admin.notesSection.cancel', 'Cancel')}
-                                    aria-label={t('admin.notesSection.cancel', 'Cancel new folder')}
+                                    title={t('admin.notesSection.cancel')}
+                                    aria-label={t('admin.notesSection.cancel')}
                                 >
                                     ✕
                                 </button>
@@ -184,23 +184,23 @@ const NoteSidebar = ({
                                                 type="text"
                                                 value={renameValue}
                                                 onChange={(e) => setRenameValue(e.target.value)}
-                                                aria-label="Rename folder"
+                                                aria-label={t('admin.ui.noteSidebar.renameFolder')}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Escape') setRenamingFolder(null);
                                                 }}
                                             />
                                             <button
                                                 type="submit"
-                                                title="Save folder name"
-                                                aria-label="Save folder name"
+                                                title={t('admin.ui.noteSidebar.saveFolderName')}
+                                                aria-label={t('admin.ui.noteSidebar.saveFolderName')}
                                             >
                                                 ✓
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setRenamingFolder(null)}
-                                                title="Cancel"
-                                                aria-label="Cancel rename"
+                                                title={t('admin.ui.noteSidebar.cancel')}
+                                                aria-label={t('admin.ui.noteSidebar.cancelRename')}
                                             >
                                                 ✕
                                             </button>
@@ -239,8 +239,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon"
                                                     onClick={() => startNewNote(folderName)}
-                                                    title={`${t('admin.notesSection.newNoteIn', 'New note in')} /${folderName}`}
-                                                    aria-label={`${t('admin.notesSection.newNoteIn', 'New note in')} /${folderName}`}
+                                                    title={`${t('admin.notesSection.newNoteIn')} /${folderName}`}
+                                                    aria-label={`${t('admin.notesSection.newNoteIn')} /${folderName}`}
                                                 >
                                                     +
                                                 </button>
@@ -248,8 +248,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon"
                                                     onClick={() => startRenamingFolder(folderName)}
-                                                    title={t('admin.actions.edit', 'Rename folder')}
-                                                    aria-label={t('admin.actions.edit', 'Rename folder')}
+                                                    title={t('admin.actions.edit')}
+                                                    aria-label={t('admin.actions.edit')}
                                                 >
                                                     ✎
                                                 </button>
@@ -257,8 +257,8 @@ const NoteSidebar = ({
                                                     type="button"
                                                     className="admin-note-action-icon danger"
                                                     onClick={() => handleDeleteFolder(folderName)}
-                                                    title={t('admin.actions.delete', 'Delete folder')}
-                                                    aria-label={t('admin.actions.delete', 'Delete folder')}
+                                                    title={t('admin.actions.delete')}
+                                                    aria-label={t('admin.actions.delete')}
                                                 >
                                                     ✕
                                                 </button>
@@ -279,13 +279,13 @@ const NoteSidebar = ({
                                                 >
                                                     <strong>
                                                         <span className="admin-note-item-title">
-                                                            {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                                            {note.title || t('admin.notesSection.untitledNote')}
                                                         </span>
                                                         {note.pinned && (
                                                             <span
                                                                 className="admin-note-pin-badge"
-                                                                title={t('admin.notesSection.pinned', 'Pinned')}
-                                                                aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                                                title={t('admin.notesSection.pinned')}
+                                                                aria-label={t('admin.notesSection.pinned')}
                                                             >
                                                                 <PinIcon size={13} />
                                                             </span>
@@ -301,7 +301,7 @@ const NoteSidebar = ({
                                                     className="admin-note-empty-folder-btn"
                                                     onClick={() => startNewNote(folderName)}
                                                 >
-                                                    <span aria-hidden="true">+</span> {t('admin.notesSection.newNoteIn', 'New note in')} /{folderName}
+                                                    <span aria-hidden="true">+</span> {t('admin.notesSection.newNoteIn')} /{folderName}
                                                 </button>
                                             )}
                                         </div>
@@ -322,13 +322,13 @@ const NoteSidebar = ({
                             >
                                 <strong>
                                     <span className="admin-note-item-title">
-                                        {note.title || t('admin.notesSection.untitledNote', 'Untitled note')}
+                                        {note.title || t('admin.notesSection.untitledNote')}
                                     </span>
                                     {note.pinned && (
                                         <span
                                             className="admin-note-pin-badge"
-                                            title={t('admin.notesSection.pinned', 'Pinned')}
-                                            aria-label={t('admin.notesSection.pinned', 'Pinned')}
+                                            title={t('admin.notesSection.pinned')}
+                                            aria-label={t('admin.notesSection.pinned')}
                                         >
                                             <PinIcon size={13} />
                                         </span>
@@ -340,7 +340,7 @@ const NoteSidebar = ({
                         ))}
 
                         {!filteredNotes.length && !allFolders.length && (
-                            <p className="admin-notes-empty">{t('admin.notesSection.noNotes', 'No notes found.')}</p>
+                            <p className="admin-notes-empty">{t('admin.notesSection.noNotes')}</p>
                         )}
                     </>
                 )}

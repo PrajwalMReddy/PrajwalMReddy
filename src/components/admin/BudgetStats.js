@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useContent } from '../../utils/ContentContext';
 import { formatCurrency } from '../../utils/budgetApi';
 
@@ -155,31 +155,31 @@ const BudgetStats = ({ stats }) => {
         <div className="admin-stats">
             <div className="admin-stats-overview">
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.funds', 'Funds')}</h2>
+                    <h2>{t('admin.budgetSection.stats.funds')}</h2>
 
                     <div className="admin-stat-grid admin-stat-grid-5">
                         <StatCard
-                            label={t('admin.budgetSection.stats.injections', 'Injections')}
+                            label={t('admin.budgetSection.stats.injections')}
                             value={formatVal(funds.injections)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.income', 'Income')}
+                            label={t('admin.budgetSection.stats.income')}
                             value={formatVal(funds.income)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.repayment', 'Repayment')}
+                            label={t('admin.budgetSection.stats.repayment')}
                             value={formatVal(funds.repayment ?? funds.repayments ?? funds.otherIncome)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.totalFunds', 'Total Funds')}
+                            label={t('admin.budgetSection.stats.totalFunds')}
                             value={formatVal(funds.totalFunds)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.netBalance', 'Net Balance')}
+                            label={t('admin.budgetSection.stats.netBalance')}
                             value={formatVal(netBalance)}
                             negative={netBalance < 0}
                         />
@@ -187,51 +187,51 @@ const BudgetStats = ({ stats }) => {
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.spending', 'Spending')}</h2>
+                    <h2>{t('admin.budgetSection.stats.spending')}</h2>
 
                     <div className="admin-stat-grid admin-stat-grid-4">
                         <StatCard
-                            label={t('admin.budgetSection.stats.expenses', 'Expenses')}
+                            label={t('admin.budgetSection.stats.expenses')}
                             value={formatVal(spending.expenses)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.realSpent', 'Real Spent')}
+                            label={t('admin.budgetSection.stats.realSpent')}
                             value={formatVal(spending.realSpent)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.realAvgPerMonth', 'Real Avg / Month')}
+                            label={t('admin.budgetSection.stats.realAvgPerMonth')}
                             value={formatVal(spending.realAvgPerMonth)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.monthsLeft', 'Months Left')}
+                            label={t('admin.budgetSection.stats.monthsLeft')}
                             value={formatNum(spending.monthsLeft)}
                         />
                     </div>
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.budget', 'Budget')}</h2>
+                    <h2>{t('admin.budgetSection.stats.budget')}</h2>
 
                     <div className="admin-stat-subgroup">
                         <span className="admin-stat-subgroup-title">
-                            {t('admin.budgetSection.stats.thisMonth', 'This Month')}
+                            {t('admin.budgetSection.stats.thisMonth')}
                         </span>
                         <div className="admin-stat-grid admin-stat-grid-3">
                             <StatCard
-                                label={t('admin.budgetSection.stats.thisMonthBudgeted', 'Month Budgeted')}
+                                label={t('admin.budgetSection.stats.thisMonthBudgeted')}
                                 value={formatVal(thisMonthBudgeted)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.monthSpending', 'Month Spending')}
+                                label={t('admin.budgetSection.stats.monthSpending')}
                                 value={formatVal(thisMonthSpending)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.monthSurplus', 'Month Surplus')}
+                                label={t('admin.budgetSection.stats.monthSurplus')}
                                 value={formatVal(thisMonthSurplus)}
                                 negative={thisMonthSurplus < 0}
                             />
@@ -240,16 +240,16 @@ const BudgetStats = ({ stats }) => {
 
                     <div className="admin-stat-subgroup">
                         <span className="admin-stat-subgroup-title">
-                            {t('admin.budgetSection.stats.cumulativeToDate', 'Cumulative (To Date)')}
+                            {t('admin.budgetSection.stats.cumulativeToDate')}
                         </span>
                         <div className="admin-stat-grid admin-stat-grid-2">
                             <StatCard
-                                label={t('admin.budgetSection.stats.meBudgeted', 'ME Budgeted')}
+                                label={t('admin.budgetSection.stats.meBudgeted')}
                                 value={formatVal(meBudgeted)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.meSurplus', 'ME Surplus')}
+                                label={t('admin.budgetSection.stats.meSurplus')}
                                 value={formatVal(budget.meSurplus)}
                                 negative={budget.meSurplus < 0}
                             />
@@ -258,25 +258,25 @@ const BudgetStats = ({ stats }) => {
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.ayanaPeriod', 'Ayana (6-month period)')}</h2>
+                    <h2>{t('admin.budgetSection.stats.ayanaPeriod')}</h2>
 
                     <div className="admin-stat-subgroup">
                         <span className="admin-stat-subgroup-title">
-                            {t('admin.budgetSection.stats.currentAyana', 'Current Ayana')}
+                            {t('admin.budgetSection.stats.currentAyana')}
                         </span>
                         <div className="admin-stat-grid admin-stat-grid-3">
                             <StatCard
-                                label={t('admin.budgetSection.stats.thisAyanaBudgeted', 'Ayana Budgeted')}
+                                label={t('admin.budgetSection.stats.thisAyanaBudgeted')}
                                 value={formatVal(thisAyanaBudgeted)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.ayanaSpending', 'Ayana Spending')}
+                                label={t('admin.budgetSection.stats.ayanaSpending')}
                                 value={formatVal(thisAyanaSpending)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.ayanaSurplus', 'Ayana Surplus')}
+                                label={t('admin.budgetSection.stats.ayanaSurplus')}
                                 value={formatVal(thisAyanaSurplus)}
                                 negative={thisAyanaSurplus < 0}
                             />
@@ -285,26 +285,26 @@ const BudgetStats = ({ stats }) => {
 
                     <div className="admin-stat-subgroup">
                         <span className="admin-stat-subgroup-title">
-                            {t('admin.budgetSection.stats.horizonToDate', 'Horizon & To Date')}
+                            {t('admin.budgetSection.stats.horizonToDate')}
                         </span>
                         <div className="admin-stat-grid admin-stat-grid-4">
                             <StatCard
-                                label={t('admin.budgetSection.stats.completedAyanas', 'Completed Ayanas')}
+                                label={t('admin.budgetSection.stats.completedAyanas')}
                                 value={formatNum(ayana.completedAyanas)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.realAvgPerAyana', 'Real Avg / Ayana')}
+                                label={t('admin.budgetSection.stats.realAvgPerAyana')}
                                 value={formatVal(ayana.realAvgPerAyana)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.aeBudgeted', 'AE Budgeted')}
+                                label={t('admin.budgetSection.stats.aeBudgeted')}
                                 value={formatVal(aeBudgeted)}
                             />
 
                             <StatCard
-                                label={t('admin.budgetSection.stats.aeSurplus', 'AE Surplus')}
+                                label={t('admin.budgetSection.stats.aeSurplus')}
                                 value={formatVal(ayana.aeSurplus)}
                                 negative={ayana.aeSurplus < 0}
                             />
@@ -313,36 +313,36 @@ const BudgetStats = ({ stats }) => {
                 </section>
 
                 <section className="admin-stats-section admin-stats-span-2">
-                    <h2>{t('admin.budgetSection.stats.transactionStats', 'Transaction Statistics')}</h2>
+                    <h2>{t('admin.budgetSection.stats.transactionStats')}</h2>
 
                     <div className="admin-stat-grid admin-stat-grid-6">
                         <StatCard
-                            label={t('admin.budgetSection.stats.q1', 'Q1')}
+                            label={t('admin.budgetSection.stats.q1')}
                             value={formatVal(transactionStats.q1)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.median', 'Tran Med')}
+                            label={t('admin.budgetSection.stats.median')}
                             value={formatVal(transactionStats.median)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.q3', 'Q3')}
+                            label={t('admin.budgetSection.stats.q3')}
                             value={formatVal(transactionStats.q3)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.mean', 'Tran Mean')}
+                            label={t('admin.budgetSection.stats.mean')}
                             value={formatVal(transactionStats.mean)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.trimMean', 'Trim Mean (10%)')}
+                            label={t('admin.budgetSection.stats.trimMean')}
                             value={formatVal(transactionStats.trimMean)}
                         />
 
                         <StatCard
-                            label={t('admin.budgetSection.stats.mode', 'Tran Mode')}
+                            label={t('admin.budgetSection.stats.mode')}
                             value={formatVal(transactionStats.mode)}
                         />
                     </div>
@@ -351,14 +351,14 @@ const BudgetStats = ({ stats }) => {
 
             <div className="admin-stats-columns">
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.categorySpending', 'Category Spending')}</h2>
+                    <h2>{t('admin.budgetSection.stats.categorySpending')}</h2>
 
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
-                                <th>{t('admin.budgetSection.stats.spending', 'Spending')}</th>
-                                <th>{t('admin.budgetSection.stats.spendingPerAyana', 'Spending / Ayana')}</th>
+                                <th>{t('admin.budgetSection.headers.category')}</th>
+                                <th>{t('admin.budgetSection.stats.spending')}</th>
+                                <th>{t('admin.budgetSection.stats.spendingPerAyana')}</th>
                             </tr>
                         </thead>
 
@@ -372,7 +372,7 @@ const BudgetStats = ({ stats }) => {
                             ))}
 
                             <tr className="admin-table-total">
-                                <td>{t('admin.budgetSection.stats.total', 'Total')}</td>
+                                <td>{t('admin.budgetSection.stats.total')}</td>
 
                                 <td>
                                     {formatVal(spending.expenses)}
@@ -396,7 +396,7 @@ const BudgetStats = ({ stats }) => {
                 </section>
 
                 <section className="admin-stats-section">
-                    <h2>{t('admin.budgetSection.stats.categoryBreakdown', 'Category Breakdown')}</h2>
+                    <h2>{t('admin.budgetSection.stats.categoryBreakdown')}</h2>
 
                     <div className="admin-bar-chart">
                         {categoryList.map((cat) => (
@@ -415,45 +415,45 @@ const BudgetStats = ({ stats }) => {
 
             <section className="admin-stats-section">
                 <div className="admin-stats-header-with-actions">
-                    <h2>{t('admin.budgetSection.stats.monthlyTrend', 'Monthly Trend')}</h2>
+                    <h2>{t('admin.budgetSection.stats.monthlyTrend')}</h2>
 
-                    <div className="admin-trend-filter-group" role="group" aria-label="Monthly trend filter">
+                    <div className="admin-trend-filter-group" role="group" aria-label={t('admin.ui.budgetStats.monthlyTrendFilter')}>
                         <button
                             type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'expenses' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('expenses')}
                         >
-                            {t('admin.budgetSection.stats.expenses', 'Expenses')}
+                            {t('admin.budgetSection.stats.expenses')}
                         </button>
                         <button
                             type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'income' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('income')}
                         >
-                            {t('admin.budgetSection.stats.income', 'Income')}
+                            {t('admin.budgetSection.stats.income')}
                         </button>
                         <button
                             type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'realSpent' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('realSpent')}
-                            title={t('admin.budgetSection.stats.realSpentTooltip', 'Net expenses (income only, no injections)')}
+                            title={t('admin.budgetSection.stats.realSpentTooltip')}
                         >
-                            {t('admin.budgetSection.stats.realSpent', 'Real Spent')}
+                            {t('admin.budgetSection.stats.realSpent')}
                         </button>
                         <button
                             type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'netExpenses' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('netExpenses')}
-                            title={t('admin.budgetSection.stats.netExpensesTooltip', 'Net expenses (all funds including injections)')}
+                            title={t('admin.budgetSection.stats.netExpensesTooltip')}
                         >
-                            {t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}
+                            {t('admin.budgetSection.stats.netExpenses')}
                         </button>
                         <button
                             type="button"
                             className={`admin-trend-filter-btn ${trendFilter === 'all' ? 'active' : ''}`}
                             onClick={() => setTrendFilter('all')}
                         >
-                            {t('admin.budgetSection.stats.together', 'Together')}
+                            {t('admin.budgetSection.stats.together')}
                         </button>
                     </div>
                 </div>
@@ -489,7 +489,7 @@ const BudgetStats = ({ stats }) => {
                                             style={{
                                                 height: `${(monthExpenses / chartMax) * 100}%`,
                                             }}
-                                            title={`${t('admin.budgetSection.stats.expensesLabel', 'Expenses:')} ${formatVal(
+                                            title={`${t('admin.budgetSection.stats.expensesLabel')} ${formatVal(
                                                 monthExpenses
                                             )}`}
                                         />
@@ -501,7 +501,7 @@ const BudgetStats = ({ stats }) => {
                                             style={{
                                                 height: `${(monthIncome / chartMax) * 100}%`,
                                             }}
-                                            title={`${t('admin.budgetSection.stats.incomeLabel', 'Income:')} ${formatVal(
+                                            title={`${t('admin.budgetSection.stats.incomeLabel')} ${formatVal(
                                                 monthIncome
                                             )}`}
                                         />
@@ -513,7 +513,7 @@ const BudgetStats = ({ stats }) => {
                                             style={{
                                                 height: `${(Math.max(monthRealSpent, 0) / chartMax) * 100}%`,
                                             }}
-                                            title={`${t('admin.budgetSection.stats.realSpentLabel', 'Real Spent:')} ${formatVal(
+                                            title={`${t('admin.budgetSection.stats.realSpentLabel')} ${formatVal(
                                                 monthRealSpent
                                             )}`}
                                         />
@@ -525,7 +525,7 @@ const BudgetStats = ({ stats }) => {
                                             style={{
                                                 height: `${(Math.max(monthNetExpenses, 0) / chartMax) * 100}%`,
                                             }}
-                                            title={`${t('admin.budgetSection.stats.netExpensesLabel', 'Net Expenses:')} ${formatVal(
+                                            title={`${t('admin.budgetSection.stats.netExpensesLabel')} ${formatVal(
                                                 monthNetExpenses
                                             )}`}
                                         />
@@ -549,23 +549,23 @@ const BudgetStats = ({ stats }) => {
 
                 <div className="admin-chart-legend">
                     {(trendFilter === 'all' || trendFilter === 'expenses') && (
-                        <span className="legend-expenses">{t('admin.budgetSection.stats.expenses', 'Expenses')}</span>
+                        <span className="legend-expenses">{t('admin.budgetSection.stats.expenses')}</span>
                     )}
                     {(trendFilter === 'all' || trendFilter === 'income') && (
-                        <span className="legend-income">{t('admin.budgetSection.stats.income', 'Income')}</span>
+                        <span className="legend-income">{t('admin.budgetSection.stats.income')}</span>
                     )}
                     {(trendFilter === 'all' || trendFilter === 'realSpent') && (
-                        <span className="legend-real-spent">{t('admin.budgetSection.stats.realSpent', 'Real Spent')}</span>
+                        <span className="legend-real-spent">{t('admin.budgetSection.stats.realSpent')}</span>
                     )}
                     {(trendFilter === 'all' || trendFilter === 'netExpenses') && (
-                        <span className="legend-net-expenses">{t('admin.budgetSection.stats.netExpenses', 'Net Expenses')}</span>
+                        <span className="legend-net-expenses">{t('admin.budgetSection.stats.netExpenses')}</span>
                     )}
                 </div>
             </section>
 
 
             <section className="admin-stats-section">
-                <h2>{t('admin.budgetSection.stats.incomeVsExpenses', 'Income vs Expenses')}</h2>
+                <h2>{t('admin.budgetSection.stats.incomeVsExpenses')}</h2>
 
                 <div className="admin-comparison-chart">
                     <div className="admin-comparison-bar">
@@ -582,7 +582,7 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <span>
-                            {t('admin.budgetSection.stats.expensesLabel', 'Expenses:')}{' '}
+                            {t('admin.budgetSection.stats.expensesLabel')}{' '}
                             {formatVal(incomeVsExpenses.expenses)}
                         </span>
                     </div>
@@ -601,7 +601,7 @@ const BudgetStats = ({ stats }) => {
                         />
 
                         <span>
-                            {t('admin.budgetSection.stats.incomeLabel', 'Income:')}{' '}
+                            {t('admin.budgetSection.stats.incomeLabel')}{' '}
                             {formatVal(incomeVsExpenses.income)}
                         </span>
                     </div>

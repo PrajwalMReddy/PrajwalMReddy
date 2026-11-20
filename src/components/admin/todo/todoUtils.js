@@ -124,10 +124,10 @@ export const getMasterTaskDateLabel = (todo, lang = 'en', t = (k, f) => f) => {
     let untilDateLabel = '';
     if (todo.recurrenceUntil) {
         const formattedDate = formatDate(todo.recurrenceUntil, lang, { month: 'short' });
-        const untilTemplate = t ? t('admin.todoSection.untilDate', 'Until {date}') : 'Until {date}';
+        const untilTemplate = t ? t('admin.todoSection.untilDate') : 'Until {date}';
         untilDateLabel = untilTemplate.replace('{date}', formattedDate);
     } else {
-        untilDateLabel = t ? t('admin.todoSection.ongoing', 'Ongoing') : 'Ongoing';
+        untilDateLabel = t ? t('admin.todoSection.ongoing') : 'Ongoing';
     }
 
     if (untilDateLabel && recurrenceLabel) {
@@ -198,13 +198,13 @@ export const formatRecurrence = (todo, t = (k, f) => f) => {
         const days = RECURRENCE_DAYS
             .filter(([value]) => (todo.recurrenceDays || []).includes(value))
             .map(([value, label]) => (t ? t(`admin.todoSection.modal.weekdays.${value}`, label) : label));
-        const weeklyLabel = t ? t('admin.todoSection.modal.recurrenceOptions.weekly', 'Weekly') : 'Weekly';
+        const weeklyLabel = t ? t('admin.todoSection.modal.recurrenceOptions.weekly') : 'Weekly';
         return days.length > 0 ? `${weeklyLabel}: ${days.join(', ')}` : weeklyLabel;
     }
     if (todo.recurrence === 'daily') {
-        return t ? t('admin.todoSection.modal.recurrenceOptions.daily', 'Every day') : 'Every day';
+        return t ? t('admin.todoSection.modal.recurrenceOptions.daily') : 'Every day';
     }
-    return t ? t('admin.todoSection.modal.recurrenceOptions.monthly', 'Every month') : 'Every month';
+    return t ? t('admin.todoSection.modal.recurrenceOptions.monthly') : 'Every month';
 };
 
 export const COLLAPSED_COLUMNS_KEY = 'admin_todo_collapsed_columns';

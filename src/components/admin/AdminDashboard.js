@@ -27,8 +27,8 @@ const AdminDashboard = () => {
             type="button"
             className="admin-dashboard-settings-btn"
             onClick={() => handleOpenSettings('data')}
-            title={t('admin.settings.title', 'Data Sources Settings')}
-            aria-label={t('admin.settings.title', 'Data Sources Settings')}
+            title={t('admin.settings.title')}
+            aria-label={t('admin.settings.title')}
         >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="3" />
@@ -39,8 +39,8 @@ const AdminDashboard = () => {
 
     return (
         <AdminLayout
-            title="Dashboard"
-            documentTitle={t('pageTitles.admin', 'Admin | Prajwal Reddy')}
+            title={t('admin.ui.adminDashboard.dashboard')}
+            documentTitle={t('pageTitles.admin')}
             actions={dashboardActions}
         >
             <div className="admin-dashboard-container">

@@ -14,12 +14,12 @@ export const normalizeIncomeType = (type) => {
 const getIncomeTypeLabel = (type, t) => {
     const normalized = normalizeIncomeType(type);
     if (normalized === 'injection') {
-        return t('admin.budgetSection.injection', 'Injection');
+        return t('admin.budgetSection.injection');
     }
     if (normalized === 'income') {
-        return t('admin.budgetSection.income', 'Income');
+        return t('admin.budgetSection.income');
     }
-    return t('admin.budgetSection.repayment', 'Repayment');
+    return t('admin.budgetSection.repayment');
 };
 
 const createEmptyIncome = () => ({
@@ -95,16 +95,16 @@ const IncomeTable = ({ income = [], onRefresh }) => {
 
     const handleSaveInline = async (entryId) => {
         if (!editForm.date) {
-            setInlineError(t('admin.budgetSection.dateRequired', 'Date is required'));
+            setInlineError(t('admin.budgetSection.dateRequired'));
             return;
         }
         if (!editForm.item || !editForm.item.trim()) {
-            setInlineError(t('admin.budgetSection.itemRequired', 'Item description is required'));
+            setInlineError(t('admin.budgetSection.itemRequired'));
             return;
         }
         const val = Number(editForm.value);
         if (editForm.value === '' || isNaN(val) || val < 0) {
-            setInlineError(t('admin.budgetSection.validValueRequired', 'A valid non-negative value is required'));
+            setInlineError(t('admin.budgetSection.validValueRequired'));
             return;
         }
 
@@ -138,7 +138,7 @@ const IncomeTable = ({ income = [], onRefresh }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.budgetSection.deleteConfirmIncome', 'Delete this income entry?'))) return;
+        if (!window.confirm(t('admin.budgetSection.deleteConfirmIncome'))) return;
         try {
             await budgetApi.deleteIncome(id);
             if (editingId === id) handleCancelEdit();
@@ -159,10 +159,10 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                     <div className="admin-budget-form-title-wrap">
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {t('admin.budgetSection.addIncome', 'Add Income')}
+                                {t('admin.budgetSection.addIncome')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
-                                {t('admin.budgetSection.recordNewIncome', 'Record incoming funds or capital injections')}
+                                {t('admin.budgetSection.recordNewIncome')}
                             </p>
                         </div>
                     </div>
@@ -170,7 +170,7 @@ const IncomeTable = ({ income = [], onRefresh }) => {
 
                 <div className="admin-budget-form-grid">
                     <label className="admin-field-group admin-field-date">
-                        <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.date')}</span>
                         <input
                             type="date"
                             value={form.date}
@@ -179,28 +179,28 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                         />
                     </label>
                     <label className="admin-field-group admin-field-item">
-                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription', 'Item Description')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription')}</span>
                         <input
                             type="text"
                             value={form.item}
                             onChange={(e) => setForm({ ...form, item: e.target.value })}
-                            placeholder={t('admin.budgetSection.incomeItemPlaceholder', 'e.g. Salary, Consulting, Investment...')}
+                            placeholder={t('admin.budgetSection.incomeItemPlaceholder')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-category">
-                        <span className="admin-field-label">{t('admin.budgetSection.incomeType', 'Income Type')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.incomeType')}</span>
                         <select
                             value={normalizeIncomeType(form.type)}
                             onChange={(e) => setForm({ ...form, type: e.target.value })}
                         >
-                            <option value="repayment">{t('admin.budgetSection.repayment', 'Repayment')}</option>
-                            <option value="income">{t('admin.budgetSection.income', 'Income')}</option>
-                            <option value="injection">{t('admin.budgetSection.injection', 'Injection')}</option>
+                            <option value="repayment">{t('admin.budgetSection.repayment')}</option>
+                            <option value="income">{t('admin.budgetSection.income')}</option>
+                            <option value="injection">{t('admin.budgetSection.injection')}</option>
                         </select>
                     </label>
                     <label className="admin-field-group admin-field-cost">
-                        <span className="admin-field-label">{t('admin.budgetSection.value', 'Value')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.value')}</span>
                         <div className="admin-currency-input-wrap">
                             <span className="admin-currency-symbol" aria-hidden="true">$</span>
                             <input
@@ -221,8 +221,8 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                             disabled={submitting}
                         >
                             {submitting
-                                ? t('admin.actions.saving', 'Saving...')
-                                : t('admin.budgetSection.addIncomeBtn', '+ Add Income')}
+                                ? t('admin.actions.saving')
+                                : t('admin.budgetSection.addIncomeBtn')}
                         </button>
                     </div>
                 </div>
@@ -232,10 +232,10 @@ const IncomeTable = ({ income = [], onRefresh }) => {
             <div className="admin-budget-table-card">
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
-                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.incomeHistory', 'Income History')}</h3>
+                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.incomeHistory')}</h3>
                         {searchQuery && filteredIncome.length !== income.length && (
                             <span className="admin-budget-filter-badge">
-                                {formatNumber(filteredIncome.length)} {t('admin.budgetSection.matching', 'matching')}
+                                {formatNumber(filteredIncome.length)} {t('admin.budgetSection.matching')}
                             </span>
                         )}
                     </div>
@@ -253,16 +253,16 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                 className="admin-table-search-input"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={t('admin.budgetSection.searchIncomePlaceholder', 'Search income by date, #, item, type, value...')}
-                                aria-label={t('admin.budgetSection.searchIncomePlaceholder', 'Search income')}
+                                placeholder={t('admin.budgetSection.searchIncomePlaceholder')}
+                                aria-label={t('admin.budgetSection.searchIncomePlaceholder')}
                             />
                             {searchQuery && (
                                 <button
                                     type="button"
                                     className="admin-table-search-clear"
                                     onClick={() => setSearchQuery('')}
-                                    title={t('admin.budgetSection.clearSearch', 'Clear search')}
-                                    aria-label={t('admin.budgetSection.clearSearch', 'Clear search')}
+                                    title={t('admin.budgetSection.clearSearch')}
+                                    aria-label={t('admin.budgetSection.clearSearch')}
                                 >
                                     ✕
                                 </button>
@@ -275,12 +275,12 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>{t('admin.budgetSection.headers.no', 'No')}</th>
-                                <th>{t('admin.budgetSection.headers.date', 'Date')}</th>
-                                <th>{t('admin.budgetSection.headers.item', 'Item')}</th>
-                                <th>{t('admin.budgetSection.headers.type', 'Type')}</th>
-                                <th>{t('admin.budgetSection.headers.value', 'Value')}</th>
-                                <th>{t('admin.budgetSection.headers.actions', 'Actions')}</th>
+                                <th>{t('admin.budgetSection.headers.no')}</th>
+                                <th>{t('admin.budgetSection.headers.date')}</th>
+                                <th>{t('admin.budgetSection.headers.item')}</th>
+                                <th>{t('admin.budgetSection.headers.type')}</th>
+                                <th>{t('admin.budgetSection.headers.value')}</th>
+                                <th>{t('admin.budgetSection.headers.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -303,7 +303,7 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                         onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
                                                         required
-                                                        aria-label={t('admin.budgetSection.headers.date', 'Date')}
+                                                        aria-label={t('admin.budgetSection.headers.date')}
                                                     />
                                                 </td>
                                                 <td>
@@ -313,10 +313,10 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                         value={editForm.item}
                                                         onChange={(e) => setEditForm({ ...editForm, item: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
-                                                        placeholder={t('admin.budgetSection.incomeItemPlaceholder', 'Item')}
+                                                        placeholder={t('admin.budgetSection.incomeItemPlaceholder')}
                                                         required
                                                         autoFocus
-                                                        aria-label={t('admin.budgetSection.headers.item', 'Item')}
+                                                        aria-label={t('admin.budgetSection.headers.item')}
                                                     />
                                                 </td>
                                                 <td>
@@ -325,11 +325,11 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                         value={normalizeIncomeType(editForm.type)}
                                                         onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
-                                                        aria-label={t('admin.budgetSection.headers.type', 'Type')}
+                                                        aria-label={t('admin.budgetSection.headers.type')}
                                                     >
-                                                        <option value="repayment">{t('admin.budgetSection.repayment', 'Repayment')}</option>
-                                                        <option value="income">{t('admin.budgetSection.income', 'Income')}</option>
-                                                        <option value="injection">{t('admin.budgetSection.injection', 'Injection')}</option>
+                                                        <option value="repayment">{t('admin.budgetSection.repayment')}</option>
+                                                        <option value="income">{t('admin.budgetSection.income')}</option>
+                                                        <option value="injection">{t('admin.budgetSection.injection')}</option>
                                                     </select>
                                                 </td>
                                                 <td>
@@ -345,7 +345,7 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                             onKeyDown={(e) => handleInlineKeyDown(e, entry.id)}
                                                             placeholder="0.00"
                                                             required
-                                                            aria-label={t('admin.budgetSection.headers.value', 'Value')}
+                                                            aria-label={t('admin.budgetSection.headers.value')}
                                                         />
                                                     </div>
                                                 </td>
@@ -356,18 +356,18 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                             className="admin-inline-save-btn"
                                                             onClick={() => handleSaveInline(entry.id)}
                                                             disabled={inlineSubmitting}
-                                                            title={t('admin.budgetSection.save', 'Save')}
+                                                            title={t('admin.budgetSection.save')}
                                                         >
-                                                            {inlineSubmitting ? t('admin.actions.saving', 'Saving...') : t('admin.budgetSection.save', 'Save')}
+                                                            {inlineSubmitting ? t('admin.actions.saving') : t('admin.budgetSection.save')}
                                                         </button>
                                                         <button
                                                             type="button"
                                                             className="admin-inline-cancel-btn"
                                                             onClick={handleCancelEdit}
                                                             disabled={inlineSubmitting}
-                                                            title={t('admin.budgetSection.cancel', 'Cancel')}
+                                                            title={t('admin.budgetSection.cancel')}
                                                         >
-                                                            {t('admin.budgetSection.cancel', 'Cancel')}
+                                                            {t('admin.budgetSection.cancel')}
                                                         </button>
                                                     </div>
                                                 </td>
@@ -405,17 +405,17 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleStartEdit(entry)}
-                                                    title={t('admin.actions.edit', 'Edit')}
+                                                    title={t('admin.actions.edit')}
                                                 >
-                                                    {t('admin.actions.edit', 'Edit')}
+                                                    {t('admin.actions.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className="danger"
                                                     onClick={() => handleDelete(entry.id)}
-                                                    title={t('admin.actions.delete', 'Delete')}
+                                                    title={t('admin.actions.delete')}
                                                 >
-                                                    {t('admin.actions.delete', 'Delete')}
+                                                    {t('admin.actions.delete')}
                                                 </button>
                                             </div>
                                         </td>
@@ -425,7 +425,7 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                             {filteredIncome.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">
-                                        {t('admin.budgetSection.totalFiltered', 'Total (Filtered):')}
+                                        {t('admin.budgetSection.totalFiltered')}
                                     </td>
                                     <td className="admin-cost-cell">
                                         {formatNumber(formatCurrency(filteredTotal))}
@@ -436,14 +436,14 @@ const IncomeTable = ({ income = [], onRefresh }) => {
                             {income.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        {t('admin.budgetSection.noIncome', 'No income entries recorded yet.')}
+                                        {t('admin.budgetSection.noIncome')}
                                     </td>
                                 </tr>
                             )}
                             {income.length > 0 && filteredIncome.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        {t('admin.budgetSection.noIncomeMatch', 'No income entries match your search.')}
+                                        {t('admin.budgetSection.noIncomeMatch')}
                                     </td>
                                 </tr>
                             )}

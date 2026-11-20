@@ -3,7 +3,6 @@ import { sound } from './audio';
 import { tStatic } from '../locales';
 import {
     addDoubleJumpParticles,
-    addTextParticle,
     extendInfiniteWorld,
     gameState,
     GRID_ROWS,
@@ -832,7 +831,7 @@ export async function startPlatformer(canvas, options = 'Coming Soon') {
             initInfiniteMode(canvasRef.height);
         }
     } catch (err) {
-        console.warn(tStatic('logs.konamiCustomLevelsError', undefined, 'Could not fetch custom levels, starting infinite mode:'), err);
+        console.warn(tStatic('logs.konamiCustomLevelsError', undefined), err);
         initInfiniteMode(canvasRef.height);
     }
 

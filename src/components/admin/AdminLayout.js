@@ -13,16 +13,8 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
         await logout();
     };
 
-    const getLocalizedTitle = (tTitle) => {
-        if (!tTitle) return '';
-        if (tTitle === 'Admin Dashboard' || tTitle === 'Dashboard') return t('admin.titles.dashboard', tTitle);
-        if (tTitle === 'Content Management System') return t('admin.titles.cms', tTitle);
-        if (tTitle === 'Budget Manager') return t('admin.titles.budget', tTitle);
-        if (tTitle === 'To-Do List' || tTitle === 'To-Do Manager') return t('admin.todoSection.title', t('admin.titles.todo', tTitle));
-        if (tTitle === 'Notes & Ideas' || tTitle === 'Notes Manager') return t('admin.notesSection.title', t('admin.titles.notes', tTitle));
-        if (tTitle === 'Networking' || tTitle === 'Networking Manager') return t('admin.titles.networking', tTitle);
-        return tTitle;
-    };
+    // Pages pass titles that are already translated.
+    const getLocalizedTitle = (tTitle) => tTitle || '';
 
     // Close mobile menu on route change
     useEffect(() => {
@@ -47,24 +39,24 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
         }
 
         if (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/home' || location.pathname === '/admin/dashboard') {
-            document.title = t('pageTitles.admin', 'Admin | Prajwal Reddy');
+            document.title = t('pageTitles.admin');
         } else if (location.pathname.startsWith('/admin/todo')) {
-            document.title = t('pageTitles.adminTodo', 'To-Do | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminTodo');
         } else if (location.pathname.startsWith('/admin/notes')) {
-            document.title = t('pageTitles.adminNotes', 'Notes | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminNotes');
         } else if (location.pathname.startsWith('/admin/networking')) {
-            document.title = t('pageTitles.adminNetworking', 'Networking | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminNetworking');
         } else if (location.pathname.startsWith('/admin/budget')) {
-            document.title = t('pageTitles.adminBudget', 'Budget | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminBudget');
         } else if (location.pathname.startsWith('/admin/cms')) {
-            document.title = t('pageTitles.adminCms', 'CMS | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminCms');
         } else if (location.pathname.startsWith('/admin/konami')) {
-            document.title = t('pageTitles.adminKonami', 'Konami | Admin | Prajwal Reddy');
+            document.title = t('pageTitles.adminKonami');
         } else if (title) {
             const localized = getLocalizedTitle(title);
-            document.title = `${localized} | Admin | Prajwal Reddy`;
+            document.title = t('pageTitles.adminSection', { title: localized });
         } else {
-            document.title = 'Admin | Prajwal Reddy';
+            document.title = t('pageTitles.admin');
         }
     }, [location.pathname, title, documentTitle, t]);
 
@@ -79,7 +71,7 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                         type="button"
                         className="admin-hamburger-btn"
                         onClick={() => setMobileMenuOpen((prev) => !prev)}
-                        aria-label={t('admin.nav.toggleMenu', 'Toggle admin navigation menu')}
+                        aria-label={t('admin.nav.toggleMenu')}
                         aria-expanded={mobileMenuOpen}
                     >
                         <span></span>
@@ -89,68 +81,68 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
 
                     {/* Mobile Header Title */}
                     <div className="admin-mobile-header-brand">
-                        <span>{getLocalizedTitle(title) || t('admin.nav.admin', 'Admin')}</span>
+                        <span>{getLocalizedTitle(title) || t('admin.nav.admin')}</span>
                     </div>
 
                     {/* Desktop Navigation */}
-                    <nav className="admin-nav" aria-label="Admin navigation">
+                    <nav className="admin-nav" aria-label={t('admin.ui.adminLayout.adminNavigation')}>
                         <Link
                             to="/admin"
                             className={`admin-nav-item ${isAdminActive ? 'active' : ''}`}
                         >
-                            {t('admin.nav.admin', 'Admin')}
+                            {t('admin.nav.admin')}
                         </Link>
                         <Link
                             to="/admin/todo"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/todo') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.todo', 'To-Do')}
+                            {t('admin.nav.todo')}
                         </Link>
                         <Link
                             to="/admin/notes"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/notes') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.notes', 'Notes')}
+                            {t('admin.nav.notes')}
                         </Link>
                         <Link
                             to="/admin/budget"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/budget') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.budget', 'Budget')}
+                            {t('admin.nav.budget')}
                         </Link>
                         <Link
                             to="/admin/networking"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/networking') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.networking', 'Networking')}
+                            {t('admin.nav.networking')}
                         </Link>
                         <span className="admin-nav-divider" aria-hidden="true" />
                         <Link
                             to="/admin/cms"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/cms') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.cms', 'CMS')}
+                            {t('admin.nav.cms')}
                         </Link>
                         <Link
                             to="/admin/konami"
                             className={`admin-nav-item ${location.pathname.startsWith('/admin/konami') ? 'active' : ''}`}
                         >
-                            {t('admin.nav.konami', 'Konami')}
+                            {t('admin.nav.konami')}
                         </Link>
                     </nav>
 
                     {/* Desktop Right Header Actions */}
                     <div className="admin-header-right">
-                        <Link to="/" className="admin-header-link" title={t('admin.nav.viewSite', 'View public portfolio')}>
-                            {t('admin.nav.site', 'Site')}
+                        <Link to="/" className="admin-header-link" title={t('admin.nav.viewSite')}>
+                            {t('admin.nav.site')}
                         </Link>
                         <button
                             type="button"
                             className="admin-header-logout"
                             onClick={handleLogout}
-                            title={t('admin.nav.signOut', 'Sign out of admin')}
+                            title={t('admin.nav.signOut')}
                         >
-                            {t('admin.nav.logout', 'Log out')}
+                            {t('admin.nav.logout')}
                         </button>
                     </div>
                 </div>
@@ -164,14 +156,14 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
             />
 
             {/* Mobile Side Drawer Navigation */}
-            <aside className={`admin-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} aria-label={t('admin.nav.navigation', 'Admin Navigation')}>
+            <aside className={`admin-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} aria-label={t('admin.nav.navigation')}>
                 <div className="admin-mobile-drawer-header">
-                    <span className="admin-mobile-drawer-title">{t('admin.nav.navigation', 'Admin Navigation')}</span>
+                    <span className="admin-mobile-drawer-title">{t('admin.nav.navigation')}</span>
                     <button
                         type="button"
                         className="admin-mobile-drawer-close"
                         onClick={() => setMobileMenuOpen(false)}
-                        aria-label={t('admin.nav.closeMenu', 'Close menu')}
+                        aria-label={t('admin.nav.closeMenu')}
                     >
                         ✕
                     </button>
@@ -184,35 +176,35 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                             className={`admin-mobile-nav-item ${isAdminActive ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.admin', 'Admin')}
+                            {t('admin.nav.admin')}
                         </Link>
                         <Link
                             to="/admin/todo"
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/todo') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.todo', 'To-Do')}
+                            {t('admin.nav.todo')}
                         </Link>
                         <Link
                             to="/admin/notes"
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/notes') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.notes', 'Notes')}
+                            {t('admin.nav.notes')}
                         </Link>
                         <Link
                             to="/admin/budget"
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/budget') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.budget', 'Budget')}
+                            {t('admin.nav.budget')}
                         </Link>
                         <Link
                             to="/admin/networking"
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/networking') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.networking', 'Networking')}
+                            {t('admin.nav.networking')}
                         </Link>
                         <span className="admin-mobile-nav-divider" aria-hidden="true" />
                         <Link
@@ -220,14 +212,14 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/cms') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.cms', 'CMS')}
+                            {t('admin.nav.cms')}
                         </Link>
                         <Link
                             to="/admin/konami"
                             className={`admin-mobile-nav-item ${location.pathname.startsWith('/admin/konami') ? 'active' : ''}`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('admin.nav.konami', 'Konami')}
+                            {t('admin.nav.konami')}
                         </Link>
                     </nav>
 
@@ -236,13 +228,13 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                             to="/"
                             className="admin-mobile-link"
                             onClick={() => setMobileMenuOpen(false)}
-                            title={t('admin.nav.viewSite', 'View public portfolio')}
+                            title={t('admin.nav.viewSite')}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
-                            <span>{t('admin.nav.site', 'View Site')}</span>
+                            <span>{t('admin.nav.site')}</span>
                         </Link>
                         <button
                             type="button"
@@ -257,7 +249,7 @@ const AdminLayout = ({ children, title, documentTitle, actions }) => {
                                 <polyline points="16 17 21 12 16 7"></polyline>
                                 <line x1="21" y1="12" x2="9" y2="12"></line>
                             </svg>
-                            <span>{t('admin.nav.logout', 'Log out')}</span>
+                            <span>{t('admin.nav.logout')}</span>
                         </button>
                     </div>
                 </div>

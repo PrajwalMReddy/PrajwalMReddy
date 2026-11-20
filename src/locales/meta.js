@@ -13,7 +13,7 @@ export const meta = {
 
             adminLogin: "Admin Login | Prajwal Reddy",
             admin: "Admin | Prajwal Reddy",
-            adminDashboard: "Admin | Prajwal Reddy",
+            adminSection: "{title} | Admin | Prajwal Reddy",
             adminTodo: "To-Do | Admin | Prajwal Reddy",
             adminNotes: "Notes | Admin | Prajwal Reddy",
             adminNetworking: "Networking | Admin | Prajwal Reddy",
@@ -53,7 +53,7 @@ export const meta = {
 
             adminLogin: "ಆಡಳಿತ ಪ್ರವೇಶ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             admin: "ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
-            adminDashboard: "ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
+            adminSection: "{title} | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminTodo: "ಕಾರ್ಯಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminNotes: "ಟಿಪ್ಪಣಿಗಳು | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",
             adminNetworking: "ನೆಟ್‌ವರ್ಕಿಂಗ್ | ಆಡಳಿತ | ಪ್ರಜ್ವಲ ರೆಡ್ಡಿ",

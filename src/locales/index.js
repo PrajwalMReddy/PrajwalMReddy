@@ -108,18 +108,24 @@ export const tStatic = (key, lang = getActiveLanguage(), fallback, params) => {
     };
 
     const resolvedLang = translations[activeLang] ? activeLang : DEFAULT_LANGUAGE;
+    const translatedValue = getNestedValue(translations[resolvedLang], key);
 
-    // 1. Try active language
-    let translatedValue = getNestedValue(translations[resolvedLang], key);
-
-    // 2. Fallback to default language if missing in active
-    if (translatedValue === undefined && resolvedLang !== DEFAULT_LANGUAGE) {
-        translatedValue = getNestedValue(translations[DEFAULT_LANGUAGE], key);
-    }
-
-    // 3. Fallback to explicit fallback argument or key
+    // Languages are co-equal: a missing key is never filled in from another language.
     if (translatedValue === undefined) {
-        return interpolate(actualFallback !== undefined ? actualFallback : key);
+        reportMissingTranslation(resolvedLang, key);
+        return interpolate(key);
     }
     return interpolate(translatedValue);
+};
+
+const reportedMissing = new Set();
+
+/** Warns once per key in development when a translation is missing for a language. */
+export const reportMissingTranslation = (lang, key) => {
+    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production') return;
+    const id = `${lang}:${key}`;
+    if (reportedMissing.has(id)) return;
+    reportedMissing.add(id);
+    // eslint-disable-next-line no-console
+    console.warn(`[i18n] Missing "${lang}" translation for "${key}"`);
 };

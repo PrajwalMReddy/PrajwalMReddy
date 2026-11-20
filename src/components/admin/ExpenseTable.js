@@ -82,20 +82,20 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
 
     const handleSaveInline = async (expenseId) => {
         if (!editForm.date) {
-            setInlineError(t('admin.budgetSection.dateRequired', 'Date is required'));
+            setInlineError(t('admin.budgetSection.dateRequired'));
             return;
         }
         if (!editForm.item || !editForm.item.trim()) {
-            setInlineError(t('admin.budgetSection.itemRequired', 'Item description is required'));
+            setInlineError(t('admin.budgetSection.itemRequired'));
             return;
         }
         if (!editForm.category || !editForm.category.trim()) {
-            setInlineError(t('admin.budgetSection.categoryRequired', 'Category is required'));
+            setInlineError(t('admin.budgetSection.categoryRequired'));
             return;
         }
         const costNum = Number(editForm.cost);
         if (editForm.cost === '' || isNaN(costNum) || costNum < 0) {
-            setInlineError(t('admin.budgetSection.validCostRequired', 'A valid non-negative cost is required'));
+            setInlineError(t('admin.budgetSection.validCostRequired'));
             return;
         }
 
@@ -129,7 +129,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.budgetSection.deleteConfirmExpense', 'Delete this expense?'))) return;
+        if (!window.confirm(t('admin.budgetSection.deleteConfirmExpense'))) return;
         try {
             await budgetApi.deleteExpense(id);
             if (editingId === id) handleCancelEdit();
@@ -150,10 +150,10 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                     <div className="admin-budget-form-title-wrap">
                         <div>
                             <h3 className="admin-budget-form-title">
-                                {t('admin.budgetSection.addExpense', 'Add Expense')}
+                                {t('admin.budgetSection.addExpense')}
                             </h3>
                             <p className="admin-budget-form-subtitle">
-                                {t('admin.budgetSection.recordNewExpense', 'Record a new transaction to track spending')}
+                                {t('admin.budgetSection.recordNewExpense')}
                             </p>
                         </div>
                     </div>
@@ -161,7 +161,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
 
                 <div className="admin-budget-form-grid">
                     <label className="admin-field-group admin-field-date">
-                        <span className="admin-field-label">{t('admin.budgetSection.date', 'Date')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.date')}</span>
                         <input
                             type="date"
                             value={form.date}
@@ -170,27 +170,27 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                         />
                     </label>
                     <label className="admin-field-group admin-field-item">
-                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription', 'Item Description')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.itemDescription')}</span>
                         <input
                             type="text"
                             value={form.item}
                             onChange={(e) => setForm({ ...form, item: e.target.value })}
-                            placeholder={t('admin.budgetSection.expenseItemPlaceholder', 'e.g. Groceries, Dinner, Transit...')}
+                            placeholder={t('admin.budgetSection.expenseItemPlaceholder')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-category">
-                        <span className="admin-field-label">{t('admin.budgetSection.category', 'Category')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.category')}</span>
                         <input
                             type="text"
                             value={form.category}
                             onChange={(e) => setForm({ ...form, category: e.target.value })}
-                            placeholder={t('admin.budgetSection.category', 'Category')}
+                            placeholder={t('admin.budgetSection.category')}
                             required
                         />
                     </label>
                     <label className="admin-field-group admin-field-cost">
-                        <span className="admin-field-label">{t('admin.budgetSection.cost', 'Cost')}</span>
+                        <span className="admin-field-label">{t('admin.budgetSection.cost')}</span>
                         <div className="admin-currency-input-wrap">
                             <span className="admin-currency-symbol" aria-hidden="true">$</span>
                             <input
@@ -211,8 +211,8 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                             disabled={submitting}
                         >
                             {submitting
-                                ? t('admin.actions.saving', 'Saving...')
-                                : t('admin.budgetSection.addExpenseBtn', '+ Add Expense')}
+                                ? t('admin.actions.saving')
+                                : t('admin.budgetSection.addExpenseBtn')}
                         </button>
                     </div>
                 </div>
@@ -222,10 +222,10 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
             <div className="admin-budget-table-card">
                 <div className="admin-budget-table-header">
                     <div className="admin-budget-table-title-group">
-                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.expenseHistory', 'Expense History')}</h3>
+                        <h3 className="admin-budget-table-title">{t('admin.budgetSection.expenseHistory')}</h3>
                         {searchQuery && filteredExpenses.length !== expenses.length && (
                             <span className="admin-budget-filter-badge">
-                                {formatNumber(filteredExpenses.length)} {t('admin.budgetSection.matching', 'matching')}
+                                {formatNumber(filteredExpenses.length)} {t('admin.budgetSection.matching')}
                             </span>
                         )}
                     </div>
@@ -243,16 +243,16 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                 className="admin-table-search-input"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={t('admin.budgetSection.searchExpensesPlaceholder', 'Search expenses by date, #, item, category, or cost...')}
-                                aria-label={t('admin.budgetSection.searchExpensesPlaceholder', 'Search expenses')}
+                                placeholder={t('admin.budgetSection.searchExpensesPlaceholder')}
+                                aria-label={t('admin.budgetSection.searchExpensesPlaceholder')}
                             />
                             {searchQuery && (
                                 <button
                                     type="button"
                                     className="admin-table-search-clear"
                                     onClick={() => setSearchQuery('')}
-                                    title={t('admin.budgetSection.clearSearch', 'Clear search')}
-                                    aria-label={t('admin.budgetSection.clearSearch', 'Clear search')}
+                                    title={t('admin.budgetSection.clearSearch')}
+                                    aria-label={t('admin.budgetSection.clearSearch')}
                                 >
                                     ✕
                                 </button>
@@ -265,12 +265,12 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>{t('admin.budgetSection.headers.serial', 'Serial #')}</th>
-                                <th>{t('admin.budgetSection.headers.date', 'Date')}</th>
-                                <th>{t('admin.budgetSection.headers.item', 'Item')}</th>
-                                <th>{t('admin.budgetSection.headers.category', 'Category')}</th>
-                                <th>{t('admin.budgetSection.headers.cost', 'Cost')}</th>
-                                <th>{t('admin.budgetSection.headers.actions', 'Actions')}</th>
+                                <th>{t('admin.budgetSection.headers.serial')}</th>
+                                <th>{t('admin.budgetSection.headers.date')}</th>
+                                <th>{t('admin.budgetSection.headers.item')}</th>
+                                <th>{t('admin.budgetSection.headers.category')}</th>
+                                <th>{t('admin.budgetSection.headers.cost')}</th>
+                                <th>{t('admin.budgetSection.headers.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -293,7 +293,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                         onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
                                                         required
-                                                        aria-label={t('admin.budgetSection.headers.date', 'Date')}
+                                                        aria-label={t('admin.budgetSection.headers.date')}
                                                     />
                                                 </td>
                                                 <td>
@@ -303,10 +303,10 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                         value={editForm.item}
                                                         onChange={(e) => setEditForm({ ...editForm, item: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
-                                                        placeholder={t('admin.budgetSection.expenseItemPlaceholder', 'Item')}
+                                                        placeholder={t('admin.budgetSection.expenseItemPlaceholder')}
                                                         required
                                                         autoFocus
-                                                        aria-label={t('admin.budgetSection.headers.item', 'Item')}
+                                                        aria-label={t('admin.budgetSection.headers.item')}
                                                     />
                                                 </td>
                                                 <td>
@@ -316,9 +316,9 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                         value={editForm.category}
                                                         onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                                                         onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
-                                                        placeholder={t('admin.budgetSection.category', 'Category')}
+                                                        placeholder={t('admin.budgetSection.category')}
                                                         required
-                                                        aria-label={t('admin.budgetSection.headers.category', 'Category')}
+                                                        aria-label={t('admin.budgetSection.headers.category')}
                                                     />
                                                 </td>
                                                 <td>
@@ -334,7 +334,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                             onKeyDown={(e) => handleInlineKeyDown(e, expense.id)}
                                                             placeholder="0.00"
                                                             required
-                                                            aria-label={t('admin.budgetSection.headers.cost', 'Cost')}
+                                                            aria-label={t('admin.budgetSection.headers.cost')}
                                                         />
                                                     </div>
                                                 </td>
@@ -345,18 +345,18 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                             className="admin-inline-save-btn"
                                                             onClick={() => handleSaveInline(expense.id)}
                                                             disabled={inlineSubmitting}
-                                                            title={t('admin.budgetSection.save', 'Save')}
+                                                            title={t('admin.budgetSection.save')}
                                                         >
-                                                            {inlineSubmitting ? t('admin.actions.saving', 'Saving...') : t('admin.budgetSection.save', 'Save')}
+                                                            {inlineSubmitting ? t('admin.actions.saving') : t('admin.budgetSection.save')}
                                                         </button>
                                                         <button
                                                             type="button"
                                                             className="admin-inline-cancel-btn"
                                                             onClick={handleCancelEdit}
                                                             disabled={inlineSubmitting}
-                                                            title={t('admin.budgetSection.cancel', 'Cancel')}
+                                                            title={t('admin.budgetSection.cancel')}
                                                         >
-                                                            {t('admin.budgetSection.cancel', 'Cancel')}
+                                                            {t('admin.budgetSection.cancel')}
                                                         </button>
                                                     </div>
                                                 </td>
@@ -394,17 +394,17 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleStartEdit(expense)}
-                                                    title={t('admin.actions.edit', 'Edit')}
+                                                    title={t('admin.actions.edit')}
                                                 >
-                                                    {t('admin.actions.edit', 'Edit')}
+                                                    {t('admin.actions.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className="danger"
                                                     onClick={() => handleDelete(expense.id)}
-                                                    title={t('admin.actions.delete', 'Delete')}
+                                                    title={t('admin.actions.delete')}
                                                 >
-                                                    {t('admin.actions.delete', 'Delete')}
+                                                    {t('admin.actions.delete')}
                                                 </button>
                                             </div>
                                         </td>
@@ -414,7 +414,7 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                             {filteredExpenses.length > 0 && (
                                 <tr className="admin-table-total">
                                     <td colSpan="4">
-                                        {t('admin.budgetSection.totalFiltered', 'Total (Filtered):')}
+                                        {t('admin.budgetSection.totalFiltered')}
                                     </td>
                                     <td className="admin-cost-cell">
                                         {formatNumber(formatCurrency(filteredTotal))}
@@ -425,14 +425,14 @@ const ExpenseTable = ({ expenses = [], onRefresh }) => {
                             {expenses.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        {t('admin.budgetSection.noExpenses', 'No expenses recorded yet.')}
+                                        {t('admin.budgetSection.noExpenses')}
                                     </td>
                                 </tr>
                             )}
                             {expenses.length > 0 && filteredExpenses.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="admin-empty">
-                                        {t('admin.budgetSection.noExpensesMatch', 'No expenses match your search.')}
+                                        {t('admin.budgetSection.noExpensesMatch')}
                                     </td>
                                 </tr>
                             )}
