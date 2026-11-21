@@ -52,14 +52,20 @@ const TodoCard = ({
                 : 'normal';
 
     const hasSubtasks = todo.subtasks && todo.subtasks.length > 0;
+    const description = typeof todo.description === 'string' ? todo.description.trim() : '';
+    const hasDescription = description.length > 0;
+    const hasDetails = hasSubtasks || hasDescription;
     const hasBottomContent = Boolean(
         dueDateLabel ||
         todo.estimatedTime ||
         isRecurringAny ||
         todo.personId ||
         (Array.isArray(todo.tags) && todo.tags.length > 0) ||
-        hasSubtasks
+        hasDetails
     );
+    const detailsToggleTitle = isExpanded
+        ? t('admin.todoSection.hideDetails', 'Hide details')
+        : t('admin.todoSection.showDetails', 'Show details');
 
     return (
         <div
@@ -91,7 +97,26 @@ const TodoCard = ({
                         checked={todo.completed}
                         onChange={() => onToggle(todo.id, todo.completed)}
                     />
-                    <span className="admin-todo-card-title">{todo.title}</span>
+                    {hasDetails ? (
+                        <span
+                            className="admin-todo-card-title is-expandable"
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={isExpanded}
+                            title={detailsToggleTitle}
+                            onClick={() => onToggleSubtasksExpanded(todo.id)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    onToggleSubtasksExpanded(todo.id);
+                                }
+                            }}
+                        >
+                            {todo.title}
+                        </span>
+                    ) : (
+                        <span className="admin-todo-card-title">{todo.title}</span>
+                    )}
                 </div>
 
                 <button
@@ -212,13 +237,13 @@ const TodoCard = ({
                     )}
                 </div>
 
-                {hasSubtasks && (
+                {hasDetails && (
                     <button
                         type="button"
                         className={`admin-todo-card-subtasks-toggle${isExpanded ? ' is-open' : ''}`}
                         onClick={() => onToggleSubtasksExpanded(todo.id)}
                         aria-expanded={isExpanded}
-                        title={isExpanded ? t('admin.todoSection.hideSubtasks') : t('admin.todoSection.showSubtasks')}
+                        title={detailsToggleTitle}
                     >
                         <svg
                             className="admin-todo-card-subtasks-chevron"
@@ -234,9 +259,29 @@ const TodoCard = ({
                         >
                             <polyline points="6 9 12 15 18 9"/>
                         </svg>
-                        <span className="admin-todo-card-subtasks-count">
-                            {formatNumber(todo.subtasks.filter((st) => st.completed).length)}/{formatNumber(todo.subtasks.length)}
-                        </span>
+                        {hasDescription && (
+                            <svg
+                                className="admin-todo-card-details-icon"
+                                width="11"
+                                height="11"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                aria-hidden="true"
+                            >
+                                <line x1="4" y1="6" x2="20" y2="6"/>
+                                <line x1="4" y1="12" x2="20" y2="12"/>
+                                <line x1="4" y1="18" x2="14" y2="18"/>
+                            </svg>
+                        )}
+                        {hasSubtasks && (
+                            <span className="admin-todo-card-subtasks-count">
+                                {formatNumber(todo.subtasks.filter((st) => st.completed).length)}/{formatNumber(todo.subtasks.length)}
+                            </span>
+                        )}
                     </button>
                 )}
             </div>
@@ -272,6 +317,10 @@ const TodoCard = ({
                         </span>
                     </a>
                 </div>
+            )}
+
+            {isExpanded && hasDescription && (
+                <div className="admin-todo-card-description">{description}</div>
             )}
 
             {isExpanded && hasSubtasks && (

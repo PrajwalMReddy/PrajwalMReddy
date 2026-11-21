@@ -9779,6 +9779,41 @@ body.dark-mode .admin-todo-card-due,
     gap: 0.1rem;
 }
 
+.admin-todo-card-title.is-expandable {
+    cursor: pointer;
+}
+
+.admin-todo-card-title.is-expandable:hover {
+    text-decoration: underline;
+    text-decoration-color: rgba(31, 45, 61, 0.3);
+    text-underline-offset: 2px;
+}
+
+.admin-todo-card-details-icon {
+    flex: 0 0 auto;
+    display: block;
+}
+
+.admin-todo-card-description {
+    margin-top: 0.55rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.42);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: rgba(31, 45, 61, 0.82);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    cursor: text;
+    user-select: text;
+}
+
+body.dark-mode .admin-todo-card-description,
+.dark-mode .admin-todo-card-description {
+    background: rgba(15, 23, 42, 0.35);
+    color: rgba(226, 232, 240, 0.85);
+}
+
 .admin-todo-card-subtask {
     display: flex;
     align-items: center;
