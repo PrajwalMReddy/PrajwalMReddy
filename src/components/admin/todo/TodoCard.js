@@ -12,6 +12,32 @@ import {
     PRIORITY_LABEL,
 } from './todoUtils';
 
+const URL_PATTERN = /((?:https?:\/\/|www\.)[^\s<]+)/gi;
+const TRAILING_PUNCTUATION = /[.,;:!?)\]}'"]+$/;
+
+const linkifyText = (text) => {
+    const parts = text.split(URL_PATTERN);
+    return parts.map((part, idx) => {
+        if (idx % 2 === 0) return part;
+        const trailing = (part.match(TRAILING_PUNCTUATION) || [''])[0];
+        const url = trailing ? part.slice(0, -trailing.length) : part;
+        return (
+            <React.Fragment key={idx}>
+                <a
+                    href={formatTodoUrl(url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="admin-todo-card-description-link"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {url}
+                </a>
+                {trailing}
+            </React.Fragment>
+        );
+    });
+};
+
 const TodoCard = ({
                       todo,
                       isMasterTask = false,
@@ -320,7 +346,7 @@ const TodoCard = ({
             )}
 
             {isExpanded && hasDescription && (
-                <div className="admin-todo-card-description">{description}</div>
+                <div className="admin-todo-card-description">{linkifyText(description)}</div>
             )}
 
             {isExpanded && hasSubtasks && (

@@ -9808,6 +9808,27 @@ body.dark-mode .admin-todo-card-due,
     user-select: text;
 }
 
+.admin-todo-card-description-link {
+    color: var(--secondary-color, #4a6b8a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-all;
+}
+
+.admin-todo-card-description-link:hover {
+    color: #1f2d3d;
+}
+
+body.dark-mode .admin-todo-card-description-link,
+.dark-mode .admin-todo-card-description-link {
+    color: #93c5fd;
+}
+
+body.dark-mode .admin-todo-card-description-link:hover,
+.dark-mode .admin-todo-card-description-link:hover {
+    color: #e2e8f0;
+}
+
 body.dark-mode .admin-todo-card-description,
 .dark-mode .admin-todo-card-description {
     background: rgba(15, 23, 42, 0.35);
