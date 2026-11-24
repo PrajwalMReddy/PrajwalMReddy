@@ -647,3 +647,763 @@ body:not(.dark-mode) .admin-page .admin-budget-planner .positive,
 body:not(.dark-mode) .admin-page .admin-budget-planner .positive strong {
     color: #13805a;
 }
+
+/* ============================================================
+   Budget statistics (BudgetStats.js), "bs-" prefix.
+   Chart colors are validated categorical / sequential steps,
+   selected separately for light and dark surfaces.
+   ============================================================ */
+
+body .admin-page .bs {
+    --bs-series-1: #2a78d6;
+    --bs-series-2: #eb6834;
+    --bs-series-3: #1baf7a;
+    --bs-series-4: #eda100;
+    --bs-seq-strong: #1c5cab;
+    --bs-seq: #2a78d6;
+    --bs-seq-soft: #86b6ef;
+    --bs-good: #006300;
+    --bs-bad: #d03b3b;
+    --bs-bad-soft: rgba(208, 59, 59, 0.08);
+    --bs-good-soft: rgba(12, 163, 12, 0.09);
+    --bs-grid: #e6ebf0;
+    --bs-axis: #c3ccd6;
+    --bs-track: #edf1f5;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+}
+
+body.dark-mode .admin-page .bs {
+    --bs-series-1: #3987e5;
+    --bs-series-2: #d95926;
+    --bs-series-3: #199e70;
+    --bs-series-4: #c98500;
+    --bs-seq-strong: #86b6ef;
+    --bs-seq: #3987e5;
+    --bs-seq-soft: #1c5cab;
+    --bs-good: #0ca30c;
+    --bs-bad: #e66767;
+    --bs-bad-soft: rgba(230, 103, 103, 0.12);
+    --bs-good-soft: rgba(12, 163, 12, 0.12);
+    --bs-grid: rgba(255, 255, 255, 0.07);
+    --bs-axis: rgba(255, 255, 255, 0.18);
+    --bs-track: rgba(255, 255, 255, 0.07);
+}
+
+/* ---------- Cards ---------- */
+
+body .admin-page .bs-card,
+body .admin-page .bs-kpi {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow);
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+body .admin-page .bs-card {
+    padding: var(--ui-card-pad);
+}
+
+body .admin-page .bs-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+body .admin-page .bs-card-head-wrap {
+    flex-wrap: wrap;
+}
+
+body .admin-page .bs-card-head h2 {
+    margin: 0;
+    color: var(--ui-text-strong);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+body .admin-page .bs-card-meta {
+    color: var(--ui-text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+body .admin-page .bs-subhead {
+    margin-bottom: 0.6rem;
+    color: var(--ui-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+body .admin-page .bs-divider {
+    height: 1px;
+    margin: 1.1rem 0;
+    background: var(--ui-border);
+}
+
+body .admin-page .bs-muted { color: var(--ui-text-muted); }
+body .admin-page .bs-strong { color: var(--ui-text-strong); font-weight: 600; }
+body .admin-page .bs-pos { color: var(--bs-good); }
+body .admin-page .bs-neg { color: var(--bs-bad); }
+
+body .admin-page .bs-row-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+body .admin-page .bs-row-periods {
+    align-items: stretch;
+}
+
+body .admin-page .bs-row-wide-left {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+}
+
+body .admin-page .bs-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+/* ---------- KPI row ---------- */
+
+body .admin-page .bs-kpis {
+    display: grid;
+    grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+body .admin-page .bs-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 1.25rem;
+}
+
+body .admin-page .bs-kpi-label {
+    color: var(--ui-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+body .admin-page .bs-kpi-value {
+    color: var(--ui-text-strong);
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body .admin-page .bs-kpi-sub {
+    color: var(--ui-text-muted);
+    font-size: 0.8rem;
+}
+
+body .admin-page .bs-kpi-primary {
+    background: linear-gradient(135deg, var(--ui-accent) 0%, var(--ui-accent-hover) 100%);
+    border-color: transparent;
+}
+
+body .admin-page .bs-kpi-primary .bs-kpi-label,
+body .admin-page .bs-kpi-primary .bs-kpi-sub {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+body .admin-page .bs-kpi-primary .bs-kpi-value {
+    color: #ffffff;
+    font-size: 1.85rem;
+}
+
+body .admin-page .bs-kpi-primary.bs-tone-bad {
+    background: linear-gradient(135deg, #c43a3a 0%, #a32e2e 100%);
+}
+
+/* ---------- Period cards & meters ---------- */
+
+body .admin-page .bs-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+body .admin-page .bs-status-good {
+    background: var(--bs-good-soft);
+    color: var(--bs-good);
+}
+
+body .admin-page .bs-status-bad {
+    background: var(--bs-bad-soft);
+    color: var(--bs-bad);
+}
+
+body .admin-page .bs-status-icon {
+    font-size: 0.6rem;
+}
+
+body .admin-page .bs-meter-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+body .admin-page .bs-meter-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+body .admin-page .bs-meter-spent {
+    color: var(--ui-text-strong);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+body .admin-page .bs-meter-of {
+    color: var(--ui-text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+body .admin-page .bs-meter-pct {
+    color: var(--ui-text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+body .admin-page .bs-meter-pct.is-over {
+    color: var(--bs-bad);
+}
+
+body .admin-page .bs-meter {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bs-track);
+    overflow: hidden;
+}
+
+body .admin-page .bs-meter-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--bs-seq);
+    transition: width 0.4s ease;
+}
+
+body .admin-page .bs-meter.is-over .bs-meter-fill {
+    background: var(--bs-bad);
+}
+
+body .admin-page .bs-dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.75rem 1rem;
+    margin: 1.1rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ui-border);
+}
+
+body .admin-page .bs-dl > div {
+    min-width: 0;
+}
+
+body .admin-page .bs-dl dt {
+    margin-bottom: 0.15rem;
+    color: var(--ui-text-muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body .admin-page .bs-dl dd {
+    margin: 0;
+    color: var(--ui-text-strong);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+body .admin-page .bs-dl dd.bs-pos { color: var(--bs-good); }
+body .admin-page .bs-dl dd.bs-neg { color: var(--bs-bad); }
+
+/* ---------- Segmented filter & legend ---------- */
+
+body .admin-page .bs-segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--ui-radius);
+    background: var(--ui-surface-muted);
+    border: 1px solid var(--ui-border);
+}
+
+body .admin-page .bs-segmented button {
+    padding: 0.35rem 0.75rem;
+    border: 0;
+    border-radius: var(--ui-radius-sm);
+    background: transparent;
+    color: var(--ui-text-muted);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+body .admin-page .bs-segmented button:hover {
+    color: var(--ui-text-strong);
+    background: var(--ui-hover);
+}
+
+body .admin-page .bs-segmented button.active {
+    background: var(--ui-surface);
+    color: var(--ui-text-strong);
+    box-shadow: var(--ui-btn-shadow);
+}
+
+body .admin-page .bs-segmented button:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-focus-ring);
+}
+
+body .admin-page .bs-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin: -0.25rem 0 0.75rem;
+    color: var(--ui-text);
+    font-size: 0.8rem;
+}
+
+body .admin-page .bs-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+body .admin-page .bs-swatch {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+/* ---------- Trend chart ---------- */
+
+body .admin-page .bs-trend-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+}
+
+body .admin-page .bs-trend-svg {
+    display: block;
+    overflow: visible;
+}
+
+body .admin-page .bs-grid {
+    stroke: var(--bs-grid);
+    stroke-width: 1;
+}
+
+body .admin-page .bs-axis {
+    stroke: var(--bs-axis);
+    stroke-width: 1;
+}
+
+body .admin-page .bs-tick {
+    fill: var(--ui-text-muted);
+    font-size: 11px;
+}
+
+body .admin-page .bs-tick-strong {
+    fill: var(--ui-text);
+    font-weight: 600;
+}
+
+body .admin-page .bs-hover-band {
+    fill: var(--ui-hover);
+}
+
+body .admin-page .bs-trend-svg path {
+    transition: opacity 0.12s ease;
+}
+
+body .admin-page .bs-trend-svg .bs-dim {
+    opacity: 0.45;
+}
+
+body .admin-page .bs-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+body .admin-page .bs-crosshair {
+    stroke: var(--bs-axis);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+body .admin-page .bs-dot {
+    stroke: var(--ui-surface);
+    stroke-width: 2;
+}
+
+body .admin-page .bs-tooltip {
+    position: absolute;
+    top: 8px;
+    transform: translateX(12px);
+    min-width: 170px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-hover);
+    pointer-events: none;
+    z-index: 2;
+}
+
+body .admin-page .bs-tooltip.is-left {
+    transform: translateX(calc(-100% - 12px));
+}
+
+body .admin-page .bs-tooltip-title {
+    margin-bottom: 0.35rem;
+    color: var(--ui-text-strong);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+body .admin-page .bs-tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--ui-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.6;
+}
+
+body .admin-page .bs-tooltip-row strong {
+    margin-left: auto;
+    padding-left: 0.75rem;
+    color: var(--ui-text-strong);
+}
+
+/* ---------- Categories ---------- */
+
+body .admin-page .bs-cat-table {
+    display: flex;
+    flex-direction: column;
+}
+
+body .admin-page .bs-cat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7.5rem 7.5rem;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--ui-border);
+    font-size: 0.875rem;
+    color: var(--ui-text);
+}
+
+body .admin-page .bs-cat-headrow {
+    padding-top: 0;
+    color: var(--ui-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+body .admin-page .bs-cat-total {
+    border-bottom: 0;
+    color: var(--ui-text-strong);
+    font-weight: 700;
+}
+
+body .admin-page .bs-num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+body .admin-page .bs-cat-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+body .admin-page .bs-cat-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+body .admin-page .bs-cat-label > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--ui-text-strong);
+    font-weight: 500;
+}
+
+body .admin-page .bs-cat-pct {
+    color: var(--ui-text-muted);
+    font-size: 0.75rem;
+}
+
+body .admin-page .bs-cat-track {
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--bs-track);
+}
+
+body .admin-page .bs-cat-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--bs-seq);
+}
+
+/* ---------- Funds ---------- */
+
+body .admin-page .bs-fund-bar {
+    display: flex;
+    gap: 2px;
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--bs-track);
+}
+
+body .admin-page .bs-fund-seg {
+    flex-basis: 0;
+    min-width: 4px;
+}
+
+body .admin-page .bs-fund-1 { background: var(--bs-seq-strong); }
+body .admin-page .bs-fund-2 { background: var(--bs-seq); }
+body .admin-page .bs-fund-3 { background: var(--bs-seq-soft); }
+
+body .admin-page .bs-fund-list {
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+body .admin-page .bs-fund-list li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ui-text);
+    font-size: 0.875rem;
+}
+
+body .admin-page .bs-fund-list strong {
+    min-width: 6.5rem;
+    color: var(--ui-text-strong);
+    text-align: right;
+}
+
+/* ---------- Transaction distribution ---------- */
+
+body .admin-page .bs-strip {
+    position: relative;
+    height: 28px;
+}
+
+body .admin-page .bs-strip-track {
+    position: absolute;
+    top: 13px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--bs-track);
+}
+
+body .admin-page .bs-strip-box {
+    position: absolute;
+    top: 6px;
+    height: 16px;
+    border-radius: 4px;
+    background: var(--bs-seq-soft);
+    opacity: 0.75;
+}
+
+body .admin-page .bs-strip-median {
+    position: absolute;
+    top: 2px;
+    width: 3px;
+    height: 24px;
+    margin-left: -1.5px;
+    border-radius: 2px;
+    background: var(--bs-seq-strong);
+}
+
+body .admin-page .bs-strip-mean {
+    position: absolute;
+    top: 7px;
+    width: 10px;
+    height: 10px;
+    margin-left: -7px;
+    border: 2px solid var(--ui-surface);
+    border-radius: 50%;
+    background: var(--bs-series-2);
+}
+
+body .admin-page .bs-strip-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.2rem;
+    color: var(--ui-text-muted);
+    font-size: 0.7rem;
+}
+
+body .admin-page .bs-strip-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    margin: 0.5rem 0 1rem;
+    color: var(--ui-text-muted);
+    font-size: 0.75rem;
+}
+
+body .admin-page .bs-strip-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+body .admin-page .bs-key-box,
+body .admin-page .bs-key-median,
+body .admin-page .bs-key-mean {
+    display: inline-block;
+}
+
+body .admin-page .bs-key-box {
+    width: 14px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--bs-seq-soft);
+}
+
+body .admin-page .bs-key-median {
+    width: 3px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--bs-seq-strong);
+}
+
+body .admin-page .bs-key-mean {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bs-series-2);
+}
+
+body .admin-page .bs-tx-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-border);
+    overflow: hidden;
+}
+
+body .admin-page .bs-tx-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.65rem 0.8rem;
+    background: var(--ui-surface);
+    min-width: 0;
+}
+
+body .admin-page .bs-tx-cell span {
+    color: var(--ui-text-muted);
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body .admin-page .bs-tx-cell strong {
+    color: var(--ui-text-strong);
+    font-size: 0.95rem;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+    body .admin-page .bs-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body .admin-page .bs-row-periods {
+    align-items: stretch;
+}
+
+body .admin-page .bs-row-wide-left {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    body .admin-page .bs-row-2 {
+        grid-template-columns: 1fr;
+    }
+
+    body .admin-page .bs-cat-row {
+        grid-template-columns: minmax(0, 1fr) 6rem;
+    }
+
+    body .admin-page .bs-cat-row > :nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    body .admin-page .bs-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    body .admin-page .bs-tx-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
